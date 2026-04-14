@@ -1,0 +1,177 @@
+[
+  {
+    "id": 1,
+    "group_name": "基础分割与线性布局 (Basic Split & Linear Layouts)",
+    "description": "最基础的版面构成方式，主要通过水平或垂直的线性分割来安排图文关系，稳重且易读。",
+    "indices": [
+      2,
+      3,
+      4,
+      5,
+      8,
+      26
+    ]
+  },
+  {
+    "id": 2,
+    "group_name": "网格与模块化系统 (Grid & Modular Systems)",
+    "description": "基于秩序感的布局，强调信息的规范化整理，适合处理多元素、高密度的信息展示。",
+    "indices": [
+      6,
+      7,
+      10,
+      29,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      78
+    ]
+  },
+  {
+    "id": 3,
+    "group_name": "视觉焦点与中心构图 (Focal Point & Central Composition)",
+    "description": "强调绝对的核心，通过居中、发散或环绕的方式，强制锁定观众的视觉注意力。",
+    "indices": [
+      1,
+      15,
+      49,
+      50,
+      53,
+      54,
+      76,
+      77,
+      86
+    ]
+  },
+  {
+    "id": 4,
+    "group_name": "视觉动线与引导 (Visual Flow & Guidance)",
+    "description": "利用人眼的阅读习惯或图形线条，引导视线按照特定路径（如Z型、S型、透视线）移动。",
+    "indices": [
+      14,
+      16,
+      28,
+      46,
+      47,
+      48,
+      51,
+      52,
+      55
+    ]
+  },
+  {
+    "id": 5,
+    "group_name": "叙事、序列与流程 (Narrative, Sequence & Process)",
+    "description": "具有时间维度或逻辑顺序的排版，用于讲述故事、展示步骤或历史发展。",
+    "indices": [
+      20,
+      21,
+      22,
+      23,
+      31,
+      56,
+      57,
+      58,
+      59,
+      61,
+      63,
+      64
+    ]
+  },
+  {
+    "id": 6,
+    "group_name": "图像主导与沉浸式 (Image-Driven & Immersive)",
+    "description": "以图片或插画为绝对主体，文字退居次要地位，强调氛围感和视觉冲击力。",
+    "indices": [
+      11,
+      13,
+      18,
+      30,
+      33,
+      35,
+      65
+    ]
+  },
+  {
+    "id": 7,
+    "group_name": "文字排版与特殊处理 (Typography & Text Creative)",
+    "description": "以文字为视觉主体，或打破常规阅读方式，将文字图形化处理的排版。",
+    "indices": [
+      9,
+      12,
+      39,
+      74,
+      75
+    ]
+  },
+  {
+    "id": 8,
+    "group_name": "极简、留白与高级感 (Minimalism, White Space & High-End)",
+    "description": "奢侈品与艺术类设计常用的手法，通过大面积留白、严格对齐和灰度控制营造格调。",
+    "indices": [
+      17,
+      70,
+      79,
+      80,
+      81,
+      82,
+      83
+    ]
+  },
+  {
+    "id": 9,
+    "group_name": "逻辑、数据与对比结构 (Logic, Data & Comparison)",
+    "description": "用于说明事物关系、对比差异或展示层级逻辑的功能性布局。",
+    "indices": [
+      24,
+      25,
+      27,
+      60,
+      62,
+      87,
+      88,
+      91
+    ]
+  },
+  {
+    "id": 10,
+    "group_name": "艺术实验与解构 (Experimental & Deconstructive)",
+    "description": "打破常规平衡，通过重叠、破碎、繁杂或随机的方式，创造独特的视觉张力和情绪。",
+    "indices": [
+      19,
+      32,
+      38,
+      66,
+      67,
+      68,
+      69,
+      71,
+      72,
+      73
+    ]
+  },
+  {
+    "id": 11,
+    "group_name": "互动与趣味化元素 (Interactive & Playful)",
+    "description": "借鉴游戏或漫画元素，增加读者参与感和阅读乐趣的版式。",
+    "indices": [
+      34,
+      36,
+      37
+    ]
+  },
+  {
+    "id": 12,
+    "group_name": "算法与生成式设计 (Algorithmic & Generative)",
+    "description": "非设计师手动排版，而是基于代码规则或参数自动生成的动态布局。",
+    "indices": [
+      84,
+      85,
+      89,
+      90
+    ]
+  }
+]

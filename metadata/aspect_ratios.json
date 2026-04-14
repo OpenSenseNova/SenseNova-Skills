@@ -1,0 +1,14 @@
+{
+  "ratios": [
+    {"ratio": "1:1", "weight": 0.2},
+    {"ratio": "9:16", "weight": 0.2},
+    {"ratio": "16:9", "weight": 0.2},
+    {"ratio": "3:4", "weight": 0.06},
+    {"ratio": "4:3", "weight": 0.06},
+    {"ratio": "3:2", "weight": 0.06},
+    {"ratio": "2:3", "weight": 0.06},
+    {"ratio": "5:4", "weight": 0.06},
+    {"ratio": "4:5", "weight": 0.06},
+    {"ratio": "21:9", "weight": 0.04}
+  ]
+}
