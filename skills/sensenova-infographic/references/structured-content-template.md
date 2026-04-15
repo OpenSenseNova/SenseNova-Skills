@@ -42,6 +42,7 @@ Verify all source data is:
 | **Tone** | Expert trainer | Knowledgeable, clear, encouraging |
 | **No new information** | Only source content | Don't add examples not in source |
 | **Verbatim data** | Exact copies | "73% increase" not "significant increase" |
+| **Text as labels** | All copy intended to appear as text in the image must be structured as explicit text labels under each section's **Text Labels** field | Headlines, subheads, data callouts — all must be listed verbatim, not embedded in prose |
 
 ## Structured Content Format
 

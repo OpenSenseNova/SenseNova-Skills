@@ -368,30 +368,60 @@ See `references/structured-content-template.md` for detailed format.
 
 **If user specified `--layout` and `--style`**: Use user's choice directly.
 
-**If not specified**: Auto-select with randomness for variety.
+**If not specified**: Auto-select based on analysis results.
 
-#### 3.1 Build Candidate Pool
+#### 3.1 Read Content Classification from analysis.md
 
-For each matching factor, collect candidates:
+From `analysis.md` frontmatter, extract:
+- `data_type`: Content structure classification
+- `topic`: Domain context
+- `complexity`: Layout density guidance
 
-| Factor | Layout Candidates | Style Candidates |
-|--------|-------------------|------------------|
-| Data structure | Process→[linear-progression, winding-roadmap, step-staircase], Compare→[binary-comparison, four-quadrant-grid, comparison-matrix], Hierarchy→[hierarchical-layers, tree-branching], Overview→[bento-grid, nine-grid], Cycle→[circular-flow, s-curve] | - |
-| Content tone | - | Professional→[swiss-style, minimalism, luxury-minimal], Playful→[paper-collage, crayon-hand-drawn, kawaii], Technical→[technical-schematic, ui-wireframe], Educational→[chalkboard, instructional-visual], Luxury→[luxury-minimal, art-deco] |
-| Domain | Timeline→[linear-progression, winding-roadmap], Data→[dashboard, data-visualization], Story→[story-mountain, comic-strip], Categories→[periodic-table, bento-grid] | Chinese→[chinese-guochao, modern-ink-wash], Japanese→[ukiyo-e], Modern→[minimalism, flat-design] |
+#### 3.2 Map to Layout Candidates
 
-#### 3.2 Score & Select with Randomness
+Use `data_type` from analysis to select layout (see `references/analysis-framework.md` Content Type Classification):
 
+| data_type | Primary Layout | Alternative Layouts |
+|-----------|----------------|---------------------|
+| timeline/history | linear-progression | winding-roadmap |
+| process/tutorial | linear-progression | winding-roadmap, step-staircase |
+| comparison | binary-comparison | comparison-matrix, four-quadrant-grid |
+| hierarchy | hierarchical-layers | tree-branching |
+| relationships | venn-diagram | hub-spoke, jigsaw |
+| data/metrics | dashboard | periodic-table |
+| cycle/loop | circular-flow | s-curve |
+| system/structure | structural-breakdown | bento-grid |
+| journey/narrative | winding-roadmap | story-mountain, comic-strip |
+| overview/summary | bento-grid | periodic-table, nine-grid |
+
+#### 3.3 Map to Style Candidates
+
+Based on content tone and domain from analysis:
+
+| Context | Primary Style | Alternative Styles |
+|---------|---------------|-------------------|
+| Technical/DIY | technical-schematic | ikea-manual, ui-wireframe |
+| Professional/Business | corporate-memphis | swiss-style, minimalism |
+| Educational | chalkboard | instructional-visual |
+| Playful/Casual | paper-collage | crayon-hand-drawn, cartoon-flat |
+| Luxury/Premium | luxury-minimal | art-deco |
+| Chinese domain | chinese-guochao | modern-ink-wash |
+| Japanese domain | ukiyo-e | - |
+| Data-focused | data-visualization | technical-diagram |
+
+#### 3.4 Select with Randomness
+
+From the matched candidates:
 ```
 final_score = match_score + random(0, 0.3)
 ```
 
-- `match_score`: How well the combination fits the content (0-1)
-- `random`: Add 0-0.3 randomness to ensure variety
+- `match_score`: 1.0 for primary, 0.7 for alternatives
+- `random`: 0-0.3 to ensure variety
 
-**Select**: Highest scoring combination.
+**Select**: Highest scoring layout × style combination.
 
-**Default fallback**: `bento-grid` + `paper-collage`
+**Fallback**: `bento-grid` + `paper-collage` (only if data_type cannot be determined)
 
 ### Step 4: Confirm Options (Only if `--interactive`)
 
@@ -416,6 +446,7 @@ Combine:
 3. Base template from `references/base-prompt.md`
 4. Structured content from Step 2
 5. All text in detected (or overridden) language
+6. Prompt writing rules from `references/prompt-writing-rules.md`
 
 ### Step 6: Generate Image
 
