@@ -36,6 +36,6 @@ Cyclic process showing continuous or recurring steps.
 
 ## Recommended Pairings
 
-- `cartoon-hand-drawn`: Friendly cycles
+- `crayon-hand-drawn`: Friendly cycles
 - `corporate-memphis`: Business processes
 - `subway-map`: Transit-style cycles

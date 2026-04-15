@@ -36,6 +36,6 @@ Hierarchical structure branching from root to leaves, showing categories and sub
 
 ## Recommended Pairings
 
-- `cartoon-hand-drawn`: Friendly taxonomies
-- `da-vinci-notebook`: Scientific classifications
+- `crayon-hand-drawn`: Friendly taxonomies
+- `aged-academia`: Scientific classifications
 - `origami`: Geometric tree structures

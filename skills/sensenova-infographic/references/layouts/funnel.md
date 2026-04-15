@@ -37,5 +37,5 @@ Narrowing stages showing conversion, filtering, or refinement process.
 ## Recommended Pairings
 
 - `corporate-memphis`: Marketing funnels
-- `isometric-3d`: Technical pipelines
-- `cartoon-hand-drawn`: Educational funnels
+- `origami`: Technical pipelines
+- `crayon-hand-drawn`: Educational funnels

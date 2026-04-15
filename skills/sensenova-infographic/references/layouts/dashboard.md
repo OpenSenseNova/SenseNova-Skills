@@ -38,4 +38,4 @@ Multi-metric display with charts, numbers, and KPI indicators.
 
 - `corporate-memphis`: Business dashboards
 - `ui-wireframe`: Technical dashboards
-- `cyberpunk-neon`: Futuristic displays
+- `neon-futurism`: Futuristic displays

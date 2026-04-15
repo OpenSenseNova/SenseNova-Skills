@@ -43,6 +43,6 @@ Nested layers showing levels of importance, influence, or proximity.
 
 ## Recommended Pairings
 
-- `craft-handmade`: Playful layered concepts
+- `paper-collage`: Playful layered concepts
 - `corporate-memphis`: Business hierarchies
 - `technical-schematic`: Technical 3D pyramids

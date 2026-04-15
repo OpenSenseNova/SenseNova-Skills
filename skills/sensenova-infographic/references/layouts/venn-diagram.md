@@ -36,6 +36,6 @@ Overlapping circles showing relationships, commonalities, and differences.
 
 ## Recommended Pairings
 
-- `cartoon-hand-drawn`: Friendly concept overlaps
+- `crayon-hand-drawn`: Friendly concept overlaps
 - `corporate-memphis`: Business segment analysis
-- `pop-art`: High-contrast comparisons
+- `high-contrast-ad`: High-contrast comparisons

@@ -44,5 +44,5 @@ Side-by-side comparison of two items, states, or concepts.
 ## Recommended Pairings
 
 - `corporate-memphis`: Business comparisons
-- `bold-graphic`: High-contrast dramatic comparisons
-- `craft-handmade`: Friendly explainers
+- `high-contrast-ad`: High-contrast dramatic comparisons
+- `paper-collage`: Friendly explainers

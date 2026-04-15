@@ -36,6 +36,6 @@ Grid of categorized elements with consistent cell formatting.
 
 ## Recommended Pairings
 
-- `pop-art`: Vibrant element grids
+- `high-contrast-ad`: Vibrant element grids
 - `pixel-art`: Retro collection displays
 - `corporate-memphis`: Business tool catalogs

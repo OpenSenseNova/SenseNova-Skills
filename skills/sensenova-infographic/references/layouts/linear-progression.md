@@ -42,7 +42,7 @@ Sequential progression showing steps, timeline, or chronological events.
 
 ## Recommended Pairings
 
-- `craft-handmade`: Friendly tutorials and timelines
+- `paper-collage`: Friendly tutorials and timelines
 - `ikea-manual`: Clean assembly instructions
 - `corporate-memphis`: Business process flows
 - `aged-academia`: Historical discoveries

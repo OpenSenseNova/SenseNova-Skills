@@ -36,6 +36,6 @@ Sequential narrative panels telling a story or explaining a concept.
 
 ## Recommended Pairings
 
-- `graphic-novel`: Dramatic narratives
+- `cartoon-flat`: Dramatic narratives
 - `kawaii`: Cute character stories
-- `cartoon-hand-drawn`: Friendly explanations
+- `crayon-hand-drawn`: Friendly explanations
