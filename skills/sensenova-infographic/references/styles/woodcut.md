@@ -5,7 +5,7 @@ Rough lines and textures of woodcut prints. Raw, expressive, and powerful graphi
 ## Color Palette
 
 - Primary: Black ink on white/cream, or limited 2-color
-- Background: Paper grain texture (#F0E8D8)
+- Background: Paper grain texture of warm cream (#F0E8D8)
 - Accents: Single bold color (red, blue, or ochre) optional
 
 ## Visual Elements

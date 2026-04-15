@@ -4,7 +4,7 @@ Technical diagrams with engineering precision and clean geometry.
 
 ## Color Palette
 
-- Primary: Blues (#2563EB), teals, grays, white lines
+- Primary: Royal blue (#2563EB), teals, grays, white lines
 - Background: Deep blue (#1E3A5F), white, or light gray with grid
 - Accents: Amber highlights (#F59E0B), cyan callouts
 

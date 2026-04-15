@@ -5,7 +5,7 @@ Paper cutout and collage aesthetic with layered, handmade feel.
 ## Color Palette
 
 - Primary: Construction paper colors, craft paper tones
-- Background: Textured paper (#F5F0E6), kraft brown
+- Background: Textured paper of warm cream (#F5F0E6), kraft brown
 - Accents: Bold highlights, contrasting paper colors
 
 ## Visual Elements
