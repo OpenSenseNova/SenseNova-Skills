@@ -1,5 +1,5 @@
 ---
-name: sensenova-infographic
+name: u1-infographic
 description: Generates professional infographics with 87 layout types and 66 visual styles. Analyzes content, recommends layout×style combinations, and generates publication-ready infographics. Use when user asks to create "infographic", "信息图", "visual summary", or "可视化".
 ---
 
@@ -10,11 +10,11 @@ Two dimensions: **layout** (information structure) × **style** (visual aestheti
 ## Usage
 
 ```bash
-/sensenova-infographic path/to/content.md                    # Auto-select layout & style
-/sensenova-infographic path/to/content.md --interactive      # Interactive mode: choose from recommendations
-/sensenova-infographic path/to/content.md --layout hierarchical-layers --style technical-schematic
-/sensenova-infographic path/to/content.md --aspect portrait --lang zh
-/sensenova-infographic  # then paste content
+/u1-infographic path/to/content.md                    # Auto-select layout & style
+/u1-infographic path/to/content.md --interactive      # Interactive mode: choose from recommendations
+/u1-infographic path/to/content.md --layout hierarchical-layers --style technical-schematic
+/u1-infographic path/to/content.md --aspect portrait --lang zh
+/u1-infographic  # then paste content
 ```
 
 ## Options
@@ -313,19 +313,19 @@ Use Bash to check EXTEND.md existence (priority order):
 
 ```bash
 # Check project-level first
-test -f .sensenova-skills/sensenova-infographic/EXTEND.md && echo "project"
+test -f .u1-skills/u1-infographic/EXTEND.md && echo "project"
 
 # Then user-level (cross-platform: $HOME works on macOS/Linux/WSL)
-test -f "$HOME/.sensenova-skills/sensenova-infographic/EXTEND.md" && echo "user"
+test -f "$HOME/.u1-skills/u1-infographic/EXTEND.md" && echo "user"
 ```
 
-┌────────────────────────────────────────────────────┬───────────────────┐
-│                        Path                        │     Location      │
-├────────────────────────────────────────────────────┼───────────────────┤
-│ .sensenova-skills/sensenova-infographic/EXTEND.md          │ Project directory │
-├────────────────────────────────────────────────────┼───────────────────┤
-│ $HOME/.sensenova-skills/sensenova-infographic/EXTEND.md    │ User home         │
-└────────────────────────────────────────────────────┴───────────────────┘
+┌──────────────────────────────────────────────┬───────────────────┐
+│                        Path                  │     Location      │
+├──────────────────────────────────────────────┼───────────────────┤
+│ .u1-skills/u1-infographic/EXTEND.md          │ Project directory │
+├──────────────────────────────────────────────┼───────────────────┤
+│ $HOME/.u1-skills/u1-infographic/EXTEND.md    │ User home         │
+└──────────────────────────────────────────────┴───────────────────┘
 
 ┌───────────┬───────────────────────────────────────────────────────────────────────────┐
 │  Result   │                                  Action                                   │
@@ -373,6 +373,7 @@ See `references/structured-content-template.md` for detailed format.
 #### 3.1 Read Content Classification from analysis.md
 
 From `analysis.md` frontmatter, extract:
+
 - `data_type`: Content structure classification
 - `topic`: Domain context
 - `complexity`: Layout density guidance
@@ -412,6 +413,7 @@ Based on content tone and domain from analysis:
 #### 3.4 Select with Randomness
 
 From the matched candidates:
+
 ```
 final_score = match_score + random(0, 0.3)
 ```
