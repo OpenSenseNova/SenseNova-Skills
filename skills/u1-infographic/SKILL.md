@@ -83,7 +83,7 @@ This skill uses a two-tier agent architecture:
 3. Start Worker Agent (Sub-Agent), passing in complete parameters and working directory
 4. When Worker Agent returns `status=ok` and `need_main_agent_send=true`:
    - **max_rounds = 1**: Send a one-sentence description of the image content, then send the rank=1 single image
-   - **max_rounds > 1, friendly mode**: Generate a one-sentence natural语气评价 based on `result` and `violations`, send the evaluation text, then send the rank=1 single image
+   - **max_rounds > 1, friendly mode**: Generate a one-sentence natural language description based on `result` and `violations`, send the evaluation text, then send the rank=1 single image
    - **max_rounds > 1, verbose mode**: Send complete text summary message, then send all images in rank order to the user
 5. If Worker Agent returns `status=error`, report the real `error` field content to the user
 
