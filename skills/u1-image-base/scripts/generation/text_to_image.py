@@ -25,11 +25,11 @@ from u1_api.paths import (
 )
 
 try:
-    from dotenv import load_dotenv  # pyright: ignore[reportAssignmentType]
-except ImportError:
+    from dotenv import load_dotenv
 
-    def load_dotenv(*_args, **_kwargs) -> None:
-        return None
+    load_dotenv()
+except ImportError:
+    pass
 
 
 DEFAULT_MODEL_SIZE = "2k"
@@ -39,8 +39,6 @@ DEFAULT_TIMEOUT = 300.0
 API_KEY_ENV = "U1_API_KEY"
 BASE_URL_ENV = "U1_BASE_URL"
 OUTPUT_DIR = Path("/tmp/openclaw-u1-image")
-
-load_dotenv()
 
 
 def build_headers(api_key: str) -> dict[str, str]:

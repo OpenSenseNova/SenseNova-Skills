@@ -1,23 +1,23 @@
-# u1-image-base API 规格说明
+# u1-image-base API Specification
 
-## 目录
+## Table of Contents
 
-- [image-generate](#image-generate)
-- [image-edit](#image-edit)
-- [image-recognize](#image-recognize)
-- [text-optimize](#text-optimize)
-- [错误处理](#错误处理)
+- [u1-image-generate](#u1-image-generate)
+- [u1-image-edit](#u1-image-edit)
+- [u1-image-recognize](#u1-image-recognize)
+- [u1-text-optimize](#u1-text-optimize)
+- [Error Handling](#error-handling)
 
 ---
 
-## image-generate
+## u1-image-generate
 
-图片生成工具，调用 U1 text-to-image-no-enhance API。
+Image generation tool that calls the U1 text-to-image-no-enhance API.
 
-### 命令格式
+### Command Format
 
 ```bash
-python openclaw_runner.py image-generate \
+python openclaw_runner.py u1-image-generate \
     --prompt <string> \
     [--api-key <string>] \
     [--base-url <string>] \
@@ -33,41 +33,41 @@ python openclaw_runner.py image-generate \
     [--save-path <path>]
 ```
 
-### 参数说明
+### Parameters
 
-| 参数 | 类型 | 必需 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| `--prompt` | string | **是** | - | 文本提示词 |
-| `--api-key` | string | 否 | 读取 `U1_API_KEY` 环境变量 | API Key（CLI 参数优先；两者都为空时抛出 `MissingApiKeyError`） |
-| `--base-url` | string | 否 | 无硬编码默认值 | API 基础 URL（CLI > `U1_BASE_URL` 环境变量；均未设置时抛出错误） |
-| `--negative-prompt` | string | 否 | `""` | 负向提示词 |
-| `--image-size` | string | 否 | `"2k"` | 图片尺寸：1k 或 2k |
-| `--aspect-ratio` | string | 否 | `"16:9"` | 宽高比 |
-| `--seed` | int | 否 | `None` | 随机种子（可复现） |
-| `--unet-name` | string | 否 | `None` | UNet 模型名称 |
-| `--poll-interval` | float | 否 | `5.0` | 轮询间隔（秒） |
-| `--timeout` | float | 否 | `300.0` | 超时时间（秒） |
-| `--insecure` | flag | 否 | `False` | 禁用 TLS 验证 |
-| `--output-format` | string | 否 | `"text"` | 输出格式：text 或 json |
-| `--save-path` | path | 否 | 自动生成 | 输出图片路径 |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `--prompt` | string | **Yes** | - | Text prompt |
+| `--api-key` | string | No | Reads `U1_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
+| `--base-url` | string | No | No hardcoded default | Base API URL (CLI > `U1_BASE_URL` env var; raises error if neither is set) |
+| `--negative-prompt` | string | No | `""` | Negative prompt |
+| `--image-size` | string | No | `"2k"` | Image size: `1k` or `2k` |
+| `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
+| `--seed` | int | No | `None` | Random seed (for reproducibility) |
+| `--unet-name` | string | No | `None` | UNet model name |
+| `--poll-interval` | float | No | `5.0` | Polling interval in seconds |
+| `--timeout` | float | No | `300.0` | Timeout in seconds |
+| `--insecure` | flag | No | `False` | Disable TLS verification |
+| `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
+| `--save-path` | path | No | Auto-generated | Output image path |
 
-### 宽高比选项
+### Aspect Ratio Options
 
 `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `1:1`, `16:9`, `9:16`, `21:9`, `9:21`
 
-### 输出路径
+### Output Path
 
-默认输出到 `/tmp/openclaw-u1-image/t2i_<timestamp>.png`
+Default output: `/tmp/openclaw-u1-image/t2i_<timestamp>.png`
 
-### 返回示例
+### Response Examples
 
-**text 格式**:
+**text format**:
 ```
 Image generated successfully
 /tmp/openclaw-u1-image/t2i_20260414_120000.png
 ```
 
-**json 格式**:
+**json format**:
 ```json
 {
   "status": "ok",
@@ -78,30 +78,30 @@ Image generated successfully
 }
 ```
 
-### API Key 说明
+### API Key Notes
 
-`--api-key` 非必填，优先取 CLI 参数，未提供时自动读取环境变量 `U1_API_KEY`。若两者都为空，则抛出 `MissingApiKeyError`，错误信息如下：
+`--api-key` is optional. CLI parameter takes precedence; if not provided, reads from `U1_API_KEY` env var. If both are empty, raises `MissingApiKeyError`:
 
-**text 格式**:
+**text format**:
 ```
 Error: API key is required but was not provided. Set the U1_API_KEY environment variable or pass --api-key explicitly.
 ```
 
-**json 格式**:
+**json format**:
 ```json
 {"status": "failed", "error": "API key is required but was not provided. Set the U1_API_KEY environment variable or pass --api-key explicitly.", "elapsed_seconds": 0.05}
 ```
 
 ---
 
-## image-edit
+## u1-image-edit
 
-图片编辑工具，调用 U1 image-edit API。
+Image editing tool that calls the U1 image-edit API.
 
-### 命令格式
+### Command Format
 
 ```bash
-python openclaw_runner.py image-edit \
+python openclaw_runner.py u1-image-edit \
     --image <string> \
     --prompt <string> \
     [--api-key <string>] \
@@ -114,34 +114,34 @@ python openclaw_runner.py image-edit \
     [--save-path <path>]
 ```
 
-### 参数说明
+### Parameters
 
-| 参数 | 类型 | 必需 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| `--image` | string | **是** | - | 输入图片路径、远程 URL 或缓存文件 key |
-| `--prompt` | string | **是** | - | 编辑指令 |
-| `--api-key` | string | 否 | 读取 `U1_API_KEY` 环境变量 | API Key（CLI 参数优先；两者都为空时抛出 `MissingApiKeyError`） |
-| `--base-url` | string | 否 | 无硬编码默认值 | API 基础 URL（CLI > `U1_BASE_URL` 环境变量；均未设置时抛出错误） |
-| `--seed` | int | 否 | `None` | 随机种子（可复现） |
-| `--poll-interval` | float | 否 | `5.0` | 轮询间隔（秒） |
-| `--timeout` | float | 否 | `300.0` | 超时时间（秒） |
-| `--insecure` | flag | 否 | `False` | 禁用 TLS 验证 |
-| `--output-format` | string | 否 | `"text"` | 输出格式：text 或 json |
-| `--save-path` | path | 否 | 自动生成 | 输出图片路径 |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `--image` | string | **Yes** | - | Input image path, remote URL, or cache file key |
+| `--prompt` | string | **Yes** | - | Edit instruction |
+| `--api-key` | string | No | Reads `U1_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
+| `--base-url` | string | No | No hardcoded default | Base API URL (CLI > `U1_BASE_URL` env var; raises error if neither is set) |
+| `--seed` | int | No | `None` | Random seed (for reproducibility) |
+| `--poll-interval` | float | No | `5.0` | Polling interval in seconds |
+| `--timeout` | float | No | `300.0` | Timeout in seconds |
+| `--insecure` | flag | No | `False` | Disable TLS verification |
+| `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
+| `--save-path` | path | No | Auto-generated | Output image path |
 
-### 输出路径
+### Output Path
 
-默认输出到 `/tmp/openclaw-u1-image/edit_<timestamp>.png`
+Default output: `/tmp/openclaw-u1-image/edit_<timestamp>.png`
 
-### 返回示例
+### Response Examples
 
-**text 格式**:
+**text format**:
 ```
 Image edited successfully
 /tmp/openclaw-u1-image/edit_20260414_120000.png
 ```
 
-**json 格式**:
+**json format**:
 ```json
 {
   "status": "ok",
@@ -152,20 +152,20 @@ Image edited successfully
 }
 ```
 
-### API Key 说明
+### API Key Notes
 
-与 `image-generate` 一致：`--api-key` 非必填，CLI 参数 > 环境变量 `U1_API_KEY`，两者都为空时抛出 `MissingApiKeyError`。
+Same as `u1-image-generate`: `--api-key` is optional, CLI > `U1_API_KEY` env var; raises `MissingApiKeyError` if both are empty.
 
 ---
 
-## image-recognize
+## u1-image-recognize
 
-图片识别工具，使用 VLM（Vision Language Model）分析图片内容。
+Image recognition tool that uses a VLM (Vision Language Model) to analyze image content.
 
-### 命令格式
+### Command Format
 
 ```bash
-python openclaw_runner.py image-recognize \
+python openclaw_runner.py u1-image-recognize \
     (--user-prompt <string> | --user-prompt-path <path>) \
     --images <string> [<string> ...] \
     --api-key <string> \
@@ -177,37 +177,37 @@ python openclaw_runner.py image-recognize \
     [--output-format text|json]
 ```
 
-### 参数说明
+### Parameters
 
-| 参数 | 类型 | 必需 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| `--user-prompt` | string | 二选一 | - | 用户指令（与 `--user-prompt-path` 互斥） |
-| `--user-prompt-path` | path | 二选一 | - | 本地文件路径，读取用户指令（与 `--user-prompt` 互斥） |
-| `--images` | string[] | **是** | - | 图片路径列表（支持多个） |
-| `--api-key` | string | 否 | 无硬编码默认值 | CLI > `VLM_API_KEY` > `U1_LM_API_KEY`；均未设置时抛出 `MissingApiKeyError` |
-| `--base-url` | string | 否 | 无硬编码默认值 | CLI > `VLM_BASE_URL` 环境变量；均未设置时抛出错误 |
-| `--model` | string | 否 | 无硬编码默认值 | CLI > `VLM_MODEL` 环境变量；均未设置时抛出错误 |
-| `--system-prompt` | string | 否 | `""` | 系统指令（与 `--system-prompt-path` 互斥） |
-| `--system-prompt-path` | path | 否 | - | 本地文件路径，读取系统指令（与 `--system-prompt` 互斥） |
-| `--vlm-type` | string | 否 | `openai-completions` | CLI > `VLM_TYPE` 环境变量 > 内置默认 |
-| `--output-format` | string | 否 | `"text"` | 输出格式：text 或 json |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `--user-prompt` | string | One of two | - | User instruction (mutually exclusive with `--user-prompt-path`) |
+| `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
+| `--images` | string[] | **Yes** | - | List of image paths (supports multiple) |
+| `--api-key` | string | No | No hardcoded default | CLI > `VLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
+| `--base-url` | string | No | No hardcoded default | CLI > `VLM_BASE_URL` env var; raises error if neither is set |
+| `--model` | string | No | No hardcoded default | CLI > `VLM_MODEL` env var; raises error if neither is set |
+| `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
+| `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
+| `--vlm-type` | string | No | `openai-completions` | CLI > `VLM_TYPE` env var > built-in default |
+| `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
 
-`--vlm-type` 可选值：
-- `openai-completions`: OpenAI 兼容 `/v1/chat/completions` 接口
-- `anthropic-messages`: Anthropic Messages `/v1/messages` 接口
+`--vlm-type` options:
+- `openai-completions`: OpenAI-compatible `/v1/chat/completions` endpoint
+- `anthropic-messages`: Anthropic Messages `/v1/messages` endpoint
 
-### 返回示例
+### Response Examples
 
-**text 格式**:
+**text format**:
 ```
-这张图片展示了一只可爱的橘色猫咪在阳光下打盹。
+This image shows an adorable orange cat napping in the sunlight.
 ```
 
-**json 格式**:
+**json format**:
 ```json
 {
   "status": "ok",
-  "result": "这张图片展示了一只可爱的橘色猫咪在阳光下打盹。",
+  "result": "This image shows an adorable orange cat napping in the sunlight.",
   "model": "sensenova-122b-128k-step9k",
   "base_url": "http://10.210.9.11:615",
   "interface_type": "openai-completions",
@@ -215,27 +215,27 @@ python openclaw_runner.py image-recognize \
 }
 ```
 
-### 参数优先级
+### Parameter Priority
 
-`--api-key`、`--base-url`、`--model`、`--vlm-type` 均遵循两级优先级：**CLI 参数 > 环境变量**（无内置默认值，必须通过其中一种方式提供）
+`--api-key`, `--base-url`, `--model`, and `--vlm-type` all follow a two-level priority: **CLI parameter > environment variable** (no built-in defaults except `--vlm-type`; must be provided via one of the two methods).
 
-| 参数 | 内置默认值 | 环境变量 |
-|------|-----------|---------|
-| `--api-key` | 无（必须提供） | `VLM_API_KEY`（优先）→ `U1_LM_API_KEY`（兜底） |
-| `--base-url` | 无（必须提供） | `VLM_BASE_URL` |
-| `--model` | 无（必须提供） | `VLM_MODEL` |
+| Parameter | Built-in Default | Environment Variable |
+|-----------|-----------------|---------------------|
+| `--api-key` | None (required) | `VLM_API_KEY` (primary) → `U1_LM_API_KEY` (fallback) |
+| `--base-url` | None (required) | `VLM_BASE_URL` |
+| `--model` | None (required) | `VLM_MODEL` |
 | `--vlm-type` | `openai-completions` | `VLM_TYPE` |
 
 ---
 
-## text-optimize
+## u1-text-optimize
 
-文本优化工具，使用 LLM（Language Language Model）优化文本内容。
+Text optimization tool that uses an LLM (Language Model) to optimize text content.
 
-### 命令格式
+### Command Format
 
 ```bash
-python openclaw_runner.py text-optimize \
+python openclaw_runner.py u1-text-optimize \
     (--user-prompt <string> | --user-prompt-path <path>) \
     --api-key <string> \
     --base-url <string> \
@@ -246,36 +246,36 @@ python openclaw_runner.py text-optimize \
     [--output-format text|json]
 ```
 
-### 参数说明
+### Parameters
 
-| 参数 | 类型 | 必需 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| `--user-prompt` | string | 二选一 | - | 用户指令（与 `--user-prompt-path` 互斥） |
-| `--user-prompt-path` | path | 二选一 | - | 本地文件路径，读取用户指令（与 `--user-prompt` 互斥） |
-| `--api-key` | string | 否 | 无硬编码默认值 | CLI > `LLM_API_KEY` > `U1_LM_API_KEY`；均未设置时抛出 `MissingApiKeyError` |
-| `--base-url` | string | 否 | 无硬编码默认值 | CLI > `LLM_BASE_URL` 环境变量；均未设置时抛出错误 |
-| `--model` | string | 否 | 无硬编码默认值 | CLI > `LLM_MODEL` 环境变量；均未设置时抛出错误 |
-| `--system-prompt` | string | 否 | `""` | 系统指令（与 `--system-prompt-path` 互斥） |
-| `--system-prompt-path` | path | 否 | - | 本地文件路径，读取系统指令（与 `--system-prompt` 互斥） |
-| `--llm-type` | string | 否 | `openai-completions` | CLI > `LLM_TYPE` 环境变量 > 内置默认 |
-| `--output-format` | string | 否 | `"text"` | 输出格式：text 或 json |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `--user-prompt` | string | One of two | - | User instruction (mutually exclusive with `--user-prompt-path`) |
+| `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
+| `--api-key` | string | No | No hardcoded default | CLI > `LLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
+| `--base-url` | string | No | No hardcoded default | CLI > `LLM_BASE_URL` env var; raises error if neither is set |
+| `--model` | string | No | No hardcoded default | CLI > `LLM_MODEL` env var; raises error if neither is set |
+| `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
+| `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
+| `--llm-type` | string | No | `openai-completions` | CLI > `LLM_TYPE` env var > built-in default |
+| `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
 
-`--llm-type` 可选值：
-- `openai-completions`: OpenAI 兼容 `/v1/chat/completions` 接口
-- `anthropic-messages`: Anthropic Messages `/v1/messages` 接口
+`--llm-type` options:
+- `openai-completions`: OpenAI-compatible `/v1/chat/completions` endpoint
+- `anthropic-messages`: Anthropic Messages `/v1/messages` endpoint
 
-### 返回示例
+### Response Examples
 
-**text 格式**:
+**text format**:
 ```
-优化后的文本内容...
+Optimized text content...
 ```
 
-**json 格式**:
+**json format**:
 ```json
 {
   "status": "ok",
-  "result": "优化后的文本内容...",
+  "result": "Optimized text content...",
   "model": "sensenova-122b-128k-step9k",
   "base_url": "http://10.210.9.11:615",
   "interface_type": "openai-completions",
@@ -283,55 +283,55 @@ python openclaw_runner.py text-optimize \
 }
 ```
 
-### 参数优先级
+### Parameter Priority
 
-`--api-key`、`--base-url`、`--model`、`--llm-type` 均遵循两级优先级：**CLI 参数 > 环境变量**（`--llm-type` 有内置默认值 `openai-completions`，其他参数无内置默认值，必须通过其中一种方式提供）
+`--api-key`, `--base-url`, `--model`, and `--llm-type` all follow a two-level priority: **CLI parameter > environment variable** (`--llm-type` has a built-in default of `openai-completions`; other parameters have no built-in defaults and must be provided via one of the two methods).
 
-| 参数 | 内置默认值 | 环境变量 |
-|------|-----------|---------|
-| `--api-key` | 无（必须提供） | `LLM_API_KEY`（优先）→ `U1_LM_API_KEY`（兜底） |
-| `--base-url` | 无（必须提供） | `LLM_BASE_URL` |
-| `--model` | 无（必须提供） | `LLM_MODEL` |
+| Parameter | Built-in Default | Environment Variable |
+|-----------|-----------------|---------------------|
+| `--api-key` | None (required) | `LLM_API_KEY` (primary) → `U1_LM_API_KEY` (fallback) |
+| `--base-url` | None (required) | `LLM_BASE_URL` |
+| `--model` | None (required) | `LLM_MODEL` |
 | `--llm-type` | `openai-completions` | `LLM_TYPE` |
 
 ---
 
-## 错误处理
+## Error Handling
 
-### 错误类型
+### Error Types
 
-| 类型 | 来源 | 触发条件 | 输出格式 |
-|------|------|----------|----------|
-| `MissingApiKeyError` | 业务层自定义异常 | `image-generate`/`image-edit` 的 API Key 未提供 | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
-| `ValueError` (prompt) | `_resolve_prompt` | `--user-prompt` 与 `--user-prompt-path` 同时提供、两者都未提供、或文件读取失败 | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
-| argparse 缺失参数 | argparse 标准报错 | `image-recognize`/`text-optimize` 缺少必填参数 | `usage: ...` + exit 2 |
-| HTTP 错误 | httpx 请求层 | API 返回非 2xx 状态码 | `{"status": "failed", "error": "HTTP NNN", "message": "..."}` |
-| 请求异常 | httpx 请求层 | 网络错误、超时等 | `{"status": "failed", "error": "<ExceptionType>", "message": "..."}` |
+| Type | Source | Trigger | Output Format |
+|------|--------|---------|---------------|
+| `MissingApiKeyError` | Custom business exception | API Key not provided for `u1-image-generate`/`u1-image-edit` | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
+| `ValueError` (prompt) | `_resolve_prompt` | `--user-prompt` and `--user-prompt-path` both provided, neither provided, or file read failure | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
+| argparse missing param | argparse standard error | Missing required parameters for `u1-image-recognize`/`u1-text-optimize` | `usage: ...` + exit 2 |
+| HTTP error | httpx request layer | API returns non-2xx status code | `{"status": "failed", "error": "HTTP NNN", "message": "..."}` |
+| Request exception | httpx request layer | Network error, timeout, etc. | `{"status": "failed", "error": "<ExceptionType>", "message": "..."}` |
 
-### text 格式
+### text format
 
-错误信息输出到 stderr，不影响 stdout 内容。
+Error messages are written to stderr and do not affect stdout content.
 
-### json 格式
+### json format
 
 ```json
 {
   "status": "failed",
-  "error": "错误类型",
-  "message": "详细错误信息",
+  "error": "error type",
+  "message": "detailed error message",
   "elapsed_seconds": 0.05
 }
 ```
 
 ---
 
-## API Key 环境变量
+## API Key Environment Variables
 
-| 工具 | 环境变量（优先级高→低） | 说明 |
-|------|----------------------|------|
-| `image-generate` | `U1_API_KEY` | CLI 参数优先；未提供时读取此变量；均为空时抛出 `MissingApiKeyError` |
-| `image-edit` | `U1_API_KEY` | CLI 参数优先；未提供时读取此变量；均为空时抛出 `MissingApiKeyError` |
-| `image-recognize` | `VLM_API_KEY` → `U1_LM_API_KEY` | CLI > `VLM_API_KEY` > `U1_LM_API_KEY`；均为空时抛出 `MissingApiKeyError` |
-| `text-optimize` | `LLM_API_KEY` → `U1_LM_API_KEY` | CLI > `LLM_API_KEY` > `U1_LM_API_KEY`；均为空时抛出 `MissingApiKeyError` |
+| Tool | Environment Variables (high → low priority) | Notes |
+|------|---------------------------------------------|-------|
+| `u1-image-generate` | `U1_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
+| `u1-image-edit` | `U1_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
+| `u1-image-recognize` | `VLM_API_KEY` → `U1_LM_API_KEY` | CLI > `VLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
+| `u1-text-optimize` | `LLM_API_KEY` → `U1_LM_API_KEY` | CLI > `LLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
 
-`U1_LM_API_KEY` 是 VLM 和 LLM 的共同兜底变量，适合在 `.env` 中统一配置 Sensenova 内网 key。`VLM_API_KEY` / `LLM_API_KEY` 可在需要时独立覆盖各自的 key。
+`U1_LM_API_KEY` is the shared fallback for both VLM and LLM, suitable for configuring a unified SenseNova internal key in `.env`. `VLM_API_KEY` / `LLM_API_KEY` can independently override their respective keys when needed.

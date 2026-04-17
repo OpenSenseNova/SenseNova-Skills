@@ -18,6 +18,8 @@ select = [
     "C4",     # flake8-comprehensions
     "UP",     # pyupgrade
     "ARG001", # unused arguments in functions
+    "PERF",   # Perflint
+    "RUF",    # Ruff-specific rules
 ]
 unfixable = [
     "F401", # unused imports

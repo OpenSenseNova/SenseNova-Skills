@@ -29,7 +29,7 @@ triggers:
 
 # u1-infographic
 
-Info graphic generation scene skill (tier 1), relying on the `image-generate`, `image-recognize`, and `text-optimize` tools provided by `u1-image-base` (tier 0).
+Info graphic generation scene skill (tier 1), relying on the `u1-image-generate`, `u1-image-recognize`, and `u1-text-optimize` tools provided by `u1-image-base` (tier 0).
 
 Features:
 
@@ -53,9 +53,9 @@ All API calls in this skill are executed through the `openclaw_runner.py` of the
 
 | Call Type | Tool | Authentication Parameters | Description |
 |-----------|------|---------------------------|-------------|
-| **LLM** | text-optimize (evaluation/expansion) | Default reads `LLM_API_KEY` / `U1_LM_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
-| **VLM** | image-recognize (image review) | Default reads `VLM_API_KEY` / `U1_LM_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
-| **Image Generation** | image-generate | Default reads `U1_API_KEY` environment variable | Default uses U1 API configuration of `u1-image-base` |
+| **LLM** | u1-text-optimize (evaluation/expansion) | Default reads `LLM_API_KEY` / `U1_LM_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
+| **VLM** | u1-image-recognize (image review) | Default reads `VLM_API_KEY` / `U1_LM_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
+| **Image Generation** | u1-image-generate | Default reads `U1_API_KEY` environment variable | Default uses U1 API configuration of `u1-image-base` |
 
 **When encountering `MissingApiKeyError` or needing to specify a model**: pass explicitly via CLI parameters, parameter reference `$U1_IMAGE_BASE/reference/api_spec.md`.
 
@@ -121,7 +121,7 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 
 **`auto` mode**:
 
-1. Call text-optimize for evaluation
+1. Call u1-text-optimize for evaluation
 2. Parse JSON, extract `required_results` and `optional_results`
 3. Determine logic:
    - `required_pass`: All `answer` in `required_results` are `"yes"`
@@ -137,10 +137,10 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 
 6. If `should_expand = true`: Execute Step 2
 
-**Evaluation Call** (using `u1-image-base`'s `text-optimize` tool):
+**Evaluation Call** (using `u1-image-base`'s `u1-text-optimize` tool):
 
 ```bash
-python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" text-optimize \
+python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-text-optimize \
   --system-prompt-path "$SKILL_DIR/reference/evaluation-standard.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json
@@ -148,10 +148,10 @@ python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" text-optimize \
 
 #### Step 2 — Content Analysis + Layout & Style Selection + Prompt Expansion
 
-**2.0 Content Analysis** (using `u1-image-base`'s `text-optimize` tool):
+**2.0 Content Analysis** (using `u1-image-base`'s `u1-text-optimize` tool):
 
 ```bash
-ANALYSIS=$(python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" text-optimize \
+ANALYSIS=$(python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-text-optimize \
   --system-prompt-path "$SKILL_DIR/reference/analysis-framework.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json)
@@ -213,7 +213,7 @@ EOF
 
 **Rules**: All data must be preserved exactly. Do not rewrite. Do not add information that is not in the source.
 
-**2.3 Prompt Expansion** (using `u1-image-base`'s `text-optimize` tool):
+**2.3 Prompt Expansion** (using `u1-image-base`'s `u1-text-optimize` tool):
 
 Read structured content and layout/style selection from temporary directory, dynamically concatenate system prompt, and write to temporary file:
 
@@ -248,10 +248,10 @@ $(cat "$SKILL_DIR/reference/base-prompt.md")
 EOF
 ```
 
-Use the content of `structured-content.md` as user-prompt, read system prompt from temporary file and call text-optimize:
+Use the content of `structured-content.md` as user-prompt, read system prompt from temporary file and call u1-text-optimize:
 
 ```bash
-python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" text-optimize \
+python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-text-optimize \
   --system-prompt-path "$TEMP_DIR/expand-system-prompt.md" \
   --user-prompt "$STRUCTURED_CONTENT" \
   --output-format json
@@ -269,10 +269,10 @@ If parsing fails or truncation is suspected (the returned content is incomplete)
 
 Execute `round` from `1` to `max_rounds` sequentially:
 
-**Generate Image** (using `u1-image-base`'s `image-generate` tool):
+**Generate Image** (using `u1-image-base`'s `u1-image-generate` tool):
 
 ```bash
-python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" image-generate \
+python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-image-generate \
   --prompt "$EXPANDED_PROMPT" \
   --image-size "$IMAGE_SIZE" \
   --aspect-ratio "$ASPECT_RATIO" \
@@ -292,7 +292,7 @@ VLM configuration requirements:
 - If VLM call times out or fails: do not fallback, report the real error directly
 
 ```bash
-python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" image-recognize \
+python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-image-recognize \
   --system-prompt-path "$U1_IMAGE_INFOG/reference/prompts-critic-system.md" \
   --user-prompt "Evaluate the diagram in the image against the rules. Output your assessment." \
   --images "$TEMP_DIR/round_<N>.png" \
@@ -318,7 +318,7 @@ System prompt comes from `reference/prompts-critic-system.md`, user prompt is pr
 }
 ```
 
-Note: `elapsed_seconds` is read from the `--output-format json` return of each CLI call; `image_generation.model` is fixed to the hardcoded placeholder `"u1_image_model"` (image-generate does not return the model field); `vlm_review.model` is read from the JSON return of image-recognize. `timing.vlm_review` is omitted when `max_rounds=1`.
+Note: `elapsed_seconds` is read from the `--output-format json` return of each CLI call; `image_generation.model` is fixed to the hardcoded placeholder `"u1_image_model"` (u1-image-generate does not return the model field); `vlm_review.model` is read from the JSON return of u1-image-recognize. `timing.vlm_review` is omitted when `max_rounds=1`.
 
 **Early Termination Check** (only executed when `max_rounds > 1`):
 
@@ -385,9 +385,9 @@ After Worker Agent completes, its last message must be and only be the following
 - `reasoning` is an empty string when `max_rounds=1`
 - Top-level `timing` contains:
   - `total_elapsed_seconds`: Worker Agent's wall time from Step 0 to returning JSON, calculated by Worker Agent itself
-  - `prompt_detection`: Step 1 evaluation call, containing `elapsed_seconds` and `model` (read from text-optimize JSON return); omitted when `prompts_expand_mode=disable`
-  - `content_analysis`: Step 2.0 content analysis call, containing `elapsed_seconds` and `model` (read from text-optimize JSON return); omitted when expand is skipped
-  - `prompt_expand`: Step 2.3 prompt expansion call, containing `elapsed_seconds` and `model` (read from text-optimize JSON return); omitted when expand is skipped
+  - `prompt_detection`: Step 1 evaluation call, containing `elapsed_seconds` and `model` (read from u1-text-optimize JSON return); omitted when `prompts_expand_mode=disable`
+  - `content_analysis`: Step 2.0 content analysis call, containing `elapsed_seconds` and `model` (read from u1-text-optimize JSON return); omitted when expand is skipped
+  - `prompt_expand`: Step 2.3 prompt expansion call, containing `elapsed_seconds` and `model` (read from u1-text-optimize JSON return); omitted when expand is skipped
 - `rounds[].timing.image_generation.model` is fixed to the hardcoded placeholder `"u1_image_model"`
 - `rounds[].timing.vlm_review` is omitted when `max_rounds=1`
 
@@ -424,7 +424,7 @@ Images (sent in rank order)
 
 ## Call Relationship
 
-- Bottom-level dependency: `u1-image-base` → `image-generate`, `image-recognize`, `text-optimize`
+- Bottom-level dependency: `u1-image-base` → `u1-image-generate`, `u1-image-recognize`, `u1-text-optimize`
 
 ## References
 

@@ -26,16 +26,16 @@ pip install -r requirements.txt
 
 `u1-image-base` is the base-layer skill (tier 0) of the SenseNova-Skills project and provides four low-level tools:
 
-- `image-generate`: image generation (calls text-to-image-no-enhance API)
-- `image-edit`: image editing (calls image-edit API)
-- `image-recognize`: image recognition (uses VLM to analyze image content)
-- `text-optimize`: text optimization (uses LLM to process text)
+- `u1-image-generate`: image generation (calls text-to-image-no-enhance API)
+- `u1-image-edit`: image editing (calls image-edit API)
+- `u1-image-recognize`: image recognition (uses VLM to analyze image content)
+- `u1-text-optimize`: text optimization (uses LLM to process text)
 
 This skill **does not perform any input preprocessing** and only calls backend services to return results.
 
 ## Tools List
 
-### image-generate
+### u1-image-generate
 
 Image generation tool that calls the text-to-image-no-enhance API.
 
@@ -56,9 +56,9 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--insecure` | flag | `False` | Disable TLS verification |
 | `--save-path` | Path | Auto-generated | Save path |
 
-### image-edit
+### u1-image-edit
 
-Image editing tool that calls the image-edit API.
+Image editing tool that calls the u1-image-edit API.
 
 `--image` and `--prompt` are required; all other parameters are optional:
 
@@ -74,7 +74,7 @@ Image editing tool that calls the image-edit API.
 | `--insecure` | flag | `False` | Disable TLS verification |
 | `--save-path` | Path | Auto-generated | Save path |
 
-### image-recognize
+### u1-image-recognize
 
 Image recognition tool that uses VLM (Vision Language Model) to analyze image content. Supports multiple image inputs.
 
@@ -94,7 +94,7 @@ Available values for `--vlm-type`:
 - `openai-completions`: OpenAI-compatible `/v1/chat/completions` interface
 - `anthropic-messages`: Anthropic Messages `/v1/messages` interface
 
-### text-optimize
+### u1-text-optimize
 
 Text optimization tool that uses LLM (Language Model) to optimize text content. Does not accept image inputs.
 
@@ -118,8 +118,8 @@ Available values for `--llm-type`:
 
 | Tool | Model Type | Image Input | Interface Type Parameter |
 |------|----------|-----------------|-------------|
-| `image-recognize` | VLM (Vision Language Model) | Yes, supports multiple images | `--vlm-type` |
-| `text-optimize` | LLM (Language Model) | No, text only | `--llm-type` |
+| `u1-image-recognize` | VLM (Vision Language Model) | Yes, supports multiple images | `--vlm-type` |
+| `u1-text-optimize` | LLM (Language Model) | No, text only | `--llm-type` |
 
 ## Usage
 
@@ -127,31 +127,31 @@ All tools are called through the unified `openclaw_runner.py` entrypoint:
 
 ```bash
 # Image generation (only prompt required; api-key/base-url have defaults)
-python scripts/openclaw_runner.py image-generate \
+python scripts/openclaw_runner.py u1-image-generate \
     --prompt "..."
 
 # Image generation (override base-url)
-python scripts/openclaw_runner.py image-generate \
+python scripts/openclaw_runner.py u1-image-generate \
     --prompt "..." \
     --base-url "https://custom-endpoint.com/u1-model"
 
 # Image generation (explicitly override api-key)
-python scripts/openclaw_runner.py image-generate \
+python scripts/openclaw_runner.py u1-image-generate \
     --prompt "..." \
     --api-key "sk-xxx"
 
 # Image editing (only image + prompt required; api-key/base-url have defaults)
-python scripts/openclaw_runner.py image-edit \
+python scripts/openclaw_runner.py u1-image-edit \
     --image "path/to/image.png" \
     --prompt "..."
 
 # Image recognition (VLM) - minimal call (uses built-in Sensenova defaults)
-python scripts/openclaw_runner.py image-recognize \
+python scripts/openclaw_runner.py u1-image-recognize \
     --user-prompt "Describe the image" \
     --images "path/to/image.png"
 
 # Image recognition (VLM) - override to Gaccode Anthropic Messages interface
-python scripts/openclaw_runner.py image-recognize \
+python scripts/openclaw_runner.py u1-image-recognize \
     --user-prompt "Describe the image" \
     --images "path/to/image.png" \
     --api-key "sk-ant-xxx" \
@@ -160,11 +160,11 @@ python scripts/openclaw_runner.py image-recognize \
     --vlm-type "anthropic-messages"
 
 # Text optimization (LLM) - minimal call (uses built-in Sensenova defaults)
-python scripts/openclaw_runner.py text-optimize \
+python scripts/openclaw_runner.py u1-text-optimize \
     --user-prompt "Optimize the text: ..."
 
 # Text optimization (LLM) - override to Minimax Anthropic Messages interface
-python scripts/openclaw_runner.py text-optimize \
+python scripts/openclaw_runner.py u1-text-optimize \
     --user-prompt "Optimize the text: ..." \
     --api-key "sk-ant-xxx" \
     --base-url "https://api.minimaxi.com/anthropic" \
@@ -174,14 +174,14 @@ python scripts/openclaw_runner.py text-optimize \
 
 ### Default Parameter Behavior
 
-Authentication parameters for `image-generate` and `image-edit` have the following default behavior:
+Authentication parameters for `u1-image-generate` and `u1-image-edit` have the following default behavior:
 
 | Parameter | Default | Override | Description |
 |------|--------|----------|------|
 | `--base-url` | Read from `U1_BASE_URL` env var | `--base-url "..."` | CLI argument has priority; throws error if env var and CLI value are both missing |
 | `--api-key` | Read from `U1_API_KEY` env var | `--api-key "..."` | CLI argument has priority; throws `MissingApiKeyError` if env var and CLI value are both missing |
 
-`image-recognize` (VLM) and `text-optimize` (LLM) use three-level priority: **CLI argument > environment variable > built-in default**
+`u1-image-recognize` (VLM) and `u1-text-optimize` (LLM) use three-level priority: **CLI argument > environment variable > built-in default**
 
 | Parameter | Built-in Default | VLM Env Var | LLM Env Var |
 |------|-----------|-------------|-------------|
@@ -241,7 +241,7 @@ All tools support two output formats:
 - `--output-format text` (default): outputs plain text result
 - `--output-format json`: outputs JSON, including `status` and `elapsed_seconds` (runtime in seconds, rounded to 2 decimals)
 
-JSON output for `image-recognize` and `text-optimize` also includes `model`, `base_url`, and `interface_type` to verify the effective runtime configuration:
+JSON output for `u1-image-recognize` and `u1-text-optimize` also includes `model`, `base_url`, and `interface_type` to verify the effective runtime configuration:
 
 ```json
 {

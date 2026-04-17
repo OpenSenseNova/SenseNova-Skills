@@ -3,10 +3,10 @@
 All tools are invoked as async coroutines and executed via asyncio.run().
 
 Usage:
-    python openclaw_runner.py image-generate --prompt "..."
-    python openclaw_runner.py image-edit --image "..." --prompt "..."
-    python openclaw_runner.py image-recognize --user-prompt "..." --images "..." --api-key "..." --base-url "..." --model "..."
-    python openclaw_runner.py text-optimize --user-prompt "..." --api-key "..." --base-url "..." --model "..."
+    python openclaw_runner.py u1-image-generate --prompt "..."
+    python openclaw_runner.py u1-image-edit --image "..." --prompt "..."
+    python openclaw_runner.py u1-image-recognize --user-prompt "..." --images "..." --api-key "..." --base-url "..." --model "..."
+    python openclaw_runner.py u1-text-optimize --user-prompt "..." --api-key "..." --base-url "..." --model "..."
 """
 
 from __future__ import annotations
@@ -29,9 +29,6 @@ from llm.anthropic_adapter import AnthropicMessagesAdapter
 from llm.chat_completions_adapter import ChatCompletionsLlmAdapter
 from vlm.anthropic_adapter import AnthropicVlmAdapter
 from vlm.chat_completions_adapter import ChatCompletionsVlmAdapter
-
-OUTPUT_DIR = Path("/tmp/openclaw-u1-image")
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 API_KEY_ENV = "U1_API_KEY"
 BASE_URL_ENV = "U1_BASE_URL"
@@ -79,17 +76,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     Returns:
         argparse.ArgumentParser:
-            Configured parser with subcommands for image-generate,
-            image-edit, image-recognize, and text-optimize.
+            Configured parser with subcommands for u1-image-generate,
+            u1-image-edit, u1-image-recognize, and u1-text-optimize.
     """
     parser = argparse.ArgumentParser(
         description="u1-image-base unified runner - async tool execution."
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    # image-generate
+    # u1-image-generate
     gen_parser = subparsers.add_parser(
-        "image-generate", help="Generate image from text prompt (U1 API)"
+        "u1-image-generate", help="Generate image from text prompt (U1 API)"
     )
     gen_parser.add_argument("--prompt", required=True, help="Text prompt for image generation")
     gen_parser.add_argument("--negative-prompt", default="", help="Negative prompt")
@@ -130,8 +127,8 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
     gen_parser.add_argument("--save-path", type=Path, default=None)
 
-    # image-edit
-    edit_parser = subparsers.add_parser("image-edit", help="Edit image based on prompt (U1 API)")
+    # u1-image-edit
+    edit_parser = subparsers.add_parser("u1-image-edit", help="Edit image based on prompt (U1 API)")
     edit_parser.add_argument(
         "--image",
         required=True,
@@ -153,9 +150,9 @@ def build_parser() -> argparse.ArgumentParser:
     edit_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
     edit_parser.add_argument("--save-path", type=Path, default=None)
 
-    # image-recognize (VLM)
+    # u1-image-recognize (VLM)
     recog_parser = subparsers.add_parser(
-        "image-recognize", help="Recognize image content using VLM"
+        "u1-image-recognize", help="Recognize image content using VLM"
     )
     recog_parser.add_argument("--user-prompt", default=None, help="User-facing text instruction")
     recog_parser.add_argument(
@@ -191,8 +188,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     recog_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
 
-    # text-optimize (LLM)
-    opt_parser = subparsers.add_parser("text-optimize", help="Optimize text using LLM")
+    # u1-text-optimize (LLM)
+    opt_parser = subparsers.add_parser("u1-text-optimize", help="Optimize text using LLM")
     opt_parser.add_argument("--user-prompt", default=None, help="User-facing text instruction")
     opt_parser.add_argument(
         "--user-prompt-path",
@@ -489,13 +486,13 @@ async def main_async(args: argparse.Namespace) -> int:
     """
     start_time = time.time()
     try:
-        if args.command == "image-generate":
+        if args.command == "u1-image-generate":
             result, code = await run_image_generate(args)
-        elif args.command == "image-edit":
+        elif args.command == "u1-image-edit":
             result, code = await run_image_edit(args)
-        elif args.command == "image-recognize":
+        elif args.command == "u1-image-recognize":
             result, code = await run_image_recognize(args)
-        elif args.command == "text-optimize":
+        elif args.command == "u1-text-optimize":
             result, code = await run_text_optimize(args)
         else:
             print(f"Unknown command: {args.command}", file=sys.stderr)
