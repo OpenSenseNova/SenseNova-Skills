@@ -36,8 +36,9 @@ BASE_URL_ENV = "U1_BASE_URL"
 # Shared built-in defaults for VLM (image-recognize) and LLM (text-optimize)
 # No hardcoded defaults - must be supplied via env var or CLI
 DEFAULT_BASE_URL = ""
-DEFAULT_MODEL = ""
+DEFAULT_MODEL = "sensenova-122b-128k-step9k"
 DEFAULT_API_KEY = ""
+DEFAULT_IMAGE_GEN_BASE_URL = "https://zoe-api.sensetime.com/zoe-model"
 DEFAULT_TYPE = "openai-completions"
 
 
@@ -242,7 +243,7 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
     if not api_key:
         raise MissingApiKeyError()
 
-    base_url = args.base_url or os.getenv(BASE_URL_ENV, "")
+    base_url = args.base_url or DEFAULT_IMAGE_GEN_BASE_URL
     if not base_url:
         raise MissingApiKeyError(
             "No base URL provided. Set U1_BASE_URL env var or pass --base-url."
@@ -286,7 +287,7 @@ async def run_image_edit(args: argparse.Namespace) -> tuple[dict, int]:
     if not api_key:
         raise MissingApiKeyError()
 
-    base_url = args.base_url or os.getenv(BASE_URL_ENV, "")
+    base_url = args.base_url or os.getenv(BASE_URL_ENV, DEFAULT_BASE_URL)
     if not base_url:
         raise MissingApiKeyError(
             "No base URL provided. Set U1_BASE_URL env var or pass --base-url."

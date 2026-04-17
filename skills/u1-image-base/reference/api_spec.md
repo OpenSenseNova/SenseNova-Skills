@@ -39,7 +39,6 @@ python openclaw_runner.py u1-image-generate \
 |-----------|------|----------|---------|-------------|
 | `--prompt` | string | **Yes** | - | Text prompt |
 | `--api-key` | string | No | Reads `U1_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
-| `--base-url` | string | No | No hardcoded default | Base API URL (CLI > `U1_BASE_URL` env var; raises error if neither is set) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
 | `--image-size` | string | No | `"2k"` | Image size: `1k` or `2k` |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
