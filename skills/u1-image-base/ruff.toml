@@ -1,0 +1,29 @@
+line-length = 100
+# Assume the minimum python version
+target-version = 'py310'
+fix = true
+
+############################
+# lint rules
+############################
+[lint]
+select = [
+    "E",      # pycodestyle: Error
+    "W",      # pycodestyle: Warning
+    "F",      # Pyflakes
+    "PLE",    # pylint: Error
+    "B",      # flake8-bugbear
+    "TC",     # flake8-type-checking
+    "I",      # isort
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "ARG001", # unused arguments in functions
+]
+unfixable = [
+    "F401", # unused imports
+    "F841", # unused variables
+]
+ignore = ["E501"]
+
+[lint.per-file-ignores]
+"scripts/openclaw_runner.py" = ["E402"]

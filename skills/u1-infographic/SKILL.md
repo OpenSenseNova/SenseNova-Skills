@@ -1,6 +1,9 @@
 ---
 name: u1-infographic
-description: Generates professional infographics with various layout types and visual styles. Analyzes content, recommends layout and style, and generates publication-ready infographics. Use when user asks to create "infographic", "信息图", "visual summary", or "可视化".
+description: |
+  Generates professional infographics with various layout types and visual styles.
+  Analyzes content, recommends layout and style, and generates publication-ready infographics.
+  Use when user asks to create "infographic", "信息图", "visual summary", or "可视化".
 metadata:
   project: SenseNova-Skills
   tier: 1
