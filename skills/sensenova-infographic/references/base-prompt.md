@@ -52,7 +52,9 @@ Use descriptive color names only (e.g., coral red, sage green, deep navy blue, w
 
 Generate the infographic based on the content below:
 
+```markdown
 {{CONTENT}}
 
 Text labels (in {{LANGUAGE}}):
 {{TEXT_LABELS}}
+```

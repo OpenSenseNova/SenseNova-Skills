@@ -464,6 +464,7 @@ Report: topic, layout, style, aspect, language, output path, files created.
 
 - `references/analysis-framework.md` - Analysis methodology
 - `references/structured-content-template.md` - Content format
+- `references/layout-style-selection.md` - Layout and style selection
 - `references/base-prompt.md` - Prompt template
 - `references/layouts/<layout>.md` - 87 layout definitions
 - `references/styles/<style>.md` - 66 style definitions

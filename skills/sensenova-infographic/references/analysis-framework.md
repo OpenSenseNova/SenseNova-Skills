@@ -5,6 +5,7 @@ Deep analysis framework applying instructional design principles to infographic 
 ## Purpose
 
 Before creating an infographic, thoroughly analyze the source material to:
+
 - Understand the content at a deep level
 - Identify clear learning objectives for the viewer
 - Structure information for maximum clarity and retention
@@ -29,22 +30,34 @@ Approach content analysis as a **world-class instructional designer**:
 
 | Type | Characteristics | Best Layout | Best Style |
 |------|-----------------|-------------|------------|
-| **Timeline/History** | Sequential events, dates, progression | linear-progression | craft-handmade, aged-academia |
+| **Timeline/History** | Sequential events, dates, progression | linear-progression | aged-academia, craft-handmade |
 | **Process/Tutorial** | Step-by-step instructions, how-to | linear-progression, winding-roadmap | ikea-manual, technical-schematic |
-| **Comparison** | A vs B, pros/cons, before-after | binary-comparison, comparison-matrix | corporate-memphis, bold-graphic |
-| **Hierarchy** | Levels, priorities, pyramids | hierarchical-layers, tree-branching | craft-handmade, corporate-memphis |
-| **Relationships** | Connections, overlaps, influences | venn-diagram, hub-spoke, jigsaw | craft-handmade, subway-map |
-| **Data/Metrics** | Statistics, KPIs, measurements | dashboard, periodic-table | corporate-memphis, technical-schematic |
-| **Cycle/Loop** | Recurring processes, feedback loops | circular-flow | craft-handmade, technical-schematic |
-| **System/Structure** | Components, architecture, anatomy | structural-breakdown, bento-grid | technical-schematic, ikea-manual |
+| **Comparison** | A vs B, pros/cons, before-after | binary-comparison, comparison-matrix | corporate-memphis, swiss-style |
+| **Hierarchy** | Levels, priorities, pyramids | hierarchical-layers, tree-branching | corporate-memphis, technical-schematic |
+| **Relationships** | Connections, overlaps, influences | venn-diagram, hub-spoke | corporate-memphis, data-visualization |
+| **Data/Metrics** | Statistics, KPIs, measurements | dashboard, periodic-table | data-visualization, technical-schematic |
+| **Cycle/Loop** | Recurring processes, feedback loops | circular-flow, s-curve | technical-schematic, corporate-memphis |
+| **System/Structure** | Components, architecture, anatomy | structural-breakdown, isometric-tech-stack | technical-schematic, ikea-manual |
 | **Journey/Narrative** | Stories, user flows, milestones | winding-roadmap, story-mountain | storybook-watercolor, comic-strip |
-| **Overview/Summary** | Multiple topics, feature highlights | bento-grid, periodic-table | chalkboard, bold-graphic |
+| **Overview/Summary** | Multiple topics, feature highlights | bento-grid, periodic-table | chalkboard, corporate-memphis |
+| **Problem/Solution** | Root cause, fix, before-after resolution | bridge, iceberg | corporate-memphis, swiss-style |
+| **Categories/Collection** | Grouped items, taxonomy, catalog entries | periodic-table, tile-layout | corporate-memphis, flat-design |
+| **Spatial/Geographic** | Maps, regions, location-based data | isometric-map, isometric-tech-stack | technical-schematic, data-visualization |
+| **Cross-functional/Workflow** | Multi-team processes, handoffs, lanes | swimlane, linear-progression | corporate-memphis, technical-schematic |
+| **Feature List/Catalog** | Product features, spec sheets, repeated units | modular-repetition, bento-grid | tech-brand, material-design |
+| **Single Concept Spotlight** | One idea, deep dive, hero message | single-focal-point, big-typography | minimalism, luxury-minimal |
+| **Dialogue/Q&A** | FAQ, interview, conversation format | speech-bubbles, character-guide | paper-collage, cartoon-flat |
+| **Discovery/Exploration** | Hidden layers, reveal, non-linear browsing | hidden-details, nonlinear-path | impressionism, pen-sketch |
+| **Network/Multi-center** | Distributed nodes, peer relationships | multi-focal, hub-spoke | data-visualization, technical-schematic |
+| **Report/Long-form** | Structured document, sections, executive summary | chapter-layout, f-pattern | swiss-style, corporate-memphis |
+| **Marketing/CTA** | Persuasion, call-to-action, brand message | z-pattern, tile-layout | tech-brand, corporate-memphis |
 
 ### 2. Learning Objective Identification
 
 Every infographic should have 1-3 clear learning objectives.
 
 **Good Learning Objectives**:
+
 - Specific and measurable
 - Focus on what the viewer will understand, not just see
 - Written from the viewer's perspective
@@ -105,6 +118,7 @@ Identify what can be shown rather than told:
 | **Lists** | Preserve order and wording |
 
 **Never**:
+
 - Round numbers
 - Paraphrase quotes
 - Substitute simpler words
@@ -113,57 +127,82 @@ Identify what can be shown rather than told:
 
 ## Output Format
 
-Save analysis results to `analysis.md`:
+Analysis results (`analysis.json`) must be in the following format:
 
-```yaml
----
-title: "[Main topic title]"
-topic: "[educational/technical/business/creative/etc.]"
-data_type: "[timeline/hierarchy/comparison/process/etc.]"
-complexity: "[simple/moderate/complex]"
-point_count: [number of main points]
-source_language: "[detected language]"
-user_language: "[user's language]"
----
-
-## Main Topic
-[1-2 sentence summary of what this content is about]
-
-## Learning Objectives
-After viewing this infographic, the viewer should understand:
-1. [Primary objective]
-2. [Secondary objective]
-3. [Tertiary objective if applicable]
-
-## Target Audience
-- **Knowledge Level**: [Beginner/Intermediate/Expert]
-- **Context**: [Why they're viewing this]
-- **Expectations**: [What they hope to learn]
-
-## Content Type Analysis
-- **Data Structure**: [How information relates to itself]
-- **Key Relationships**: [What connects to what]
-- **Visual Opportunities**: [What can be shown rather than told]
-
-## Key Data Points (Verbatim)
-[All statistics, quotes, and critical facts exactly as they appear in source]
-- "[Exact data point 1]"
-- "[Exact data point 2]"
-- "[Exact quote with attribution]"
-
-## Layout × Style Signals
-- Content type: [type] → suggests [layout]
-- Tone: [tone] → suggests [style]
-- Audience: [audience] → suggests [style]
-- Complexity: [level] → suggests [layout density]
-
-## Design Instructions (from user input)
-[Any style, color, layout, or visual preferences extracted from user's steering prompt]
-
-## Recommended Combinations
-1. **[Layout] + [Style]** (Recommended): [Brief rationale]
-2. **[Layout] + [Style]**: [Brief rationale]
-3. **[Layout] + [Style]**: [Brief rationale]
+```json
+{
+  "title": "[Main topic title]",
+  "topic": "[educational/technical/business/creative/etc.]",
+  "data_type": "[timeline/hierarchy/comparison/process/etc.]",
+  "complexity": "[simple/moderate/complex]",
+  "point_count": "[number of main points]",
+  "source_language": "[detected language]",
+  "user_language": "[user's language]",
+  "main_topic": "[1-2 sentence summary of what this content is about]",
+  "learning_objectives": [
+    "[Primary objective]",
+    "[Secondary objective]",
+    "[Tertiary objective if applicable]"
+  ],
+  "target_audience": {
+    "knowledge_level": "[Beginner/Intermediate/Expert]",
+    "context": "[Why they're viewing this]",
+    "expectations": "[What they hope to learn]"
+  },
+  "content_type_analysis": {
+    "data_structure": "[How information relates to itself]",
+    "key_relationships": "[What connects to what]",
+    "visual_opportunities": "[What can be shown rather than told]"
+  },
+  "key_data_points_verbatim": [
+    "[Exact data point 1]",
+    "[Exact data point 2]",
+    "[Exact quote with attribution]"
+  ],
+  "layout_style_signals": [
+    {
+      "signal": "content_type",
+      "input": "[type]",
+      "suggests": "[layout]"
+    },
+    {
+      "signal": "tone",
+      "input": "[tone]",
+      "suggests": "[style]"
+    },
+    {
+      "signal": "audience",
+      "input": "[audience]",
+      "suggests": "[style]"
+    },
+    {
+      "signal": "complexity",
+      "input": "[level]",
+      "suggests": "[layout density]"
+    }
+  ],
+  "design_instructions": "[Any style, color, layout, or visual preferences extracted from user's steering prompt]",
+  "recommended_combinations": [
+    {
+      "layout": "[Layout]",
+      "style": "[Style]",
+      "recommended": true,
+      "rationale": "[Brief rationale]"
+    },
+    {
+      "layout": "[Layout]",
+      "style": "[Style]",
+      "recommended": false,
+      "rationale": "[Brief rationale]"
+    },
+    {
+      "layout": "[Layout]",
+      "style": "[Style]",
+      "recommended": false,
+      "rationale": "[Brief rationale]"
+    }
+  ]
+}
 ```
 
 ## Analysis Checklist
