@@ -173,7 +173,7 @@ def build_parser() -> argparse.ArgumentParser:
     recog_parser.add_argument(
         "--base-url",
         default=None,
-        help="API base URL (CLI > VLM_BASE_URL env > built-in default)",
+        help="API base URL (CLI > VLM_BASE_URL > U1_LM_BASE_URL > built-in default)",
     )
     recog_parser.add_argument(
         "--model",
@@ -208,7 +208,7 @@ def build_parser() -> argparse.ArgumentParser:
     opt_parser.add_argument(
         "--base-url",
         default=None,
-        help="API base URL (CLI > LLM_BASE_URL env > built-in default)",
+        help="API base URL (CLI > LLM_BASE_URL > U1_LM_BASE_URL > built-in default)",
     )
     opt_parser.add_argument(
         "--model",
@@ -334,7 +334,9 @@ async def run_image_recognize(args: argparse.Namespace) -> tuple[dict, int]:
     )
 
     vlm_type = _resolve_param(args.vlm_type, "VLM_TYPE", DEFAULT_TYPE)
-    base_url = _resolve_param(args.base_url, "VLM_BASE_URL", DEFAULT_BASE_URL)
+    base_url = _resolve_param(
+        args.base_url, "VLM_BASE_URL", os.getenv("U1_LM_BASE_URL", DEFAULT_BASE_URL)
+    )
     model = _resolve_param(args.model, "VLM_MODEL", DEFAULT_MODEL)
     api_key = args.api_key or os.getenv("VLM_API_KEY", "") or os.getenv("U1_LM_API_KEY", "")
     if not api_key:
@@ -343,7 +345,7 @@ async def run_image_recognize(args: argparse.Namespace) -> tuple[dict, int]:
         )
     if not base_url:
         raise MissingApiKeyError(
-            "No base URL provided for VLM. Set VLM_BASE_URL or pass --base-url."
+            "No base URL provided for VLM. Set VLM_BASE_URL, U1_LM_BASE_URL, or pass --base-url."
         )
     if not model:
         raise MissingApiKeyError("No model provided for VLM. Set VLM_MODEL or pass --model.")
@@ -403,7 +405,9 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
     )
 
     llm_type = _resolve_param(args.llm_type, "LLM_TYPE", DEFAULT_TYPE)
-    base_url = _resolve_param(args.base_url, "LLM_BASE_URL", DEFAULT_BASE_URL)
+    base_url = _resolve_param(
+        args.base_url, "LLM_BASE_URL", os.getenv("U1_LM_BASE_URL", DEFAULT_BASE_URL)
+    )
     model = _resolve_param(args.model, "LLM_MODEL", DEFAULT_MODEL)
     api_key = args.api_key or os.getenv("LLM_API_KEY", "") or os.getenv("U1_LM_API_KEY", "")
     if not api_key:
@@ -412,7 +416,7 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
         )
     if not base_url:
         raise MissingApiKeyError(
-            "No base URL provided for LLM. Set LLM_BASE_URL or pass --base-url."
+            "No base URL provided for LLM. Set LLM_BASE_URL, U1_LM_BASE_URL, or pass --base-url."
         )
     if not model:
         raise MissingApiKeyError("No model provided for LLM. Set LLM_MODEL or pass --model.")

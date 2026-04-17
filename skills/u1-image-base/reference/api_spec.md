@@ -62,12 +62,14 @@ Default output: `/tmp/openclaw-u1-image/t2i_<timestamp>.png`
 ### Response Examples
 
 **text format**:
+
 ```
 Image generated successfully
 /tmp/openclaw-u1-image/t2i_20260414_120000.png
 ```
 
 **json format**:
+
 ```json
 {
   "status": "ok",
@@ -83,11 +85,13 @@ Image generated successfully
 `--api-key` is optional. CLI parameter takes precedence; if not provided, reads from `U1_API_KEY` env var. If both are empty, raises `MissingApiKeyError`:
 
 **text format**:
+
 ```
 Error: API key is required but was not provided. Set the U1_API_KEY environment variable or pass --api-key explicitly.
 ```
 
 **json format**:
+
 ```json
 {"status": "failed", "error": "API key is required but was not provided. Set the U1_API_KEY environment variable or pass --api-key explicitly.", "elapsed_seconds": 0.05}
 ```
@@ -136,12 +140,14 @@ Default output: `/tmp/openclaw-u1-image/edit_<timestamp>.png`
 ### Response Examples
 
 **text format**:
+
 ```
 Image edited successfully
 /tmp/openclaw-u1-image/edit_20260414_120000.png
 ```
 
 **json format**:
+
 ```json
 {
   "status": "ok",
@@ -185,7 +191,7 @@ python openclaw_runner.py u1-image-recognize \
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
 | `--images` | string[] | **Yes** | - | List of image paths (supports multiple) |
 | `--api-key` | string | No | No hardcoded default | CLI > `VLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
-| `--base-url` | string | No | No hardcoded default | CLI > `VLM_BASE_URL` env var; raises error if neither is set |
+| `--base-url` | string | No | No hardcoded default | CLI > `VLM_BASE_URL` > `U1_LM_BASE_URL`; raises error if neither is set |
 | `--model` | string | No | No hardcoded default | CLI > `VLM_MODEL` env var; raises error if neither is set |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
@@ -193,17 +199,20 @@ python openclaw_runner.py u1-image-recognize \
 | `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
 
 `--vlm-type` options:
+
 - `openai-completions`: OpenAI-compatible `/v1/chat/completions` endpoint
 - `anthropic-messages`: Anthropic Messages `/v1/messages` endpoint
 
 ### Response Examples
 
 **text format**:
+
 ```
 This image shows an adorable orange cat napping in the sunlight.
 ```
 
 **json format**:
+
 ```json
 {
   "status": "ok",
@@ -221,8 +230,8 @@ This image shows an adorable orange cat napping in the sunlight.
 
 | Parameter | Built-in Default | Environment Variable |
 |-----------|-----------------|---------------------|
-| `--api-key` | None (required) | `VLM_API_KEY` (primary) → `U1_LM_API_KEY` (fallback) |
-| `--base-url` | None (required) | `VLM_BASE_URL` |
+| `--api-key` | None (required) | `VLM_API_KEY` (primary) -> `U1_LM_API_KEY` (fallback) |
+| `--base-url` | None (required) | `VLM_BASE_URL` (primary) -> `U1_LM_BASE_URL` (fallback) |
 | `--model` | None (required) | `VLM_MODEL` |
 | `--vlm-type` | `openai-completions` | `VLM_TYPE` |
 
@@ -253,7 +262,7 @@ python openclaw_runner.py u1-text-optimize \
 | `--user-prompt` | string | One of two | - | User instruction (mutually exclusive with `--user-prompt-path`) |
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
 | `--api-key` | string | No | No hardcoded default | CLI > `LLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
-| `--base-url` | string | No | No hardcoded default | CLI > `LLM_BASE_URL` env var; raises error if neither is set |
+| `--base-url` | string | No | No hardcoded default | CLI > `LLM_BASE_URL` > `U1_LM_BASE_URL`; raises error if neither is set |
 | `--model` | string | No | No hardcoded default | CLI > `LLM_MODEL` env var; raises error if neither is set |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
@@ -261,17 +270,20 @@ python openclaw_runner.py u1-text-optimize \
 | `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
 
 `--llm-type` options:
+
 - `openai-completions`: OpenAI-compatible `/v1/chat/completions` endpoint
 - `anthropic-messages`: Anthropic Messages `/v1/messages` endpoint
 
 ### Response Examples
 
 **text format**:
+
 ```
 Optimized text content...
 ```
 
 **json format**:
+
 ```json
 {
   "status": "ok",
@@ -289,8 +301,8 @@ Optimized text content...
 
 | Parameter | Built-in Default | Environment Variable |
 |-----------|-----------------|---------------------|
-| `--api-key` | None (required) | `LLM_API_KEY` (primary) → `U1_LM_API_KEY` (fallback) |
-| `--base-url` | None (required) | `LLM_BASE_URL` |
+| `--api-key` | None (required) | `LLM_API_KEY` (primary) -> `U1_LM_API_KEY` (fallback) |
+| `--base-url` | None (required) | `LLM_BASE_URL` (primary) -> `U1_LM_BASE_URL` (fallback) |
 | `--model` | None (required) | `LLM_MODEL` |
 | `--llm-type` | `openai-completions` | `LLM_TYPE` |
 

@@ -83,7 +83,7 @@ Image recognition tool that uses VLM (Vision Language Model) to analyze image co
 | Parameter | Type | Built-in Default | Env Var | Description |
 |------|------|-----------|---------|------|
 | `--api-key` | string | No hardcoded default | `VLM_API_KEY` → `U1_LM_API_KEY` | Priority: CLI > `VLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` when all are unset |
-| `--base-url` | string | No hardcoded default | `VLM_BASE_URL` | API base URL; raises error when all are unset |
+| `--base-url` | string | No hardcoded default | `VLM_BASE_URL` -> `U1_LM_BASE_URL` | API base URL; raises error when all are unset |
 | `--model` | string | No hardcoded default | `VLM_MODEL` | Model name; raises error when all are unset |
 | `--vlm-type` | string | `openai-completions` | `VLM_TYPE` | VLM interface type |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
@@ -103,7 +103,7 @@ Text optimization tool that uses LLM (Language Model) to optimize text content. 
 | Parameter | Type | Built-in Default | Env Var | Description |
 |------|------|-----------|---------|------|
 | `--api-key` | string | No hardcoded default | `LLM_API_KEY` → `U1_LM_API_KEY` | Priority: CLI > `LLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` when all are unset |
-| `--base-url` | string | No hardcoded default | `LLM_BASE_URL` | API base URL; raises error when all are unset |
+| `--base-url` | string | No hardcoded default | `LLM_BASE_URL` -> `U1_LM_BASE_URL` | API base URL; raises error when all are unset |
 | `--model` | string | No hardcoded default | `LLM_MODEL` | Model name; raises error when all are unset |
 | `--llm-type` | string | `openai-completions` | `LLM_TYPE` | LLM interface type |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
@@ -186,7 +186,7 @@ Authentication parameters for `u1-image-generate` and `u1-image-edit` have the f
 | Parameter | Built-in Default | VLM Env Var | LLM Env Var |
 |------|-----------|-------------|-------------|
 | `--api-key` | None (must be provided) | `VLM_API_KEY` → `U1_LM_API_KEY` | `LLM_API_KEY` → `U1_LM_API_KEY` |
-| `--base-url` | None (must be provided) | `VLM_BASE_URL` | `LLM_BASE_URL` |
+| `--base-url` | None (must be provided) | `VLM_BASE_URL` -> `U1_LM_BASE_URL` | `LLM_BASE_URL` -> `U1_LM_BASE_URL` |
 | `--model` | None (must be provided) | `VLM_MODEL` | `LLM_MODEL` |
 | `--vlm-type` / `--llm-type` | `openai-completions` | `VLM_TYPE` | `LLM_TYPE` |
 
