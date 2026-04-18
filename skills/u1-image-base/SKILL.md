@@ -1,7 +1,7 @@
 ---
 name: u1-image-base
 description: |
-  Base-layer skill for the SenseNova-Skills project, providing low-level APIs for image generation, editing, and recognition.
+  Base-layer skill for the SenseNova-Skills project, providing low-level APIs for image generation, recognition (VLM), and text optimization (LLM).
   This skill does not preprocess inputs; it only calls backend services and returns results.
   This skill is not user-facing and is intended for upper-layer skills only.
 triggers:
@@ -24,10 +24,9 @@ pip install -r requirements.txt
 
 ## Overview
 
-`u1-image-base` is the base-layer skill (tier 0) of the SenseNova-Skills project and provides four low-level tools:
+`u1-image-base` is the base-layer skill (tier 0) of the SenseNova-Skills project and provides three low-level tools:
 
 - `u1-image-generate`: image generation (calls text-to-image-no-enhance API)
-- `u1-image-edit`: image editing (calls image-edit API)
 - `u1-image-recognize`: image recognition (uses VLM to analyze image content)
 - `u1-text-optimize`: text optimization (uses LLM to process text)
 
@@ -50,25 +49,7 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--seed` | int | `None` | Random seed for reproducible generation |
 | `--unet-name` | string | `None` | Specify a UNet model name |
 | `--api-key` | string | Read from `U1_API_KEY` env var | API key (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
-| `--base-url` | string | Read from `U1_BASE_URL` env var | API base URL (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
-| `--poll-interval` | float | `5.0` | Polling interval (seconds) |
-| `--timeout` | float | `300.0` | Timeout (seconds) |
-| `--insecure` | flag | `False` | Disable TLS verification |
-| `--save-path` | Path | Auto-generated | Save path |
-
-### u1-image-edit
-
-Image editing tool that calls the u1-image-edit API.
-
-`--image` and `--prompt` are required; all other parameters are optional:
-
-| Parameter | Type | Default | Description |
-|------|------|--------|------|
-| `--image` | string | **Required** | Image path to edit (local path, remote URL, or cached file key) |
-| `--prompt` | string | **Required** | Edit instruction prompt |
-| `--seed` | int | `None` | Random seed |
-| `--api-key` | string | Read from `U1_API_KEY` env var | API key (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
-| `--base-url` | string | Read from `U1_BASE_URL` env var | API base URL (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
+| `--base-url` | string | Read from `U1_IMAGE_GEN_BASE_URL` env var | API base URL (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
 | `--poll-interval` | float | `5.0` | Polling interval (seconds) |
 | `--timeout` | float | `300.0` | Timeout (seconds) |
 | `--insecure` | flag | `False` | Disable TLS verification |
@@ -140,22 +121,17 @@ python scripts/openclaw_runner.py u1-image-generate \
     --prompt "..." \
     --api-key "sk-xxx"
 
-# Image editing (only image + prompt required; api-key/base-url have defaults)
-python scripts/openclaw_runner.py u1-image-edit \
-    --image "path/to/image.png" \
-    --prompt "..."
-
 # Image recognition (VLM) - minimal call (uses built-in Sensenova defaults)
 python scripts/openclaw_runner.py u1-image-recognize \
     --user-prompt "Describe the image" \
     --images "path/to/image.png"
 
-# Image recognition (VLM) - override to Gaccode Anthropic Messages interface
+# Image recognition (VLM) - override to Anthropic Claude API compatible (messages interface)
 python scripts/openclaw_runner.py u1-image-recognize \
     --user-prompt "Describe the image" \
     --images "path/to/image.png" \
     --api-key "sk-ant-xxx" \
-    --base-url "https://gaccode.com/claudecode/v1" \
+    --base-url "https://api.anthropic.com" \
     --model "claude-sonnet-4-6" \
     --vlm-type "anthropic-messages"
 
@@ -163,18 +139,18 @@ python scripts/openclaw_runner.py u1-image-recognize \
 python scripts/openclaw_runner.py u1-text-optimize \
     --user-prompt "Optimize the text: ..."
 
-# Text optimization (LLM) - override to Minimax Anthropic Messages interface
+# Text optimization (LLM) - override to Anthropic Claude API compatible (messages interface)
 python scripts/openclaw_runner.py u1-text-optimize \
     --user-prompt "Optimize the text: ..." \
     --api-key "sk-ant-xxx" \
-    --base-url "https://api.minimaxi.com/anthropic" \
-    --model "MiniMax-M2.7-highspeed" \
+    --base-url "https://api.anthropic.com" \
+    --model "claude-sonnet-4-6" \
     --llm-type "anthropic-messages"
 ```
 
 ### Default Parameter Behavior
 
-Authentication parameters for `u1-image-generate` and `u1-image-edit` have the following default behavior:
+Authentication parameters for `u1-image-generate` have the following default behavior:
 
 | Parameter | Default | Override | Description |
 |------|--------|----------|------|
@@ -200,10 +176,10 @@ The agent can automatically read parameters from `openclaw.json` without manual 
 
 | CLI Parameter | openclaw.json Field | Example |
 |-----------|-------------------|--------|
-| `--base-url` | `providers.<name>.baseUrl` | `https://api.minimaxi.com/anthropic` |
+| `--base-url` | `providers.<name>.baseUrl` | `https://api.anthropic.com` |
 | `--llm-type` | `providers.<name>.api` | `anthropic-messages` / `openai-completions` |
 | `--vlm-type` | `providers.<name>.api` | `anthropic-messages` / `openai-completions` |
-| `--model` | `providers.<name>.models[].id` | `MiniMax-M2.7-highspeed` |
+| `--model` | `providers.<name>.models[].id` | `claude-sonnet-4-6` |
 | `--api-key` | `providers.<name>.apiKey` or env var | `sk-cp-...` |
 
 Note: `--llm-type` and `--vlm-type` share the same `providers.<name>.api` field and are used by LLM and VLM tools respectively.
@@ -223,9 +199,9 @@ Different API types have different requirements for base-url format:
 | Type | `--llm-type` / `--vlm-type` | base-url Example | Code Appended Path | Final URL Example |
 |------|------------------------------|---------------|--------------|---------------|
 | LLM | `openai-completions` | `http://127.0.0.1:615` | `/v1/chat/completions` | `http://127.0.0.1:615/v1/chat/completions` |
-| LLM | `anthropic-messages` | `https://api.minimaxi.com/anthropic` | `/v1/messages` | `https://api.minimaxi.com/anthropic/v1/messages` |
+| LLM | `anthropic-messages` | `https://api.anthropic.com` | `/v1/messages` | `https://api.anthropic.com/v1/messages` |
 | VLM | `openai-completions` | `http://127.0.0.1:615` | `/v1/chat/completions` | `http://127.0.0.1:615/v1/chat/completions` |
-| VLM | `anthropic-messages` | `https://gaccode.com/claudecode/v1` | `/v1/messages` | `https://gaccode.com/claudecode/v1/v1/messages` |
+| VLM | `anthropic-messages` | `https://api.anthropic.com` | `/v1/messages` | `https://api.anthropic.com/v1/messages` |
 
 **Note**:
 
@@ -247,7 +223,7 @@ JSON output for `u1-image-recognize` and `u1-text-optimize` also includes `model
 {
   "status": "ok",
   "result": "...",
-  "model": "sensenova-122b-128k-step9k",
+  "model": "sensenova-122b",
   "base_url": "http://127.0.0.1:615",
   "interface_type": "openai-completions",
   "elapsed_seconds": 1.23

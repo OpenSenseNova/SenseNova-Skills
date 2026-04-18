@@ -6,7 +6,7 @@ A collection of AIGC skills.
 
 ### u1-image-base (Tier 0)
 
-Base-layer infrastructure skill providing four low-level tools:
+Base-layer infrastructure skill providing two low-level tools:
 
 - **u1-image-generate** — text-to-image generation
 - **u1-text-optimize** — text processing using LLM
@@ -34,7 +34,7 @@ pip install -r skills/u1-image-base/requirements.txt
 
 ```bash
 export U1_API_KEY="your-image-api-key"
-export U1_LM_API_KEY="your-lm-api-key"   # shared fallback for LLM/VLM
+export U1_LM_API_KEY="your-lm-api-key"  # for LLM and VLM
 ```
 
 ### Generate an infographic

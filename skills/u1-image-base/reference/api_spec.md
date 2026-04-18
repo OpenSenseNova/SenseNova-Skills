@@ -3,7 +3,6 @@
 ## Table of Contents
 
 - [u1-image-generate](#u1-image-generate)
-- [u1-image-edit](#u1-image-edit)
 - [u1-image-recognize](#u1-image-recognize)
 - [u1-text-optimize](#u1-text-optimize)
 - [Error Handling](#error-handling)
@@ -97,72 +96,6 @@ Error: API key is required but was not provided. Set the U1_API_KEY environment 
 
 ---
 
-## u1-image-edit
-
-Image editing tool that calls the U1 image-edit API.
-
-### Command Format
-
-```bash
-python openclaw_runner.py u1-image-edit \
-    --image <string> \
-    --prompt <string> \
-    [--api-key <string>] \
-    [--base-url <string>] \
-    [--seed <int>] \
-    [--poll-interval <float>] \
-    [--timeout <float>] \
-    [--insecure] \
-    [--output-format text|json] \
-    [--save-path <path>]
-```
-
-### Parameters
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `--image` | string | **Yes** | - | Input image path, remote URL, or cache file key |
-| `--prompt` | string | **Yes** | - | Edit instruction |
-| `--api-key` | string | No | Reads `U1_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
-| `--base-url` | string | No | No hardcoded default | Base API URL (CLI > `U1_BASE_URL` env var; raises error if neither is set) |
-| `--seed` | int | No | `None` | Random seed (for reproducibility) |
-| `--poll-interval` | float | No | `5.0` | Polling interval in seconds |
-| `--timeout` | float | No | `300.0` | Timeout in seconds |
-| `--insecure` | flag | No | `False` | Disable TLS verification |
-| `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
-| `--save-path` | path | No | Auto-generated | Output image path |
-
-### Output Path
-
-Default output: `/tmp/openclaw-u1-image/edit_<timestamp>.png`
-
-### Response Examples
-
-**text format**:
-
-```
-Image edited successfully
-/tmp/openclaw-u1-image/edit_20260414_120000.png
-```
-
-**json format**:
-
-```json
-{
-  "status": "ok",
-  "output": "/tmp/openclaw-u1-image/edit_20260414_120000.png",
-  "task_id": "task_xxx",
-  "message": "Image edited successfully",
-  "elapsed_seconds": 1.47
-}
-```
-
-### API Key Notes
-
-Same as `u1-image-generate`: `--api-key` is optional, CLI > `U1_API_KEY` env var; raises `MissingApiKeyError` if both are empty.
-
----
-
 ## u1-image-recognize
 
 Image recognition tool that uses a VLM (Vision Language Model) to analyze image content.
@@ -216,8 +149,8 @@ This image shows an adorable orange cat napping in the sunlight.
 {
   "status": "ok",
   "result": "This image shows an adorable orange cat napping in the sunlight.",
-  "model": "sensenova-122b-128k-step9k",
-  "base_url": "http://10.210.9.11:615",
+  "model": "sensenova-122b",
+  "base_url": "http://127.0.0.1:615",
   "interface_type": "openai-completions",
   "elapsed_seconds": 2.15
 }
@@ -287,8 +220,8 @@ Optimized text content...
 {
   "status": "ok",
   "result": "Optimized text content...",
-  "model": "sensenova-122b-128k-step9k",
-  "base_url": "http://10.210.9.11:615",
+  "model": "sensenova-122b",
+  "base_url": "http://127.0.0.1:615",
   "interface_type": "openai-completions",
   "elapsed_seconds": 0.83
 }
@@ -313,7 +246,7 @@ Optimized text content...
 
 | Type | Source | Trigger | Output Format |
 |------|--------|---------|---------------|
-| `MissingApiKeyError` | Custom business exception | API Key not provided for `u1-image-generate`/`u1-image-edit` | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
+| `MissingApiKeyError` | Custom business exception | API Key not provided for `u1-image-generate` | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
 | `ValueError` (prompt) | `_resolve_prompt` | `--user-prompt` and `--user-prompt-path` both provided, neither provided, or file read failure | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
 | argparse missing param | argparse standard error | Missing required parameters for `u1-image-recognize`/`u1-text-optimize` | `usage: ...` + exit 2 |
 | HTTP error | httpx request layer | API returns non-2xx status code | `{"status": "failed", "error": "HTTP NNN", "message": "..."}` |
@@ -341,7 +274,6 @@ Error messages are written to stderr and do not affect stdout content.
 | Tool | Environment Variables (high → low priority) | Notes |
 |------|---------------------------------------------|-------|
 | `u1-image-generate` | `U1_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
-| `u1-image-edit` | `U1_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
 | `u1-image-recognize` | `VLM_API_KEY` → `U1_LM_API_KEY` | CLI > `VLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
 | `u1-text-optimize` | `LLM_API_KEY` → `U1_LM_API_KEY` | CLI > `LLM_API_KEY` > `U1_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
 

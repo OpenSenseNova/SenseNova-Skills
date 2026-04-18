@@ -6,9 +6,9 @@ Usage:
     from llm.anthropic_adapter import AnthropicMessagesAdapter
 
     adapter = AnthropicMessagesAdapter(
-        endpoint_url="https://api.minimaxi.com/anthropic/v1/messages",
+        endpoint_url="https://api.anthropic.com/v1/messages",
         api_key="sk-ant-xxx",
-        model="MiniMax-M2.7-highspeed",
+        model="claude-sonnet-4-6",
     )
     result = await adapter.text_completion(
         user_prompt="Optimize this text: Hello world",
@@ -59,7 +59,7 @@ class AnthropicMessagesAdapter(LlmAdapter):
 
         Args:
             endpoint_url: Full ``/v1/messages`` endpoint URL
-                (e.g. ``https://api.minimaxi.com/anthropic/v1/messages``).
+                (e.g. ``https://api.anthropic.com/v1/messages``).
             api_key: Bearer token for the ``Authorization`` header.
             model: Default model name sent in the request payload.
             max_tokens: Maximum tokens to generate. Defaults to 4096.

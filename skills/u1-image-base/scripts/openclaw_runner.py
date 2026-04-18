@@ -4,7 +4,6 @@ All tools are invoked as async coroutines and executed via asyncio.run().
 
 Usage:
     python openclaw_runner.py u1-image-generate --prompt "..."
-    python openclaw_runner.py u1-image-edit --image "..." --prompt "..."
     python openclaw_runner.py u1-image-recognize --user-prompt "..." --images "..." --api-key "..." --base-url "..." --model "..."
     python openclaw_runner.py u1-text-optimize --user-prompt "..." --api-key "..." --base-url "..." --model "..."
 """
@@ -24,7 +23,6 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from exceptions import MissingApiKeyError
 from generation.text_to_image import TextToImageClient
-from image_edit.image_edit import ImageEditClient
 from llm.anthropic_adapter import AnthropicMessagesAdapter
 from llm.chat_completions_adapter import ChatCompletionsLlmAdapter
 from vlm.anthropic_adapter import AnthropicVlmAdapter
@@ -78,7 +76,7 @@ def build_parser() -> argparse.ArgumentParser:
     Returns:
         argparse.ArgumentParser:
             Configured parser with subcommands for u1-image-generate,
-            u1-image-edit, u1-image-recognize, and u1-text-optimize.
+            u1-image-recognize, and u1-text-optimize.
     """
     parser = argparse.ArgumentParser(
         description="u1-image-base unified runner - async tool execution."
@@ -127,29 +125,6 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument("--insecure", action="store_true", help="Disable TLS verification")
     gen_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
     gen_parser.add_argument("--save-path", type=Path, default=None)
-
-    # u1-image-edit
-    edit_parser = subparsers.add_parser("u1-image-edit", help="Edit image based on prompt (U1 API)")
-    edit_parser.add_argument(
-        "--image",
-        required=True,
-        help="Local image path, remote URL, or cached file key",
-    )
-    edit_parser.add_argument("--prompt", required=True, help="Edit instruction prompt")
-    edit_parser.add_argument("--seed", type=int, default=None, help="Random seed")
-    edit_parser.add_argument(
-        "--api-key", default="", help="API key (falls back to U1_API_KEY env var)"
-    )
-    edit_parser.add_argument(
-        "--base-url",
-        default="",
-        help="API base URL (falls back to U1_BASE_URL env var)",
-    )
-    edit_parser.add_argument("--poll-interval", type=float, default=5.0)
-    edit_parser.add_argument("--timeout", type=float, default=300.0)
-    edit_parser.add_argument("--insecure", action="store_true")
-    edit_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
-    edit_parser.add_argument("--save-path", type=Path, default=None)
 
     # u1-image-recognize (VLM)
     recog_parser = subparsers.add_parser(
@@ -264,47 +239,6 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             aspect_ratio=args.aspect_ratio,
             seed=args.seed,
             unet_name=args.unet_name,
-            output_path=args.save_path,
-        )
-        return result, 0 if result["status"] == "ok" else 1
-    finally:
-        await client.aclose()
-
-
-async def run_image_edit(args: argparse.Namespace) -> tuple[dict, int]:
-    """Run image-edit command using the U1 image-edit API.
-
-    Args:
-        args: Parsed command-line arguments from ``image-edit`` subcommand.
-
-    Returns:
-        tuple[dict, int]:
-            A (result_dict, exit_code) pair. result_dict contains status,
-            output (image path), task_id, and message. exit_code is 0 on
-            success and 1 on failure.
-    """
-    api_key = args.api_key or os.getenv(API_KEY_ENV, "")
-    if not api_key:
-        raise MissingApiKeyError()
-
-    base_url = args.base_url or os.getenv(BASE_URL_ENV, DEFAULT_BASE_URL)
-    if not base_url:
-        raise MissingApiKeyError(
-            "No base URL provided. Set U1_BASE_URL env var or pass --base-url."
-        )
-
-    client = ImageEditClient(
-        api_key=api_key,
-        base_url=base_url,
-        poll_interval=args.poll_interval,
-        timeout=args.timeout,
-        insecure=args.insecure,
-    )
-    try:
-        result = await client.edit(
-            image=args.image,
-            prompt=args.prompt,
-            seed=args.seed,
             output_path=args.save_path,
         )
         return result, 0 if result["status"] == "ok" else 1
@@ -473,7 +407,7 @@ async def output_result(output_format: str, result: dict, elapsed: float | None 
         if result["status"] == "ok":
             if result.get("message"):
                 print(result["message"])
-            # text-optimize/image-recognize use "result", image-generate/image-edit use "output"
+            # text-optimize/image-recognize use "result", image-generate uses "output"
             print(result.get("result") or result.get("output") or "")
         else:
             print(result.get("message") or result["error"], file=sys.stderr)
@@ -493,8 +427,6 @@ async def main_async(args: argparse.Namespace) -> int:
     try:
         if args.command == "u1-image-generate":
             result, code = await run_image_generate(args)
-        elif args.command == "u1-image-edit":
-            result, code = await run_image_edit(args)
         elif args.command == "u1-image-recognize":
             result, code = await run_image_recognize(args)
         elif args.command == "u1-text-optimize":
