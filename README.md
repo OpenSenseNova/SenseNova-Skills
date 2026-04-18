@@ -37,6 +37,8 @@ Use these skills from [OpenClaw](https://openclaw.ai/). They follow the [Agent S
 
 Clone this repository, then expose **both** skill directories to OpenClaw ([locations and precedence](https://docs.openclaw.ai/skills#locations-and-precedence)). `u1-infographic` depends on `u1-image-base`—install both.
 
+Use one of the following approaches:
+
 | Approach | What to do |
 |----------|------------|
 | **Workspace `skills/`** (typical) | Copy or symlink `skills/u1-image-base` and `skills/u1-infographic` into your agent workspace as `./skills/u1-image-base/` and `./skills/u1-infographic/`. |
@@ -65,7 +67,7 @@ export U1_API_KEY="your-image-api-key"
 export U1_LM_API_KEY="your-lm-api-key"  # for LLM and VLM
 ```
 
-Prefer environment variables or a local `.env` file. Do not commit secrets. You can also inject keys through `skills.entries` ([environment injection](https://docs.openclaw.ai/skills#environment-injection-per-agent-run)). Optionally map LLM/VLM endpoints to your OpenClaw providers: [`skills/u1-image-base/SKILL.md`](skills/u1-image-base/SKILL.md) (Agent Configuration Integration).
+Prefer environment variables or a local `.env` file. Do not commit secrets.
 
 ### 3. Invoke in OpenClaw
 
