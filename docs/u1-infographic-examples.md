@@ -45,58 +45,67 @@ Bottom: selection and storage—good: heavy for size, firm skin, bright yellow, 
 **Expanded prompt**
 
 ```
-标题：Full Job Posting Creation & Optimization Workflow
-风格：Corporate Memphis（扁平矢量风格）
-布局：Hub-Spoke（中心辐射式）
-整体设计
-中央枢纽：大号圆形，包含主标题"Job Posting Workflow"
-辐射节点：5 个节点均匀分布在五边形位置
-连接线：5 条干净的直线从中心辐射到各节点
-背景：白色或浅灰色渐变，点缀抽象几何形状（三角形、圆点、曲线）
-五大模块
-1️⃣ 顶部 — Requirements Analysis（橙色 #FF7675）
+Title: Full Job Posting Creation & Optimization Workflow
+Style: Corporate Memphis (flat vector)
+Layout: Hub-and-spoke (radiating from center)
+
+Overall design
+Central hub: large circle containing the main title "Job Posting Workflow"
+Radial nodes: five nodes evenly placed on a pentagonal layout
+Connectors: five clean straight lines radiating from the hub to each node
+Background: white or light grey gradient with abstract geometric accents (triangles, dots, curves)
+
+Five modules
+1️⃣ Top — Requirements Analysis (orange #FF7675)
 Define role responsibilities
-Identify target candidate
-Determine compensation
+Identify target candidate profile
+Determine compensation band
 Align with hiring manager
-插图：人物手持放大镜
-2️⃣ 右上 — Job Description Drafting（青色 #00B894）
+Illustration: figure with magnifying glass
+
+2️⃣ Upper right — Job Description Drafting (teal #00B894)
 Write compelling title
-Craft company intro
+Craft company introduction
 Detail key responsibilities
 List qualifications
 Include culture & values
-插图：人物在打字
-3️⃣ 右下 — Review & Refine（黄色 #FDCB6E）
+Illustration: figure typing
+
+3️⃣ Lower right — Review & Refine (yellow #FDCB6E)
 Check inclusive language
 Ensure clarity & readability
 Optimize for SEO
 Get stakeholder approval
-插图：人物手持清单
-4️⃣ 左下 — Publish & Distribute（蓝色 #74B9FF）
-Post on career page
+Illustration: figure with checklist
+
+4️⃣ Lower left — Publish & Distribute (blue #74B9FF)
+Post on careers page
 Share on job boards
 Promote via social media
 Enable employee referrals
-插图：人物手持扩音器
-5️⃣ 左上 — Track & Optimize（粉色 #E17055）
+Illustration: figure with megaphone
+
+5️⃣ Upper left — Track & Optimize (pink #E17055)
 Monitor application metrics
 Analyze source effectiveness
 A/B test variations
 Iterate based on data
-插图：人物手持图表
-色彩方案
-背景：白色 (#FFFFFF) 或浅灰色 (#F5F5F5)
-中央枢纽：深紫色 (#6C5CE7)
-文字：深灰色 (#2D3436)
-排版
-字体：几何无衬线体（类似 Montserrat 或 Open Sans）
-标题：粗体、大写
-正文：常规字重
-技术参数
-画幅：4:5（竖版）
-分辨率：8K 高清
-光照：扁平均匀光照
+Illustration: figure with charts
+
+Color palette
+Background: white (#FFFFFF) or light grey (#F5F5F5)
+Central hub: deep purple (#6C5CE7)
+Typography: dark grey (#2D3436)
+
+Typography
+Fonts: geometric sans-serif (similar to Montserrat or Open Sans)
+Headlines: bold, uppercase
+Body: regular weight
+
+Technical specs
+Aspect ratio: 4:5 (portrait)
+Resolution: 8K HD
+Lighting: flat, even illumination
 ```
 
 ![Example 3](images/07-info-nb2.webp)
@@ -108,54 +117,60 @@ Iterate based on data
 **Expanded prompt**
 
 ```
-标题：Canadian Horizons: Urban Landmarks & Natural Wonders
-风格：Flat vector corporate-memphis 风格
-布局：Structured bento-grid（便当盒网格）
-背景：Clean off-white paper texture with subtle light gray grid lines
-整体设计
-顶部 Hero Cell：横跨全宽，包含主标题"Canadian Horizons"和副标题"Urban Landmarks & Natural Wonders"
-两大列：左右平分，左列"Urban Icons"，右列"Natural Wonders"
-底部行：加拿大地图轮廓"From Coast to Coast"
-装饰：角落点缀红色枫叶图案
-左列 — Urban Icons
-CN Tower（红色+白色条纹）
-垂直剪影，标注"553m"和"32 years"
-红白条纹设计
-Old Quebec（石灰色）
-殖民时期城墙建筑
-标注"UNESCO World Heritage site"
-Stanley Park（绿色+蓝色）
-树荫海滨步道，海浪
-标注"405 hectares"
-Parliament Hill（深绿色）
-哥特复兴式尖顶建筑
-标注"Ottawa River"
-右列 — Natural Wonders
-Niagara Falls（蓝色瀑布）
-瀑布与雾气
-标注"5,525 m³/s"
-Banff（绿松石色湖泊+雪山）
-绿松石色湖泊，雪山峰顶
-标注"Canada's first national park"和"1885"
-Canadian Rockies（森林绿色山脉）
-崎岖山脉剪影
-标注"48,000 km²"和"UNESCO"
-Northern Lights（绿色+紫色极光）
-绿色和紫色极光波浪
-标注"Yukon/NWT"
-底部 — From Coast to Coast
-地图：加拿大轮廓，森林绿色陆地，山脉蓝色水域
-位置标记：Atlantic, Pacific, Arctic, Great Lakes
-标签字体：粗体衬线体用于章节标题，压缩等宽字体用于技术数据
-色彩方案
-主色调：加拿大红、白、森林绿、山脉蓝
-填充：纯色填充，无轮廓线
-文字：深灰色，高对比度
-技术参数
-画幅：16:9
-分辨率：2K (2048×1152)
-字体：Clean sans-serif
-风格：专业且鼓舞人心
+Title: Canadian Horizons: Urban Landmarks & Natural Wonders
+Style: Flat vector Corporate Memphis
+Layout: Structured bento grid
+Background: Clean off-white paper texture with subtle light grey grid lines
+
+Overall design
+Top Hero cell: full-width strip with main title "Canadian Horizons" and subtitle "Urban Landmarks & Natural Wonders"
+Two main columns: split left and right — left column "Urban Icons", right column "Natural Wonders"
+Bottom row: Canadian map silhouette titled "From Coast to Coast"
+Decorative accents: small red maple-leaf motifs in the corners
+
+Left column — Urban Icons
+CN Tower (red + white stripes)
+Vertical silhouette labeled "553 m" and "32 years"
+Red-and-white striped treatment
+Old Quebec (stone grey)
+Colonial walled architecture
+Caption "UNESCO World Heritage Site"
+Stanley Park (green + blue)
+Tree-lined seawall walk, waves
+Caption "405 hectares"
+Parliament Hill (deep green)
+Gothic Revival spires
+Caption "Ottawa River"
+
+Right column — Natural Wonders
+Niagara Falls (blue waterfall)
+Falls with mist
+Caption "5,525 m³/s"
+Banff (turquoise lake + snow peaks)
+Turquoise lake, snow-capped peaks
+Caption "Canada's first national park" and "1885"
+Canadian Rockies (forest-green mountains)
+Rugged mountain silhouette
+Caption "48,000 km²" and "UNESCO"
+Northern Lights (green + purple aurora)
+Green and purple aurora waves
+Caption "Yukon/NWT"
+
+Bottom — From Coast to Coast
+Map: outline of Canada — forest-green land, mountain-blue water
+Pins: Atlantic, Pacific, Arctic, Great Lakes
+Labels: bold serif for section titles, condensed monospaced face for numeric data
+
+Color palette
+Primaries: Canadian red, white, forest green, mountain blue
+Fill: flat color blocks, minimal outlines
+Text: dark grey, high contrast
+
+Technical specs
+Aspect ratio: 16:9
+Resolution: 2K (2048 × 1152)
+Fonts: clean sans-serif
+Mood: professional and uplifting
 ```
 
 ![Example 4](images/08-info-nb2.webp)
