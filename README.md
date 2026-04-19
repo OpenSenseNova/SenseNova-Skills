@@ -1,6 +1,6 @@
 # SenseNova-Skills
 
-[English](README.md) | [简体中文](README_CN.md)
+English | [简体中文](README_CN.md)
 
 Skills and tooling for **AIGC** in agent runtimes.
 
@@ -81,12 +81,10 @@ Or call the skill by name:
 
 ## Sample Outputs
 
-Examples from `u1-infographic` (more comparisons in [`examples/u1-infographics.md`](examples/u1-infographics.md)).
-
 | # | User prompt | Output image |
 |---|-------------|--------------|
-| 1 | Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies | ![Sample 1](examples/images/01-info.png) |
-| 2 | Lemons: complete uses & reference guide | ![Sample 2](examples/images/05-info.png) |
+| 1 | Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies | ![Sample 1](docs/images/01-info.webp) |
+| 2 | Lemons: complete uses & reference guide | ![Sample 2](docs/images/05-info.webp) |
 
 Skill-generated expanded prompts for the runs above:
 
