@@ -81,13 +81,11 @@ export U1_LM_API_KEY="your-lm-api-key"  # 用于 LLM 与 VLM
 
 ## 示例输出
 
-以下为 `u1-infographic` 的示例（更多对比见 [`examples/u1-infographics.md`](examples/u1-infographics.md)）。
-
-GitHub 会在 Markdown 渲染时过滤掉绝大多数 HTML **`style`** 属性，因此无法用内联 CSS 精确控制表格列宽。下文按 **用户提示 → 扩展提示词 → 输出图** 分段展示；图片居中并用 `width` 拉大显示区域（GitHub 通常保留 `width`/`align` 等属性）。
+以下为 `u1-infographic` 的示例
 
 ### 示例 1 — 酒店布草卫生
 
-**User prompt:** Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies
+**User prompt:** `"Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies"`
 
 **Expanded prompt**
 
@@ -103,9 +101,9 @@ Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, heal
 
 <p align="center"><img src="docs/images/01-info.webp" width="720" alt="示例信息图输出 — 酒店布草"></p>
 
-### 示例 2 — 柠檬指南
+### 示例 2 — 柠檬使用指南
 
-**User prompt:** Lemons: complete uses & reference guide
+**User prompt:** `"Lemons: complete uses & reference guide"`
 
 **Expanded prompt**
 

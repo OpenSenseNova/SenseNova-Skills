@@ -81,13 +81,11 @@ Or call the skill by name:
 
 ## Sample Outputs
 
-Examples from `u1-infographic` (more comparisons in [`examples/u1-infographics.md`](examples/u1-infographics.md)).
-
-GitHub strips most inline **`style`** attributes from HTML in Markdown files, so column widths from CSS usually do nothing. Below, each sample is **User prompt → Expanded prompt → Output image**, with images at full README width.
+Examples for `u1-infographic` (more examples in [`u1-infographic-examples.md`](docs/u1-infographic-examples.md)).
 
 ### Example 1 — hotel linen hygiene
 
-**User prompt:** Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies
+**User prompt:** `"Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies"`
 
 **Expanded prompt**
 
@@ -101,11 +99,11 @@ Section 5 — Disposable Supplies Control: dashboard-style stock for three lines
 Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, health-code compliant, brand certified.
 ```
 
-<p align="center"><img src="docs/images/01-info.webp" width="720" alt="Sample infographic output — hotel linen hygiene"></p>
+<p align="center"><img src="docs/images/01-info-nb2.webp" width="720" alt="Sample infographic output — hotel linen hygiene"></p>
 
 ### Example 2 — lemon guide
 
-**User prompt:** Lemons: complete uses & reference guide
+**User prompt:** `"Lemons: complete uses & reference guide"`
 
 **Expanded prompt**
 
@@ -119,7 +117,7 @@ Center-right: household hacks—lemon half + salt for cutting boards, microwave 
 Bottom: selection and storage—good: heavy for size, firm skin, bright yellow, thin skin. Avoid: soft spots, mold, greenish tint. Storage: room temp ~1 week; fridge ~3–4 weeks. Tips: roll on the counter before cutting; freeze juice in ice-cube trays; zest before juicing; avoid the white pith.
 ```
 
-<p align="center"><img src="docs/images/05-info.webp" width="720" alt="Sample infographic output — lemon guide"></p>
+<p align="center"><img src="docs/images/05-info-nb2.webp" width="720" alt="Sample infographic output — lemon guide"></p>
 
 ## License
 
