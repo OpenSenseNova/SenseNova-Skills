@@ -104,7 +104,7 @@ Section 5 — Disposable Supplies Control: dashboard-style stock for three lines
 Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, health-code compliant, brand certified.
 ```
 
-<p align="center"><img src="docs/images/01-info.webp" width="720" alt="示例信息图输出 — 酒店布草"></p>
+<p align="center"><img src="docs/images/01-infa-nb2.webp" width="720" alt="示例信息图输出 — 酒店布草"></p>
 
 ### 示例 2 — 柠檬使用指南
 
