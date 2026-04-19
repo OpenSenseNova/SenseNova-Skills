@@ -13,7 +13,6 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-import os
 import sys
 import time
 from pathlib import Path
@@ -21,28 +20,13 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from configs import global_configs
 from exceptions import MissingApiKeyError
 from generation.text_to_image import TextToImageClient
 from llm.anthropic_adapter import AnthropicMessagesAdapter
 from llm.chat_completions_adapter import ChatCompletionsLlmAdapter
 from vlm.anthropic_adapter import AnthropicVlmAdapter
 from vlm.chat_completions_adapter import ChatCompletionsVlmAdapter
-
-API_KEY_ENV = "U1_API_KEY"
-BASE_URL_ENV = "U1_BASE_URL"
-
-# Shared built-in defaults for VLM (image-recognize) and LLM (text-optimize)
-# No hardcoded defaults - must be supplied via env var or CLI
-DEFAULT_BASE_URL = ""
-DEFAULT_MODEL = "sensenova-122b-128k-step9k"
-DEFAULT_API_KEY = ""
-DEFAULT_IMAGE_GEN_BASE_URL = "https://zoe-api.sensetime.com/zoe-model"
-DEFAULT_TYPE = "openai-completions"
-
-
-def _resolve_param(cli_value: str | None, env_name: str, default: str) -> str:
-    """Resolve a parameter using CLI > env > default priority."""
-    return cli_value or os.getenv(env_name, "") or default
 
 
 def _resolve_prompt(
@@ -214,11 +198,11 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             output (image path), task_id, and message. exit_code is 0 on
             success and 1 on failure.
     """
-    api_key = args.api_key or os.getenv(API_KEY_ENV, "")
+    api_key = args.api_key or global_configs.U1_API_KEY
     if not api_key:
         raise MissingApiKeyError()
 
-    base_url = args.base_url or DEFAULT_IMAGE_GEN_BASE_URL
+    base_url = args.base_url or global_configs.U1_IMAGE_GEN_BASE_URL
     if not base_url:
         raise MissingApiKeyError(
             "No base URL provided. Set U1_BASE_URL env var or pass --base-url."
@@ -268,12 +252,10 @@ async def run_image_recognize(args: argparse.Namespace) -> tuple[dict, int]:
         name="system-prompt",
     )
 
-    vlm_type = _resolve_param(args.vlm_type, "VLM_TYPE", DEFAULT_TYPE)
-    base_url = _resolve_param(
-        args.base_url, "VLM_BASE_URL", os.getenv("U1_LM_BASE_URL", DEFAULT_BASE_URL)
-    )
-    model = _resolve_param(args.model, "VLM_MODEL", DEFAULT_MODEL)
-    api_key = args.api_key or os.getenv("VLM_API_KEY", "") or os.getenv("U1_LM_API_KEY", "")
+    vlm_type = args.vlm_type or global_configs.VLM_TYPE
+    base_url = args.base_url or global_configs.VLM_BASE_URL
+    model = args.model or global_configs.VLM_MODEL
+    api_key = args.api_key or global_configs.VLM_API_KEY
     if not api_key:
         raise MissingApiKeyError(
             "No API key provided for VLM. Set VLM_API_KEY, U1_LM_API_KEY, or pass --api-key."
@@ -339,12 +321,10 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
         name="system-prompt",
     )
 
-    llm_type = _resolve_param(args.llm_type, "LLM_TYPE", DEFAULT_TYPE)
-    base_url = _resolve_param(
-        args.base_url, "LLM_BASE_URL", os.getenv("U1_LM_BASE_URL", DEFAULT_BASE_URL)
-    )
-    model = _resolve_param(args.model, "LLM_MODEL", DEFAULT_MODEL)
-    api_key = args.api_key or os.getenv("LLM_API_KEY", "") or os.getenv("U1_LM_API_KEY", "")
+    llm_type = args.llm_type or global_configs.LLM_TYPE
+    base_url = args.base_url or global_configs.LLM_BASE_URL
+    model = args.model or global_configs.LLM_MODEL
+    api_key = args.api_key or global_configs.LLM_API_KEY
     if not api_key:
         raise MissingApiKeyError(
             "No API key provided for LLM. Set LLM_API_KEY, U1_LM_API_KEY, or pass --api-key."

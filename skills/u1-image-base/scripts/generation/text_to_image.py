@@ -10,12 +10,12 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
 import httpx
+from configs import global_configs
 from u1_api.paths import (
     generation_file_download_url,
     generation_file_presigned_url,
@@ -307,7 +307,7 @@ class TextToImageClient:
                 If True, disable TLS verification. Defaults to False.
         """
         self.api_key = api_key
-        self.base_url = (base_url or os.getenv(BASE_URL_ENV, "")).rstrip("/")
+        self.base_url = (base_url or global_configs.U1_IMAGE_GEN_BASE_URL).rstrip("/")
         self.poll_interval = poll_interval
         self.timeout = timeout
         self.insecure = insecure
@@ -570,8 +570,10 @@ if __name__ == "__main__":
     )
     parser.add_argument("--seed", type=int, default=None, help="Random seed")
     parser.add_argument("--unet-name", default=None, help="UNet model name (optional)")
-    parser.add_argument("--api-key", default=os.getenv(API_KEY_ENV, ""), help="API key")
-    parser.add_argument("--base-url", default=os.getenv(BASE_URL_ENV, ""), help="API base URL")
+    parser.add_argument("--api-key", default=global_configs.U1_API_KEY, help="API key")
+    parser.add_argument(
+        "--base-url", default=global_configs.U1_IMAGE_GEN_BASE_URL, help="API base URL"
+    )
     parser.add_argument("--poll-interval", type=float, default=DEFAULT_POLL_INTERVAL)
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     parser.add_argument("--insecure", action="store_true", help="Disable TLS verification")

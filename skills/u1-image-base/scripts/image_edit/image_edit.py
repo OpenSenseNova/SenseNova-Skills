@@ -10,12 +10,12 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import sys
 from pathlib import Path
 from urllib.parse import quote, urlparse
 
 import httpx
+from configs import global_configs
 from u1_api.paths import (
     generation_file_presigned_url,
     generation_file_upload_url,
@@ -309,7 +309,7 @@ class ImageEditClient:
                 If True, disable TLS verification. Defaults to False.
         """
         self.api_key = api_key
-        self.base_url = (base_url or os.getenv(BASE_URL_ENV, "")).rstrip("/")
+        self.base_url = (base_url or global_configs.VLM_BASE_URL).rstrip("/")
         self.poll_interval = poll_interval
         self.timeout = timeout
         self.insecure = insecure
@@ -525,8 +525,8 @@ if __name__ == "__main__":
         help="Local image path, remote URL, or cached file key",
     )
     parser.add_argument("--prompt", required=True, help="Edit instruction prompt")
-    parser.add_argument("--api-key", default=os.getenv(API_KEY_ENV, ""), help="API key")
-    parser.add_argument("--base-url", default=None, help="API base URL")
+    parser.add_argument("--api-key", default=global_configs.VLM_API_KEY, help="API key")
+    parser.add_argument("--base-url", default=global_configs.VLM_BASE_URL, help="API base URL")
     parser.add_argument("--seed", type=int, default=None, help="Random seed")
     parser.add_argument("--poll-interval", type=float, default=DEFAULT_POLL_INTERVAL)
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)

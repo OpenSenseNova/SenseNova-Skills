@@ -1,0 +1,6 @@
+*.py text eol=lf encoding=utf-8
+*.{yml,yaml} text eol=lf encoding=utf-8
+*.toml text eol=lf encoding=utf-8
+*.json text eol=lf encoding=utf-8
+*.{md,txt} text eol=lf encoding=utf-8
+*.{png,jpg,jpeg,gif,ico,tiff,bmp} binary
