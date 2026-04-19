@@ -22,7 +22,7 @@ All tools are invoked through a unified `openclaw_runner.py` entrypoint.
 
 ### u1-infographic (Tier 1)
 
-Scene skill for generating professional infographics, built on `u1-image-base`. See [`skills/u1-infographic/SKILL.md`](skills/u1-infographic/SKILL.md) for full behavior. Sample outputs: [`examples/u1-infographics.md`](examples/u1-infographics.md).
+Scene skill for generating professional infographics, built on `u1-image-base`. See [wwwills/u1-infographic/SKILL.md`](skills/u1-infographic/SKILL.md) for full behavior.
 
 - Automatic prompt quality evaluation
 - Content analysis and layout/style selection (87 layouts, 66 styles)

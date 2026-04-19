@@ -22,7 +22,7 @@
 
 ### u1-infographic（第 1 层）
 
-用于生成专业信息图的场景技能，基于 `u1-image-base`。完整说明见 [`skills/u1-infographic/SKILL.md`](skills/u1-infographic/SKILL.md)。示例输出见 [`examples/u1-infographics.md`](examples/u1-infographics.md)。
+用于生成专业信息图的场景技能，基于 `u1-image-base`。完整说明见 [`skills/u1-infographic/SKILL.md`](skills/u1-infographic/SKILL.md)。
 
 - 自动评估提示词质量
 - 内容分析与版式/风格选择（87 种版式、66 种风格）
@@ -81,7 +81,7 @@ export U1_LM_API_KEY="your-lm-api-key"  # 用于 LLM 与 VLM
 
 ## 示例输出
 
-以下为 `u1-infographic` 的示例
+以下为 `u1-infographic` 的示例（更多示例见 [`u1-infographic-examples_CN.md`](docs/u1-infographic-examples_CN.md)）。
 
 ### 示例 1 — 酒店布草卫生
 
