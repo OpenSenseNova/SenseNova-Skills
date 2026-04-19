@@ -61,7 +61,7 @@
 
 ### 2. Python 依赖与 API 密钥
 
-在 OpenClaw 运行 [`skills/u1-image-base/scripts/openclaw_runner.py`](skills/u1-image-base/scripts/openclaw_runner.py)（上述工具的统一直达入口）时所使用的 **Python 环境与进程**中安装依赖并导出密钥：
+在 OpenClaw 运行 [`skills/u1-image-base/scripts/openclaw_runner.py`](skills/u1-image-base/scripts/openclaw_runner.py)（上述工具的统一直达入口）时所使用的 **Python 环境与进程**中安装依赖并配置密钥：
 
 ```bash
 pip install -r skills/u1-image-base/requirements.txt
@@ -82,7 +82,7 @@ export U1_LM_BASE_URL="your-lm-base-url"
 
 或按名称调用技能：
 
-> /skill u1-infographic "The water cycle"
+> /skill u1-infographic "水循环"
 
 ## 示例输出
 
