@@ -31,11 +31,13 @@
 
 ## 快速开始
 
-在 [OpenClaw](https://openclaw.ai/) 中使用本仓库技能。目录需符合 [Agent Skills](https://agentskills.io/) 约定；OpenClaw 如何发现并加载技能文件夹见 [OpenClaw Skills](https://docs.openclaw.ai/skills)。若尚未完成 OpenClaw 的安装或配置，请通过 **[官方文档](https://docs.openclaw.ai/)** 进行安装与配置（产品介绍：[openclaw.ai](https://openclaw.ai/)）。
+在 [OpenClaw](https://openclaw.ai/) 中使用本仓库技能。
+目录需符合 [Agent Skills](https://agentskills.io/) 约定；OpenClaw 如何发现并加载技能文件夹见 [OpenClaw Skills](https://docs.openclaw.ai/tools/skills)。
+若尚未完成 OpenClaw 的安装或配置，请通过 **[官方文档](https://docs.openclaw.ai/)** 进行安装与配置（产品介绍：[openclaw.ai](https://openclaw.ai/)）。
 
 ### 1. 注册 `u1-image-base` 与 `u1-infographic`
 
-克隆本仓库后，须将 **两个** 技能目录暴露给 OpenClaw（见 [Locations and precedence](https://docs.openclaw.ai/skills#locations-and-precedence)）。`u1-infographic` 依赖 `u1-image-base`，两者皆需安装。
+克隆本仓库后，须将 **两个** 技能目录暴露给 OpenClaw（见 [Locations and precedence](https://docs.openclaw.ai/tools/skills#locations-and-precedence)）。`u1-infographic` 依赖 `u1-image-base`，两者皆需安装。
 
 可选用以下任一方式：
 
@@ -63,8 +65,11 @@
 
 ```bash
 pip install -r skills/u1-image-base/requirements.txt
+# 图像生成
 export U1_API_KEY="your-image-api-key"
-export U1_LM_API_KEY="your-lm-api-key"  # 用于 LLM 与 VLM
+# LLM/VLM
+export U1_LM_API_KEY="your-lm-api-key"
+export U1_LM_BASE_URL="your-lm-base-url"
 ```
 
 请使用环境变量或本地 `.env` 文件。不要将密钥提交到版本库。

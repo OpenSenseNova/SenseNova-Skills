@@ -1,6 +1,6 @@
 line-length = 100
 # Assume the minimum python version
-target-version = 'py310'
+target-version = 'py39'
 fix = true
 
 ############################

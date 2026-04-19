@@ -31,11 +31,13 @@ Scene skill for generating professional infographics, built on `u1-image-base`. 
 
 ## Quick Start
 
-Use these skills from [OpenClaw](https://openclaw.ai/). They follow the [Agent Skills](https://agentskills.io/) layout; see [OpenClaw Skills](https://docs.openclaw.ai/skills) for how OpenClaw discovers and loads skill folders. If you have not set up OpenClaw yet, install and configure it from the **[official documentation](https://docs.openclaw.ai/)** (product site: [openclaw.ai](https://openclaw.ai/)).
+Use these skills from [OpenClaw](https://openclaw.ai/).
+They follow the [Agent Skills](https://agentskills.io/) layout; see [OpenClaw Skills](https://docs.openclaw.ai/tools/skills) for how OpenClaw discovers and loads skill folders.
+If you have not set up OpenClaw yet, install and configure it from the **[official documentation](https://docs.openclaw.ai/)** (product site: [openclaw.ai](https://openclaw.ai/)).
 
 ### 1. Register `u1-image-base` and `u1-infographic`
 
-Clone this repository, then expose **both** skill directories to OpenClaw ([locations and precedence](https://docs.openclaw.ai/skills#locations-and-precedence)). `u1-infographic` depends on `u1-image-base`—install both.
+Clone this repository, then expose **both** skill directories to OpenClaw ([locations and precedence](https://docs.openclaw.ai/tools/skills#locations-and-precedence)). `u1-infographic` depends on `u1-image-base`—install both.
 
 Use one of the following approaches:
 
@@ -63,8 +65,11 @@ Install packages and export keys in the **Python environment and process** OpenC
 
 ```bash
 pip install -r skills/u1-image-base/requirements.txt
+# for image generation
 export U1_API_KEY="your-image-api-key"
-export U1_LM_API_KEY="your-lm-api-key"  # for LLM and VLM
+# for LLM and VLM
+export U1_LM_API_KEY="your-lm-api-key"
+export U1_LM_BASE_URL="your-lm-base-url"
 ```
 
 Prefer environment variables or a local `.env` file. Do not commit secrets.
