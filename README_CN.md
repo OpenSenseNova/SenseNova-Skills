@@ -1,6 +1,6 @@
 # SenseNova-Skills
 
-[English](README.md) | [简体中文](README_CN.md)
+[English](README.md) | 简体中文
 
 面向智能体运行时的 **AIGC** 技能与工具。
 
@@ -78,6 +78,47 @@ export U1_LM_API_KEY="your-lm-api-key"  # 用于 LLM 与 VLM
 或按名称调用技能：
 
 > /skill u1-infographic "The water cycle"
+
+## 示例输出
+
+以下为 `u1-infographic` 的示例（更多对比见 [`examples/u1-infographics.md`](examples/u1-infographics.md)）。
+
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>User Prompt</th>
+<th>Expanded Prompt</th>
+<th>Output Image</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top">1</td>
+<td valign="top">Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies</td>
+<td valign="top"><pre style="white-space: pre-wrap; max-height: 320px; overflow: auto; font-size: 0.82rem; margin: 0;"><code>Technical blueprint style: six operational modules arranged vertically, light grey grid background, deep navy blue borders.
+Section 1 — Linen Hygiene Lifecycle: a seven-node horizontal flow; icons: waste bin → sealed cart → sort bin → washer → iron → shelf → delivery cart. Three color zones: red (soiled zone: collection and transport), yellow (processing zone: sort → wash → finish), green (clean zone: store and distribute).
+Section 2 — Laundering Parameters: cutaway of an industrial washer, labeled: 71°C/160°F (temperature), 50–100 ppm chlorine (chemical disinfection), pH 6.5–7.5, 45–60 min cycle, 80%+ moisture removal.
+Section 3 — Linen Quality Tiers: a three-column matrix: Clean (standard linen) → Sanitized (≥99.9% pathogen reduction) → Sterile (121°C autoclave, medical use).
+Section 4 — Quality Control Checklist: ✓ no stains ✓ no damage ✓ no odor ✓ correct fold ✓ documented traceability; "QC Passed" stamp.
+Section 5 — Disposable Supplies Control: dashboard-style stock for three lines: amenities, housekeeping, food service; color bands: green (sufficient) → yellow (low) → red (reorder).
+Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, health-code compliant, brand certified.</code></pre></td>
+<td valign="top"><img src="docs/images/01-info.webp" alt="Sample 1" width="280"></td>
+</tr>
+<tr>
+<td valign="top">2</td>
+<td valign="top">Lemons: complete uses &amp; reference guide</td>
+<td valign="top"><pre style="white-space: pre-wrap; max-height: 320px; overflow: auto; font-size: 0.82rem; margin: 0;"><code>The title of this infographic is "The Lemon: Nature's Multi-Purpose Fruit" and it uses a modern minimalist matrix layout with botanical illustration accents.
+Overall layout: a modular bento-style grid, clear sections, yellowed-paper texture on a light grey grid; bold serif titles plus a narrow monospaced data face; palette: bright lemon yellow, leaf green, and clean white.
+Top-left quadrant: detailed botanical cutaway of a lemon (flesh, peel, juice sacs). Labels: Citrus limon, pH ~2.3, 50–70 ml juice per average fruit. Three round variety icons: Eureka, Lisbon, Meyer (lemon hybrid). Origin: northeastern India, northern Myanmar, or China. Season: winter through early summer.
+Top-right quadrant: culinary uses grid with food icons: salad-dressing bowl, lemonade glass, ceviche plate, lemon cake, preserved-lemon jar. Categories: fresh juice, zest and garnish, preserved, cooking, beverages.
+Center-left: health and nutrition—badge: ~53 mg vitamin C per 100 g (about 88% DV); icons: immune support, antioxidant, digestive aid, skin health, kidney-stone prevention; note hesperidin and diosmin.
+Center-right: household hacks—lemon half + salt for cutting boards, microwave to deodorize the fridge, descale a kettle, natural laundry bleach, wood polish with oil.
+Bottom: selection and storage—good: heavy for size, firm skin, bright yellow, thin skin. Avoid: soft spots, mold, greenish tint. Storage: room temp ~1 week; fridge ~3–4 weeks. Tips: roll on the counter before cutting; freeze juice in ice-cube trays; zest before juicing; avoid the white pith.</code></pre></td>
+<td valign="top"><img src="docs/images/05-info.webp" alt="Sample 2" width="280"></td>
+</tr>
+</tbody>
+</table>
 
 ## 许可
 

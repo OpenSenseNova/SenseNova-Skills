@@ -81,36 +81,44 @@ Or call the skill by name:
 
 ## Sample Outputs
 
-| # | User prompt | Output image |
-|---|-------------|--------------|
-| 1 | Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies | ![Sample 1](docs/images/01-info.webp) |
-| 2 | Lemons: complete uses & reference guide | ![Sample 2](docs/images/05-info.webp) |
+Examples from `u1-infographic` (more comparisons in [`examples/u1-infographics.md`](examples/u1-infographics.md)).
 
-Skill-generated expanded prompts for the runs above:
-
-**Sample 1**
-
-```markdown
-技术蓝图风格，6个操作模块纵向排列，浅灰网格背景，深海军蓝边框。
-Section 1 — Linen Hygiene Lifecycle：7节点横向流程图，图标：垃圾箱→封闭推车→分类箱→洗衣机→熨斗→货架→配送车。三色分区：红（SOILED ZONE：Collection+Transport）、黄（PROCESSING ZONE：Sort+Wash+Finish）、绿（CLEAN ZONE：Store+Distribute）。
-Section 2 — Laundering Parameters：工业洗衣机剖面图，标注：71°C/160°F（温度）、50-100ppm Chlorine（化学消毒）、pH 6.5-7.5、45-60min cycle、80%+ moisture removal。
-Section 3 — Linen Quality Tiers：三列对比矩阵：Clean（基础布草）→ Sanitized（≥99.9%灭菌）→ Sterile（121°C高压灭菌，医疗专用）。
-Section 4 — Quality Control Checklist：六项检查清单：✓无污渍 ✓无破损 ✓无异味 ✓正确折叠 ✓文件记录，QC Passed印章。
-Section 5 — Disposable Supplies Control：仪表盘式库存系统，三类：Amenities/Housekeeping/Food Service，颜色指示：绿（充足）→黄（低）→红（补货）。
-Section 6 — Compliance Documentation：文件堆叠+合规徽章：ISO 9001、Health Code Compliant、Brand Certified。
-```
-
-**Sample 2**
-
-```markdown
-The title of this infographic is "The Lemon: Nature's Multi-Purpose Fruit" and adopts a modern minimalist matrix style with botanical touches.
-整体布局： 模块化便当盒网格布局，清晰分区，背景为泛黄纸张纹理配浅灰网格。字体采用粗体衬线标题 + 浓缩等宽技术数据字体。配色以活力柠檬黄、叶绿、纯净白为主。
-左上象限： 详细植物插图展示柠檬横截面，显示果瓣、果皮、汁囊。标签：Citrus limon, pH 2.3, 50-70ml juice per average fruit。三个圆形图标展示品种：Eureka、Lisbon、Meyer（柠檬-柠檬杂交）。产地：Northeastern India, northern Myanmar, or China。产季：Winter through early summer。
-右上象限： Culinary Uses 网格，美食插图。图标：Salad Dressing碗、Lemonade杯、Ceviche鱼盘、Lemon Cake蛋糕、Preserved Lemons罐。分类：Fresh Juice、Zest & Garnish、Preserved、Cooking、Beverages。
-中左区： Health & Nutrition。徽章：53mg Vitamin C per 100g (88% DV)。图标：盾牌Immune Support、分子Antioxidant Power、胃Digestive Aid、脸Skin Health、肾Kidney Stone Prevention。提及Hesperidin, diosmin抗氧化剂。
-中右区： Household Hacks。教学图示：柠檬半+盐Clean Cutting Boards、微波炉Deodorize Fridge、水壶Descaling Kettle、洗衣机Natural Laundry Bleach、木桌+油Wood Polish。
-底部： Selection & Storage 对比。好柠檬打勾：Heavy for size、Firm skin、Bright yellow、Thin skin。坏柠檬打叉：Soft spots、Mold、Green tint。储存：Room temp 1 week、Fridge 3-4 weeks。技巧：Roll on counter before cutting、Freeze juice in ice cube trays、Zest before juicing; avoid white pith。
-```
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>User Prompt</th>
+<th>Expanded Prompt</th>
+<th>Output Image</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top">1</td>
+<td valign="top">Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies</td>
+<td valign="top"><pre style="white-space: pre-wrap; max-height: 320px; overflow: auto; font-size: 0.82rem; margin: 0;"><code>Technical blueprint style: six operational modules arranged vertically, light grey grid background, deep navy blue borders.
+Section 1 — Linen Hygiene Lifecycle: a seven-node horizontal flow; icons: waste bin → sealed cart → sort bin → washer → iron → shelf → delivery cart. Three color zones: red (soiled zone: collection and transport), yellow (processing zone: sort → wash → finish), green (clean zone: store and distribute).
+Section 2 — Laundering Parameters: cutaway of an industrial washer, labeled: 71°C/160°F (temperature), 50–100 ppm chlorine (chemical disinfection), pH 6.5–7.5, 45–60 min cycle, 80%+ moisture removal.
+Section 3 — Linen Quality Tiers: a three-column matrix: Clean (standard linen) → Sanitized (≥99.9% pathogen reduction) → Sterile (121°C autoclave, medical use).
+Section 4 — Quality Control Checklist: ✓ no stains ✓ no damage ✓ no odor ✓ correct fold ✓ documented traceability; "QC Passed" stamp.
+Section 5 — Disposable Supplies Control: dashboard-style stock for three lines: amenities, housekeeping, food service; color bands: green (sufficient) → yellow (low) → red (reorder).
+Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, health-code compliant, brand certified.</code></pre></td>
+<td valign="top"><img src="docs/images/01-info.webp" alt="Sample 1" width="280"></td>
+</tr>
+<tr>
+<td valign="top">2</td>
+<td valign="top">Lemons: complete uses &amp; reference guide</td>
+<td valign="top"><pre style="white-space: pre-wrap; max-height: 320px; overflow: auto; font-size: 0.82rem; margin: 0;"><code>The title of this infographic is "The Lemon: Nature's Multi-Purpose Fruit" and it uses a modern minimalist matrix layout with botanical illustration accents.
+Overall layout: a modular bento-style grid, clear sections, yellowed-paper texture on a light grey grid; bold serif titles plus a narrow monospaced data face; palette: bright lemon yellow, leaf green, and clean white.
+Top-left quadrant: detailed botanical cutaway of a lemon (flesh, peel, juice sacs). Labels: Citrus limon, pH ~2.3, 50–70 ml juice per average fruit. Three round variety icons: Eureka, Lisbon, Meyer (lemon hybrid). Origin: northeastern India, northern Myanmar, or China. Season: winter through early summer.
+Top-right quadrant: culinary uses grid with food icons: salad-dressing bowl, lemonade glass, ceviche plate, lemon cake, preserved-lemon jar. Categories: fresh juice, zest and garnish, preserved, cooking, beverages.
+Center-left: health and nutrition—badge: ~53 mg vitamin C per 100 g (about 88% DV); icons: immune support, antioxidant, digestive aid, skin health, kidney-stone prevention; note hesperidin and diosmin.
+Center-right: household hacks—lemon half + salt for cutting boards, microwave to deodorize the fridge, descale a kettle, natural laundry bleach, wood polish with oil.
+Bottom: selection and storage—good: heavy for size, firm skin, bright yellow, thin skin. Avoid: soft spots, mold, greenish tint. Storage: room temp ~1 week; fridge ~3–4 weeks. Tips: roll on the counter before cutting; freeze juice in ice-cube trays; zest before juicing; avoid the white pith.</code></pre></td>
+<td valign="top"><img src="docs/images/05-info.webp" alt="Sample 2" width="280"></td>
+</tr>
+</tbody>
+</table>
 
 ## License
 
