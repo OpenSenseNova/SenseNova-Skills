@@ -25,8 +25,8 @@ class EnvVar:
         """Return the first env var value that is set, converted to target_type.
 
         Args:
-            target_type: The type to convert to (str, int, float, etc.).
-                         If None or str, returns the raw string.
+            target_type: The type to convert to (str, int, float, etc.) or None.
+                If not int or float, returns the raw string.
 
         Returns:
             The converted value, or None if none of the env vars exist.

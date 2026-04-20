@@ -1,9 +1,9 @@
-"""Async Image Edit client using the U1 API (REST + polling).
+"""Async Text-to-Image (no-enhance) client using the U1 API (REST + polling).
 
 Usage:
-    from image_edit.image_edit import ImageEditClient
-    client = ImageEditClient(api_key="sk-xxx", base_url="https://...")
-    result = await client.edit(image="input.png", prompt="remove watermark")
+    from generation.text_to_image import TextToImageClient
+    client = TextToImageClient(api_key="sk-xxx", base_url="https://...")
+    result = await client.generate(prompt="a cute cat")
 """
 
 from __future__ import annotations
@@ -12,15 +12,17 @@ import asyncio
 import json
 import sys
 from pathlib import Path
-from urllib.parse import quote, urlparse
+from urllib.parse import urlparse
 
 import httpx
-from configs import global_configs
-from u1_api.paths import (
+
+from u1_image_base.configs import global_configs
+from u1_image_base.u1_api.paths import (
+    generation_file_download_url,
     generation_file_presigned_url,
     generation_file_upload_url,
-    image_edit_create_url,
-    image_edit_status_url,
+    text_to_image_create_url,
+    text_to_image_status_url,
 )
 
 try:
@@ -31,6 +33,8 @@ except ImportError:
     pass
 
 
+DEFAULT_MODEL_SIZE = "2k"
+DEFAULT_ASPECT_RATIO = "16:9"
 DEFAULT_POLL_INTERVAL = 5.0
 DEFAULT_TIMEOUT = 300.0
 API_KEY_ENV = "U1_API_KEY"
@@ -83,20 +87,6 @@ def is_absolute_url(value: str) -> bool:
     return bool(parsed.scheme and parsed.netloc)
 
 
-def is_local_file(value: str) -> bool:
-    """Check if the given value is a path to a local file.
-
-    Args:
-        value (str):
-            The file path to check.
-
-    Returns:
-        bool:
-            True if value points to an existing local file, False otherwise.
-    """
-    return Path(value).is_file()
-
-
 def extract_task_input(task: dict) -> dict:
     """Extract the input parameters from a task dictionary.
 
@@ -107,12 +97,24 @@ def extract_task_input(task: dict) -> dict:
     Returns:
         dict:
             The input parameters if available, otherwise a subset of
-            fields (image, prompt, seed) from the task.
+            fields (prompt, negative_prompt, image_size, aspect_ratio,
+            seed, unet_name) from the task.
     """
     task_input = task.get("input")
     if isinstance(task_input, dict):
         return task_input
-    return {key: task.get(key) for key in ("image", "prompt", "seed") if key in task}
+    return {
+        key: task.get(key)
+        for key in (
+            "prompt",
+            "negative_prompt",
+            "image_size",
+            "aspect_ratio",
+            "seed",
+            "unet_name",
+        )
+        if key in task
+    }
 
 
 def extract_task_image(task: dict) -> dict | None:
@@ -131,6 +133,41 @@ def extract_task_image(task: dict) -> dict | None:
     if isinstance(image, dict) and image.get("url"):
         return image
     return None
+
+
+async def download_image(
+    client: httpx.AsyncClient,
+    base_url: str,
+    headers: dict[str, str],
+    image_ref: str,
+    output_path: Path,
+) -> Path:
+    """Download an image from a URL or image reference.
+
+    Args:
+        client (httpx.AsyncClient):
+            The HTTP client for making requests.
+        base_url (str):
+            The API base URL.
+        headers (dict[str, str]):
+            HTTP headers including authentication.
+        image_ref (str):
+            The image reference (URL or cached file key) to download.
+        output_path (Path):
+            The local file path where the image will be saved.
+
+    Returns:
+        Path:
+            The path to the downloaded image file.
+    """
+    if is_absolute_url(image_ref):
+        response = await client.get(image_ref, headers=headers)
+    else:
+        download_url = generation_file_download_url(base_url, image_ref)
+        response = await client.get(download_url, headers=headers)
+    response.raise_for_status()
+    output_path.write_bytes(response.content)
+    return output_path
 
 
 async def upload_local_image(
@@ -236,52 +273,14 @@ async def resolve_image_ref(
     """
     if is_absolute_url(image_value):
         return image_value
-    if is_local_file(image_value):
+    if Path(image_value).is_file():
         uploaded_path = await upload_local_image(client, base_url, headers, Path(image_value))
         return await generate_presigned_url(client, base_url, headers, uploaded_path)
     return image_value
 
 
-async def download_image(
-    client: httpx.AsyncClient,
-    base_url: str,
-    headers: dict[str, str],
-    image_ref: str,
-    output_path: Path,
-) -> Path:
-    """Download an image from a URL or image reference.
-
-    Args:
-        client (httpx.AsyncClient):
-            The HTTP client for making requests.
-        base_url (str):
-            The API base URL.
-        headers (dict[str, str]):
-            HTTP headers including authentication.
-        image_ref (str):
-            The image reference (URL or cached file key) to download.
-        output_path (Path):
-            The local file path where the image will be saved.
-
-    Returns:
-        Path:
-            The path to the downloaded image file.
-    """
-    if is_absolute_url(image_ref):
-        response = await client.get(image_ref, headers=headers)
-    else:
-        image_key = image_ref.lstrip("/")
-        response = await client.get(
-            f"{base_url}/v1/generation/files/{quote(image_key, safe='/')}",
-            headers=headers,
-        )
-    response.raise_for_status()
-    output_path.write_bytes(response.content)
-    return output_path
-
-
-class ImageEditClient:
-    """Async client for U1 image-edit API."""
+class TextToImageClient:
+    """Async client for U1 text-to-image-no-enhance API."""
 
     def __init__(
         self,
@@ -292,7 +291,7 @@ class ImageEditClient:
         timeout: float = DEFAULT_TIMEOUT,
         insecure: bool = False,
     ) -> None:
-        """Initialize the ImageEditClient.
+        """Initialize the TextToImageClient.
 
         Args:
             api_key (str):
@@ -303,13 +302,13 @@ class ImageEditClient:
                 Polling interval in seconds for task status checks.
                 Defaults to DEFAULT_POLL_INTERVAL.
             timeout (float, optional):
-                Total timeout in seconds for the edit call.
+                Total timeout in seconds for the generate call.
                 Defaults to DEFAULT_TIMEOUT.
             insecure (bool, optional):
                 If True, disable TLS verification. Defaults to False.
         """
         self.api_key = api_key
-        self.base_url = (base_url or global_configs.VLM_BASE_URL).rstrip("/")
+        self.base_url = (base_url or global_configs.U1_IMAGE_GEN_BASE_URL).rstrip("/")
         self.poll_interval = poll_interval
         self.timeout = timeout
         self.insecure = insecure
@@ -325,24 +324,33 @@ class ImageEditClient:
             await self._client.aclose()
             self._client = None
 
-    async def edit(
+    async def generate(
         self,
-        image: str,
         prompt: str,
+        negative_prompt: str = "",
+        image_size: str = DEFAULT_MODEL_SIZE,
+        aspect_ratio: str = DEFAULT_ASPECT_RATIO,
         seed: int | None = None,
+        unet_name: str | None = None,
         output_path: Path | None = None,
     ) -> dict:
-        """Edit an image based on the prompt.
+        """Generate an image from text prompt.
 
         Args:
-            image (str):
-                Local image path, remote URL, or cached file key.
             prompt (str):
-                Edit instruction prompt.
+                Text prompt for image generation.
+            negative_prompt (str, optional):
+                Negative prompt. Defaults to "".
+            image_size (str, optional):
+                Image size preset ("1k" or "2k"). Defaults to DEFAULT_MODEL_SIZE.
+            aspect_ratio (str, optional):
+                Aspect ratio (e.g. "16:9", "1:1"). Defaults to DEFAULT_ASPECT_RATIO.
             seed (int | None, optional):
                 Random seed for reproducibility. Defaults to None.
+            unet_name (str | None, optional):
+                Optional UNet model name. Defaults to None.
             output_path (Path | None, optional):
-                Output path for the edited image. Defaults to None.
+                Output path for the generated image. Defaults to None.
 
         Returns:
             dict:
@@ -351,29 +359,31 @@ class ImageEditClient:
         if not self.api_key:
             return {"status": "failed", "error": f"{API_KEY_ENV} is required"}
 
+        payload: dict = {
+            "prompt": prompt,
+            "negative_prompt": negative_prompt,
+            "image_size": image_size,
+            "aspect_ratio": aspect_ratio,
+        }
+        if seed is not None:
+            payload["seed"] = seed
+        if unet_name is not None:
+            payload["unet_name"] = unet_name
+
         headers = build_headers(self.api_key)
         if output_path is None:
             OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
             import time
 
             timestamp = time.strftime("%Y%m%d_%H%M%S")
-            output_path = OUTPUT_DIR / f"edit_{timestamp}.png"
+            output_path = OUTPUT_DIR / f"t2i_{timestamp}.png"
         output_path = ensure_output_path(output_path)
 
         client = await self._get_client()
 
         try:
-            image_ref = await resolve_image_ref(client, self.base_url, headers, image)
-
-            payload: dict = {
-                "image": image_ref,
-                "prompt": prompt,
-            }
-            if seed is not None:
-                payload["seed"] = seed
-
             create_response = await client.post(
-                image_edit_create_url(self.base_url),
+                text_to_image_create_url(self.base_url),
                 json=payload,
                 headers=headers,
             )
@@ -384,7 +394,7 @@ class ImageEditClient:
             deadline = asyncio.get_event_loop().time() + self.timeout
             while True:
                 status_response = await client.get(
-                    image_edit_status_url(self.base_url, task_id),
+                    text_to_image_status_url(self.base_url, task_id),
                     headers=headers,
                 )
                 status_response.raise_for_status()
@@ -393,8 +403,8 @@ class ImageEditClient:
                 # progress = task.get("progress", 0.0)
 
                 if state == "completed":
-                    image_result = extract_task_image(task)
-                    if not image_result:
+                    image = extract_task_image(task)
+                    if not image:
                         return {
                             "status": "failed",
                             "error": f"task completed but no image found: {task}",
@@ -404,14 +414,14 @@ class ImageEditClient:
                         client=client,
                         base_url=self.base_url,
                         headers=headers,
-                        image_ref=image_result["url"],
+                        image_ref=image["url"],
                         output_path=output_path,
                     )
                     return {
                         "status": "ok",
                         "output": str(saved_path),
                         "task_id": task_id,
-                        "message": "Image edited successfully",
+                        "message": "Image generated successfully",
                     }
 
                 if state in {"failed", "canceled", "interrupted"}:
@@ -446,30 +456,39 @@ class ImageEditClient:
 
 
 async def main_async(
-    image: str,
     prompt: str,
     api_key: str,
     base_url: str | None = None,
+    negative_prompt: str = "",
+    image_size: str = DEFAULT_MODEL_SIZE,
+    aspect_ratio: str = DEFAULT_ASPECT_RATIO,
     seed: int | None = None,
+    unet_name: str | None = None,
     poll_interval: float = DEFAULT_POLL_INTERVAL,
     timeout: float = DEFAULT_TIMEOUT,
     insecure: bool = False,
     output_format: str = "text",
     save_path: Path | None = None,
 ) -> int:
-    """Async entry point for image-edit.
+    """Async entry point for text-to-image generation.
 
     Args:
-        image (str):
-            Local image path, remote URL, or cached file key.
         prompt (str):
-            Edit instruction prompt.
+            Text prompt for image generation.
         api_key (str):
             API key for authentication.
         base_url (str | None, optional):
             API base URL. If None, reads from U1_BASE_URL env var.
+        negative_prompt (str, optional):
+            Negative prompt. Defaults to "".
+        image_size (str, optional):
+            Image size preset ("1k" or "2k"). Defaults to DEFAULT_MODEL_SIZE.
+        aspect_ratio (str, optional):
+            Aspect ratio (e.g. "16:9", "1:1"). Defaults to DEFAULT_ASPECT_RATIO.
         seed (int | None, optional):
             Random seed. Defaults to None.
+        unet_name (str | None, optional):
+            UNet model name. Defaults to None.
         poll_interval (float, optional):
             Polling interval in seconds. Defaults to DEFAULT_POLL_INTERVAL.
         timeout (float, optional):
@@ -485,7 +504,7 @@ async def main_async(
         int:
             Exit code: 0 for success, 1 for failure.
     """
-    client = ImageEditClient(
+    client = TextToImageClient(
         api_key=api_key,
         base_url=base_url,
         poll_interval=poll_interval,
@@ -493,10 +512,13 @@ async def main_async(
         insecure=insecure,
     )
     try:
-        result = await client.edit(
-            image=image,
+        result = await client.generate(
             prompt=prompt,
+            negative_prompt=negative_prompt,
+            image_size=image_size,
+            aspect_ratio=aspect_ratio,
             seed=seed,
+            unet_name=unet_name,
             output_path=save_path,
         )
 
@@ -518,16 +540,41 @@ async def main_async(
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Async image-edit client.")
-    parser.add_argument(
-        "--image",
-        required=True,
-        help="Local image path, remote URL, or cached file key",
+    parser = argparse.ArgumentParser(
+        description="Async text-to-image (no-enhance) generation client."
     )
-    parser.add_argument("--prompt", required=True, help="Edit instruction prompt")
-    parser.add_argument("--api-key", default=global_configs.VLM_API_KEY, help="API key")
-    parser.add_argument("--base-url", default=global_configs.VLM_BASE_URL, help="API base URL")
+    parser.add_argument("--prompt", required=True, help="Text prompt for image generation")
+    parser.add_argument("--negative-prompt", default="", help="Negative prompt")
+    parser.add_argument(
+        "--image-size",
+        default=DEFAULT_MODEL_SIZE,
+        choices=["1k", "2k"],
+        help="Image size preset",
+    )
+    parser.add_argument(
+        "--aspect-ratio",
+        default=DEFAULT_ASPECT_RATIO,
+        choices=[
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "1:1",
+            "16:9",
+            "9:16",
+            "21:9",
+            "9:21",
+        ],
+        help="Aspect ratio",
+    )
     parser.add_argument("--seed", type=int, default=None, help="Random seed")
+    parser.add_argument("--unet-name", default=None, help="UNet model name (optional)")
+    parser.add_argument("--api-key", default=global_configs.U1_API_KEY, help="API key")
+    parser.add_argument(
+        "--base-url", default=global_configs.U1_IMAGE_GEN_BASE_URL, help="API base URL"
+    )
     parser.add_argument("--poll-interval", type=float, default=DEFAULT_POLL_INTERVAL)
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     parser.add_argument("--insecure", action="store_true", help="Disable TLS verification")
