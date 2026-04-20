@@ -100,41 +100,105 @@ export U1_LM_BASE_URL="your-lm-base-url"
 
 以下为 `u1-infographic` 的示例（更多示例见 [`u1-infographic-examples_CN.md`](docs/u1-infographic-examples_CN.md)）。
 
-### 示例 1 — 酒店布草卫生
+### 示例 1｜HEALTH_CHECK_PROMO
 
-**User prompt:** `"Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies"`
+**User prompt:** `"HEALTH_CHECK_PROMO"`
 
-**Expanded prompt**
+#### Expanded prompt
 
+```text
+The infographic is titled "HEALTH_CHECK_PROMO.exe", styled as a retro computer application window with a pink title bar and standard window controls (close, minimize, maximize) in the top-right corner. The overall design mimics a 90s-era software interface with a grid background, pixelated icons, and bold, colorful sections. The primary color scheme includes bright yellow, purple, pink, blue, and green, creating a high-contrast, energetic aesthetic.
+
+At the top, under the title bar, is a section labeled "Campaign Info" with fields for "Event Name:", "Date:", and "Coordinator:". Adjacent to this is an "HP Loading Bar" with a red heart icon, showing a segmented progress bar filled with green, yellow, and pink segments—indicating health or completion status.
+
+Below this header, the main content is organized into three vertical columns representing a workflow:
+
+1. **TO PROMOTE** (pink background):
+   - Header: "TO PROMOTE" with a red circle labeled "Urgent".
+   - Contains three blank rectangular input boxes.
+   - Decorated with pixelated yellow band-aids and arrows indicating movement or prioritization.
+   - A ">>>" symbol at the bottom suggests progression.
+
+2. **LIVE DOING** (blue background):
+   - Header: "LIVE DOING" with a yellow circle labeled "In-Progress".
+   - Contains three blank rectangular input boxes.
+   - Each box has small black or yellow squares on the left, possibly indicating status or priority.
+   - Pixelated white cursor icons with sparkles point toward each box, suggesting active tasks.
+
+3. **PUBLISHED** (yellow background):
+   - Header: "PUBLISHED" with a green circle labeled "Healthy/Published".
+   - Contains three blank rectangular input boxes.
+   - Each box has a pink checkmark and a "DONE" stamp in the bottom-right corner, signifying completion.
+
+Beneath these columns is a section titled "Media Milestones", displayed as a horizontal timeline with a black electrocardiogram (ECG) line. Three pixelated red hearts mark key points along the ECG:
+
+- **Milestone 1: Pre-heat**
+- **Milestone 2: Live Coverage**
+- **Milestone 3: Recap & Insights**
+
+Each milestone is linked to a blank rectangular box below for additional notes or details.
+
+At the bottom of the infographic are two side-by-side panels:
+
+- **Med-Team** (pink header):
+  - Contains four circular placeholder icons for team members, each with a plus sign above or below, indicating expandability or addition.
+  - Standard window controls (minimize, maximize, close) are present in the top-right.
+
+- **Blockers** (pink header):
+  - Contains a single green pixelated virus/bug icon with a skull face, symbolizing obstacles or issues.
+  - Also includes window controls in the top-right.
+
+The entire layout is framed by decorative elements: pixelated red crosses (like medical symbols), a pixelated hand cursor on the right, and scattered pixelated handheld gaming devices (resembling Game Boys) in pink and yellow. The background features a split of bright yellow and purple with grid patterns, reinforcing the retro digital theme.
+
+All text is rendered in a bold, pixelated font consistent with early computer graphics. No numerical data beyond the segment counts in the HP bar is explicitly presented; all values are categorical or qualitative. The infographic serves as a dynamic, gamified project management tool for tracking promotional campaigns.
 ```
-Technical blueprint style: six operational modules arranged vertically, light grey grid background, deep navy blue borders.
-Section 1 — Linen Hygiene Lifecycle: a seven-node horizontal flow; icons: waste bin → sealed cart → sort bin → washer → iron → shelf → delivery cart. Three color zones: red (soiled zone: collection and transport), yellow (processing zone: sort → wash → finish), green (clean zone: store and distribute).
-Section 2 — Laundering Parameters: cutaway of an industrial washer, labeled: 71°C/160°F (temperature), 50–100 ppm chlorine (chemical disinfection), pH 6.5–7.5, 45–60 min cycle, 80%+ moisture removal.
-Section 3 — Linen Quality Tiers: a three-column matrix: Clean (standard linen) → Sanitized (≥99.9% pathogen reduction) → Sterile (121°C autoclave, medical use).
-Section 4 — Quality Control Checklist: ✓ no stains ✓ no damage ✓ no odor ✓ correct fold ✓ documented traceability; "QC Passed" stamp.
-Section 5 — Disposable Supplies Control: dashboard-style stock for three lines: amenities, housekeeping, food service; color bands: green (sufficient) → yellow (low) → red (reorder).
-Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, health-code compliant, brand certified.
+
+![示例信息图输出 — HEALTH_CHECK_PROMO](docs/images/demo8.webp)
+
+### 示例 2｜减速机原理及应用
+
+**User prompt:** `"减速机原理及应用"`
+
+#### Expanded prompt
+
+```text
+该信息图以“传动与控制：减速机原理及应用”为标题，采用清晰的三栏式布局，整体风格为现代工业技术插画风格，背景带有浅灰色网格和齿轮轮廓装饰，营造出工程图纸氛围。主标题位于顶部中央，字体加粗，左侧配有齿轮图标，右侧配有闪电符号，突出机械与动力主题。
+
+信息图分为三个主要部分，每个部分均置于独立的圆角矩形框内，颜色区分明显：
+
+1. **第一部分：Principle: 降速与增矩 (Speed & Torque)**
+   - 背景色为浅蓝色。
+   - 图表类型：机械传动示意图。
+   - 视觉元素：展示两个大小不同的齿轮啮合传动，小齿轮连接输入轴（标注“高转速 (High Speed)”），大齿轮连接输出轴（标注“低转速，高扭矩 (Low Speed, High Torque)”）。箭头指示旋转方向，蓝色弧线表示旋转运动。
+   - 文本内容：
+     - 标题：“Principle: 降速与增矩 (Speed & Torque)”
+     - 描述文字：“减速机的核心功能在于‘降低转速，提升扭矩’。通过齿轮级数的变化，将电机的高速低扭矩运转转化为设备所需的低速高扭矩动力。”
+
+2. **第二部分：Types: 常见结构分类 (Gear Types)**
+   - 背景色为浅米色。
+   - 图表类型：两种减速机内部结构剖面示意图。
+   - 视觉元素：
+     - 左侧为行星减速机结构图，中心橙色太阳轮，周围三个银色行星轮，外圈为齿圈，橙色箭头指示各部件旋转方向。
+     - 右侧为蜗轮蜗杆减速机结构图，上方为蜗杆，下方为蜗轮，橙色箭头指示转动方向。
+   - 文本内容：
+     - 标题：“Types: 常见结构分类 (Gear Types)”
+     - 描述文字：“依据结构分为多种类型：行星减速机具有极高的传动精度与紧凑性；蜗轮蜗杆减速机则具备独特的自锁功能及大减速比。它们各有特定的应用优势。”
+
+3. **第三部分：Application: 工业与自动化 (Automation)**
+   - 背景色为浅绿色。
+   - 图表类型：应用场景示意图。
+   - 视觉元素：
+     - 左侧为减速机在机器人关节中的特写，绿色虚线圈出内部结构，绿色箭头表示旋转运动。
+     - 中间为工业机器人手臂，绿色虚线指向其关节处的减速机。
+     - 右侧为传送带系统，电机驱动端安装有减速机。
+   - 文本内容：
+     - 标题：“Application: 工业与自动化 (Automation)”
+     - 描述文字：“减速机是现代工业装备的‘关节’。广泛应用于机器人关节（如RV与谐波减速机）、数控机床、起重设备与物流传送带中，实现极高精度的运动控制。”
+
+整体设计逻辑清晰，从原理到结构再到应用层层递进，图文结合紧密，使用不同颜色区分模块，视觉引导明确。所有文本均为中文，包含少量英文括号注释，符合中文阅读习惯。信息图未包含数据图表或数值刻度，仅通过图形和文字传递概念性知识。
 ```
 
-<p align="center"><img src="docs/images/01-infa-nb2.webp" width="720" alt="示例信息图输出 — 酒店布草"></p>
-
-### 示例 2 — 柠檬使用指南
-
-**User prompt:** `"Lemons: complete uses & reference guide"`
-
-**Expanded prompt**
-
-```
-The title of this infographic is "The Lemon: Nature's Multi-Purpose Fruit" and it uses a modern minimalist matrix layout with botanical illustration accents.
-Overall layout: a modular bento-style grid, clear sections, yellowed-paper texture on a light grey grid; bold serif titles plus a narrow monospaced data face; palette: bright lemon yellow, leaf green, and clean white.
-Top-left quadrant: detailed botanical cutaway of a lemon (flesh, peel, juice sacs). Labels: Citrus limon, pH ~2.3, 50–70 ml juice per average fruit. Three round variety icons: Eureka, Lisbon, Meyer (lemon hybrid). Origin: northeastern India, northern Myanmar, or China. Season: winter through early summer.
-Top-right quadrant: culinary uses grid with food icons: salad-dressing bowl, lemonade glass, ceviche plate, lemon cake, preserved-lemon jar. Categories: fresh juice, zest and garnish, preserved, cooking, beverages.
-Center-left: health and nutrition—badge: ~53 mg vitamin C per 100 g (about 88% DV); icons: immune support, antioxidant, digestive aid, skin health, kidney-stone prevention; note hesperidin and diosmin.
-Center-right: household hacks—lemon half + salt for cutting boards, microwave to deodorize the fridge, descale a kettle, natural laundry bleach, wood polish with oil.
-Bottom: selection and storage—good: heavy for size, firm skin, bright yellow, thin skin. Avoid: soft spots, mold, greenish tint. Storage: room temp ~1 week; fridge ~3–4 weeks. Tips: roll on the counter before cutting; freeze juice in ice-cube trays; zest before juicing; avoid the white pith.
-```
-
-<p align="center"><img src="docs/images/05-info.webp" width="720" alt="示例信息图输出 — 柠檬指南"></p>
+![示例信息图输出 — 减速机原理及应用](docs/images/demo1.webp)
 
 ## 许可
 
