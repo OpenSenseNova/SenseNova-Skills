@@ -108,26 +108,26 @@ All tools are called through the unified `openclaw_runner.py` entrypoint:
 
 ```bash
 # Image generation (only prompt required; api-key/base-url have defaults)
-python scripts/openclaw_runner.py u1-image-generate \
+python u1_image_base/openclaw_runner.py u1-image-generate \
     --prompt "..."
 
 # Image generation (override base-url)
-python scripts/openclaw_runner.py u1-image-generate \
+python u1_image_base/openclaw_runner.py u1-image-generate \
     --prompt "..." \
     --base-url "https://custom-endpoint.com/u1-model"
 
 # Image generation (explicitly override api-key)
-python scripts/openclaw_runner.py u1-image-generate \
+python u1_image_base/openclaw_runner.py u1-image-generate \
     --prompt "..." \
     --api-key "sk-xxx"
 
 # Image recognition (VLM) - minimal call (uses built-in Sensenova defaults)
-python scripts/openclaw_runner.py u1-image-recognize \
+python u1_image_base/openclaw_runner.py u1-image-recognize \
     --user-prompt "Describe the image" \
     --images "path/to/image.png"
 
 # Image recognition (VLM) - override to Anthropic Claude API compatible (messages interface)
-python scripts/openclaw_runner.py u1-image-recognize \
+python u1_image_base/openclaw_runner.py u1-image-recognize \
     --user-prompt "Describe the image" \
     --images "path/to/image.png" \
     --api-key "sk-ant-xxx" \
@@ -136,11 +136,11 @@ python scripts/openclaw_runner.py u1-image-recognize \
     --vlm-type "anthropic-messages"
 
 # Text optimization (LLM) - minimal call (uses built-in Sensenova defaults)
-python scripts/openclaw_runner.py u1-text-optimize \
+python u1_image_base/openclaw_runner.py u1-text-optimize \
     --user-prompt "Optimize the text: ..."
 
 # Text optimization (LLM) - override to Anthropic Claude API compatible (messages interface)
-python scripts/openclaw_runner.py u1-text-optimize \
+python u1_image_base/openclaw_runner.py u1-text-optimize \
     --user-prompt "Optimize the text: ..." \
     --api-key "sk-ant-xxx" \
     --base-url "https://api.anthropic.com" \

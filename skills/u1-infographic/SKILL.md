@@ -140,7 +140,7 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 **Evaluation Call** (using `u1-image-base`'s `u1-text-optimize` tool):
 
 ```bash
-python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-text-optimize \
+python "$U1_IMAGE_BASE/u1_image_base/openclaw_runner.py" u1-text-optimize \
   --system-prompt-path "$SKILL_DIR/reference/evaluation-standard.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json
@@ -151,7 +151,7 @@ python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-text-optimize \
 **2.0 Content Analysis** (using `u1-image-base`'s `u1-text-optimize` tool):
 
 ```bash
-ANALYSIS=$(python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-text-optimize \
+ANALYSIS=$(python "$U1_IMAGE_BASE/u1_image_base/openclaw_runner.py" u1-text-optimize \
   --system-prompt-path "$SKILL_DIR/reference/analysis-framework.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json)
@@ -251,7 +251,7 @@ EOF
 Use the content of `structured-content.md` as user-prompt, read system prompt from temporary file and call u1-text-optimize:
 
 ```bash
-python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-text-optimize \
+python "$U1_IMAGE_BASE/u1_image_base/openclaw_runner.py" u1-text-optimize \
   --system-prompt-path "$TEMP_DIR/expand-system-prompt.md" \
   --user-prompt "$STRUCTURED_CONTENT" \
   --output-format json
@@ -272,7 +272,7 @@ Execute `round` from `1` to `max_rounds` sequentially:
 **Generate Image** (using `u1-image-base`'s `u1-image-generate` tool):
 
 ```bash
-python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-image-generate \
+python "$U1_IMAGE_BASE/u1_image_base/openclaw_runner.py" u1-image-generate \
   --prompt "$EXPANDED_PROMPT" \
   --image-size "$IMAGE_SIZE" \
   --aspect-ratio "$ASPECT_RATIO" \
@@ -292,7 +292,7 @@ VLM configuration requirements:
 - If VLM call times out or fails: do not fallback, report the real error directly
 
 ```bash
-python "$U1_IMAGE_BASE/scripts/openclaw_runner.py" u1-image-recognize \
+python "$U1_IMAGE_BASE/u1_image_base/openclaw_runner.py" u1-image-recognize \
   --system-prompt-path "$U1_IMAGE_INFOG/reference/prompts-critic-system.md" \
   --user-prompt "Evaluate the diagram in the image against the rules. Output your assessment." \
   --images "$TEMP_DIR/round_<N>.png" \

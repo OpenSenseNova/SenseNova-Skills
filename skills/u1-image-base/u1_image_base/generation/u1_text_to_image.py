@@ -1,8 +1,8 @@
 """Async Text-to-Image (no-enhance) client using the U1 API (REST + polling).
 
 Usage:
-    from generation.text_to_image import TextToImageClient
-    client = TextToImageClient(api_key="sk-xxx", base_url="https://...")
+    from u1_image_base.generation import U1Text2ImageClient
+    client = U1Text2ImageClient(api_key="sk-xxx", base_url="https://...")
     result = await client.generate(prompt="a cute cat")
 """
 
@@ -11,275 +11,28 @@ from __future__ import annotations
 import asyncio
 import json
 import sys
+import typing
 from pathlib import Path
-from urllib.parse import urlparse
 
 import httpx
+from typing_extensions import Any, Literal, override
 
 from u1_image_base.configs import global_configs
 from u1_image_base.u1_api.paths import (
-    generation_file_download_url,
-    generation_file_presigned_url,
-    generation_file_upload_url,
     text_to_image_create_url,
     text_to_image_status_url,
 )
 
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
-
+from .core import download_image, ensure_output_path, extract_task_image
+from .core.client_base import DEFAULT_HTTP_REQUEST_TIMEOUT, DEFAULT_MAX_CONNECTIONS, T2IBaseClient
 
 DEFAULT_MODEL_SIZE = "2k"
 DEFAULT_ASPECT_RATIO = "16:9"
 DEFAULT_POLL_INTERVAL = 5.0
-DEFAULT_TIMEOUT = 300.0
-API_KEY_ENV = "U1_API_KEY"
-BASE_URL_ENV = "U1_BASE_URL"
 OUTPUT_DIR = Path("/tmp/openclaw-u1-image")
 
 
-def build_headers(api_key: str) -> dict[str, str]:
-    """Build HTTP headers for API authentication.
-
-    Args:
-        api_key (str):
-            The API key for authentication.
-
-    Returns:
-        dict[str, str]:
-            Headers dictionary with Authorization set to the api_key.
-    """
-    return {"Authorization": api_key}
-
-
-def ensure_output_path(path: Path) -> Path:
-    """Ensure the parent directory of the given path exists.
-
-    Args:
-        path (Path):
-            The file path whose parent directory should be created.
-
-    Returns:
-        Path:
-            The original path unchanged.
-    """
-    path.parent.mkdir(parents=True, exist_ok=True)
-    return path
-
-
-def is_absolute_url(value: str) -> bool:
-    """Check if the given value is an absolute URL.
-
-    Args:
-        value (str):
-            The string to check.
-
-    Returns:
-        bool:
-            True if value contains both a scheme (e.g., "http") and
-            a network location (netloc), False otherwise.
-    """
-    parsed = urlparse(value)
-    return bool(parsed.scheme and parsed.netloc)
-
-
-def extract_task_input(task: dict) -> dict:
-    """Extract the input parameters from a task dictionary.
-
-    Args:
-        task (dict):
-            The task dictionary, typically from an API response.
-
-    Returns:
-        dict:
-            The input parameters if available, otherwise a subset of
-            fields (prompt, negative_prompt, image_size, aspect_ratio,
-            seed, unet_name) from the task.
-    """
-    task_input = task.get("input")
-    if isinstance(task_input, dict):
-        return task_input
-    return {
-        key: task.get(key)
-        for key in (
-            "prompt",
-            "negative_prompt",
-            "image_size",
-            "aspect_ratio",
-            "seed",
-            "unet_name",
-        )
-        if key in task
-    }
-
-
-def extract_task_image(task: dict) -> dict | None:
-    """Extract the image result from a completed task.
-
-    Args:
-        task (dict):
-            The task dictionary from an API response.
-
-    Returns:
-        dict | None:
-            The image dictionary containing a URL if present,
-            otherwise None.
-    """
-    image = task.get("image")
-    if isinstance(image, dict) and image.get("url"):
-        return image
-    return None
-
-
-async def download_image(
-    client: httpx.AsyncClient,
-    base_url: str,
-    headers: dict[str, str],
-    image_ref: str,
-    output_path: Path,
-) -> Path:
-    """Download an image from a URL or image reference.
-
-    Args:
-        client (httpx.AsyncClient):
-            The HTTP client for making requests.
-        base_url (str):
-            The API base URL.
-        headers (dict[str, str]):
-            HTTP headers including authentication.
-        image_ref (str):
-            The image reference (URL or cached file key) to download.
-        output_path (Path):
-            The local file path where the image will be saved.
-
-    Returns:
-        Path:
-            The path to the downloaded image file.
-    """
-    if is_absolute_url(image_ref):
-        response = await client.get(image_ref, headers=headers)
-    else:
-        download_url = generation_file_download_url(base_url, image_ref)
-        response = await client.get(download_url, headers=headers)
-    response.raise_for_status()
-    output_path.write_bytes(response.content)
-    return output_path
-
-
-async def upload_local_image(
-    client: httpx.AsyncClient,
-    base_url: str,
-    headers: dict[str, str],
-    image_path: Path,
-) -> str:
-    """Upload a local image file to the generation service.
-
-    Args:
-        client (httpx.AsyncClient):
-            The HTTP client for making requests.
-        base_url (str):
-            The API base URL.
-        headers (dict[str, str]):
-            HTTP headers including authentication.
-        image_path (Path):
-            Path to the local image file to upload.
-
-    Returns:
-        str:
-            The OSS path returned by the server after successful upload.
-
-    Raises:
-        ValueError:
-            If the server response is not a non-empty string.
-    """
-    with open(image_path, "rb") as image_file:
-        response = await client.post(
-            generation_file_upload_url(base_url),
-            headers=headers,
-            files={"upload_file": (image_path.name, image_file)},
-        )
-    response.raise_for_status()
-    body = response.json()
-    if not isinstance(body, str) or not body:
-        raise ValueError(f"unexpected upload response: {body}")
-    return body
-
-
-async def generate_presigned_url(
-    client: httpx.AsyncClient,
-    base_url: str,
-    headers: dict[str, str],
-    oss_path: str,
-) -> str:
-    """Generate a presigned URL for accessing an OSS file.
-
-    Args:
-        client (httpx.AsyncClient):
-            The HTTP client for making requests.
-        base_url (str):
-            The API base URL.
-        headers (dict[str, str]):
-            HTTP headers including authentication.
-        oss_path (str):
-            The OSS file path for which to generate a presigned URL.
-
-    Returns:
-        str:
-            The presigned URL for accessing the file.
-
-    Raises:
-        ValueError:
-            If the server response is not a non-empty string.
-    """
-    response = await client.get(
-        generation_file_presigned_url(base_url),
-        headers=headers,
-        params={"oss_path": oss_path},
-    )
-    response.raise_for_status()
-    body = response.json()
-    if not isinstance(body, str) or not body:
-        raise ValueError(f"unexpected presigned url response: {body}")
-    return body
-
-
-async def resolve_image_ref(
-    client: httpx.AsyncClient,
-    base_url: str,
-    headers: dict[str, str],
-    image_value: str,
-) -> str:
-    """Resolve an image reference to a URL.
-
-    Args:
-        client (httpx.AsyncClient):
-            The HTTP client for making requests.
-        base_url (str):
-            The API base URL.
-        headers (dict[str, str]):
-            HTTP headers including authentication.
-        image_value (str):
-            An image reference: absolute URL, local file path, or cached key.
-
-    Returns:
-        str:
-            A URL suitable for use in API requests. If image_value is an
-            absolute URL, it is returned as-is. If it is a local file,
-            the file is uploaded and a presigned URL is returned.
-    """
-    if is_absolute_url(image_value):
-        return image_value
-    if Path(image_value).is_file():
-        uploaded_path = await upload_local_image(client, base_url, headers, Path(image_value))
-        return await generate_presigned_url(client, base_url, headers, uploaded_path)
-    return image_value
-
-
-class TextToImageClient:
+class U1Text2ImageClient(T2IBaseClient):
     """Async client for U1 text-to-image-no-enhance API."""
 
     def __init__(
@@ -287,48 +40,48 @@ class TextToImageClient:
         api_key: str,
         base_url: str | None = None,
         *,
+        model: str | None = None,
+        max_connections: int = DEFAULT_MAX_CONNECTIONS,
+        timeout: float = DEFAULT_HTTP_REQUEST_TIMEOUT,
+        ssl_verify: bool = True,
         poll_interval: float = DEFAULT_POLL_INTERVAL,
-        timeout: float = DEFAULT_TIMEOUT,
-        insecure: bool = False,
+        **kwargs: typing.Any,
     ) -> None:
-        """Initialize the TextToImageClient.
+        """Initialize the U1Text2ImageClient.
 
         Args:
             api_key (str):
                 API key for authentication.
             base_url (str | None, optional):
-                API base URL. If None, reads from U1_BASE_URL env var.
+                API base URL. If None, reads from U1_IMAGE_GEN_BASE_URL env var.
             poll_interval (float, optional):
                 Polling interval in seconds for task status checks.
                 Defaults to DEFAULT_POLL_INTERVAL.
             timeout (float, optional):
                 Total timeout in seconds for the generate call.
-                Defaults to DEFAULT_TIMEOUT.
-            insecure (bool, optional):
-                If True, disable TLS verification. Defaults to False.
+                Defaults to DEFAULT_HTTP_REQUEST_TIMEOUT.
+            ssl_verify (bool, optional):
+                If True, enable TLS verification. Defaults to True.
         """
-        self.api_key = api_key
-        self.base_url = (base_url or global_configs.U1_IMAGE_GEN_BASE_URL).rstrip("/")
+        super().__init__(
+            api_key=api_key,
+            base_url=base_url,
+            model=model,
+            max_connections=max_connections,
+            timeout=timeout,
+            ssl_verify=ssl_verify,
+            **kwargs,
+        )
         self.poll_interval = poll_interval
-        self.timeout = timeout
-        self.insecure = insecure
-        self._client: httpx.AsyncClient | None = None
 
-    async def _get_client(self) -> httpx.AsyncClient:
-        if self._client is None:
-            self._client = httpx.AsyncClient(timeout=self.timeout, verify=not self.insecure)
-        return self._client
-
-    async def aclose(self) -> None:
-        if self._client is not None:
-            await self._client.aclose()
-            self._client = None
-
+    @override
     async def generate(
         self,
         prompt: str,
         negative_prompt: str = "",
-        image_size: str = DEFAULT_MODEL_SIZE,
+        *,
+        model: str | None = None,
+        image_size: Literal["1k", "2k", "4k"] = DEFAULT_MODEL_SIZE,
         aspect_ratio: str = DEFAULT_ASPECT_RATIO,
         seed: int | None = None,
         unet_name: str | None = None,
@@ -356,21 +109,17 @@ class TextToImageClient:
             dict:
                 Dictionary with keys: status, output (path), task_id, message.
         """
-        if not self.api_key:
-            return {"status": "failed", "error": f"{API_KEY_ENV} is required"}
+        payload: dict = self.build_payload(
+            prompt=prompt,
+            negative_prompt=negative_prompt,
+            image_size=image_size,
+            aspect_ratio=aspect_ratio,
+            seed=seed,
+            unet_name=unet_name,
+        )
+        headers = self.headers
+        api_url = self.get_api_url()
 
-        payload: dict = {
-            "prompt": prompt,
-            "negative_prompt": negative_prompt,
-            "image_size": image_size,
-            "aspect_ratio": aspect_ratio,
-        }
-        if seed is not None:
-            payload["seed"] = seed
-        if unet_name is not None:
-            payload["unet_name"] = unet_name
-
-        headers = build_headers(self.api_key)
         if output_path is None:
             OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
             import time
@@ -382,16 +131,11 @@ class TextToImageClient:
         client = await self._get_client()
 
         try:
-            create_response = await client.post(
-                text_to_image_create_url(self.base_url),
-                json=payload,
-                headers=headers,
-            )
-            create_response.raise_for_status()
-            task = create_response.json()
+            create_response = await client.post(api_url, json=payload, headers=headers)
+            task = self.parse_response(create_response)
             task_id = task["id"]
 
-            deadline = asyncio.get_event_loop().time() + self.timeout
+            deadline = asyncio.get_running_loop().time() + self._timeout
             while True:
                 status_response = await client.get(
                     text_to_image_status_url(self.base_url, task_id),
@@ -432,7 +176,7 @@ class TextToImageClient:
                         "task_id": task_id,
                     }
 
-                if asyncio.get_event_loop().time() >= deadline:
+                if asyncio.get_running_loop().time() >= deadline:
                     return {
                         "status": "failed",
                         "error": "Timeout",
@@ -454,18 +198,75 @@ class TextToImageClient:
                 "message": f"request error: {exc}",
             }
 
+    @property
+    @override
+    def api_key(self) -> str:
+        api_key = self._api_key or global_configs.U1_API_KEY
+        if not api_key:
+            raise ValueError(
+                "API key is missing: {}".format(global_configs.get_env_var_help("U1_API_KEY"))
+            )
+        return api_key
+
+    @property
+    @override
+    def base_url(self) -> str:
+        base_url = self._base_url or global_configs.U1_IMAGE_GEN_BASE_URL
+        if not base_url:
+            raise ValueError(
+                "Base URL is missing: {}".format(
+                    global_configs.get_env_var_help("U1_IMAGE_GEN_BASE_URL")
+                )
+            )
+        return base_url
+
+    @override
+    def get_api_url(self) -> str:
+        return text_to_image_create_url(self.base_url)
+
+    @override
+    def build_payload(
+        self,
+        prompt: str,
+        negative_prompt: str = "",
+        *,
+        image_size: str = DEFAULT_MODEL_SIZE,
+        aspect_ratio: str = DEFAULT_ASPECT_RATIO,
+        **kwargs: Any,
+    ) -> dict:
+        payload: dict = {
+            "prompt": prompt,
+            "image_size": image_size,
+            "aspect_ratio": aspect_ratio,
+        }
+        if negative_prompt:
+            payload["negative_prompt"] = negative_prompt
+        if seed := kwargs.get("seed"):
+            payload["seed"] = seed
+        if unet_name := kwargs.get("unet_name"):
+            payload["unet_name"] = unet_name
+        return payload
+
+    @property
+    @override
+    def headers(self) -> dict[str, str]:
+        return {
+            "Authorization": self.api_key,
+            "Content-Type": "application/json",
+        }
+
 
 async def main_async(
     prompt: str,
     api_key: str,
     base_url: str | None = None,
     negative_prompt: str = "",
-    image_size: str = DEFAULT_MODEL_SIZE,
+    image_size: Literal["1k", "2k", "4k"] = DEFAULT_MODEL_SIZE,
     aspect_ratio: str = DEFAULT_ASPECT_RATIO,
     seed: int | None = None,
     unet_name: str | None = None,
     poll_interval: float = DEFAULT_POLL_INTERVAL,
-    timeout: float = DEFAULT_TIMEOUT,
+    timeout: float = DEFAULT_HTTP_REQUEST_TIMEOUT,
     insecure: bool = False,
     output_format: str = "text",
     save_path: Path | None = None,
@@ -492,7 +293,7 @@ async def main_async(
         poll_interval (float, optional):
             Polling interval in seconds. Defaults to DEFAULT_POLL_INTERVAL.
         timeout (float, optional):
-            Timeout in seconds. Defaults to DEFAULT_TIMEOUT.
+            Timeout in seconds. Defaults to DEFAULT_HTTP_REQUEST_TIMEOUT.
         insecure (bool, optional):
             If True, disable TLS verification. Defaults to False.
         output_format (str, optional):
@@ -504,12 +305,13 @@ async def main_async(
         int:
             Exit code: 0 for success, 1 for failure.
     """
-    client = TextToImageClient(
+    client = U1Text2ImageClient(
         api_key=api_key,
         base_url=base_url,
+        model=global_configs.U1_IMAGE_GEN_MODEL,
         poll_interval=poll_interval,
         timeout=timeout,
-        insecure=insecure,
+        ssl_verify=not insecure,
     )
     try:
         result = await client.generate(
@@ -538,6 +340,13 @@ async def main_async(
 
 
 if __name__ == "__main__":
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv()
+    except ImportError:
+        pass
+
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -576,7 +385,7 @@ if __name__ == "__main__":
         "--base-url", default=global_configs.U1_IMAGE_GEN_BASE_URL, help="API base URL"
     )
     parser.add_argument("--poll-interval", type=float, default=DEFAULT_POLL_INTERVAL)
-    parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
+    parser.add_argument("--timeout", type=float, default=DEFAULT_HTTP_REQUEST_TIMEOUT)
     parser.add_argument("--insecure", action="store_true", help="Disable TLS verification")
     parser.add_argument(
         "-o",

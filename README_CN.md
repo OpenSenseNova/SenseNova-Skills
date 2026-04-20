@@ -11,6 +11,14 @@
 
 ## 技能
 
+### u1-doctor
+
+环境诊断技能，用于检查安装、依赖和配置。完整说明见 [`skills/u1-doctor/SKILL.md`](skills/u1-doctor/SKILL.md)。
+
+- 验证 `u1-image-base` 安装和 Python 依赖
+- 检查环境变量并交互式提示配置缺失的必填变量
+- 保存配置到 `.env` 文件并自动重载环境
+
 ### u1-image-base（第 0 层）
 
 基础层基础设施技能，提供两个底层工具。完整说明见 [`skills/u1-image-base/SKILL.md`](skills/u1-image-base/SKILL.md)。
@@ -61,7 +69,7 @@
 
 ### 2. Python 依赖与 API 密钥
 
-在 OpenClaw 运行 [`skills/u1-image-base/scripts/openclaw_runner.py`](skills/u1-image-base/scripts/openclaw_runner.py)（上述工具的统一直达入口）时所使用的 **Python 环境与进程**中安装依赖并配置密钥：
+在 OpenClaw 运行 [`skills/u1-image-base/u1_image_base/openclaw_runner.py`](skills/u1-image-base/u1_image_base/openclaw_runner.py)（上述工具的统一直达入口）时所使用的 **Python 环境与进程**中安装依赖并配置密钥：
 
 ```bash
 pip install -r skills/u1-image-base/requirements.txt
@@ -75,6 +83,10 @@ export U1_LM_BASE_URL="your-lm-base-url"
 请使用环境变量或本地 `.env` 文件。不要将密钥提交到版本库。
 
 ### 3. 在 OpenClaw 中调用
+
+检查环境并交互式配置缺失的变量：
+
+> /skill u1-doctor
 
 在对话中描述任务，例如：
 

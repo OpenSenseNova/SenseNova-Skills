@@ -53,10 +53,11 @@ class Configs:
 
     # image-generate
     U1_API_KEY: Annotated[str, EnvVar("U1_API_KEY")] = ""
-    U1_IMAGE_GEN_BASE_URL: Annotated[
-        str,
-        EnvVar("U1_IMAGE_GEN_BASE_URL", "U1_BASE_URL"),
-    ] = "https://zoe-api.sensetime.com/zoe-model"
+    U1_IMAGE_GEN_BASE_URL: Annotated[str, EnvVar("U1_IMAGE_GEN_BASE_URL", "U1_BASE_URL")] = (
+        "https://zoe-api.sensetime.com/zoe-model"
+    )
+    U1_IMAGE_GEN_MODEL: Annotated[str, EnvVar("U1_IMAGE_GEN_MODEL")] = ""
+    U1_IMAGE_GEN_MODEL_TYPE: Annotated[str, EnvVar("U1_IMAGE_GEN_MODEL_TYPE")] = "u1"
 
     # NOTE: "U1_LM_*" vars are shared between VLM and LLM
     # image-recognize (VLM) — falls back to shared U1_LM_* vars
@@ -90,6 +91,62 @@ class Configs:
                 actual_type = hint
             if (val := env_var.resolve(actual_type)) is not None:
                 setattr(self, field, val)
+
+    def get_env_var_help(self, field_name: str) -> str:
+        """Return a help string describing which environment variables can be used
+        to set the specified configuration field.
+
+        Args:
+            field_name: The name of the configuration field (e.g., "VLM_API_KEY").
+
+        Returns:
+            A string describing the environment variable(s) that control this field.
+            Returns an error message if the field does not exist or has no EnvVar annotation.
+        """
+        if not hasattr(type(self), field_name):
+            return f"Field '{field_name}' does not exist in Configs."
+
+        hints = get_type_hints(type(self), include_extras=True)
+        if field_name not in hints:
+            return f"Field '{field_name}' has no type hint."
+
+        hint = hints[field_name]
+        env_var = next((a for a in get_args(hint) if isinstance(a, EnvVar)), None)
+        if env_var is None:
+            return f"Field '{field_name}' is not configurable via environment variables."
+
+        current_value = getattr(self, field_name)
+        env_names = list(env_var.env_names)
+
+        if len(env_names) == 1:
+            return (
+                f"To set '{field_name}', configure the environment variable: {env_names[0]}\n"
+                f"Current value: {current_value!r}"
+            )
+        else:
+            env_list = ", ".join(env_names)
+            return (
+                f"To set '{field_name}', configure one of these environment variables: {env_list}\n"
+                f"They are tried in order; the first set value is used.\n"
+                f"Current value: {current_value!r}"
+            )
+
+
+def reload_env(override: bool = True) -> None:
+    global global_configs
+
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(override=override)
+    except ImportError:
+        print("❌ python-dotenv is not installed, `.env` file will not be loaded on reload")
+
+    try:
+        global_configs = Configs()
+        print("✅ Reloaded global_configs")
+    except Exception as e:
+        warnings.warn(f"Failed to reload global_configs: {e}", stacklevel=2)
 
 
 global_configs = Configs()
