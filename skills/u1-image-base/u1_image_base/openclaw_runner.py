@@ -23,7 +23,7 @@ if (d := str(SCRIPT_DIR.parents[1])) not in sys.path:
 
 from u1_image_base.configs import global_configs
 from u1_image_base.exceptions import MissingApiKeyError
-from u1_image_base.generation.text_to_image import TextToImageClient
+from u1_image_base.generation import NanoBananaText2ImageClient, U1Text2ImageClient
 from u1_image_base.llm.anthropic_adapter import AnthropicMessagesAdapter
 from u1_image_base.llm.chat_completions_adapter import ChatCompletionsLlmAdapter
 from u1_image_base.vlm.anthropic_adapter import AnthropicVlmAdapter
@@ -209,13 +209,26 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             "No base URL provided. Set U1_BASE_URL env var or pass --base-url."
         )
 
-    client = TextToImageClient(
-        api_key=api_key,
-        base_url=base_url,
-        poll_interval=args.poll_interval,
-        timeout=args.timeout,
-        insecure=args.insecure,
-    )
+    if global_configs.U1_IMAGE_GEN_MODEL_TYPE == "nano-banana":
+        if not global_configs.U1_IMAGE_GEN_MODEL:
+            raise MissingApiKeyError(
+                "No model provided. Set U1_IMAGE_GEN_MODEL env var or pass --model."
+            )
+        client = NanoBananaText2ImageClient(
+            api_key=api_key,
+            base_url=base_url,
+            model=global_configs.U1_IMAGE_GEN_MODEL,
+            timeout=args.timeout,
+            ssl_verify=not args.insecure,
+        )
+    else:
+        client = U1Text2ImageClient(
+            api_key=api_key,
+            base_url=base_url,
+            poll_interval=args.poll_interval,
+            timeout=args.timeout,
+            ssl_verify=not args.insecure,
+        )
     try:
         result = await client.generate(
             prompt=args.prompt,

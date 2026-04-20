@@ -53,10 +53,11 @@ class Configs:
 
     # image-generate
     U1_API_KEY: Annotated[str, EnvVar("U1_API_KEY")] = ""
-    U1_IMAGE_GEN_BASE_URL: Annotated[
-        str,
-        EnvVar("U1_IMAGE_GEN_BASE_URL", "U1_BASE_URL"),
-    ] = "https://zoe-api.sensetime.com/zoe-model"
+    U1_IMAGE_GEN_BASE_URL: Annotated[str, EnvVar("U1_IMAGE_GEN_BASE_URL", "U1_BASE_URL")] = (
+        "https://zoe-api.sensetime.com/zoe-model"
+    )
+    U1_IMAGE_GEN_MODEL: Annotated[str, EnvVar("U1_IMAGE_GEN_MODEL")] = ""
+    U1_IMAGE_GEN_MODEL_TYPE: Annotated[str, EnvVar("U1_IMAGE_GEN_MODEL_TYPE")] = "u1"
 
     # NOTE: "U1_LM_*" vars are shared between VLM and LLM
     # image-recognize (VLM) — falls back to shared U1_LM_* vars
