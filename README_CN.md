@@ -2,6 +2,8 @@
 
 [English](README.md) | 简体中文
 
+<p align="center"><img src="docs/images/teaser_v1.png" width="800" alt="SenseNova-Skills 预览图"></p>
+
 面向智能体运行时的 **AIGC** 技能与工具。
 
 ## 环境要求
