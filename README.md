@@ -6,7 +6,7 @@ Skills and tooling for **AIGC** in agent runtimes.
 
 ## Prerequisites
 
-- **Python** 3.10 or later.
+- **Python** 3.9 or later.
 - **U1 API** credentials for image generation and LLM/VLM endpoints (`U1_API_KEY`, `U1_LM_API_KEY`; see Quick Start).
 
 ## Skills

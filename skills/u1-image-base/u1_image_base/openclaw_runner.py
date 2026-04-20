@@ -18,7 +18,8 @@ import time
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(SCRIPT_DIR.parents[1]))
+if (d := str(SCRIPT_DIR.parents[1])) not in sys.path:
+    sys.path.insert(0, d)
 
 from u1_image_base.configs import global_configs
 from u1_image_base.exceptions import MissingApiKeyError
