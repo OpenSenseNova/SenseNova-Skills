@@ -2,7 +2,7 @@
 
 English | [简体中文](README_CN.md)
 
-<p align="center"><img src="docs/images/teaser_v1.1.png" width="800" alt="SenseNova-Skills Teaser"></p>
+<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="SenseNova-Skills Teaser"></p>
 
 Skills and tooling for **AIGC** in agent runtimes.
 
