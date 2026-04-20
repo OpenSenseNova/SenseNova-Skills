@@ -116,7 +116,7 @@ Section 5 — Disposable Supplies Control: dashboard-style stock for three lines
 Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, health-code compliant, brand certified.
 ```
 
-<p align="center"><img src="docs/images/01-info-nb2.webp" width="720" alt="Sample infographic output — hotel linen hygiene"></p>
+<p align="center"><img src="docs/images/01-info.webp" width="720" alt="Sample infographic output — hotel linen hygiene"></p>
 
 ### Example 2 — lemon guide
 
@@ -134,7 +134,7 @@ Center-right: household hacks—lemon half + salt for cutting boards, microwave 
 Bottom: selection and storage—good: heavy for size, firm skin, bright yellow, thin skin. Avoid: soft spots, mold, greenish tint. Storage: room temp ~1 week; fridge ~3–4 weeks. Tips: roll on the counter before cutting; freeze juice in ice-cube trays; zest before juicing; avoid the white pith.
 ```
 
-<p align="center"><img src="docs/images/05-info-nb2.webp" width="720" alt="Sample infographic output — lemon guide"></p>
+<p align="center"><img src="docs/images/05-info.webp" width="720" alt="Sample infographic output — lemon guide"></p>
 
 ## License
 

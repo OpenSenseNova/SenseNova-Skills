@@ -18,7 +18,7 @@ Section 5 — Disposable Supplies Control: dashboard-style stock for three lines
 Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, health-code compliant, brand certified.
 ```
 
-![Example 1](images/01-info-nb2.webp)
+![Example 1](images/01-info.webp)
 
 ## Example 2 — Lemon Usage Guide
 
@@ -36,7 +36,7 @@ Center-right: household hacks—lemon half + salt for cutting boards, microwave 
 Bottom: selection and storage—good: heavy for size, firm skin, bright yellow, thin skin. Avoid: soft spots, mold, greenish tint. Storage: room temp ~1 week; fridge ~3–4 weeks. Tips: roll on the counter before cutting; freeze juice in ice-cube trays; zest before juicing; avoid the white pith.
 ```
 
-![Example 2](images/05-info-nb2.webp)
+![Example 2](images/05-info.webp)
 
 ## Example 3 — Job Posting Workflow
 
@@ -108,7 +108,7 @@ Resolution: 8K HD
 Lighting: flat, even illumination
 ```
 
-![Example 3](images/07-info-nb2.webp)
+![Example 3](images/07-info.webp)
 
 ## Example 4 — Canadian Horizons
 
@@ -173,4 +173,4 @@ Fonts: clean sans-serif
 Mood: professional and uplifting
 ```
 
-![Example 4](images/08-info-nb2.webp)
+![Example 4](images/08-info.webp)
