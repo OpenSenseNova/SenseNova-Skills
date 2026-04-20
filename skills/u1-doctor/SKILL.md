@@ -3,7 +3,8 @@ name: u1-doctor
 description: |
   Environment diagnostic skill for SenseNova-Skills project.
   Checks that u1-image-base is properly installed and configured, validates dependencies
-  and environment variables.
+  and environment variables. Prompts user to configure missing required variables and saves
+  them to .env file. After configuration, reloads environment and suggests agent restart if needed.
 triggers:
   - "SenseNova-Skills环境检查"
   - "SenseNova-Skills doctor"
@@ -29,7 +30,8 @@ This skill performs comprehensive checks including:
 
 - Installation verification of SenseNova-Skills project
 - Python dependency validation
-- Environment variable configuration checks
+- Environment variable configuration checks, with interactive prompts to configure missing required variables and save them to `.env`
+- Automatic environment reload after configuration changes, with agent restart suggestion if reload fails
 
 ## Usage
 
@@ -58,15 +60,29 @@ python u1_doctor/check_environment.py --verbose
   ✅ All required packages installed
 
 [3/3] Checking environment variables...
-  ✅ U1_API_KEY configured
-  ✅ U1_IMAGE_GEN_BASE_URL configured
-  ⚠️  VLM_API_KEY not set
-  ✅ U1_LM_API_KEY configured
-  ⚠️  VLM_BASE_URL not set
-  ⚠️  VLM_MODEL not set
+  ❌ U1_API_KEY not set (required)
+
+  Some required environment variables are missing.
+  Enter values below to save them to /path/to/.env.
+  Press Enter to skip a variable.
+
+  U1_API_KEY: <user input>
+
+  ✅ Saved to /path/to/.env: U1_API_KEY
+  🔄 Reloading environment...
+  ✅ Environment reloaded successfully
 
 === Summary ===
 ✅ Environment is properly configured
+```
+
+If reload fails, the output will suggest restarting the agent:
+
+```
+  ✅ Saved to /path/to/.env: U1_API_KEY
+  🔄 Reloading environment...
+  ⚠️  Failed to reload environment: <error message>
+  💡 Suggestion: Restart the agent to apply new configuration
 ```
 
 ### Error Output

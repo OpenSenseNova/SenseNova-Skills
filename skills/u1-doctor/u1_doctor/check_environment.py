@@ -18,8 +18,10 @@ Checks performed:
 """
 
 import argparse
+import os
 import sys
 from pathlib import Path
+from typing import get_args, get_type_hints
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILLS_DIR = SCRIPT_DIR.parents[1]
@@ -106,49 +108,113 @@ def check_dependencies(root: Path, verbose: bool) -> bool:
     return ok
 
 
+def _load_configs(root: Path):
+    """Import and return Configs from u1-image-base, or None on failure."""
+    base_path = root / "u1-image-base"
+    sys.path.insert(0, str(base_path))
+    try:
+        from u1_image_base.configs import (  # pyright: ignore[reportMissingImports]
+            Configs,
+        )
+
+        return Configs
+    except ImportError:
+        return None
+    finally:
+        if sys.path and sys.path[0] == str(base_path):
+            sys.path.pop(0)
+
+
+def _write_env_file(env_file: Path, key: str, value: str) -> None:
+    """Append or update a key=value line in the .env file."""
+    lines = env_file.read_text().splitlines() if env_file.exists() else []
+    updated = False
+    for i, line in enumerate(lines):
+        if line.startswith(f"{key}=") or line.startswith(f"{key} ="):
+            lines[i] = f"{key}={value}"
+            updated = True
+            break
+    if not updated:
+        lines.append(f"{key}={value}")
+    env_file.write_text("\n".join(lines) + "\n")
+
+
 def check_env_vars(root: Path, verbose: bool) -> bool:
     print("[3/3] Checking environment variables...")
 
-    # Import Configs from u1-image-base
-    base_path = root / "u1-image-base"
-    if str(base_path) not in sys.path:
-        sys.path.insert(0, str(base_path))
-    try:
-        from u1_image_base.configs import (  # pyright: ignore[reportMissingImports]
-            global_configs,
-        )
-    except ImportError as e:
-        print(f"  ⚠️ Cannot import Configs: {e}")
+    Configs = _load_configs(root)
+    if Configs is None:
+        print("  ⚠️  Cannot import Configs from u1-image-base, skipping env check")
         return True
-    finally:
-        if sys.path[0] == str(base_path):
-            sys.path.pop(0)
 
-    # image-generation
-    if not global_configs.U1_API_KEY:
-        msg = global_configs.get_env_var_help("U1_API_KEY")
-        print(f"  ❌ {msg}")
-        return False
-    if not global_configs.U1_IMAGE_GEN_BASE_URL:
-        msg = global_configs.get_env_var_help("U1_IMAGE_GEN_BASE_URL")
-        print(f"  ❌ {msg}")
-        return False
+    from u1_image_base.configs import EnvVar  # pyright: ignore[reportMissingImports]
 
-    # VLM
-    if not global_configs.VLM_API_KEY:
-        msg = global_configs.get_env_var_help("VLM_API_KEY")
-        print(f"  ⚠️ {msg}")
-    if not global_configs.VLM_BASE_URL:
-        msg = global_configs.get_env_var_help("VLM_BASE_URL")
-        print(f"  ⚠️ {msg}")
+    hints = get_type_hints(Configs, include_extras=True)
+    env_file = root / ".env"
+    missing_required = []
 
-    # LLM
-    if not global_configs.LLM_API_KEY:
-        msg = global_configs.get_env_var_help("LLM_API_KEY")
-        print(f"  ⚠️ {msg}")
-    if not global_configs.LLM_BASE_URL:
-        msg = global_configs.get_env_var_help("LLM_BASE_URL")
-        print(f"  ⚠️ {msg}")
+    for field, hint in hints.items():
+        env_var = next((a for a in get_args(hint) if isinstance(a, EnvVar)), None)
+        if env_var is None:
+            continue
+
+        set_name = next((n for n in env_var.env_names if os.environ.get(n)), None)
+        default = getattr(Configs, field, "")
+        is_required = default == ""
+        primary_name = env_var.env_names[0]
+
+        if set_name:
+            if verbose:
+                suffix = f" (via {set_name})" if set_name != primary_name else ""
+                print(f"  ✅ {primary_name} configured{suffix}")
+        elif is_required:
+            print(f"  ❌ {primary_name} not set (required)")
+            missing_required.append(primary_name)
+        else:
+            if verbose:
+                print(f"  ⚠️  {primary_name} not set (using default: {default!r})")
+
+    if not missing_required:
+        if not verbose:
+            print("  ✅ All required environment variables configured")
+        return True
+
+    # Prompt user to fill in missing required vars
+    print()
+    print("  Some required environment variables are missing.")
+    print(f"  Enter values below to save them to {env_file}.")
+    print("  Press Enter to skip a variable.\n")
+
+    saved = []
+    for primary_name in missing_required:
+        try:
+            value = input(f"  {primary_name}: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+        if value:
+            _write_env_file(env_file, primary_name, value)
+            os.environ[primary_name] = value
+            saved.append(primary_name)
+
+    if saved:
+        print(f"\n  ✅ Saved to {env_file}: {', '.join(saved)}")
+
+        # Reload environment
+        try:
+            from u1_image_base.configs import (  # pyright: ignore[reportMissingImports]
+                reload_env,
+            )
+
+            print("  🔄 Reloading environment...")
+            reload_env(override=True)
+            print("  ✅ Environment reloaded successfully")
+        except Exception as e:
+            print(f"  ⚠️  Failed to reload environment: {e}")
+            print("  💡 Suggestion: Restart the agent to apply new configuration")
+    else:
+        print("\n  ⚠️  No values entered. Required variables are still missing.")
+
     return True  # env vars are warnings, not hard failures
 
 

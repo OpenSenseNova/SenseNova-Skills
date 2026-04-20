@@ -131,4 +131,22 @@ class Configs:
             )
 
 
+def reload_env(override: bool = True) -> None:
+    import sys
+    from importlib import reload
+
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(override=override)
+    except ImportError:
+        print("❌ python-dotenv is not installed, `.env` file will not be loaded on reload")
+
+    try:
+        reload(sys.modules[__name__])
+        print(f"Reloaded {__name__}")
+    except KeyError:
+        warnings.warn(f"Module {__name__} not found, cannot reload", stacklevel=2)
+
+
 global_configs = Configs()
