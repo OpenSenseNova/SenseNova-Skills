@@ -18,15 +18,15 @@ import time
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(SCRIPT_DIR.parents[1]))
 
-from configs import global_configs
-from exceptions import MissingApiKeyError
-from generation.text_to_image import TextToImageClient
-from llm.anthropic_adapter import AnthropicMessagesAdapter
-from llm.chat_completions_adapter import ChatCompletionsLlmAdapter
-from vlm.anthropic_adapter import AnthropicVlmAdapter
-from vlm.chat_completions_adapter import ChatCompletionsVlmAdapter
+from u1_image_base.configs import global_configs
+from u1_image_base.exceptions import MissingApiKeyError
+from u1_image_base.generation.text_to_image import TextToImageClient
+from u1_image_base.llm.anthropic_adapter import AnthropicMessagesAdapter
+from u1_image_base.llm.chat_completions_adapter import ChatCompletionsLlmAdapter
+from u1_image_base.vlm.anthropic_adapter import AnthropicVlmAdapter
+from u1_image_base.vlm.chat_completions_adapter import ChatCompletionsVlmAdapter
 
 
 def _resolve_prompt(

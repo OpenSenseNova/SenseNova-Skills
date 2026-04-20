@@ -28,4 +28,4 @@ unfixable = [
 ignore = ["E501"]
 
 [lint.per-file-ignores]
-"scripts/openclaw_runner.py" = ["E402"]
+"openclaw_runner.py" = ["E402"]
