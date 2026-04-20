@@ -11,6 +11,14 @@ Skills and tooling for **AIGC** in agent runtimes.
 
 ## Skills
 
+### u1-doctor
+
+Environment diagnostic skill that checks installation, dependencies, and configuration. See [`skills/u1-doctor/SKILL.md`](skills/u1-doctor/SKILL.md) for full behavior.
+
+- Validates `u1-image-base` installation and Python dependencies
+- Checks environment variables and interactively prompts to configure missing required variables
+- Saves configuration to `.env` file and reloads environment automatically
+
 ### u1-image-base (Tier 0)
 
 Base-layer infrastructure skill providing two low-level tools. See [`skills/u1-image-base/SKILL.md`](skills/u1-image-base/SKILL.md) for full behavior.
@@ -61,7 +69,7 @@ Replace the path with your clone. Details: [Skills config](https://docs.openclaw
 
 ### 2. Python dependencies and API keys
 
-Install packages and export keys in the **Python environment and process** OpenClaw uses when it runs [`skills/u1-image-base/scripts/openclaw_runner.py`](skills/u1-image-base/scripts/openclaw_runner.py) (the unified runner for these tools):
+Install packages and export keys in the **Python environment and process** OpenClaw uses when it runs [`skills/u1-image-base/u1_image_base/openclaw_runner.py`](skills/u1-image-base/u1_image_base/openclaw_runner.py) (the unified runner for these tools):
 
 ```bash
 pip install -r skills/u1-image-base/requirements.txt
@@ -75,6 +83,10 @@ export U1_LM_BASE_URL="your-lm-base-url"
 Prefer environment variables or a local `.env` file. Do not commit secrets.
 
 ### 3. Invoke in OpenClaw
+
+Check your environment and configure missing variables interactively:
+
+> /skill u1-doctor
 
 Describe the task in chat, for example:
 
