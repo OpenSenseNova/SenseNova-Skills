@@ -88,7 +88,7 @@ class Configs:
     U1_API_KEY: Annotated[str, Field("U1_API_KEY", required=True)] = ""
     U1_IMAGE_GEN_BASE_URL: Annotated[
         str, Field("U1_IMAGE_GEN_BASE_URL", "U1_BASE_URL", required=True)
-    ] = "https://zoe-api.sensetime.com/zoe-model"
+    ] = "https://u1-api.sensenova.cn/zoe-model"
     # if U1_IMAGE_GEN_MODEL_TYPE is not "u1", U1_IMAGE_GEN_MODEL must be set
     #   "nano-banana": available models are "gemini-3.1-flash-image-preview", "gemini-3-pro-image-preview"
     U1_IMAGE_GEN_MODEL_TYPE: Annotated[

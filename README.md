@@ -81,20 +81,24 @@ pip install -r skills/u1-image-base/requirements.txt
 
 ```bash
 export U1_API_KEY="your-image-api-key"
-export U1_IMAGE_GEN_BASE_URL="your-image-gen-base-url"   # or U1_BASE_URL
 ```
 
-If `U1_IMAGE_GEN_MODEL_TYPE` is set to something other than `"u1"` (e.g. `"nano-banana"`), you must also set `U1_IMAGE_GEN_MODEL`.
-
-For example, if `U1_IMAGE_GEN_MODEL_TYPE` is set to `"nano-banana"`, you can set `U1_IMAGE_GEN_MODEL` to `"gemini-3.1-flash-image-preview"` or `"gemini-3-pro-image-preview"`.
-
-**Optional** — shared prefix `U1_LM_*` sets both LLM and VLM; use the specific prefixes (`LLM_*` / `VLM_*`) to override individually:
+**Recommended** — shared prefix `U1_LM_*` sets both LLM and VLM; use the specific prefixes (`LLM_*` / `VLM_*`) to override individually:
 
 ```bash
 export U1_LM_API_KEY="your-lm-api-key"      # LLM_API_KEY / VLM_API_KEY
-export U1_LM_BASE_URL="your-lm-base-url"    # LLM_BASE_URL / VLM_BASE_URL
+export U1_LM_BASE_URL="your-lm-base-url"    # LLM_BASE_URL / VLM_BASE_URL, e.g. "https://api.anthropic.com" (Not including "/v1" path)
 export U1_LM_MODEL="your-model-name"        # LLM_MODEL / VLM_MODEL
 export U1_LM_TYPE="openai-completions"      # LLM_TYPE / VLM_TYPE — "openai-completions" or "anthropic-messages"
+```
+
+**Optional** - To use Nano Banana models for image generation:
+
+```bash
+export U1_API_KEY="your-api-key-for-nano-banana"                            # Your API key for Nano Banana models
+export U1_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"    # The base URL for Nano Banana models API
+export U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
+export U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"  # Nano Banana model name, e.g. "gemini-3.1-flash-image-preview", "gemini-3-pro-image-preview"
 ```
 
 Prefer environment variables or a local `.env` file. Do not commit secrets.
