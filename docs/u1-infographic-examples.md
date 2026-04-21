@@ -88,7 +88,7 @@ Here are infographic examples generated with the `u1-infographic` skill (powered
 
 | u1-fast | sensenova-u1 |
 |---------|--------------|
-| ![u1-fast Example 2](images/demo2.webp) | ![sensenova-u1 Example 2](images/demo0002_2720x1536.webp) |
+| ![u1-fast Example 2](images/demo2.webp) | ![sensenova-u1 Example 2](images/demo0002_1536x2720.webp) |
 
 ---
 
