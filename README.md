@@ -101,7 +101,7 @@ Prefer environment variables or a local `.env` file. Do not commit secrets.
 
 ### 3. Invoke in OpenClaw
 
-Check your environment and configure missing variables interactively:
+Check your environment before using the skills:
 
 > /skill u1-doctor
 

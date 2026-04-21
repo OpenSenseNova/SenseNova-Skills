@@ -101,7 +101,7 @@ export U1_LM_TYPE="openai-completions"      # LLM_TYPE / VLM_TYPE — "openai-co
 
 ### 3. 在 OpenClaw 中调用
 
-检查环境并交互式配置缺失的变量：
+检查环境变量，确保技能可以正常工作：
 
 > /skill u1-doctor
 
