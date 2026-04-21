@@ -75,11 +75,26 @@ Install packages and export keys in the **Python environment and process** OpenC
 
 ```bash
 pip install -r skills/u1-image-base/requirements.txt
-# for image generation
+```
+
+**Required** — image generation will not work without these:
+
+```bash
 export U1_API_KEY="your-image-api-key"
-# for LLM and VLM
-export U1_LM_API_KEY="your-lm-api-key"
-export U1_LM_BASE_URL="your-lm-base-url"
+export U1_IMAGE_GEN_BASE_URL="your-image-gen-base-url"   # or U1_BASE_URL
+```
+
+If `U1_IMAGE_GEN_MODEL_TYPE` is set to something other than `"u1"` (e.g. `"nano-banana"`), you must also set `U1_IMAGE_GEN_MODEL`.
+
+For example, if `U1_IMAGE_GEN_MODEL_TYPE` is set to `"nano-banana"`, you can set `U1_IMAGE_GEN_MODEL` to `"gemini-3.1-flash-image-preview"` or `"gemini-3-pro-image-preview"`.
+
+**Optional** — shared prefix `U1_LM_*` sets both LLM and VLM; use the specific prefixes (`LLM_*` / `VLM_*`) to override individually:
+
+```bash
+export U1_LM_API_KEY="your-lm-api-key"      # LLM_API_KEY / VLM_API_KEY
+export U1_LM_BASE_URL="your-lm-base-url"    # LLM_BASE_URL / VLM_BASE_URL
+export U1_LM_MODEL="your-model-name"        # LLM_MODEL / VLM_MODEL
+export U1_LM_TYPE="openai-completions"      # LLM_TYPE / VLM_TYPE — "openai-completions" or "anthropic-messages"
 ```
 
 Prefer environment variables or a local `.env` file. Do not commit secrets.

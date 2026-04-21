@@ -75,11 +75,26 @@
 
 ```bash
 pip install -r skills/u1-image-base/requirements.txt
-# 图像生成
+```
+
+**必填** — 缺少以下变量时图像生成将无法工作：
+
+```bash
 export U1_API_KEY="your-image-api-key"
-# LLM/VLM
-export U1_LM_API_KEY="your-lm-api-key"
-export U1_LM_BASE_URL="your-lm-base-url"
+export U1_IMAGE_GEN_BASE_URL="your-image-gen-base-url"   # 或 U1_BASE_URL
+```
+
+若 `U1_IMAGE_GEN_MODEL_TYPE` 设置为非 `"u1"` 的值（如 `"nano-banana"`），则还需设置 `U1_IMAGE_GEN_MODEL`。
+
+例如，当 `U1_IMAGE_GEN_MODEL_TYPE` 为 `"nano-banana"` 时，可将 `U1_IMAGE_GEN_MODEL` 设置为 `"gemini-3.1-flash-image-preview"` 或 `"gemini-3-pro-image-preview"`。
+
+**可选** — 共享前缀 `U1_LM_*` 同时作用于 LLM 和 VLM；如需单独覆盖，可使用各自的前缀（`LLM_*` / `VLM_*`）：
+
+```bash
+export U1_LM_API_KEY="your-lm-api-key"      # LLM_API_KEY / VLM_API_KEY
+export U1_LM_BASE_URL="your-lm-base-url"    # LLM_BASE_URL / VLM_BASE_URL
+export U1_LM_MODEL="your-model-name"        # LLM_MODEL / VLM_MODEL
+export U1_LM_TYPE="openai-completions"      # LLM_TYPE / VLM_TYPE — "openai-completions" 或 "anthropic-messages"
 ```
 
 请使用环境变量或本地 `.env` 文件。不要将密钥提交到版本库。
