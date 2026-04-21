@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+.idea/
+/docs/
+/test/
+/node_modules/
+/tests/
