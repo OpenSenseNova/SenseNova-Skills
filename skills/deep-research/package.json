@@ -1,0 +1,50 @@
+{
+  "name": "openclaw-deep-research",
+  "version": "0.1.0",
+  "description": "OpenClaw plugin: multi-agent deep research workflow",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.4.15",
+      "minGatewayVersion": "2026.4.15"
+    },
+    "build": {
+      "openclawVersion": "2026.4.15",
+      "pluginSdkVersion": "2026.4.15"
+    }
+  },
+  "files": [
+    "dist",
+    "skills",
+    "workspaces",
+    "scripts/install.sh",
+    "scripts/install.ps1",
+    "scripts/merge_config.py",
+    "openclaw.plugin.json",
+    "requirements.txt",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "prepack": "npm run build",
+    "install:local": "bash scripts/install.sh",
+    "install:local:windows": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install.ps1",
+    "test": "vitest"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.4.15"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.4"
+  }
+}
