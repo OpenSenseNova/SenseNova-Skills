@@ -1,5 +1,5 @@
 ---
-name: u1-image-caption
+name: da-image-caption
 description: "Use this skill when image files (.png, .jpg, .jpeg, .gif, .webp, .bmp) are the primary input and the user needs to understand, extract data from, or analyze image content. Provides a pre-configured caption script (scripts/caption.py) that converts images to text descriptions via a vision model — no API key setup needed. Covers: (1) captioning charts/tables/screenshots/diagrams via scripts/caption.py, (2) parsing caption text into structured DataFrames, (3) re-creating visualizations from extracted data, (4) exporting to Excel/CSV. Trigger when user uploads images and wants: data extraction, table OCR, chart analysis, UI description, or diagram understanding. Do NOT trigger for image editing (resize, crop, filter) or image generation."
 ---
 
@@ -71,7 +71,7 @@ python3 scripts/caption.py /mnt/data/image.png --model gemini-3.1-flash-lite-pre
 ```python
 import subprocess, json
 
-CAPTION = "/path/to/skills/u1-image-caption/scripts/caption.py"
+CAPTION = "/path/to/skills/da-image-caption/scripts/caption.py"
 
 # Single image
 result = subprocess.run(

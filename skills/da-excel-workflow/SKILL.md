@@ -1,5 +1,5 @@
 ---
-name: u1-excel-workflow
+name: da-excel-workflow
 description: "Multi-step workflow for Excel data analysis. Use when a task involves: (1) reading multi-sheet Excel files and counting rows, (2) large file detection (>=10k rows -> Parquet optimization), (3) data cleaning (missing values, text normalization, invalid characters), (4) conditional filtering and category extraction, (5) statistical aggregation across sheets, (6) exporting results as Excel/CSV with download links. Covers the full pipeline from ingestion to report generation. Orchestrates capability sub-skills for each step."
 ---
 
@@ -42,11 +42,11 @@ memory, which will OOM on large files.
 |-----------|----------|------------|
 | < 10k | Direct read | `df = pd.read_excel(file_path, sheet_name=target_sheet)` |
 | 10k – 100k | Parquet cache | `pd.read_excel()` once → `df.to_parquet()` → all later reads from Parquet |
-| **>= 100k** | **STOP. Load `u1-large-file-analysis` skill** | Read its SKILL.md, then follow its streaming read + Parquet pattern. **Do NOT use `pd.read_excel()` at all** — it will OOM or timeout on 100k+ rows. |
+| **>= 100k** | **STOP. Load `da-large-file-analysis` skill** | Read its SKILL.md, then follow its streaming read + Parquet pattern. **Do NOT use `pd.read_excel()` at all** — it will OOM or timeout on 100k+ rows. |
 
 **For >= 100k rows:**
 ```
-read_file(path="<skills_base>/u1-large-file-analysis/SKILL.md")
+read_file(path="<skills_base>/da-large-file-analysis/SKILL.md")
 ```
 Then use `stream_excel_to_parquet()` from that skill — it reads via
 openpyxl `iter_rows` in 50k-row chunks with constant memory.
@@ -96,7 +96,7 @@ df[col] = df[col].apply(clean_text)
 ```
 
 ⚠️ **Large file rule**: When `total_rows >= 100k`, do NOT use `df.apply(lambda...)`.
-Use vectorized operations or `np.where()` instead. See `u1-large-file-analysis` skill
+Use vectorized operations or `np.where()` instead. See `da-large-file-analysis` skill
 for the vectorized cheat sheet.
 
 → capabilities:
@@ -140,7 +140,7 @@ print(f"[Download](sandbox:{output_path})")
 ## Key rules
 
 - **Always count rows first** — gate large-file logic on the 10k threshold.
-- **>= 100k rows → MUST load `u1-large-file-analysis` skill** — do not attempt to handle with `pd.read_excel()`.
+- **>= 100k rows → MUST load `da-large-file-analysis` skill** — do not attempt to handle with `pd.read_excel()`.
 - **Column names may contain spaces** (e.g. `'是否通 过'`) — use exact string indexing.
 - **Headerless sheets** — use `header=None` and positional indexing.
 - **Prohibited on large files (>= 100k rows)**:
@@ -191,7 +191,7 @@ read_file(path="<base_path>/<Category>/<Sub_skill_Name>/SKILL.md")
 
 ## Available capability sub-skills
 
-Base path: `<skills_root>/u1-excel-workflow/capability/{category}/{sub-skill}/SKILL.md`
+Base path: `<skills_root>/da-excel-workflow/capability/{category}/{sub-skill}/SKILL.md`
 
 ### Excel_Reading — 读取与解析
 
