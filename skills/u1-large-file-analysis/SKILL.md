@@ -1,5 +1,5 @@
 ---
-name: large-scale-excel-analysis
+name: u1-large-file-analysis
 description: "High-performance analysis for Excel datasets with 10k+ rows. Provides streaming read via openpyxl read_only + iter_rows for 100k+ rows, Parquet conversion, memory optimization, chunked processing, and large-file write patterns. Must load this skill when data >= 10k rows."
 ---
 

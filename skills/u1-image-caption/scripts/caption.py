@@ -2,7 +2,7 @@
 """
 Image Caption Script — Generate text descriptions of images via vision LLM.
 
-Standalone script for the Image_Analysis skill. Can be used directly
+Standalone script for the u1-image-caption skill. Can be used directly
 from the command line or imported as a module.
 
 Features:
