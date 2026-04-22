@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const HELPER_SKILLS = [
+  "deep-research",
   "_search-common",
   "search-code",
   "search-academic",

@@ -25,6 +25,10 @@ function resolveAbs(raw: string): string {
   return path.resolve(expanded);
 }
 
+function stripGeneratedBibliography(text: string): string {
+  return text.replace(/\n## 参考文献\s*[\s\S]*$/u, "").trimEnd();
+}
+
 async function runPrepareCitations(input: PrepareCitationsInput): Promise<PrepareCitationsResult> {
   const reportPath = resolveAbs(input.report_path);
   const subReportPaths = (input.sub_report_paths ?? []).map(resolveAbs);
@@ -41,7 +45,7 @@ async function runPrepareCitations(input: PrepareCitationsInput): Promise<Prepar
   for (const sr of subReportPaths) {
     try {
       const text = await fs.readFile(sr, "utf-8");
-      cm.collectDefinitions(text);
+      cm.collectDefinitions(text, { kind: "sub", order: scanned.length });
       scanned.push(sr);
     } catch (err) {
       // 子报告缺失不阻塞终稿处理，但要把失败路径返回出去给调用方排查
@@ -50,9 +54,10 @@ async function runPrepareCitations(input: PrepareCitationsInput): Promise<Prepar
   }
 
   const reportText = await fs.readFile(reportPath, "utf-8");
-  cm.collectDefinitions(reportText);
+  cm.collectDefinitions(reportText, { kind: "final", order: subReportPaths.length });
+  const cleanReportText = stripGeneratedBibliography(reportText);
 
-  const { processed, references } = cm.processReport(reportText);
+  const { processed, references } = cm.processReport(cleanReportText);
   const finalText = `${processed}\n\n## 参考文献\n\n${references}\n`;
   await fs.writeFile(reportPath, finalText, "utf-8");
 
@@ -76,7 +81,7 @@ export function prepareReportCitationsTool() {
     name: "prepare_report_citations",
     label: "Deep Research: prepare citations",
     description:
-      "处理终稿引用：从指定子报告收集 [^key] 脚注定义（按 URL 去重），将终稿中的 [^key] 替换为 [N] 编号，末尾追加参考文献列表，并生成 citations.json。所有路径必须是绝对路径。仅在终稿撰写完成且通过审查后调用。",
+      "处理终稿引用：收集终稿与子报告中的全部 [^key] 脚注定义，去重并统一重排为 [N] 数字引用，重写终稿参考文献列表，并生成 citations.json。所有路径必须是绝对路径。仅在终稿撰写完成且通过审查后调用。",
     parameters: {
       type: "object" as const,
       additionalProperties: false,

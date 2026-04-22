@@ -7,6 +7,9 @@ function resolveAbs(raw) {
     const expanded = raw.replace(/^~(?=$|\/|\\)/, process.env.HOME ?? process.env.USERPROFILE ?? "~");
     return path.resolve(expanded);
 }
+function stripGeneratedBibliography(text) {
+    return text.replace(/\n## 参考文献\s*[\s\S]*$/u, "").trimEnd();
+}
 async function runPrepareCitations(input) {
     const reportPath = resolveAbs(input.report_path);
     const subReportPaths = (input.sub_report_paths ?? []).map(resolveAbs);
@@ -22,7 +25,7 @@ async function runPrepareCitations(input) {
     for (const sr of subReportPaths) {
         try {
             const text = await fs.readFile(sr, "utf-8");
-            cm.collectDefinitions(text);
+            cm.collectDefinitions(text, { kind: "sub", order: scanned.length });
             scanned.push(sr);
         }
         catch (err) {
@@ -31,8 +34,9 @@ async function runPrepareCitations(input) {
         }
     }
     const reportText = await fs.readFile(reportPath, "utf-8");
-    cm.collectDefinitions(reportText);
-    const { processed, references } = cm.processReport(reportText);
+    cm.collectDefinitions(reportText, { kind: "final", order: subReportPaths.length });
+    const cleanReportText = stripGeneratedBibliography(reportText);
+    const { processed, references } = cm.processReport(cleanReportText);
     const finalText = `${processed}\n\n## 参考文献\n\n${references}\n`;
     await fs.writeFile(reportPath, finalText, "utf-8");
     const citationsPath = path.join(path.dirname(reportPath), "citations.json");
@@ -52,7 +56,7 @@ export function prepareReportCitationsTool() {
     return {
         name: "prepare_report_citations",
         label: "Deep Research: prepare citations",
-        description: "处理终稿引用：从指定子报告收集 [^key] 脚注定义（按 URL 去重），将终稿中的 [^key] 替换为 [N] 编号，末尾追加参考文献列表，并生成 citations.json。所有路径必须是绝对路径。仅在终稿撰写完成且通过审查后调用。",
+        description: "处理终稿引用：收集终稿与子报告中的全部 [^key] 脚注定义，去重并统一重排为 [N] 数字引用，重写终稿参考文献列表，并生成 citations.json。所有路径必须是绝对路径。仅在终稿撰写完成且通过审查后调用。",
         parameters: {
             type: "object",
             additionalProperties: false,

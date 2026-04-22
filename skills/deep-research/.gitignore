@@ -1,6 +1,8 @@
 .venv/
 venv/
+
 __pycache__/
+skills/**/__pycache__/
 *.py[cod]
 
 .idea/

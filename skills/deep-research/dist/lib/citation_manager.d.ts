@@ -4,12 +4,17 @@ export interface Citation {
     title: string;
     index: number;
     aliasKeys: string[];
+    identity: string;
+    sourceKind: "sub" | "final";
+    sourceOrder: number;
 }
 export declare class CitationManager {
     private definitions;
     private pool;
-    private keyToNormUrl;
-    collectDefinitions(text: string): void;
+    collectDefinitions(text: string, source?: {
+        kind: "sub" | "final";
+        order: number;
+    }): void;
     processReport(reportText: string): {
         processed: string;
         references: string;

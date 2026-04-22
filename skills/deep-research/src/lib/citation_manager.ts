@@ -7,6 +7,9 @@ export interface Citation {
   title: string;
   index: number;
   aliasKeys: string[];
+  identity: string;
+  sourceKind: "sub" | "final";
+  sourceOrder: number;
 }
 
 function normalizeUrl(raw: string): string {
@@ -27,79 +30,150 @@ const FOOTNOTE_DEF_RE = /^\[\^([\w-]+)\]:\s*(.+)$/gm;
 const MD_LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/;
 const BARE_URL_RE = /https?:\/\/\S+/;
 
+function normalizeText(raw: string): string {
+  return raw.trim().replace(/\s+/g, " ");
+}
+
 function parseFootnoteDef(content: string): { title: string; url: string } {
   const link = MD_LINK_RE.exec(content);
   if (link) return { title: link[1].trim(), url: link[2].trim() };
 
   const url = BARE_URL_RE.exec(content);
   if (url) {
-    const title = content.slice(0, url.index).trim().replace(/-$/, "").trim();
-    return { title: title || url[0], url: url[0] };
+    const cleanUrl = url[0].replace(/[),.;]+$/g, "");
+    const title = content
+      .slice(0, url.index)
+      .trim()
+      .replace(/[-,:;]+$/g, "")
+      .trim();
+    return { title: title || cleanUrl, url: cleanUrl };
   }
   return { title: content.trim(), url: "" };
 }
 
 export class CitationManager {
-  private definitions = new Map<string, { title: string; url: string }>();
+  private definitions = new Map<string, { title: string; url: string; identity: string }>();
   private pool = new Map<string, Citation>();
-  private keyToNormUrl = new Map<string, string>();
 
-  collectDefinitions(text: string): void {
+  collectDefinitions(
+    text: string,
+    source: {
+      kind: "sub" | "final";
+      order: number;
+    } = { kind: "sub", order: 0 },
+  ): void {
     FOOTNOTE_DEF_RE.lastIndex = 0;
     let m: RegExpExecArray | null;
     while ((m = FOOTNOTE_DEF_RE.exec(text)) !== null) {
       const key = m[1];
       const { title, url } = parseFootnoteDef(m[2]);
-      this.definitions.set(key, { title, url });
+      const identity = url ? `url:${normalizeUrl(url)}` : `text:${normalizeText(title)}`;
+      this.definitions.set(key, { title, url, identity });
 
-      if (!url) continue;
-      const norm = normalizeUrl(url);
-      this.keyToNormUrl.set(key, norm);
-
-      const existing = this.pool.get(norm);
+      const existing = this.pool.get(identity);
       if (!existing) {
-        this.pool.set(norm, { key, url, title, index: 0, aliasKeys: [key] });
-      } else if (!existing.aliasKeys.includes(key)) {
+        this.pool.set(identity, {
+          key,
+          url,
+          title,
+          index: 0,
+          aliasKeys: [key],
+          identity,
+          sourceKind: source.kind,
+          sourceOrder: source.order,
+        });
+        continue;
+      }
+
+      if (!existing.aliasKeys.includes(key)) {
         existing.aliasKeys.push(key);
+      }
+
+      const shouldReplace =
+        (source.kind === "final" && existing.sourceKind !== "final") ||
+        (source.kind === existing.sourceKind && source.order >= existing.sourceOrder);
+
+      if (shouldReplace) {
+        existing.key = key;
+        existing.url = url;
+        existing.title = title;
+        existing.sourceKind = source.kind;
+        existing.sourceOrder = source.order;
       }
     }
   }
 
   processReport(reportText: string): { processed: string; references: string } {
     const keyToIndex = new Map<string, number>();
+    const identityToIndex = new Map<string, number>();
     const ordered: Citation[] = [];
     let counter = 0;
+
+    const resolveCitation = (key: string): Citation => {
+      const def = this.definitions.get(key);
+      if (def) {
+        const citation = this.pool.get(def.identity);
+        if (citation) {
+          return citation;
+        }
+      }
+
+      const identity = `missing:${key}`;
+      const existing = this.pool.get(identity);
+      if (existing) {
+        return existing;
+      }
+
+      const fallback: Citation = {
+        key,
+        url: "",
+        title: def?.title ?? key,
+        index: 0,
+        aliasKeys: [key],
+        identity,
+        sourceKind: "final",
+        sourceOrder: Number.MAX_SAFE_INTEGER,
+      };
+      this.pool.set(identity, fallback);
+      return fallback;
+    };
+
+    const assignCitation = (citation: Citation): number => {
+      const existing = identityToIndex.get(citation.identity);
+      if (existing) {
+        return existing;
+      }
+
+      counter += 1;
+      citation.index = counter;
+      identityToIndex.set(citation.identity, counter);
+      ordered.push(citation);
+      return counter;
+    };
 
     FOOTNOTE_REF_RE.lastIndex = 0;
     let m: RegExpExecArray | null;
     while ((m = FOOTNOTE_REF_RE.exec(reportText)) !== null) {
       const key = m[1];
-      const norm = this.keyToNormUrl.get(key);
+      const citation = resolveCitation(key);
+      const idx = assignCitation(citation);
 
-      if (norm && this.pool.has(norm)) {
-        const citation = this.pool.get(norm)!;
-        const primaryKey = citation.key;
-        if (!keyToIndex.has(primaryKey)) {
-          counter += 1;
-          citation.index = counter;
-          keyToIndex.set(primaryKey, counter);
-          ordered.push(citation);
+      if (!keyToIndex.has(key)) {
+        keyToIndex.set(key, idx);
+      }
+      for (const aliasKey of citation.aliasKeys) {
+        if (!keyToIndex.has(aliasKey)) {
+          keyToIndex.set(aliasKey, idx);
         }
-        if (!keyToIndex.has(key)) {
-          keyToIndex.set(key, keyToIndex.get(primaryKey)!);
+      }
+    }
+
+    for (const citation of this.pool.values()) {
+      const idx = assignCitation(citation);
+      for (const aliasKey of citation.aliasKeys) {
+        if (!keyToIndex.has(aliasKey)) {
+          keyToIndex.set(aliasKey, idx);
         }
-      } else if (!keyToIndex.has(key)) {
-        counter += 1;
-        const def = this.definitions.get(key);
-        const fallback: Citation = {
-          key,
-          url: "",
-          title: def?.title ?? key,
-          index: counter,
-          aliasKeys: [key],
-        };
-        keyToIndex.set(key, counter);
-        ordered.push(fallback);
       }
     }
 
@@ -110,7 +184,7 @@ export class CitationManager {
     processed = processed.replace(FOOTNOTE_DEF_RE, "").replace(/\n{3,}/g, "\n\n").trim();
 
     const refLines = ordered.map((c) =>
-      c.url ? `${c.index}. [${c.title}](${c.url})` : `${c.index}. ${c.title}`,
+      c.url ? `[${c.index}] [${c.title}](${c.url})` : `[${c.index}] ${c.title}`,
     );
 
     return { processed, references: refLines.join("\n") };
