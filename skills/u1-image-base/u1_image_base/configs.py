@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import contextlib
 import os
 import warnings
 from pathlib import Path
-from typing import Annotated, Literal, Optional, Union, get_args, get_origin, get_type_hints
+from typing import Annotated, Literal, get_args, get_origin, get_type_hints
 from urllib.parse import urlparse
 
 SCRIPT_DIR = Path(__file__).absolute().parent
@@ -51,10 +53,10 @@ class Field:
     __slots__ = ("env_names", "required")
 
     def __init__(self, *env_names: str, required: bool = False) -> None:
-        self.env_names: Optional[tuple[str, ...]] = tuple(env_names) if env_names else None
+        self.env_names: tuple[str, ...] | None = tuple(env_names) if env_names else None
         self.required = required
 
-    def resolve(self, target_type: Optional[type] = None) -> Union[str, int, float, None]:
+    def resolve(self, target_type: type | None = None) -> str | int | float | None:
         """Return the first env var value that is set, converted to target_type.
 
         Args:
@@ -133,7 +135,7 @@ class Configs:
                 setattr(self, field, val)
 
     def validate_configs(self) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
-        field_env_names: dict[str, Union[tuple[str, ...], str]] = {}
+        field_env_names: dict[str, tuple[str, ...] | str] = {}
         errors: list[tuple[str, str]] = []
         for field, hint in get_type_hints(type(self), include_extras=True).items():
             env_var = next((a for a in get_args(hint) if isinstance(a, Field)), None)
@@ -195,7 +197,7 @@ class Configs:
         )
         return errors, warnings
 
-    def get_annotated_field(self, field_name: str) -> Union[Field, None]:
+    def get_annotated_field(self, field_name: str) -> Field | None:
         hints = get_type_hints(type(self), include_extras=True)
         if field_name not in hints:
             return None

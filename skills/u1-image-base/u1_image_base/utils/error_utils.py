@@ -1,4 +1,6 @@
-from typing import Any, Union
+from __future__ import annotations
+
+from typing import Any
 
 
 class U1BaseError(Exception):
@@ -6,9 +8,9 @@ class U1BaseError(Exception):
 
     def __init__(
         self,
-        message: Union[str, None] = None,
-        detail: Union[str, None] = None,
-        code: Union[int, None] = None,
+        message: str | None = None,
+        detail: str | None = None,
+        code: int | None = None,
         **kwargs: Any,
     ) -> None:
         if message is None:
