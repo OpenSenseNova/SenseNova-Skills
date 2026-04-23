@@ -14,6 +14,7 @@ import httpx
 from .error_utils import (
     U1HttpAuthError,
     U1HttpBadRequestError,
+    U1HttpNotFoundError,
     U1HttpServerError,
     U1HttpTooManyRequestsError,
 )
@@ -149,25 +150,31 @@ def httpx_response_raise_for_status_code(response: httpx.Response) -> None:
         response_content = json.loads(response_content)
     with contextlib.suppress(Exception):
         request_method = response.request.method
+        request_method = request_method.upper()
         request_url = str(response.request.url)
 
+    if response.status_code == 404:
+        raise U1HttpNotFoundError(
+            detail=f"{request_method} {request_url!r} not found. Please check the URL.",
+            code=response.status_code,
+        )
     if response.status_code in (401, 403):
         raise U1HttpAuthError(
-            detail=f"Authentication or authorization failed. {request_url} {request_method}. Response content: {response_content}",
+            detail=f"Authentication or authorization failed. {request_method} {request_url!r}. Response content: {response_content}",
             code=response.status_code,
         )
     elif response.status_code in (429, 503):
         raise U1HttpTooManyRequestsError(
-            detail=f"Service temporarily unavailable. {request_url} {request_method}. Response content: {response_content}",
+            detail=f"Service temporarily unavailable. {request_method} {request_url!r}. Response content: {response_content}",
             code=response.status_code,
         )
     elif 500 <= response.status_code <= 599:
         raise U1HttpServerError(
-            detail=f"Request failed. {request_url} {request_method}. Response content: {response_content}",
+            detail=f"Request failed. {request_method} {request_url!r}. Response content: {response_content}",
             code=response.status_code,
         )
     elif 400 <= response.status_code <= 499:
         raise U1HttpBadRequestError(
-            detail=f"Bad request. {request_url} {request_method}. Response content: {response_content}",
+            detail=f"Bad request. {request_method} {request_url!r}. Response content: {response_content}",
             code=response.status_code,
         )

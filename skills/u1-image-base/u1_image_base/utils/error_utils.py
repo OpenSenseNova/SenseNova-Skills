@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 
 
 class U1BaseError(Exception):
@@ -6,9 +6,9 @@ class U1BaseError(Exception):
 
     def __init__(
         self,
-        message: str | None = None,
-        detail: str | None = None,
-        code: int | None = None,
+        message: Union[str, None] = None,
+        detail: Union[str, None] = None,
+        code: Union[int, None] = None,
         **kwargs: Any,
     ) -> None:
         if message is None:
@@ -33,6 +33,10 @@ class U1HttpErrorBase(U1BaseError):
 
 class U1HttpAuthError(U1HttpErrorBase):
     MESSAGE = "Authentication or Authorization Failed"
+
+
+class U1HttpNotFoundError(U1HttpErrorBase):
+    MESSAGE = "Resource Not Found"
 
 
 class U1HttpTooManyRequestsError(U1HttpErrorBase):

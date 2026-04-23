@@ -17,7 +17,7 @@ from pathlib import Path
 import httpx
 from typing_extensions import Any, Literal, override
 
-from u1_image_base.configs import global_configs
+from u1_image_base.configs import global_configs, is_valid_base_url
 from u1_image_base.u1_api.paths import (
     text_to_image_create_url,
     text_to_image_status_url,
@@ -217,6 +217,11 @@ class U1Text2ImageClient(T2IBaseClient):
                 "Base URL is missing: {}".format(
                     global_configs.get_env_var_help("U1_IMAGE_GEN_BASE_URL")
                 )
+            )
+        if not is_valid_base_url(base_url):
+            raise ValueError(
+                f"Base URL is not a valid base URL: {base_url}. "
+                f"Try setting environment variable(s): {global_configs.get_env_var_help('U1_IMAGE_GEN_BASE_URL')}"
             )
         return base_url
 

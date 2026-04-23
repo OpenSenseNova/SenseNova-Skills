@@ -1,7 +1,9 @@
+import contextlib
 import os
 import warnings
 from pathlib import Path
-from typing import Annotated, Literal, get_args, get_origin, get_type_hints
+from typing import Annotated, Literal, Optional, Union, get_args, get_origin, get_type_hints
+from urllib.parse import urlparse
 
 SCRIPT_DIR = Path(__file__).absolute().parent
 # "skills" directory that contains "u1-*" skills (e.g. "u1-image-base", "u1-infographic", etc.)
@@ -49,10 +51,10 @@ class Field:
     __slots__ = ("env_names", "required")
 
     def __init__(self, *env_names: str, required: bool = False) -> None:
-        self.env_names: tuple[str, ...] | None = tuple(env_names) if env_names else None
+        self.env_names: Optional[tuple[str, ...]] = tuple(env_names) if env_names else None
         self.required = required
 
-    def resolve(self, target_type: type | None = None) -> str | int | float | None:
+    def resolve(self, target_type: Optional[type] = None) -> Union[str, int, float, None]:
         """Return the first env var value that is set, converted to target_type.
 
         Args:
@@ -101,7 +103,7 @@ class Configs:
     # image-recognize (VLM) — falls back to shared U1_LM_* vars
     VLM_API_KEY: Annotated[str, Field("VLM_API_KEY", "U1_LM_API_KEY")] = "dummy"
     VLM_BASE_URL: Annotated[str, Field("VLM_BASE_URL", "U1_LM_BASE_URL")] = ""
-    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "U1_LM_MODEL")] = "sensenova-122b-128k-step9k"
+    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "U1_LM_MODEL")] = ""
     VLM_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("VLM_TYPE", "U1_LM_TYPE"),
@@ -110,7 +112,7 @@ class Configs:
     # text-optimize (LLM) — falls back to shared U1_LM_* vars
     LLM_API_KEY: Annotated[str, Field("LLM_API_KEY", "U1_LM_API_KEY")] = "dummy"
     LLM_BASE_URL: Annotated[str, Field("LLM_BASE_URL", "U1_LM_BASE_URL")] = ""
-    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "U1_LM_MODEL")] = "sensenova-122b-128k-step9k"
+    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "U1_LM_MODEL")] = ""
     LLM_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("LLM_TYPE", "U1_LM_TYPE"),
@@ -131,7 +133,7 @@ class Configs:
                 setattr(self, field, val)
 
     def validate_configs(self) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
-        field_env_names: dict[str, tuple[str, ...] | str] = {}
+        field_env_names: dict[str, Union[tuple[str, ...], str]] = {}
         errors: list[tuple[str, str]] = []
         for field, hint in get_type_hints(type(self), include_extras=True).items():
             env_var = next((a for a in get_args(hint) if isinstance(a, Field)), None)
@@ -175,7 +177,25 @@ class Configs:
             for key in llm_keys
             if not getattr(self, key)
         ])
+
+        # check urls
+        errors.extend(
+            (
+                key,
+                f"{key} is not a valid base URL: {getattr(self, key)}",
+            )
+            for key in ("VLM_BASE_URL", "LLM_BASE_URL")
+            if getattr(self, key) and not is_valid_base_url(getattr(self, key))
+        )
         return errors, warnings
+
+    def get_annotated_field(self, field_name: str) -> Union[Field, None]:
+        hints = get_type_hints(type(self), include_extras=True)
+        if field_name not in hints:
+            return None
+        hint = hints[field_name]
+        field_inst = next((a for a in get_args(hint) if isinstance(a, Field)), None)
+        return field_inst
 
     def get_env_var_help(self, field_name: str) -> str:
         """Return a help string describing which environment variables can be used
@@ -191,18 +211,12 @@ class Configs:
         if not hasattr(type(self), field_name):
             return f"Field '{field_name}' does not exist in Configs."
 
-        hints = get_type_hints(type(self), include_extras=True)
-        if field_name not in hints:
-            return f"Field '{field_name}' has no type hint."
-
-        hint = hints[field_name]
-        env_var = next((a for a in get_args(hint) if isinstance(a, Field)), None)
-        if env_var is None:
+        field_inst = self.get_annotated_field(field_name)
+        if field_inst is None:
             return f"Field '{field_name}' is not configurable via environment variables."
 
         current_value = getattr(self, field_name)
-        env_names = list(env_var.env_names) if env_var.env_names else []
-
+        env_names = list(field_inst.env_names) if field_inst.env_names else []
         if len(env_names) == 1:
             return (
                 f"To set '{field_name}', configure the environment variable: {env_names[0]}\n"
@@ -215,6 +229,13 @@ class Configs:
                 f"They are tried in order; the first set value is used.\n"
                 f"Current value: {current_value!r}"
             )
+
+
+def is_valid_base_url(url: str) -> bool:
+    with contextlib.suppress(ValueError):
+        parsed = urlparse(url)
+        return bool(parsed.scheme and parsed.netloc)
+    return False
 
 
 def reload_env(override: bool = True) -> None:
