@@ -9,10 +9,14 @@ import httpx
 from typing_extensions import override
 
 from u1_image_base.configs import global_configs, is_valid_base_url
-from u1_image_base.utils.error_utils import U1HttpErrorBase, U1HttpNotFoundError
+from u1_image_base.utils.error_utils import U1HttpErrorBase
 
 from .core import ensure_output_path
-from .core.client_base import DEFAULT_HTTP_REQUEST_TIMEOUT, DEFAULT_MAX_CONNECTIONS, T2IBaseClient
+from .core.client_base import (
+    DEFAULT_HTTP_REQUEST_TIMEOUT,
+    DEFAULT_MAX_CONNECTIONS,
+    T2IBaseClient,
+)
 
 DEFAULT_MODEL_SIZE: Literal["1K", "2K", "4K"] = "2K"
 DEFAULT_ASPECT_RATIO = "16:9"

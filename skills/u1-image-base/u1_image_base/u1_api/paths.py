@@ -118,9 +118,7 @@ def generation_file_download_url(base_url: str, image_ref: str) -> str:
             key URL-encoded.
     """
     image_key = image_ref.lstrip("/")
-    return (
-        f"{join_base(base_url, GENERATION_FILES_PREFIX)}/{quote(image_key, safe='/')}"
-    )
+    return f"{join_base(base_url, GENERATION_FILES_PREFIX)}/{quote(image_key, safe='/')}"
 
 
 def generation_file_upload_url(base_url: str) -> str:

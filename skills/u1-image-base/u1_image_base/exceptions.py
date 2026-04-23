@@ -1,5 +1,7 @@
 """Shared exceptions for u1-image-base."""
 
+from __future__ import annotations
+
 
 class U1BaseError(Exception):
     """Base exception for u1-image-base."""

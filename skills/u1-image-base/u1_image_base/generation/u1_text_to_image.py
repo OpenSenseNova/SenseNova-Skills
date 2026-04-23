@@ -24,7 +24,11 @@ from u1_image_base.u1_api.paths import (
 )
 
 from .core import download_image, ensure_output_path, extract_task_image
-from .core.client_base import DEFAULT_HTTP_REQUEST_TIMEOUT, DEFAULT_MAX_CONNECTIONS, T2IBaseClient
+from .core.client_base import (
+    DEFAULT_HTTP_REQUEST_TIMEOUT,
+    DEFAULT_MAX_CONNECTIONS,
+    T2IBaseClient,
+)
 
 DEFAULT_MODEL_SIZE = "2k"
 DEFAULT_ASPECT_RATIO = "16:9"

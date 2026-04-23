@@ -153,30 +153,36 @@ class Configs:
 
         # Check fields combination rules:
         if self.U1_IMAGE_GEN_MODEL_TYPE != "u1" and not self.U1_IMAGE_GEN_MODEL:
-            errors.append((
-                "U1_IMAGE_GEN_MODEL",
-                "U1_IMAGE_GEN_MODEL is required when U1_IMAGE_GEN_MODEL_TYPE is not 'u1'",
-            ))
+            errors.append(
+                (
+                    "U1_IMAGE_GEN_MODEL",
+                    "U1_IMAGE_GEN_MODEL is required when U1_IMAGE_GEN_MODEL_TYPE is not 'u1'",
+                )
+            )
 
         warnings: list[tuple[str, str]] = []
         vlm_keys = ("VLM_API_KEY", "VLM_BASE_URL", "VLM_MODEL", "VLM_TYPE")
-        warnings.extend([
-            (
-                key,
-                f"{key} is not set; VLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
-            )
-            for key in vlm_keys
-            if not getattr(self, key)
-        ])
+        warnings.extend(
+            [
+                (
+                    key,
+                    f"{key} is not set; VLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
+                )
+                for key in vlm_keys
+                if not getattr(self, key)
+            ]
+        )
         llm_keys = ("LLM_API_KEY", "LLM_BASE_URL", "LLM_MODEL", "LLM_TYPE")
-        warnings.extend([
-            (
-                key,
-                f"{key} is not set; LLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
-            )
-            for key in llm_keys
-            if not getattr(self, key)
-        ])
+        warnings.extend(
+            [
+                (
+                    key,
+                    f"{key} is not set; LLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
+                )
+                for key in llm_keys
+                if not getattr(self, key)
+            ]
+        )
 
         # check urls
         errors.extend(

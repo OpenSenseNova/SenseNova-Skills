@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Union
 from urllib.parse import urlparse
 
 import httpx
@@ -71,7 +72,7 @@ def extract_task_input(task: dict) -> dict:
     }
 
 
-def extract_task_image(task: dict) -> Union[dict, None]:
+def extract_task_image(task: dict) -> dict | None:
     """Extract the image result from a completed task.
 
     Args:

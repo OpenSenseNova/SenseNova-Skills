@@ -110,14 +110,16 @@ class AnthropicVlmAdapter(VlmAdapter):
         blocks: list[dict[str, Any]] = [{"type": "text", "text": user_prompt}]
         for img in images:
             mime, b64 = image_to_base64(img)
-            blocks.append({
-                "type": "image",
-                "source": {
-                    "type": "base64",
-                    "media_type": mime,
-                    "data": b64,
-                },
-            })
+            blocks.append(
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": mime,
+                        "data": b64,
+                    },
+                }
+            )
         return blocks
 
     def _build_payload(
@@ -141,10 +143,12 @@ class AnthropicVlmAdapter(VlmAdapter):
         messages: list[dict[str, Any]] = []
         if system_prompt:
             messages.append({"role": "user", "content": system_prompt})
-        messages.append({
-            "role": "user",
-            "content": self._build_content_blocks(user_prompt, images),
-        })
+        messages.append(
+            {
+                "role": "user",
+                "content": self._build_content_blocks(user_prompt, images),
+            }
+        )
 
         payload: dict[str, Any] = {
             "model": model or self._default_model,
