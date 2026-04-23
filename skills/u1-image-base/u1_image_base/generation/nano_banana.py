@@ -136,11 +136,11 @@ class NanoBananaText2ImageClient(T2IBaseClient):
                     if env_names:
                         if len(env_names) == 1:
                             details += (
-                                f"Is the environment variable `{env_names[0]}` set correctly?"
+                                f"\nIs the environment variable `{env_names[0]}` set correctly?"
                             )
                         else:
                             env_names_str = ", ".join([f"`{n}`" for n in env_names])
-                            details += f"Is any of the following environment variable(s) set correctly: {env_names_str}?"
+                            details += f"\nIs any of the following environment variable(s) set correctly: {env_names_str}?"
             return {
                 "status": "failed",
                 "error": f"HTTP {exc.code}: {exc.message}",
@@ -206,7 +206,7 @@ class NanoBananaText2ImageClient(T2IBaseClient):
     @override
     def get_api_url(self, model: str | None = None) -> str:
         model = model or self.model
-        base_path = f"{self.base_url}/v1beta/models/{model}"
+        base_path = f"{self.base_url.rstrip('/')}/v1beta/models/{model}"
         return f"{base_path}:generateContent"
 
     @override

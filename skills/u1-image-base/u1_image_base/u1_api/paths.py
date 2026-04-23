@@ -29,18 +29,10 @@ def join_base(base_url: str, path: str) -> str:
 
     Returns:
         str:
-            The joined URL with the base stripped of trailing slashes and
-            the path prepended with a leading slash if missing.
+            The joined URL, with the path of base_url ignored.
     """
-    try:
-        parsed = urlparse(base_url)
-    except ValueError as e:
-        raise ValueError(f"Invalid base URL: {base_url}") from e
-    try:
-        url = urljoin(parsed.geturl(), path)
-    except ValueError as e:
-        raise ValueError(f"Invalid URL path: {path}") from e
-    return url
+    parsed = urlparse(base_url)
+    return urljoin(parsed.geturl(), path)
 
 
 def text_to_image_create_url(base_url: str) -> str:
