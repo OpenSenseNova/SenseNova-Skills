@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 
@@ -33,6 +35,10 @@ class U1HttpErrorBase(U1BaseError):
 
 class U1HttpAuthError(U1HttpErrorBase):
     MESSAGE = "Authentication or Authorization Failed"
+
+
+class U1HttpNotFoundError(U1HttpErrorBase):
+    MESSAGE = "Resource Not Found"
 
 
 class U1HttpTooManyRequestsError(U1HttpErrorBase):

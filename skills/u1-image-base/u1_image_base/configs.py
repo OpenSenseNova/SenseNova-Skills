@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+import contextlib
 import os
 import warnings
 from pathlib import Path
 from typing import Annotated, Literal, get_args, get_origin, get_type_hints
+from urllib.parse import urlparse
 
 SCRIPT_DIR = Path(__file__).absolute().parent
 # "skills" directory that contains "u1-*" skills (e.g. "u1-image-base", "u1-infographic", etc.)
@@ -88,7 +92,7 @@ class Configs:
     U1_API_KEY: Annotated[str, Field("U1_API_KEY", required=True)] = ""
     U1_IMAGE_GEN_BASE_URL: Annotated[
         str, Field("U1_IMAGE_GEN_BASE_URL", "U1_BASE_URL", required=True)
-    ] = "https://u1-api.sensenova.cn/zoe-model"
+    ] = "https://u1-api.sensenova.cn/model"
     # if U1_IMAGE_GEN_MODEL_TYPE is not "u1", U1_IMAGE_GEN_MODEL must be set
     #   "nano-banana": available models are "gemini-3.1-flash-image-preview", "gemini-3-pro-image-preview"
     U1_IMAGE_GEN_MODEL_TYPE: Annotated[
@@ -101,7 +105,7 @@ class Configs:
     # image-recognize (VLM) — falls back to shared U1_LM_* vars
     VLM_API_KEY: Annotated[str, Field("VLM_API_KEY", "U1_LM_API_KEY")] = "dummy"
     VLM_BASE_URL: Annotated[str, Field("VLM_BASE_URL", "U1_LM_BASE_URL")] = ""
-    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "U1_LM_MODEL")] = "sensenova-122b-128k-step9k"
+    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "U1_LM_MODEL")] = ""
     VLM_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("VLM_TYPE", "U1_LM_TYPE"),
@@ -110,7 +114,7 @@ class Configs:
     # text-optimize (LLM) — falls back to shared U1_LM_* vars
     LLM_API_KEY: Annotated[str, Field("LLM_API_KEY", "U1_LM_API_KEY")] = "dummy"
     LLM_BASE_URL: Annotated[str, Field("LLM_BASE_URL", "U1_LM_BASE_URL")] = ""
-    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "U1_LM_MODEL")] = "sensenova-122b-128k-step9k"
+    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "U1_LM_MODEL")] = ""
     LLM_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("LLM_TYPE", "U1_LM_TYPE"),
@@ -151,31 +155,55 @@ class Configs:
 
         # Check fields combination rules:
         if self.U1_IMAGE_GEN_MODEL_TYPE != "u1" and not self.U1_IMAGE_GEN_MODEL:
-            errors.append((
-                "U1_IMAGE_GEN_MODEL",
-                "U1_IMAGE_GEN_MODEL is required when U1_IMAGE_GEN_MODEL_TYPE is not 'u1'",
-            ))
+            errors.append(
+                (
+                    "U1_IMAGE_GEN_MODEL",
+                    "U1_IMAGE_GEN_MODEL is required when U1_IMAGE_GEN_MODEL_TYPE is not 'u1'",
+                )
+            )
 
         warnings: list[tuple[str, str]] = []
         vlm_keys = ("VLM_API_KEY", "VLM_BASE_URL", "VLM_MODEL", "VLM_TYPE")
-        warnings.extend([
-            (
-                key,
-                f"{key} is not set; VLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
-            )
-            for key in vlm_keys
-            if not getattr(self, key)
-        ])
+        warnings.extend(
+            [
+                (
+                    key,
+                    f"{key} is not set; VLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
+                )
+                for key in vlm_keys
+                if not getattr(self, key)
+            ]
+        )
         llm_keys = ("LLM_API_KEY", "LLM_BASE_URL", "LLM_MODEL", "LLM_TYPE")
-        warnings.extend([
+        warnings.extend(
+            [
+                (
+                    key,
+                    f"{key} is not set; LLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
+                )
+                for key in llm_keys
+                if not getattr(self, key)
+            ]
+        )
+
+        # check urls
+        errors.extend(
             (
                 key,
-                f"{key} is not set; LLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
+                f"{key} is not a valid base URL: {getattr(self, key)}",
             )
-            for key in llm_keys
-            if not getattr(self, key)
-        ])
+            for key in ("VLM_BASE_URL", "LLM_BASE_URL")
+            if getattr(self, key) and not is_valid_base_url(getattr(self, key))
+        )
         return errors, warnings
+
+    def get_annotated_field(self, field_name: str) -> Field | None:
+        hints = get_type_hints(type(self), include_extras=True)
+        if field_name not in hints:
+            return None
+        hint = hints[field_name]
+        field_inst = next((a for a in get_args(hint) if isinstance(a, Field)), None)
+        return field_inst
 
     def get_env_var_help(self, field_name: str) -> str:
         """Return a help string describing which environment variables can be used
@@ -191,18 +219,12 @@ class Configs:
         if not hasattr(type(self), field_name):
             return f"Field '{field_name}' does not exist in Configs."
 
-        hints = get_type_hints(type(self), include_extras=True)
-        if field_name not in hints:
-            return f"Field '{field_name}' has no type hint."
-
-        hint = hints[field_name]
-        env_var = next((a for a in get_args(hint) if isinstance(a, Field)), None)
-        if env_var is None:
+        field_inst = self.get_annotated_field(field_name)
+        if field_inst is None:
             return f"Field '{field_name}' is not configurable via environment variables."
 
         current_value = getattr(self, field_name)
-        env_names = list(env_var.env_names) if env_var.env_names else []
-
+        env_names = list(field_inst.env_names) if field_inst.env_names else []
         if len(env_names) == 1:
             return (
                 f"To set '{field_name}', configure the environment variable: {env_names[0]}\n"
@@ -215,6 +237,13 @@ class Configs:
                 f"They are tried in order; the first set value is used.\n"
                 f"Current value: {current_value!r}"
             )
+
+
+def is_valid_base_url(url: str) -> bool:
+    with contextlib.suppress(ValueError):
+        parsed = urlparse(url)
+        return bool(parsed.scheme and parsed.netloc)
+    return False
 
 
 def reload_env(override: bool = True) -> None:
