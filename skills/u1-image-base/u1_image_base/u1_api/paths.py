@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from urllib.parse import quote, urljoin, urlparse
+from urllib.parse import quote
 
 GENERATION_TEXT_TO_IMAGE = "/v1/generation/text-to-image"
 IMAGE_EDIT = "/v1/generation/image-edit"
@@ -12,14 +12,6 @@ PROMPTS_EXPAND = "/v1/generation/prompts/expand"
 
 def join_base(base_url: str, path: str) -> str:
     """Join a base URL with a path segment.
-    The path of base_url is ignored.
-
-    Example:
-        join_base("https://api.example.com", "/v1/generation/text-to-image")
-        -> "https://api.example.com/v1/generation/text-to-image"
-
-        join_base("https://api.example.com/v1", "/v2/generation/text-to-image")
-        -> "https://api.example.com/v2/generation/text-to-image"  # `"/v1"` is ignored
 
     Args:
         base_url (str):
@@ -29,10 +21,12 @@ def join_base(base_url: str, path: str) -> str:
 
     Returns:
         str:
-            The joined URL, with the path of base_url ignored.
+            The joined URL with the base stripped of trailing slashes and
+            the path prepended with a leading slash if missing.
     """
-    parsed = urlparse(base_url)
-    return urljoin(parsed.geturl(), path)
+    base = base_url.rstrip("/")
+    path = path.lstrip("/")
+    return f"{base}/{path}"
 
 
 def text_to_image_create_url(base_url: str) -> str:
@@ -124,7 +118,9 @@ def generation_file_download_url(base_url: str, image_ref: str) -> str:
             key URL-encoded.
     """
     image_key = image_ref.lstrip("/")
-    return f"{join_base(base_url, GENERATION_FILES_PREFIX)}/{quote(image_key, safe='/')}"
+    return (
+        f"{join_base(base_url, GENERATION_FILES_PREFIX)}/{quote(image_key, safe='/')}"
+    )
 
 
 def generation_file_upload_url(base_url: str) -> str:
