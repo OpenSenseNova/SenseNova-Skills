@@ -27,6 +27,9 @@ OUTPUT_DIR = Path("/tmp/openclaw-u1-image")
 class NanoBananaText2ImageClient(T2IBaseClient):
     """Async client for U1 text-to-image-no-enhance API."""
 
+    # requires `{model}` placeholder for format string
+    DEFAULT_API_PATH = "/v1beta/models/{model}:generateContent"
+
     def __init__(
         self,
         api_key: str,
@@ -210,8 +213,9 @@ class NanoBananaText2ImageClient(T2IBaseClient):
     @override
     def get_api_url(self, model: str | None = None) -> str:
         model = model or self.model
-        base_path = f"{self.base_url.rstrip('/')}/v1beta/models/{model}"
-        return f"{base_path}:generateContent"
+        path = self.DEFAULT_API_PATH.format(model=model).lstrip("/")
+        api_url = f"{self.base_url.rstrip('/')}/{path}"
+        return api_url
 
     @override
     def build_payload(
