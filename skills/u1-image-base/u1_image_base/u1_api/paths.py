@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from urllib.parse import quote
+from urllib.parse import quote, urljoin, urlparse
 
 GENERATION_TEXT_TO_IMAGE = "/v1/generation/text-to-image"
 IMAGE_EDIT = "/v1/generation/image-edit"
@@ -12,6 +12,14 @@ PROMPTS_EXPAND = "/v1/generation/prompts/expand"
 
 def join_base(base_url: str, path: str) -> str:
     """Join a base URL with a path segment.
+    The path of base_url is ignored.
+
+    Example:
+        join_base("https://api.example.com", "/v1/generation/text-to-image")
+        -> "https://api.example.com/v1/generation/text-to-image"
+
+        join_base("https://api.example.com/v1", "/v2/generation/text-to-image")
+        -> "https://api.example.com/v2/generation/text-to-image"  # `"/v1"` is ignored
 
     Args:
         base_url (str):
@@ -24,10 +32,15 @@ def join_base(base_url: str, path: str) -> str:
             The joined URL with the base stripped of trailing slashes and
             the path prepended with a leading slash if missing.
     """
-    base = base_url.rstrip("/")
-    if not path.startswith("/"):
-        path = f"/{path}"
-    return f"{base}{path}"
+    try:
+        parsed = urlparse(base_url)
+    except ValueError as e:
+        raise ValueError(f"Invalid base URL: {base_url}") from e
+    try:
+        url = urljoin(parsed.geturl(), path)
+    except ValueError as e:
+        raise ValueError(f"Invalid URL path: {path}") from e
+    return url
 
 
 def text_to_image_create_url(base_url: str) -> str:

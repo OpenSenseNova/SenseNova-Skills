@@ -24,6 +24,8 @@ from typing import Any
 
 import httpx
 
+from ..utils.error_utils import U1HttpResponseParseError
+from ..utils.httpx_client import httpx_response_raise_for_status_code
 from .utils import image_to_base64
 from .vlm_adapter import VlmAdapter
 
@@ -108,16 +110,14 @@ class AnthropicVlmAdapter(VlmAdapter):
         blocks: list[dict[str, Any]] = [{"type": "text", "text": user_prompt}]
         for img in images:
             mime, b64 = image_to_base64(img)
-            blocks.append(
-                {
-                    "type": "image",
-                    "source": {
-                        "type": "base64",
-                        "media_type": mime,
-                        "data": b64,
-                    },
-                }
-            )
+            blocks.append({
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": mime,
+                    "data": b64,
+                },
+            })
         return blocks
 
     def _build_payload(
@@ -141,12 +141,10 @@ class AnthropicVlmAdapter(VlmAdapter):
         messages: list[dict[str, Any]] = []
         if system_prompt:
             messages.append({"role": "user", "content": system_prompt})
-        messages.append(
-            {
-                "role": "user",
-                "content": self._build_content_blocks(user_prompt, images),
-            }
-        )
+        messages.append({
+            "role": "user",
+            "content": self._build_content_blocks(user_prompt, images),
+        })
 
         payload: dict[str, Any] = {
             "model": model or self._default_model,
@@ -212,8 +210,15 @@ class AnthropicVlmAdapter(VlmAdapter):
             "x-api-key": self._api_key,
         }
         resp = await self._get_client().post(self._url, json=payload, headers=headers)
-        resp.raise_for_status()
-        return self._parse_response(resp.json())
+        httpx_response_raise_for_status_code(resp)
+        try:
+            data = resp.json()
+        except ValueError as exc:
+            raise U1HttpResponseParseError(
+                detail=f"Failed to parse HTTP response. {resp.request.url}. Response content: {resp.content}",
+                code=resp.status_code,
+            ) from exc
+        return self._parse_response(data)
 
     async def aclose(self) -> None:
         """Close the internal async HTTP client if we own it.

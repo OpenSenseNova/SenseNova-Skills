@@ -165,7 +165,7 @@ def httpx_response_raise_for_status_code(response: httpx.Response) -> None:
         )
     elif response.status_code in (429, 503):
         raise U1HttpTooManyRequestsError(
-            detail=f"Service temporarily unavailable. {request_method} {request_url!r}. Response content: {response_content}",
+            detail=f"Service temporarily unavailable. Please try again later. {request_method} {request_url!r}. Response content: {response_content}",
             code=response.status_code,
         )
     elif 500 <= response.status_code <= 599:
