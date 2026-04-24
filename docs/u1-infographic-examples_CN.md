@@ -1,5 +1,7 @@
 # u1-infographic 示例
 
+[English](u1-infographic-examples.md) | 简体中文
+
 以下是使用 `u1-infographic` 技能生成的信息图示例（底层能力由 `u1-image-base` 提供）。
 
 ## 示例 1｜理财产品配置机理
