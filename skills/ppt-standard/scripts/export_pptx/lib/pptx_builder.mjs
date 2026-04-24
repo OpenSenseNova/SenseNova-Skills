@@ -5,8 +5,17 @@ import {
   parseBoxShadow, parseFontFamily, parseBorder, pxToInch, setCanvasWidth,
   extractCssAlpha,
 } from './style_parser.mjs';
+import { echartsOptionToPptx } from './echarts_to_pptx.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+
+// Module-level: chart options captured from the current IR. Set by
+// buildSlideFromIR before flattening, read by flattenIRToElements when it
+// encounters a `<div id="chart_N">` node.
+let _currentChartOptions = {};
+// pptxgenjs exposes ChartType only on *instances*, so we stash the enum from
+// the active pptx instance at slide-build time.
+let _currentChartTypeEnum = null;
 
 const TRANSPARENT_PIXEL_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
@@ -1064,6 +1073,11 @@ export function buildListElement(node) {
 
 /**
  * 从 SVG 节点构建图片元素（base64 嵌入）
+ *
+ * 直接用 node.svgContent 生成 `data:image/svg+xml;base64,…`。之前尝试过在
+ * dom_extractor 里用 Playwright 对 SVG 的包围盒截图得到 PNG，但 SVG 常常叠在
+ * 其他背景/装饰层之上，包围盒截图会把底层内容也截进来，PPTX 里就变成"截错东西
+ * 的一张 PNG"。所以移除 svgPng 通路，全部走原生 svgBlip。
  */
 export function buildSvgElement(node) {
   if (!node.svgContent) return null;
@@ -1071,8 +1085,9 @@ export function buildSvgElement(node) {
 
   try {
     const svgBase64 = Buffer.from(node.svgContent).toString('base64');
+    const dataUri = `data:image/svg+xml;base64,${svgBase64}`;
     return {
-      data: `data:image/svg+xml;base64,${svgBase64}`,
+      data: dataUri,
       x: pxToInch(b.x),
       y: pxToInch(b.y),
       w: pxToInch(b.w),
@@ -1265,6 +1280,32 @@ export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, paren
     }
   }
 
+  // ECharts chart container: <div id="chart_N"> with a captured option
+  if ((tag === 'DIV' || tag === 'SECTION') && node.id && /^chart_/.test(node.id)) {
+    const entry = _currentChartOptions[node.id];
+    if (entry && entry.option && _currentChartTypeEnum) {
+      const mapped = echartsOptionToPptx(entry.option, _currentChartTypeEnum);
+      if (mapped) {
+        const b = node.bounds;
+        elements.push({
+          type: 'chart',
+          data: {
+            chartType: mapped.chartType,
+            chartData: mapped.data,
+            x: pxToInch(b.x),
+            y: pxToInch(b.y),
+            w: pxToInch(b.w),
+            h: pxToInch(b.h),
+            options: mapped.options,
+          },
+        });
+        return elements;  // don't recurse into chart internals (svg children)
+      }
+      // unsupported chart type: fall through, the inner <svg> will be
+      // rasterized by buildSvgElement like before.
+    }
+  }
+
   // SVG
   if (tag === 'SVG') {
     const svgEl = buildSvgElement(node);
@@ -1305,6 +1346,11 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   if (!hasRenderableIR(ir)) {
     throw new Error(ir?.error || '页面 DOM 提取结果为空，无法构建可编辑 PPTX');
   }
+  // Capture ECharts options for this page so flattenIRToElements can route
+  // <div id="chart_N"> nodes to addChart instead of addImage.
+  _currentChartOptions = ir._chartOptions || {};
+  _currentChartTypeEnum = pptx.ChartType;
+
   const slide = pptx.addSlide();
 
   // 解析 body / wrapper 背景色，用于 fallback
@@ -1379,6 +1425,9 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
             case 'svg':
               slide.addImage(el.data);
               break;
+            case 'chart':
+              slide.addChart(el.data.chartType, el.data.chartData, { x: el.data.x, y: el.data.y, w: el.data.w, h: el.data.h, ...el.data.options });
+              break;
           }
         }
       }
@@ -1428,6 +1477,9 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
             break;
           case 'svg':
             slide.addImage(el.data);
+            break;
+          case 'chart':
+            slide.addChart(el.data.chartType, el.data.chartData, { x: el.data.x, y: el.data.y, w: el.data.w, h: el.data.h, ...el.data.options });
             break;
           case 'table':
             slide.addTable(el.data.rows, el.data.options);
@@ -1485,6 +1537,9 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
         case 'svg':
           slide.addImage(el.data);
           break;
+        case 'chart':
+          slide.addChart(el.data.chartType, el.data.chartData, { x: el.data.x, y: el.data.y, w: el.data.w, h: el.data.h, ...el.data.options });
+          break;
         case 'table':
           slide.addTable(el.data.rows, el.data.options);
           break;
@@ -1517,6 +1572,9 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
             break;
           case 'svg':
             slide.addImage(el.data);
+            break;
+          case 'chart':
+            slide.addChart(el.data.chartType, el.data.chartData, { x: el.data.x, y: el.data.y, w: el.data.w, h: el.data.h, ...el.data.options });
             break;
         }
       }

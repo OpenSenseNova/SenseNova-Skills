@@ -270,7 +270,39 @@ const BROWSER_EXTRACT_FN = () => {
             h,
           };
         } else {
-          bounds = extractBounds(el, wrapperRect);
+          // In-flow (display:block/inline/inline-block) pseudo. We CANNOT use
+          // the parent's full bounds here — that paints the pseudo's background
+          // on top of the parent's text content (e.g. a `::before` dot with a
+          // solid --accent fill ends up covering the whole `<div class="head">产能占用</div>`
+          // and the title text disappears in PPTX).
+          //
+          // Only draw the pseudo if CSS gives it an explicit, small pixel size
+          // we can safely place at the parent's origin. If size is auto/100%
+          // we can't know its real bounds (no direct getBoundingClientRect on
+          // pseudos), so skip it — losing a decorative flourish is a much
+          // smaller loss than overwriting real content.
+          const parentRect = el.getBoundingClientRect();
+          const wRect = wrapperRect;
+          const widthStr = cs.getPropertyValue('width');
+          const heightStr = cs.getPropertyValue('height');
+          const w = parseFloat(widthStr);
+          const h = parseFloat(heightStr);
+          const finite = Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0;
+          const small = finite && w < parentRect.width * 0.9 && h < parentRect.height * 0.9;
+          if (!small) {
+            continue;
+          }
+          const parentPadL = parseFloat(cs.getPropertyValue('padding-left')) || 0;
+          const parentPadT = parseFloat(cs.getPropertyValue('padding-top')) || 0;
+          const parentDisplay = cs.getPropertyValue('display');
+          const align = cs.getPropertyValue('align-items');
+          let bx = parentRect.left - wRect.left + parentPadL;
+          let by = parentRect.top - wRect.top + parentPadT;
+          // flex + align-items:center → vertically center the pseudo inside the parent
+          if (parentDisplay.includes('flex') && align === 'center') {
+            by = parentRect.top - wRect.top + (parentRect.height - h) / 2;
+          }
+          bounds = { x: bx, y: by, w, h };
         }
 
         // 构建合成 styles 对象
@@ -505,9 +537,88 @@ export async function extractPage(page, htmlPath) {
   await page.setViewportSize({ width: canvasSize.w, height: canvasSize.h });
   await page.waitForTimeout(200);
 
+  // Wait for ECharts to finish rendering, if any charts are on the page.
+  // The page contract (see prompts/page_html.md) is that each chart increments
+  // `window.__pptxChartsReady`. We count expected charts by looking for divs
+  // with id="chart_N" containing a canvas or svg child.
+  await page.evaluate(async () => {
+    // wait up to 5 s for charts to finish rendering
+    const start = Date.now();
+    while (Date.now() - start < 5000) {
+      const expected = document.querySelectorAll('[id^="chart_"]').length;
+      if (expected === 0) return;  // no charts
+      const ready = (window.__pptxChartsReady || 0);
+      if (ready >= expected) return;
+      await new Promise(r => setTimeout(r, 100));
+    }
+  });
+
+  // Extract ECharts options from each chart_N container BEFORE the generic
+  // BROWSER_EXTRACT_FN walks the DOM. We attach them as a map keyed by
+  // the container's id (e.g. "chart_1") so the IR walker can pick them up.
+  const chartOptionsMap = await page.evaluate(() => {
+    // ECharts exposes echarts.getInstanceByDom(el) to recover the chart from
+    // its container. If echarts isn't loaded (no charts on this page), bail.
+    if (typeof window.echarts === 'undefined') return {};
+    const result = {};
+    const containers = document.querySelectorAll('[id^="chart_"]');
+    for (const el of containers) {
+      try {
+        const inst = window.echarts.getInstanceByDom(el);
+        if (!inst) continue;
+        const opt = inst.getOption();
+        result[el.id] = {
+          option: opt,
+          bounds: (() => {
+            const r = el.getBoundingClientRect();
+            return { x: r.left, y: r.top, w: r.width, h: r.height };
+          })(),
+        };
+      } catch (e) {
+        // ignore; extractor can still fall back to SVG-as-PNG for this chart
+      }
+    }
+    return result;
+  });
+
   const ir = await page.evaluate(BROWSER_EXTRACT_FN);
 
+  // Attach chart options to the IR so pptx_builder can emit native charts.
+  if (Object.keys(chartOptionsMap).length > 0 && ir) {
+    ir._chartOptions = chartOptionsMap;
+  }
+
   return ir;
+}
+
+// Kept as a no-op shim so callers / tests that still import the symbol do
+// not break. SVG-area screenshots captured whatever happened to render
+// underneath the SVG's bounding rect (other z-layers, background motifs,
+// etc.), which produced visually wrong PPTX chart tiles. SVGs now flow
+// through pptx_builder's native svgBlip path instead.
+function _attachSvgPngsToIR(_ir, _svgPngs) {
+  return;
+  /* legacy walker body below, intentionally unreachable. */
+  // eslint-disable-next-line no-unreachable
+  let svgIdx = 0;
+  function walk(node) {
+    if (!node || typeof node !== 'object') return;
+    if (node.tag === 'SVG' && node.svgContent) {
+      svgIdx += 1;
+    }
+    const kids = node.children || node.overlays || node.rest;
+    if (Array.isArray(kids)) for (const c of kids) walk(c);
+    if (node.children) for (const c of node.children) walk(c);
+    if (node.overlays) for (const c of node.overlays) walk(c);
+    if (node.rest) for (const c of node.rest) walk(c);
+  }
+  // The IR root could be {bg, ct, footer, overlays, rest, ...}; walk all branches.
+  for (const key of ['bg', 'ct', 'footer', 'header']) {
+    if (ir[key]) walk(ir[key]);
+  }
+  for (const key of ['overlays', 'rest']) {
+    if (Array.isArray(ir[key])) for (const c of ir[key]) walk(c);
+  }
 }
 
 // ---------------------------------------------------------------------------

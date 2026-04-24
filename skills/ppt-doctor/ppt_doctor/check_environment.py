@@ -1,10 +1,27 @@
-"""Individual environment checks for ppt-doctor.
+#!/usr/bin/env python3
+"""ppt-doctor: environment diagnostic for the PPT skill family.
 
-Each function returns a CheckResult describing one aspect of the environment.
-The caller aggregates results into a report.
+Single-file script runnable directly:
+
+    python skills/ppt-doctor/ppt_doctor/check_environment.py [--non-interactive] [--env-path PATH]
+
+No package imports across modules, no `-m`, no PYTHONPATH. Mirrors u1-doctor's
+self-contained design so OpenClaw can invoke it via a plain file path.
+
+Sections:
+    1. CheckResult dataclass + shared helpers
+    2. Hard checks   (U1_LM_API_KEY, U1_LM_BASE_URL, U1_API_KEY,
+                      U1_IMAGE_BASE discovery, openclaw_runner executable,
+                      Node >= 18)
+    3. Soft checks   (PPT_DECK_ROOT writable, optional env vars,
+                      export_pptx node_modules, Python deps)
+    4. Aggregator    (run_all_checks)
+    5. Interactive .env filler
+    6. CLI main()
 """
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import os
 import subprocess
@@ -19,6 +36,38 @@ _SUBPROCESS_TIMEOUT = 5
 _MIN_NODE_MAJOR = 18
 
 
+def _load_dotenv_if_available() -> list[Path]:
+    """Load .env into os.environ from a few well-known locations.
+
+    Search order (each loaded, later ones DO NOT override existing values):
+        1. <repo_root>/.env           (where this script sits at <repo>/skills/ppt-doctor/ppt_doctor/check_environment.py)
+        2. <repo_root>/skills/.env    (user may place it here)
+        3. cwd / .env                 (python-dotenv default)
+
+    Returns list of paths that were actually loaded (for display).
+    """
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return []
+    script = Path(__file__).resolve()
+    repo_root = script.parents[3]
+    loaded: list[Path] = []
+    for candidate in (repo_root / ".env", repo_root / "skills" / ".env", Path.cwd() / ".env"):
+        if candidate.exists():
+            load_dotenv(candidate, override=False)
+            loaded.append(candidate)
+    return loaded
+
+
+_LOADED_DOTENV_PATHS = _load_dotenv_if_available()
+
+
+# ---------------------------------------------------------------------------
+# 1. CheckResult + shared helpers
+# ---------------------------------------------------------------------------
+
+
 @dataclass
 class CheckResult:
     name: str
@@ -26,10 +75,6 @@ class CheckResult:
     passed: bool
     detail: str
 
-
-# ---------------------------------------------------------------------------
-# Internal helpers
-# ---------------------------------------------------------------------------
 
 def _env(name: str) -> str | None:
     val = os.environ.get(name, "").strip()
@@ -39,19 +84,17 @@ def _env(name: str) -> str | None:
 def _find_openclaw_runner() -> Path | None:
     """Three-level discovery for openclaw_runner.py.
 
-    Level 1: U1_IMAGE_BASE env var → <path>/u1_image_base/openclaw_runner.py
+    Level 1: U1_IMAGE_BASE env var -> <path>/u1_image_base/openclaw_runner.py
               If the var is set but the runner isn't there, stop (do not fall through).
-    Level 2: TODO — openclaw registry (not yet implemented)
+    Level 2: TODO - openclaw registry (not yet implemented)
     Level 3: repo-relative skills/u1-image-base/u1_image_base/openclaw_runner.py
               Only tried when U1_IMAGE_BASE is NOT set at all.
     """
-    # Level 1: env var takes precedence; if set, do not fall through to other levels
     base_env = _env("U1_IMAGE_BASE")
     if base_env is not None:
         candidate = Path(base_env) / "u1_image_base" / "openclaw_runner.py"
         return candidate if candidate.exists() else None
 
-    # Level 3: repo-relative from cwd (only when env var absent)
     repo_candidate = Path.cwd() / "skills" / "u1-image-base" / "u1_image_base" / "openclaw_runner.py"
     if repo_candidate.exists():
         return repo_candidate
@@ -60,8 +103,9 @@ def _find_openclaw_runner() -> Path | None:
 
 
 # ---------------------------------------------------------------------------
-# Hard checks
+# 2. Hard checks
 # ---------------------------------------------------------------------------
+
 
 def check_u1_lm_api_key() -> CheckResult:
     val = _env("U1_LM_API_KEY")
@@ -122,7 +166,6 @@ def check_openclaw_runner_executable() -> CheckResult:
             passed=False,
             detail="openclaw_runner.py not found; see check_u1_image_base_discoverable",
         )
-    # The runner's package root is the parent of u1_image_base/ (i.e. runner.parent.parent)
     skill_root = str(runner.parent.parent)
     env = os.environ.copy()
     existing_pp = env.get("PYTHONPATH", "")
@@ -172,7 +215,7 @@ def check_node_version() -> CheckResult:
             text=True,
             timeout=_SUBPROCESS_TIMEOUT,
         )
-        raw = result.stdout.strip()  # e.g. "v20.11.0"
+        raw = result.stdout.strip()
         if result.returncode != 0 or not raw.startswith("v"):
             return CheckResult(
                 name="NODE_VERSION",
@@ -213,47 +256,35 @@ def check_node_version() -> CheckResult:
 
 
 # ---------------------------------------------------------------------------
-# Soft checks
+# 3. Soft checks
 # ---------------------------------------------------------------------------
 
-def check_ppt_deck_root_writable() -> CheckResult:
-    """Check that PPT_DECK_ROOT (or cwd fallback) is writable."""
-    deck_root_env = _env("PPT_DECK_ROOT")
 
-    if deck_root_env:
-        target = Path(deck_root_env)
-        # Probe writability by creating and deleting a temp file via NamedTemporaryFile
-        try:
-            with tempfile.NamedTemporaryFile(dir=target, delete=True):
-                pass
-            return CheckResult(
-                name="PPT_DECK_ROOT",
-                severity="soft",
-                passed=True,
-                detail=f"{target} is writable",
-            )
-        except OSError as exc:
-            return CheckResult(
-                name="PPT_DECK_ROOT",
-                severity="soft",
-                passed=False,
-                detail=f"{target} is not writable: {exc}",
-            )
-    else:
-        # Fallback: use os.access to check cwd writability without mutation
-        cwd = Path.cwd()
-        if os.access(cwd, os.W_OK):
-            return CheckResult(
-                name="PPT_DECK_ROOT",
-                severity="soft",
-                passed=True,
-                detail=f"cwd {cwd} is writable (PPT_DECK_ROOT not set; will default to cwd/ppt_decks/)",
-            )
+def check_ppt_deck_root_writable() -> CheckResult:
+    """Verify that $(cwd)/ppt_decks/ can be created/written.
+
+    Decks are always created under `$(cwd)/ppt_decks/` — in OpenClaw that
+    resolves to the agent workspace. PPT_DECK_ROOT env var is no longer
+    consulted (removed to avoid drift; see ppt-entry SKILL.md step 4).
+    """
+    cwd = Path.cwd()
+    target = cwd / "ppt_decks"
+    try:
+        target.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(dir=target, delete=True):
+            pass
+        return CheckResult(
+            name="PPT_DECK_ROOT",
+            severity="soft",
+            passed=True,
+            detail=f"{target} is writable",
+        )
+    except OSError as exc:
         return CheckResult(
             name="PPT_DECK_ROOT",
             severity="soft",
             passed=False,
-            detail=f"cwd {cwd} is not writable",
+            detail=f"{target} is not creatable/writable: {exc}",
         )
 
 
@@ -261,6 +292,7 @@ _OPTIONAL_VARS = [
     "U1_IMAGE_GEN_BASE_URL",
     "U1_BASE_URL",
     "U1_IMAGE_GEN_MODEL",
+    # NOTE: PPT_DECK_ROOT removed — deck_dir is now always $(cwd)/ppt_decks/
     "U1_IMAGE_GEN_MODEL_TYPE",
     "VLM_API_KEY",
     "VLM_BASE_URL",
@@ -271,30 +303,27 @@ _OPTIONAL_VARS = [
     "LLM_MODEL",
     "LLM_TYPE",
     "U1_IMAGE_BASE",
-    "PPT_DECK_ROOT",
 ]
 
 
 def check_optional_env_vars() -> CheckResult:
-    """Enumerate optional env vars; always passes (informational only)."""
     parts = []
     for var in _OPTIONAL_VARS:
         val = _env(var)
         parts.append(f"{var}={'<set>' if val else 'unset'}")
-    detail = "; ".join(parts)
     return CheckResult(
         name="OPTIONAL_ENV_VARS",
         severity="soft",
         passed=True,
-        detail=detail,
+        detail="; ".join(parts),
     )
 
 
 def check_export_pptx_node_modules(base: Path | None = None) -> CheckResult:
-    """Check that export_pptx script has its node_modules installed."""
     if base is None:
-        # Default: repo-relative
-        repo_root = Path(__file__).parent.parent.parent.parent  # skills/ppt-doctor/../../../ → repo
+        # check_environment.py sits at skills/ppt-doctor/ppt_doctor/check_environment.py
+        # -> parents[3] = repo root
+        repo_root = Path(__file__).resolve().parents[3]
         base = repo_root / "skills" / "ppt-standard" / "scripts" / "export_pptx"
 
     node_modules = base / "node_modules"
@@ -314,17 +343,23 @@ def check_export_pptx_node_modules(base: Path | None = None) -> CheckResult:
 
 
 def check_python_deps() -> CheckResult:
-    """Check optional Python dependencies; always passed=True (informational)."""
     checks = [
         ("pypdf", "pypdf"),
         ("python-docx", "docx"),
+        ("python-pptx", "pptx"),
     ]
     parts = []
+    missing: list[str] = []
     for display_name, module_name in checks:
         spec = importlib.util.find_spec(module_name)
-        status = "installed" if spec is not None else "missing"
-        parts.append(f"{display_name}: {status}")
+        if spec is None:
+            missing.append(display_name)
+            parts.append(f"{display_name}: missing")
+        else:
+            parts.append(f"{display_name}: installed")
     detail = "; ".join(parts)
+    if missing:
+        detail += f"  (install with: pip install {' '.join(missing)})"
     return CheckResult(
         name="PYTHON_DEPS",
         severity="soft",
@@ -334,11 +369,11 @@ def check_python_deps() -> CheckResult:
 
 
 # ---------------------------------------------------------------------------
-# Aggregator
+# 4. Aggregator
 # ---------------------------------------------------------------------------
 
+
 def run_all_checks() -> list[CheckResult]:
-    """Run all checks (hard and soft) and return the results."""
     return [
         check_u1_lm_api_key(),
         check_u1_lm_base_url(),
@@ -346,9 +381,98 @@ def run_all_checks() -> list[CheckResult]:
         check_u1_image_base_discoverable(),
         check_openclaw_runner_executable(),
         check_node_version(),
-        # soft checks
         check_ppt_deck_root_writable(),
         check_optional_env_vars(),
         check_export_pptx_node_modules(),
         check_python_deps(),
     ]
+
+
+# ---------------------------------------------------------------------------
+# 5. Interactive .env filler
+# ---------------------------------------------------------------------------
+
+
+REQUIRED = [
+    ("U1_LM_API_KEY", "LLM/VLM API key"),
+    ("U1_LM_BASE_URL", "LLM/VLM endpoint URL"),
+    ("U1_API_KEY", "Image generation API key"),
+]
+
+
+@dataclass
+class FillResult:
+    written: bool
+    path: Path | None
+
+
+def interactive_fill_env(env_path: Path, non_interactive: bool = False) -> FillResult:
+    missing: list[tuple[str, str]] = [
+        (name, desc) for name, desc in REQUIRED if not os.environ.get(name, "").strip()
+    ]
+    if not missing:
+        return FillResult(written=False, path=None)
+    if non_interactive:
+        return FillResult(written=False, path=None)
+
+    lines: list[str] = []
+    for name, desc in missing:
+        value = input(f"{name} ({desc}): ").strip()
+        if value:
+            lines.append(f"{name}={value}")
+
+    if not lines:
+        return FillResult(written=False, path=None)
+
+    env_path.parent.mkdir(parents=True, exist_ok=True)
+    existing = env_path.read_text() if env_path.exists() else ""
+    with env_path.open("w", encoding="utf-8") as f:
+        if existing:
+            f.write(existing)
+            if not existing.endswith("\n"):
+                f.write("\n")
+        f.write("\n".join(lines) + "\n")
+    return FillResult(written=True, path=env_path)
+
+
+# ---------------------------------------------------------------------------
+# 6. CLI main
+# ---------------------------------------------------------------------------
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="ppt-doctor")
+    parser.add_argument("--non-interactive", action="store_true", help="Skip interactive .env prompts")
+    parser.add_argument("--env-path", type=Path, default=Path.cwd() / ".env")
+    args = parser.parse_args(argv)
+
+    print("== ppt-doctor: environment check ==\n")
+    if _LOADED_DOTENV_PATHS:
+        print("Loaded .env:")
+        for p in _LOADED_DOTENV_PATHS:
+            print(f"  - {p}")
+        print()
+    else:
+        print("(No .env file loaded. Relying on OS environment variables.)\n")
+    results = run_all_checks()
+    hard_failed = [r for r in results if r.severity == "hard" and not r.passed]
+
+    for r in results:
+        tag = "OK  " if r.passed else ("FAIL" if r.severity == "hard" else "WARN")
+        print(f"[{tag}] [{r.severity}] {r.name}: {r.detail}")
+
+    if hard_failed:
+        print("\nSome required checks failed. Entering interactive fill...\n")
+        fill = interactive_fill_env(env_path=args.env_path, non_interactive=args.non_interactive)
+        if fill.written:
+            print(f"\nWrote .env at {fill.path}. Please re-run ppt-doctor to verify.")
+        else:
+            print("\nNothing written. Re-run after fixing environment manually.")
+        return 1
+
+    print("\nAll hard checks passed. PPT family is ready to use.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

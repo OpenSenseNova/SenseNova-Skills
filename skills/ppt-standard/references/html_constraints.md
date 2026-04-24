@@ -18,6 +18,17 @@ system prompts. They describe what the downstream converter
 - mask-image gradient masks (simulated via SVG overlay)
 - Page footer (page number)
 
+## 1a. Pseudo-element decorations require wrapped text
+
+If an element has a `::before` / `::after` pseudo with a background color / gradient / image (bullet dot, label pill, underline bar, gradient strip, etc.), the host element's text content **must be wrapped in a `<span>`**. The converter paints pseudos as separate shapes; bare text nodes next to a pseudo can get painted over in the exported PPTX and the title disappears.
+
+- ✅ `<div class="head"><span>产能占用</span></div>`
+- ❌ `<div class="head">产能占用</div>` (text may vanish in PPTX)
+
+## 1b. Backgrounds are single-layer only
+
+`#bg`, `.wrapper`, and card containers must use **at most one** background layer — a single solid color, OR a single gradient, OR a single `background-image: url(...)`. Multi-layer stacks (`background: linear-gradient(...), radial-gradient(...), url(...), #FFF;`) are not reliably rendered; only the first layer survives the PPTX export. For "photo + overlay" effects use two child elements (`<img class="bg-photo">` + a sibling overlay div), not two background layers on one element.
+
 ## 2. Known limits — avoid these
 
 - `mix-blend-mode` — not supported
@@ -52,8 +63,71 @@ Any asset slot whose `asset_plan` intent implies a real photograph MUST referenc
 the absolute path to a real local PNG produced by `u1-image-generate`.
 Do NOT use `<svg>` placeholders, empty `<div>` blocks, grey squares, or text like "配图待补".
 
-## 6. Canvas size (advisory, not gated)
+## 6. Charts / tables / diagrams — MUST be code, NOT images
 
-- 16:9 aspect ratio
-- Recommended: 1280x720 or 1600x900
-- Write explicit `width` and `height` on the outer slide container.
+Data visualization of ANY kind (tables, charts, flow diagrams, KPI tiles, architecture diagrams) MUST be written as code. NOT `<img src="...">`.
+
+### Data charts → ECharts (preferred, becomes editable PPTX)
+
+For **bar / line / pie / doughnut / radar / scatter / area** charts, use ECharts:
+
+    <script src="../assets/echarts.min.js"></script>
+    <div id="chart_1" style="width: 600px; height: 400px;"></div>
+    <script>
+      const chart = echarts.init(document.getElementById('chart_1'), null, {renderer: 'svg'});
+      chart.setOption({ /* ... */ });
+      window.__pptxChartsReady = (window.__pptxChartsReady || 0) + 1;
+    </script>
+
+The PPTX converter extracts the ECharts `option` and **rebuilds a native editable chart** inside the PPTX — double-clicking the chart in PowerPoint opens the data editor, same as Excel.
+
+Do NOT hand-roll `<rect>` + `<text>` SVG charts — they become rasterized PNG in the PPTX (can't edit the underlying data) AND the agent frequently miscalculates axis positions / labels.
+
+See `prompts/page_html.md` § "Charts: use ECharts" for complete syntax and example `setOption` for each chart kind.
+
+### Tables → `<table>`
+
+For raw tabular data use `<table>` / `<thead>` / `<tbody>`. The PPTX converter exports these as native tables with editable cells.
+
+### Diagrams (flow, architecture) → `<div>` + inline `<svg>`
+
+Non-data visuals (flow steps, boxes + arrows, org charts) use `<div>` boxes styled with CSS + inline `<svg>` for connector lines. These become rasterized in PPTX but the content is correct.
+
+### KPI tiles → pure CSS
+
+Big number + label + delta → `<div class="kpi">` with flex / CSS. No SVG, no chart.
+
+### Decorations → inline `<svg>` is fine
+
+Wave backgrounds, outlined circles, icon-like shapes — inline `<svg>` is still the right tool.
+
+### Banned
+
+- `<img src="...bar_chart.png">` — no T2I charts
+- `background-image: url('...chart.png')` for data content
+- Hand-rolled `<svg>` bar/line/pie/radar/scatter charts — use ECharts instead
+
+Data copied into chart / table code MUST be verbatim from the source (inherited_table, outline.data_points, digest.data_highlights). No paraphrase, no unit conversion, no rounding beyond what the source used.
+
+## 7. Canvas size — REQUIRED `.wrapper` at 1600×900
+
+The HTML-to-PPTX converter (`lib/dom_extractor.mjs`) detects the slide canvas via `document.querySelector('.wrapper')`. Every page HTML **must** have:
+
+```html
+<body>
+  <div class="wrapper">    <!-- 1600×900 fixed; overflow hidden -->
+    <div id="bg">...</div>  <!-- decoration layer, z-index 0 -->
+    <div id="ct">...</div>  <!-- content layer, z-index 1 -->
+  </div>
+</body>
+```
+
+CSS (comes from `style_spec.base_styles`, already handled):
+
+```css
+.wrapper { width: 1600px; height: 900px; position: relative; overflow: hidden; margin: 0 auto; }
+#bg { position: absolute; inset: 0; z-index: 0; }
+#ct { position: absolute; inset: 0; z-index: 1; padding: 60px; box-sizing: border-box; }
+```
+
+Without `.wrapper`, the converter falls back to `body.getBoundingClientRect()` → canvas width = Playwright viewport, height = auto from content flow → not 16:9 → PPTX aspect ratio comes out wrong. This is not optional.

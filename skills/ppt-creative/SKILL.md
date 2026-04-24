@@ -1,9 +1,10 @@
 ---
 name: ppt-creative
 description: |
-  Creative-mode PPT pipeline. One full-page 16:9 PNG per slide, generated via
-  u1-image-generate with a per-page composed prompt. Expects task_pack.json +
-  info_pack.json already written by ppt-entry.
+  Creative-mode PPT pipeline. One full-page 16:9 PNG per slide.
+  LLM / VLM calls go through ppt-standard/lib/model_client.py (shared thin client).
+  Text-to-image (the actual png rendering) goes through u1-image-base/openclaw_runner.py.
+  Expects task_pack.json + info_pack.json already written by ppt-entry.
 metadata:
   project: SenseNova-Skills
   tier: 1
@@ -15,139 +16,197 @@ triggers:
 
 # ppt-creative
 
+## Call-routing policy
+
+| Kind | Backend |
+|---|---|
+| LLM (text) | `$PPT_STANDARD_DIR/lib/model_client.py` → `llm(sys, user)` |
+| VLM (image understanding) | `$PPT_STANDARD_DIR/lib/model_client.py` → `vlm(sys, user, images)` |
+| T2I (image generation) | `$U1_IMAGE_BASE/u1_image_base/openclaw_runner.py u1-image-generate` |
+
+Never mix — LLM / VLM through u1-image-base, or T2I through model_client — both violate policy.
+
 ## Preconditions
 
 - `<deck_dir>/task_pack.json` exists and `ppt_mode == "creative"`
 - `<deck_dir>/info_pack.json` exists
 - `<deck_dir>/pages/` exists
+- `$U1_IMAGE_BASE` env var (OpenClaw-injected) points at the u1-image-base skill root
+- `$PPT_STANDARD_DIR` env var points at the ppt-standard skill root (so we can import `model_client`)
 
-Any missing -> stop and tell user to enter via `/skill ppt-entry`.
+Any missing → stop and tell user to enter via `/skill ppt-entry`.
 
-## Resume first
-
-Always run `scripts/resume_scan.py --deck-dir <deck_dir>` as step 1.
-Read the manifest; dispatch based on what's present:
+## Resume
 
 ```bash
-python <SKILL_DIR>/scripts/resume_scan.py --deck-dir <deck_dir>
-# => {"style_spec_done": true/false, "outline_done": true/false,
-#     "pages": [{"action": "skip|render_only|full"}, ...]}
+python3 $SKILL_DIR/scripts/resume_scan.py --deck-dir <deck_dir>
+# => {"style_spec_done": bool, "outline_done": bool, "pptx_done": bool,
+#     "pages": [{"page_no": 1, "action": "skip|render_only|full"}, ...]}
 ```
 
-### Dispatch table
+Dispatch:
 
-| Manifest state | Do |
+| Manifest | Do |
 |---|---|
 | `style_spec_done == false` | Run Stage 2 |
-| `style_spec_done == true`, `outline_done == false` | Run Stage 3 |
-| Both true | For each page: run Stage 4 per the per-page `action` |
+| `outline_done == false` | Run Stage 3 |
+| per-page `action == "full"` | Run Stage 4.1 + 4.2 |
+| per-page `action == "render_only"` | Run Stage 4.2 only (prompt.txt already on disk) |
+| per-page `action == "skip"` | Skip |
+| `pptx_done == false` (all pages done or failed) | Run Stage 5 |
 
-Within "Stage 4", per-page `action` further drives:
-- `full` -> run 4.1 (compose prompt) + 4.2 (generate image)
-- `render_only` -> run 4.2 only (prompt.txt already on disk)
-- `skip` -> do nothing
+## Stage 2 — style_spec.md  (LLM or VLM via model_client)
 
-## timing.json (shared with ppt-entry)
+One independent exec tool_call. Two branches based on reference images.
 
-Step 1 of entry already ran `timing_helper.py init`; this skill does NOT re-init.
-After every stage completes, record wall-clock seconds via the helper; per-page
-stages also record per-page fields. See
-`<PPT_ENTRY_DIR>/scripts/timing_helper.py` and the contract in
-`<PPT_ENTRY_DIR>/references/conventions.md`.
-
-## Stage 2 — style_spec.md
-
-Trigger: `style_spec_done == false`.
-
-- Branch A (no reference images, or all ref images missing on disk):
+**Branch A (no ref images, or all missing on disk)** — use `model_client.llm`:
 
 ```bash
-python <U1_IMAGE_BASE>/u1_image_base/openclaw_runner.py u1-text-optimize \
-  --system-prompt-path <SKILL_DIR>/prompts/style_from_query.md \
-  --user-prompt "<JSON of info_pack.query_normalized + task_pack.params>" \
-  --output-format json
+python3 -c "
+import sys, pathlib, json
+sys.path.insert(0, '$PPT_STANDARD_DIR/lib')
+from model_client import llm
+
+deck = pathlib.Path('<deck_dir>')
+tp = json.loads((deck / 'task_pack.json').read_text())
+ip = json.loads((deck / 'info_pack.json').read_text())
+
+sys_prompt = open('$SKILL_DIR/prompts/style_from_query.md').read()
+user_prompt = json.dumps({
+    'params': tp['params'],
+    'query': ip.get('user_query'),
+    'digest': ip.get('document_digest'),
+}, ensure_ascii=False)
+
+md = llm(sys_prompt, user_prompt)
+(deck / 'style_spec.md').write_text(md, encoding='utf-8')
+print('style_spec.md ok')
+"
 ```
 
-- Branch B (has at least one reference image that exists on disk):
+**Branch B (≥1 reference image on disk)** — use `model_client.vlm`:
 
 ```bash
-python <U1_IMAGE_BASE>/u1_image_base/openclaw_runner.py u1-image-recognize \
-  --system-prompt-path <SKILL_DIR>/prompts/style_from_image.md \
-  --user-prompt "PPT 主题: <topic>; 配合参考图产出风格 spec" \
-  --images /abs/path/ref1.png /abs/path/ref2.png \
-  --output-format json
+python3 -c "
+import sys, pathlib, json
+sys.path.insert(0, '$PPT_STANDARD_DIR/lib')
+from model_client import vlm
+
+deck = pathlib.Path('<deck_dir>')
+ip = json.loads((deck / 'info_pack.json').read_text())
+tp = json.loads((deck / 'task_pack.json').read_text())
+
+refs = [p for p in (ip.get('user_assets') or {}).get('reference_images', []) if pathlib.Path(p).exists()]
+
+sys_prompt = open('$SKILL_DIR/prompts/style_from_image.md').read()
+user_prompt = f'PPT 主题/参数: {json.dumps(tp[\"params\"], ensure_ascii=False)}\nuser_query: {ip.get(\"user_query\") or \"\"}'
+
+md = vlm(sys_prompt, user_prompt, images=refs)
+(deck / 'style_spec.md').write_text(md, encoding='utf-8')
+print(f'style_spec.md ok (from {len(refs)} ref images)')
+"
 ```
 
-Take `result` field (markdown body) -> write to `<deck_dir>/style_spec.md`.
+If `user_assets.reference_images` is non-empty but **all** paths missing on disk: fall through to Branch A and prepend a line `reference_images_missing: <original paths>` at the top of style_spec.md.
 
-If `info_pack.user_assets.reference_images` is non-empty but all paths missing
-on disk: degrade to Branch A and record a line
-`reference_images_missing: <original paths>` at the top of style_spec.md.
+## Stage 3 — outline.json  (LLM via model_client)
 
-Timing:
 ```bash
-python <PPT_ENTRY_DIR>/scripts/timing_helper.py record-stage \
-  --path <deck_dir>/timing.json --stage style --seconds <elapsed>
+python3 -c "
+import sys, pathlib, json
+sys.path.insert(0, '$PPT_STANDARD_DIR/lib')
+from model_client import llm
+
+deck = pathlib.Path('<deck_dir>')
+tp = json.loads((deck / 'task_pack.json').read_text())
+ip = json.loads((deck / 'info_pack.json').read_text())
+style = (deck / 'style_spec.md').read_text()
+
+sys_prompt = open('$SKILL_DIR/prompts/outline.md').read()
+user_prompt = json.dumps({
+    'style_spec_markdown': style,
+    'params': tp['params'],
+    'query': ip.get('user_query'),
+    'digest': ip.get('document_digest'),
+}, ensure_ascii=False)
+
+raw = llm(sys_prompt, user_prompt).strip()
+if raw.startswith('\`\`\`'):
+    raw = raw.split('\n', 1)[1].rsplit('\`\`\`', 1)[0]
+data = json.loads(raw)
+assert len(data['pages']) == tp['params']['page_count'], 'page_count mismatch'
+(deck / 'outline.json').write_text(json.dumps(data, ensure_ascii=False, indent=2))
+print(f'outline ok, {len(data[\"pages\"])} pages')
+"
 ```
 
-## Stage 3 — outline.json
+On failure (non-JSON / length mismatch): **abort**.
 
-Trigger: `outline_done == false`.
+## Stage 4 — per-page: one independent exec per page
+
+### 4.1 Compose prompt  (LLM via model_client) — skip if `action == "render_only"`
 
 ```bash
-python <U1_IMAGE_BASE>/u1_image_base/openclaw_runner.py u1-text-optimize \
-  --system-prompt-path <SKILL_DIR>/prompts/outline.md \
-  --user-prompt "<cat style_spec.md + JSON of info_pack.query_normalized + task_pack.params>" \
-  --output-format json
+python3 -c "
+import sys, pathlib, json
+sys.path.insert(0, '$PPT_STANDARD_DIR/lib')
+from model_client import llm
+
+deck = pathlib.Path('<deck_dir>')
+N = <NNN>
+style = (deck / 'style_spec.md').read_text()
+outline = json.loads((deck / 'outline.json').read_text())
+page = next(p for p in outline['pages'] if int(p['page_no']) == N)
+
+sys_prompt = open('$SKILL_DIR/prompts/page_prompt.md').read()
+user_prompt = json.dumps({'style_spec_markdown': style, 'page': page}, ensure_ascii=False)
+
+txt = llm(sys_prompt, user_prompt)
+(deck / 'pages' / f'page_{N:03d}.prompt.txt').write_text(txt, encoding='utf-8')
+print(f'prompt page {N} ok')
+"
 ```
 
-Extract `result` -> parse as JSON (the prompt enforces strict JSON; page_count
-must match). Write to `<deck_dir>/outline.json`.
-
-On failure (non-JSON / empty): **abort** (structural artifact).
-
-Timing: `record-stage --stage outline --seconds <elapsed>`.
-
-## Stage 4 — per-page prompt + image (sequential)
-
-For each page where `action != "skip"`:
-
-### 4.1 Compose prompt (skip when `action == "render_only"`)
+### 4.2 Generate image  (T2I via u1-image-base)
 
 ```bash
-python <U1_IMAGE_BASE>/u1_image_base/openclaw_runner.py u1-text-optimize \
-  --system-prompt-path <SKILL_DIR>/prompts/page_prompt.md \
-  --user-prompt "<cat style_spec.md + JSON of outline.pages[i]>" \
-  --output-format json
-```
-
-Take `result` (prose) -> write to `<deck_dir>/pages/page_{NNN}.prompt.txt`
-(absolute path).
-
-### 4.2 Generate image
-
-```bash
-python <U1_IMAGE_BASE>/u1_image_base/openclaw_runner.py u1-image-generate \
-  --prompt "$(cat <deck_dir>/pages/page_{NNN}.prompt.txt)" \
+python $U1_IMAGE_BASE/u1_image_base/openclaw_runner.py u1-image-generate \
+  --prompt "$(cat <deck_dir>/pages/page_<NNN>.prompt.txt)" \
   --aspect-ratio 16:9 \
   --image-size 2k \
-  --save-path <deck_dir>/pages/page_{NNN}.png \
+  --save-path <deck_dir>/pages/page_<NNN>.png \
   --output-format json
 ```
 
 ### 4.3 Failure handling
 
-- 4.1 failure (model timeout / empty / malformed): skip this page, record `page_no` into an in-memory `failed_pages`, continue
-- 4.2 failure: same — skip, record, continue
-- No retries; the prompt.txt may remain on disk for later manual re-run of 4.2
+- 4.1 failure (model timeout / empty / malformed): record `page_no` into `failed_pages`, echo failure line, continue.
+- 4.2 failure: same — record, echo, continue.
+- **No retries.** **No placeholder PNG.** Don't write 1x1 transparent PNGs to fake success.
+- `.prompt.txt` may remain on disk for a later manual re-run of 4.2 only.
 
-Timing per page: record with `record-page` for `prompt_seconds` (4.1) and
-`image_gen_seconds` (4.2); accumulate with `record-stage` for `style` /
-`outline` / `image_generate`.
+## Stage 5 — pptx 打包（一次独立 exec）
 
-## Stage 5 — closing
+所有页图生成后（含部分失败的情况），把 `pages/page_*.png` 平铺打包成 16:9 整册 PPTX，每张图满版一页。由 `scripts/build_pptx.py` 完成，模型只负责执行脚本。
 
-Emit a closing summary per spec §8.2:
+```bash
+python3 $SKILL_DIR/scripts/build_pptx.py --deck-dir <deck_dir>
+# => {"deck_id": "...", "output": "<deck_dir>/<deck_id>.pptx",
+#     "total_slides": N, "included_pages": [...], "missing_pages": [...]}
+```
+
+行为约定：
+
+- 输出路径默认 `<deck_dir>/<deck_id>.pptx`；可用 `--output` 覆盖。
+- 页序按 `outline.json` 的 `page_no` 排；缺失 `outline.json` 时按 `page_001..page_NNN` 走。
+- 缺失的 PNG 会插入空白页并在 stderr 记录一行，**不中止**；这样跟 Stage 4 的"失败跳过"语义一致。
+- 脚本失败（依赖缺失 / 写盘失败）：echo 失败原因，**不中止整个 skill**，仍进入 Stage 6 收尾；PNG 已在磁盘上。
+
+依赖：`python-pptx`（与 `ppt-standard` 共用的打包思路；若运行环境未装，由 `ppt-doctor` 的 env check 提示安装）。
+
+## Stage 6 — closing
+
+Emit:
 
 ```
 创意模式已完成。
@@ -157,32 +216,37 @@ Emit a closing summary per spec §8.2:
   - style_spec.md
   - outline.json
   - pages/page_001.png ~ page_NNN.png（失败 M 页：page_..., page_...）
+  - <deck_id>.pptx（整册，缺失页插入空白）
 
 ⚠️ 未完成：
-  - page_007：生图返回超时，已跳过；可重新调用 ppt-creative 对该页单独重试
-
-⏱️ 耗时统计：
-  - 总计：...
-  - 风格：...
-  - 大纲：...
-  - 逐页出图：...
+  - page_007：生图返回超时，已跳过（pptx 中为空白页）
 
 下一步：
-  - 可直接在 pages/ 目录查看 PNG
+  - 可直接打开 <deck_id>.pptx 查看整册
+  - 或在 pages/ 目录查看 PNG
 ```
 
-Read `<deck_dir>/timing.json` for the stats.
+## Progress echo — MANDATORY
 
-## Progress echo
+| Stage | Example |
+|---|---|
+| After resume_scan | `已进入 ppt-creative，共 N 页` |
+| After Stage 2 | `[1] style_spec.md ✓` |
+| After Stage 3 | `[2] outline.json ✓（N 页）` |
+| Per page-prompt (4.1) | `[prompt 3/10] ✓` |
+| Per page-image (4.2) | `[图 3/10] page_003.png ✓` or `[图 3/10] ✗ 超时` |
+| After Stage 5 | `[pptx] <deck_id>.pptx ✓（N 页，缺失 M 页）` or `[pptx] ✗ <reason>` |
+| Closing | full summary above |
 
-- Start: one line — mode, deck_dir, page_count
-- Stage 2 / Stage 3: one line each on completion
-- Stage 4: one line every 3 pages (not every page)
-- Closing: the full summary above
+- Each echo is a chat reply, not a log write.
+- Per-page echo is the heartbeat for Stage 4.
+- On failure, echo failure line with reason before moving on.
 
-## Does NOT
+## 🚫 Hard rules
 
-- Do not call any model endpoint directly — always via `openclaw_runner.py`
-- Do not parallelize page rendering
-- Do not retry on first failure
-- Do not generate editable JSON from the PNG (out of scope this version)
+1. **Do NOT loop inside a single exec.** One page = one tool_call.
+2. **Do NOT fake images.** Failed T2I → record failed, move on. No 1x1 placeholder PNGs.
+3. **Do NOT use `model_client.t2i`** — T2I must go through `u1-image-base`. `model_client` handles only LLM / VLM.
+4. **Do NOT use `u1-text-optimize` or `u1-image-recognize`** from u1-image-base — those must go through `model_client.llm` / `model_client.vlm`.
+5. **Do NOT retry on first failure.**
+6. **Do NOT generate editable JSON from PNG** (out of scope).
