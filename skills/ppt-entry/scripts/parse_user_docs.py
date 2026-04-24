@@ -252,6 +252,16 @@ def dispatch(path: Path) -> dict:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--files", nargs="+", required=True)
+    parser.add_argument(
+        "--output",
+        type=str,
+        default=None,
+        help=(
+            "Write the JSON result to this file instead of stdout. "
+            "Parent directories are created if missing. Recommended when the "
+            "caller is an agent that may not reliably handle shell redirection."
+        ),
+    )
     args = parser.parse_args(argv)
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
@@ -279,7 +289,23 @@ def main(argv: list[str] | None = None) -> int:
             img["image_index"] = ii
             img["doc_index"] = di
 
-    json.dump({"documents": documents, "errors": errors}, sys.stdout, ensure_ascii=False)
+    payload = {"documents": documents, "errors": errors}
+    if args.output:
+        out_path = Path(args.output).expanduser().resolve()
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(
+            json.dumps(payload, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        # Emit a short status line so the agent has something to echo.
+        print(json.dumps({
+            "status": "ok",
+            "output": str(out_path),
+            "documents": len(documents),
+            "errors": len(errors),
+        }, ensure_ascii=False))
+    else:
+        json.dump(payload, sys.stdout, ensure_ascii=False)
     return 0
 
 

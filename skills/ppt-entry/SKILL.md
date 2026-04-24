@@ -45,7 +45,7 @@ Run `ppt-doctor` hard checks (U1_LM_API_KEY / U1_LM_BASE_URL / U1_API_KEY / node
    - Create subdirs: `pages/` always; `images/` only if `ppt_mode=standard`.
    - If `$(pwd)/ppt_decks/` cannot be created (permission denied) → **abort**, tell the user to check workspace permissions.
 5. If user attached reference_docs (pdf/docx/md/txt):
-   - Run `$SKILL_DIR/scripts/parse_user_docs.py --files <paths...>` -> write `deck_dir/raw_documents.json`.
+   - Run `$SKILL_DIR/scripts/parse_user_docs.py --files <paths...> --output <deck_dir>/raw_documents.json`. The `--output` flag tells the script to write the JSON itself (recommended — works reliably even on agents that don't handle shell redirection well). The script prints a single-line JSON status `{"status":"ok","output":"...","documents":N,"errors":M}` to stdout when `--output` is used.
    - Call the LLM with `$SKILL_DIR/prompts/document_digest.md` as system prompt + (user_query + concatenated document text) as user prompt. See "Invoking the LLM" below.
    - On success: write `document_digest` JSON into `info_pack.document_digest`.
    - On failure: degrade — set `info_pack.document_digest = null`, continue (do NOT abort entry).
@@ -61,7 +61,7 @@ Run `ppt-doctor` hard checks (U1_LM_API_KEY / U1_LM_BASE_URL / U1_API_KEY / node
 
 ## Invoking the LLM for document_digest
 
-After running `parse_user_docs.py`, write the full JSON (documents + errors) to `<deck_dir>/raw_documents.json`. Then call the LLM with a user prompt that gives only **counts + indices** of tables/images (not row contents) so the LLM can't accidentally paraphrase numbers:
+`parse_user_docs.py --output <deck_dir>/raw_documents.json` already creates the file. Then call the LLM with a user prompt that gives only **counts + indices** of tables/images (not row contents) so the LLM can't accidentally paraphrase numbers:
 
 ```bash
 python3 -c "
