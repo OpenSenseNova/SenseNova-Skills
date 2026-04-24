@@ -59,7 +59,8 @@ All API calls in this skill are executed through the `openclaw_runner.py` of the
 
 **When encountering `MissingApiKeyError` or needing to specify a model**: pass explicitly via CLI parameters, parameter reference `$U1_IMAGE_BASE/reference/api_spec.md`.
 
-**`$U1_IMAGE_BASE` path explanation**: `$U1_IMAGE_BASE` is the installation directory of the `u1-image-base` skill. The agent can locate this path by skill name `u1-image-base` in the list of installed skills.
+**`$U1_IMAGE_BASE` path explanation**: `$U1_IMAGE_BASE` is the installation directory of the `u1-image-base` skill (`SKILL.md` exists).
+The agent can locate this path by skill name `u1-image-base` in the list of installed skills.
 
 ## Architecture: Main Agent + Worker Agent
 

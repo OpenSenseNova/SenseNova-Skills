@@ -14,34 +14,36 @@ Checks performed:
 
 3. Environment variables
    Driven by u1_image_base.configs.Configs — all fields annotated with EnvVar
-   are checked. Fields with empty string defaults are treated as required.
+   are checked. Only U1_API_KEY and U1_IMAGE_GEN_BASE_URL are required; other
+   vars are optional and may be omitted (built-in defaults apply).
 """
 
 import argparse
-import os
 import sys
 from pathlib import Path
-from typing import get_args, get_type_hints
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILLS_DIR = SCRIPT_DIR.parents[1]
 
+BASE_SKILL_DIR = SKILLS_DIR / "u1-image-base"
 
-def check_installation(root: Path, verbose: bool) -> bool:
+
+def check_installation(verbose: bool) -> bool:
     print("[1/3] Checking u1-image-base installation...")
-    base = root / "u1-image-base"
+    root = SKILLS_DIR
+    base_skill = BASE_SKILL_DIR
     required = [
-        base / "SKILL.md",
-        base / "requirements.txt",
-        base / "u1_image_base" / "openclaw_runner.py",
+        base_skill / "SKILL.md",
+        base_skill / "requirements.txt",
+        base_skill / "u1_image_base/openclaw_runner.py",
     ]
     ok = True
-    if not base.exists():
+    if not base_skill.exists():
         print("  ❌ u1-image-base directory not found")
-        print(f"  Expected location: {base}")
+        print(f"  Expected location: {base_skill}")
         return False
     if verbose:
-        print(f"  ✅ u1-image-base directory found: {base}")
+        print(f"  ✅ u1-image-base directory found: {base_skill}")
     for f in required:
         if f.exists():
             if verbose:
@@ -51,10 +53,17 @@ def check_installation(root: Path, verbose: bool) -> bool:
             ok = False
     if ok and not verbose:
         print("  ✅ Installation looks good")
+    # Check skills
+    for d in root.iterdir():
+        if not d.is_dir():
+            continue
+        if (d / "SKILL.md").exists():
+            print(f"  ✅ {d.name} skill found")
     return ok
 
 
-def check_dependencies(root: Path, verbose: bool) -> bool:
+def check_dependencies(verbose: bool) -> bool:
+    root = SKILLS_DIR
     print("[2/3] Checking Python dependencies...")
     ok = True
 
@@ -67,20 +76,19 @@ def check_dependencies(root: Path, verbose: bool) -> bool:
         ok = False
 
     # Packages from requirements.txt
-    req_file = root / "u1-image-base" / "requirements.txt"
+    req_file = BASE_SKILL_DIR / "requirements.txt"
     if not req_file.exists():
-        print("  ❌ requirements.txt not found, skipping package check")
+        # This should never happen, check_installation should have failed
+        print(f"  ❌ requirements.txt not found: {req_file.relative_to(root)}")
+        ok = False
         return ok
 
     import importlib.util
 
+    # Some packages' import names are different from their names in requirements.txt
     pkg_map = {
-        "httpx": "httpx",
         "pillow": "PIL",
         "python-dotenv": "dotenv",
-        "requests": "requests",
-        "anthropic": "anthropic",
-        "openai": "openai",
     }
 
     missing = []
@@ -100,7 +108,7 @@ def check_dependencies(root: Path, verbose: bool) -> bool:
 
     if missing:
         print(f"  ❌ Missing packages: {', '.join(missing)}")
-        print("  Run: pip install -r skills/u1-image-base/requirements.txt")
+        print("  Run: python -m pip install -r skills/u1-image-base/requirements.txt")
         ok = False
     elif not verbose:
         print("  ✅ All required packages installed")
@@ -114,10 +122,10 @@ def _load_configs(root: Path):
     sys.path.insert(0, str(base_path))
     try:
         from u1_image_base.configs import (  # pyright: ignore[reportMissingImports]
-            Configs,
+            global_configs,
         )
 
-        return Configs
+        return global_configs
     except ImportError:
         return None
     finally:
@@ -125,97 +133,28 @@ def _load_configs(root: Path):
             sys.path.pop(0)
 
 
-def _write_env_file(env_file: Path, key: str, value: str) -> None:
-    """Append or update a key=value line in the .env file."""
-    lines = env_file.read_text().splitlines() if env_file.exists() else []
-    updated = False
-    for i, line in enumerate(lines):
-        if line.startswith(f"{key}=") or line.startswith(f"{key} ="):
-            lines[i] = f"{key}={value}"
-            updated = True
-            break
-    if not updated:
-        lines.append(f"{key}={value}")
-    env_file.write_text("\n".join(lines) + "\n")
-
-
-def check_env_vars(root: Path, verbose: bool) -> bool:
+def check_env_vars(root: Path, _verbose: bool) -> bool:
     print("[3/3] Checking environment variables...")
 
-    Configs = _load_configs(root)
-    if Configs is None:
-        print("  ⚠️  Cannot import Configs from u1-image-base, skipping env check")
+    configs = _load_configs(root)
+    if configs is None:
+        print("  ⚠️ Cannot import Configs from u1-image-base, skipping env check")
         return True
 
-    from u1_image_base.configs import EnvVar  # pyright: ignore[reportMissingImports]
-
-    hints = get_type_hints(Configs, include_extras=True)
-    env_file = root / ".env"
-    missing_required = []
-
-    for field, hint in hints.items():
-        env_var = next((a for a in get_args(hint) if isinstance(a, EnvVar)), None)
-        if env_var is None:
-            continue
-
-        set_name = next((n for n in env_var.env_names if os.environ.get(n)), None)
-        default = getattr(Configs, field, "")
-        is_required = default == ""
-        primary_name = env_var.env_names[0]
-
-        if set_name:
-            if verbose:
-                suffix = f" (via {set_name})" if set_name != primary_name else ""
-                print(f"  ✅ {primary_name} configured{suffix}")
-        elif is_required:
-            print(f"  ❌ {primary_name} not set (required)")
-            missing_required.append(primary_name)
-        else:
-            if verbose:
-                print(f"  ⚠️  {primary_name} not set (using default: {default!r})")
-
-    if not missing_required:
-        if not verbose:
-            print("  ✅ All required environment variables configured")
-        return True
-
-    # Prompt user to fill in missing required vars
-    print()
-    print("  Some required environment variables are missing.")
-    print(f"  Enter values below to save them to {env_file}.")
-    print("  Press Enter to skip a variable.\n")
-
-    saved = []
-    for primary_name in missing_required:
-        try:
-            value = input(f"  {primary_name}: ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print()
-            break
-        if value:
-            _write_env_file(env_file, primary_name, value)
-            os.environ[primary_name] = value
-            saved.append(primary_name)
-
-    if saved:
-        print(f"\n  ✅ Saved to {env_file}: {', '.join(saved)}")
-
-        # Reload environment
-        try:
-            from u1_image_base.configs import (  # pyright: ignore[reportMissingImports]
-                reload_env,
-            )
-
-            print("  🔄 Reloading environment...")
-            reload_env(override=True)
-            print("  ✅ Environment reloaded successfully")
-        except Exception as e:
-            print(f"  ⚠️  Failed to reload environment: {e}")
-            print("  💡 Suggestion: Restart the agent to apply new configuration")
+    is_ok = True
+    errors, warnings = configs.validate_configs()
+    if errors:
+        is_ok = False
+        print("  ❌ Environment check failed! Configuration errors:")
+        for field, msg in errors:
+            print(f"    ❌ {field}: {msg}")
+    elif warnings:
+        print("  ✅ Environment check passed! Although with some warnings:")
+        for field, msg in warnings:
+            print(f"    ⚠️ {field}: {msg}")
     else:
-        print("\n  ⚠️  No values entered. Required variables are still missing.")
-
-    return True  # env vars are warnings, not hard failures
+        print("  ✅ Environment check passed!")
+    return is_ok
 
 
 def main():
@@ -229,11 +168,11 @@ def main():
 
     root = SKILLS_DIR
     if args.verbose:
-        print(f"Project root: {root}\n")
+        print(f"Skills root directory: {root}\n")
 
     results = [
-        check_installation(root, args.verbose),
-        check_dependencies(root, args.verbose),
+        check_installation(args.verbose),
+        check_dependencies(args.verbose),
     ]
     check_env_vars(root, args.verbose)
 

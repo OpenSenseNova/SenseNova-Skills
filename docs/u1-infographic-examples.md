@@ -51,7 +51,7 @@ Here are infographic examples generated with the `u1-infographic` skill (powered
 整体布局呈从左到右、由外而内的递进式结构：外部威胁 → 精准干预 → 风险过滤 → 内部激活 → 最终成长。视觉隐喻贯穿始终，将复杂的金融概念转化为直观易懂的生物学过程，增强了信息传达的有效性与记忆点。所有文本均为简体中文，语言专业且富有修辞色彩，适合用于金融产品宣传或投资者教育材料。
 ```
 
-![Example 1](images/demo10.webp)
+![u1-fast Example 1](images/demo10.webp)
 
 ---
 
@@ -84,7 +84,7 @@ Here are infographic examples generated with the `u1-infographic` skill (powered
 整体设计融合了科幻美学与技术叙事，通过三个递进场景——云端传输、超清解码、全球共享——构建完整流媒体服务链条，所有文本均为中文，语言风格充满未来感与诗意，精准传达“无界分发”的技术愿景。
 ```
 
-![Example 2](images/demo2.webp)
+![u1-fast Example 2](images/demo2.webp)
 
 ---
 
@@ -132,7 +132,7 @@ Here are infographic examples generated with the `u1-infographic` skill (powered
 整张图没有使用传统数据图表（如柱状图、饼图），而是通过叙事性拼贴、文字叙述与实物摄影相结合的方式，构建一个关于物质与心理、表象与内在、消费与记忆的哲学化视觉文本。所有文字均为中文，无英文翻译，语言风格兼具文学性与批判性，旨在引发观者对个人物品与自我身份关系的深层思考。
 ```
 
-![Example 3](images/demo3.webp)
+![u1-fast Example 3](images/demo3.webp)
 
 ---
 
@@ -152,7 +152,7 @@ Here are infographic examples generated with the `u1-infographic` skill (powered
 画面右侧的第三栏是一个带有红色警示条纹顶部装饰的深色半透明面板，顶部用白色粗体写着“重要规则”。面板内包含五个垂直排列的条目。第一条左侧是一个代表重置的银色金属质感圆环插画，右侧文字为“每次请求都是全新任务”。第二条左侧是一个发光的数字“1”被牢牢锁定在坚固的钛金属盾牌中的插画，右侧文字为“最多调用一次生成工具”。第三条左侧是一个带有金色星标的深灰色工具箱插画，右侧文字为“优先使用辅助工具收集信息”。第四条左侧是一个发着绿光的厚重保险柜插画，右侧文字为“保留用户原始数据”。第五条左侧是两个带有不同文字符号的对话气泡实现无缝拼接的插画，右侧文字为“使用用户语言生成内容”。右栏底部有一个带有亮紫色光晕的强调框，用粗体字写着“核心目标：”，其后跟着等宽科技字体写着的文字“消除混乱，重构逻辑，实现高维度视觉数据合成。”
 ```
 
-![Example 4](images/demo4.webp)
+![u1-fast Example 4](images/demo4.webp)
 
 ---
 
@@ -174,7 +174,7 @@ Here are infographic examples generated with the `u1-infographic` skill (powered
 在画面的正下方，跨越左右两个区域，有一个淡黄色的宽大横幅。横幅内部用醒目的深藏青色粗体字写着“结论：无论性格如何，都是我们的完美伴侣！”横幅两端分别画着一颗跳动的红色爱心图案。整个画面信息密度极高，文字排版层次分明，色彩对比强烈且极具亲和力，所有元素均清晰可见且无重叠。图像的整体宽高比设定为16:9。
 ```
 
-![Example 5](images/demo5.webp)
+![u1-fast Example 5](images/demo5.webp)
 
 ---
 
@@ -204,7 +204,7 @@ Here are infographic examples generated with the `u1-infographic` skill (powered
 [Target aspect ratio: 16:9]
 ```
 
-![Example 6](images/demo6.webp)
+![u1-fast Example 6](images/demo6.webp)
 
 ---
 
@@ -224,7 +224,7 @@ Here are infographic examples generated with the `u1-infographic` skill (powered
 色彩方案以工程蓝、金属银、电路绿和哑光黑为主，辅以警示橙作为关键连接点标记。光照均匀扁平，无强烈阴影，强调结构清晰度。线条 crisp 且清晰，具有矢量图形的锐利感，部分剖面使用交叉排线纹理表示材质。底部角落包含比例尺图示和“比例 1:1”字样，以及“机密文件”印章效果。整体视觉效果专业、严谨，适合技术文档展示，确保所有组件名称与视觉形态严格对应，信息密度高且阅读逻辑流畅。
 ```
 
-![Example 7](images/demo7.webp)
+![u1-fast Example 7](images/demo7.webp)
 
 ---
 
@@ -279,7 +279,7 @@ The entire layout is framed by decorative elements: pixelated red crosses (like 
 All text is rendered in a bold, pixelated font consistent with early computer graphics. No numerical data beyond the segment counts in the HP bar is explicitly presented; all values are categorical or qualitative. The infographic serves as a dynamic, gamified project management tool for tracking promotional campaigns.
 ```
 
-![Example 8](images/demo8.webp)
+![u1-fast Example 8](images/demo8.webp)
 
 ---
 
@@ -321,7 +321,7 @@ All text is rendered in a bold, pixelated font consistent with early computer gr
 整体视觉风格温馨、活泼，大量使用卡通插画、鲜艳色彩和装饰性元素（如心形、闪电、星星），使复杂的心理学概念变得易于理解和记忆。信息层级清晰，通过颜色、图标和排版引导读者关注重点内容，是一份兼具实用性与美感的亲密关系指南。
 ```
 
-![Example 9](images/demo9.webp)
+![u1-fast Example 9](images/demo9.webp)
 
 ---
 
@@ -356,4 +356,4 @@ All text is rendered in a bold, pixelated font consistent with early computer gr
 整体设计通过”抉择—突破—启航”的叙事逻辑，将教育选择与个人成长、国家发展紧密结合，传递积极向上的价值观。所有文字均为中文，无英文或数字数据内容，完全依赖视觉符号与文本叙述传达信息。
 ```
 
-![Example 10](images/demo1.webp)
+![u1-fast Example 10](images/demo1.webp)

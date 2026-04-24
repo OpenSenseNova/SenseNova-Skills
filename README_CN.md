@@ -75,18 +75,37 @@
 
 ```bash
 pip install -r skills/u1-image-base/requirements.txt
-# 图像生成
+```
+
+**必填** — 缺少以下变量时图像生成将无法工作：
+
+```bash
 export U1_API_KEY="your-image-api-key"
-# LLM/VLM
-export U1_LM_API_KEY="your-lm-api-key"
-export U1_LM_BASE_URL="your-lm-base-url"
+```
+
+**推荐** — 前缀 `U1_LM_*` 的环境变量同时作用于 LLM 和 VLM 设置；如需单独覆盖，可使用各自的前缀（`LLM_*` / `VLM_*`）：
+
+```bash
+export U1_LM_API_KEY="your-lm-api-key"      # LLM_API_KEY / VLM_API_KEY
+export U1_LM_BASE_URL="your-lm-base-url"    # LLM_BASE_URL / VLM_BASE_URL, 例如 "https://api.anthropic.com"（不包括 "/v1" 路径）
+export U1_LM_MODEL="your-model-name"        # LLM_MODEL / VLM_MODEL
+export U1_LM_TYPE="openai-completions"      # LLM_TYPE / VLM_TYPE — "openai-completions" 或 "anthropic-messages"
+```
+
+**可选** — 使用 Nano Banana 系列模型（如 Gemini 3.1 Flash Image Preview）进行图像生成：
+
+```bash
+export U1_API_KEY="your-api-key-for-nano-banana"                            # Nano Banana 模型的 API 密钥
+export U1_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"    # Nano Banana 模型 API 的基础 URL
+export U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
+export U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"  # Nano Banana 模型名称，例如 "gemini-3.1-flash-image-preview"、"gemini-3-pro-image-preview"
 ```
 
 请使用环境变量或本地 `.env` 文件。不要将密钥提交到版本库。
 
 ### 3. 在 OpenClaw 中调用
 
-检查环境并交互式配置缺失的变量：
+检查环境变量，确保技能可以正常工作：
 
 > /skill u1-doctor
 
