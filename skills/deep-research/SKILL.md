@@ -1,6 +1,6 @@
 ---
 name: deep-research
-description: 深度调研编排器，覆盖 规划→分维度取证→综合→成稿（report.md）全流程，产物落盘到 report_dir，支持断点续跑。**遇到以下任一情况就主动使用本 skill，不要自行搜几条就回答**：①用户出现触发词：深度研究 / 深度调研 / 深入研究 / 全面研究 / 系统研究 / 调研 / 调查 / 尽调 / 行业研究 / 市场研究 / 竞品分析 / 政策研究 / 技术研究 / 趋势研究 / 事实核查 / 写一份研究报告 / 调研报告 / 深度报告 / research / deep research；②请求需要跨多来源取证、多维度对比、交叉验证才能给出可靠结论；③用户要求产出报告、白皮书、行业分析或尽调文档；④话题涉及最新政策/市场/产品/价格/法规，需要系统核查。模糊或宽泛的"研究/了解一下 X"也优先触发。仅不用于：单点事实问答（"X 是什么"）、一句话摘要、已给定单一来源的整理、纯文字润色改写。
+description: 深度调研编排器，覆盖 规划→分维度取证→综合→成稿（report.md）全流程，产物落盘到 report_dir，支持断点续跑；启动前必须先确认 OpenClaw web_search 已配置且可用，需要 key 的 provider 必须已配置对应 key，缺失时停止并提示用户配置。**遇到以下任一情况就主动使用本 skill，不要自行搜几条就回答**：①用户出现触发词：深度研究 / 深度调研 / 深入研究 / 全面研究 / 系统研究 / 调研 / 调查 / 尽调 / 行业研究 / 市场研究 / 竞品分析 / 政策研究 / 技术研究 / 趋势研究 / 事实核查 / 写一份研究报告 / 调研报告 / 深度报告 / research / deep research；②请求需要跨多来源取证、多维度对比、交叉验证才能给出可靠结论；③用户要求产出报告、白皮书、行业分析或尽调文档；④话题涉及最新政策/市场/产品/价格/法规，需要系统核查。模糊或宽泛的"研究/了解一下 X"也优先触发。仅不用于：单点事实问答（"X 是什么"）、一句话摘要、已给定单一来源的整理、纯文字润色改写。
 ---
 
 # Deep Research Orchestrator
@@ -8,6 +8,28 @@ description: 深度调研编排器，覆盖 规划→分维度取证→综合→
 这是深度研究的总控 skill。它负责把用户请求推进成一条可执行、可续跑、可核查、可交付的研究链路，并把全过程落盘到同一个 `report_dir`。
 
 它是**编排器**，不是某一阶段的方法本身。需要在对应阶段读取并遵循其他方法 skill，但这些 skill 仍然在当前会话内顺序执行；不要异步分派、创建后台专家、启动额外子会话，或把关键阶段留在对话里不落盘。
+
+## 启动前硬检查：web_search 配置
+
+在创建 `report_dir`、写 `request.md` 或进入任何研究阶段之前，必须确认当前 OpenClaw `web_search` 可用。未确认时不要开始研究，也不要用记忆或已有知识替代联网取证。
+
+检查规则：
+
+- 先运行 `openclaw config validate`，并确认 `tools.web.search.enabled` 未显式为 `false`
+- `web_search` 使用 `tools.web.search.provider` 和 `plugins.entries.<plugin>.config.webSearch.*`
+- 只判断 key 是否存在且非空；绝不展示、记录或复制 key 原文
+- 若 provider 省略、自动检测、使用 SecretRef，或静态检查无法确认，就发起一次极小的 `web_search` 探测；成功返回结果即可继续，返回缺失 key、provider 未就绪、服务不可达或 search disabled 则停止
+
+```text
+deep-research 需要 OpenClaw web_search 可用，但当前未确认 web_search 可用。
+
+请先任选一种方式配置：
+1. 运行 `openclaw configure --section web`
+2. 或按所选 provider 设置环境变量；Gateway 安装可写入 `~/.openclaw/.env`
+3. 或在 OpenClaw 配置中写入 `plugins.entries.<plugin>.config.webSearch.*`
+
+配置后重启或刷新 OpenClaw 会话，再重新发起 deep-research。
+```
 
 ## 第一性原理
 
