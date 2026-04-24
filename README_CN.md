@@ -101,7 +101,9 @@ export U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
 export U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"  # Nano Banana 模型名称，例如 "gemini-3.1-flash-image-preview"、"gemini-3-pro-image-preview"
 ```
 
-请使用环境变量或本地 `.env` 文件。不要将密钥提交到版本库。
+`configs.py` 中的配置优先级为：当前工作目录 `.env` > `skills/.env` > `~/.openclaw/.env`（或 `~/.hermes/.env`）> 进程环境变量。
+
+不要将密钥提交到版本库。
 
 ### 3. 在 OpenClaw 中调用
 
