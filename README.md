@@ -101,7 +101,7 @@ export U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
 export U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"  # Nano Banana model name, e.g. "gemini-3.1-flash-image-preview", "gemini-3-pro-image-preview"
 ```
 
-Configuration precedence in `configs.py` is: current working directory `.env` > `skills/.env` > `~/.openclaw/.env` (or `~/.hermes/.env`) > process environment variables.
+Configuration precedence in `configs.py` is: `~/.openclaw/.env` (or `~/.hermes/.env`) > current working directory `.env` > process environment variables.
 
 Do not commit secrets.
 

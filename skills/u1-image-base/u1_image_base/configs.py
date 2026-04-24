@@ -19,27 +19,23 @@ def prepare_env() -> None:
         warnings.warn("python-dotenv is not installed, `.env` files will be ignored", stacklevel=2)
         return
     # Priorities:
-    # 1. ".env" in current working directory. (depends on how the agent runs the skill)
-    # 2. ".env" in skills directory
-    # 3. ".env" in the agent's config directory:
+    # 1. ".env" in the agent's config directory:
     #    - openclaw: ~/.openclaw/.env
     #    - hermes: ~/.openclaw/.env
-    # 4. Environment variables
+    # 2. ".env" in current working directory. (depends on how the agent runs the skill)
+    # 3. Environment variables
     # ------------------------------------------------------------
     # In reverse order of priority, the latter overrides the former:
-    # 4 -- do nothing; overridden by other env files
-    # 3 --
+    # 3 -- do nothing; overridden by other env files
+    # 2 --
+    load_dotenv(override=True)
+    # 1 --
     if "OPENCLAW_SHELL" in os.environ:
         agent_config_dir = Path("~/.openclaw").expanduser()
     else:
         agent_config_dir = Path("~/.hermes").expanduser()
     if (dotenv_path := agent_config_dir / ".env").exists():
         load_dotenv(dotenv_path, override=True)
-    # 2 --
-    if (dotenv_path := SKILLS_DIR / ".env").exists():
-        load_dotenv(dotenv_path, override=True)
-    # 1 --
-    load_dotenv(override=True)
 
 
 prepare_env()
