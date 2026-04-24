@@ -77,6 +77,17 @@ JSON 对象，包含：
 
 content / data / section 页如果 `body_points` 少于 3 条，说明要点没拆够 —— 回头把 `key_points` 拆成更具体、可独立读的短句。
 
+## 所有文本字段的"反污染"约束
+
+`visual_hints` / `key_points` / `narrative` / `on_page_text.*` 都会被下游 `page_prompt.md` 拼进最终喂给 T2I 的 prompt。T2I 后端可能会做自身的 prompt-enhance，一旦 prompt 里出现以下内容，容易被烤进画面（历史故障：hex 色号被当作文字画出）。所以在 outline 阶段就要源头堵住：
+
+- 禁止写 hex 色值（`#RRGGBB` / `#RGB` / `#RRGGBBAA`）、`rgb(...)` / `rgba(...)` / `hsl(...)` / `hsla(...)`；颜色只写自然语言色名。
+- 禁止写字号/尺寸数值单位（`48px` / `2rem` / `1.2em` / `14pt` / `vh` / `vw`）；字号层级只写相对描述。
+- 禁止写 CSS/JSON/YAML 片段或 `key: value` 形式的样式声明。
+- 禁止写英文设计稿标签词（`Color Palette:` / `Typography:` / `Design Spec` / `Style Guide` / `Font Stack` / `HEX Code`）。
+
+`body_points` 和 `callouts` 里的内容是**会被烤进画面的文字**，尤其不要放任何像色号、尺寸标注、CSS 的字符串。
+
 ## `visual_hints` 写法（关键）
 
 这段会被下一步 `page_prompt.md` 吸收到最终 T2I prompt 里，所以要写**具体可视化的语言**，不是空泛形容：

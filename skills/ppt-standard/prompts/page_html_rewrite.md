@@ -19,7 +19,7 @@
 ## 输入
 
 一个 JSON 对象，包含：
-- `style_spec` —— deck 级风格指南（含 palette / typography / layout_tendency / mood / design_style / color_tone / primary_color）。
+- `style_spec` —— deck 级风格指南（含 palette / typography / design_style / color_tone / primary_color）。
 - `page_outline` —— 本页结构化大纲（title / subtitle / bullets / narrative / data_points / page_kind / use_table / use_image / visual_hints 等）。
 - `page_no` —— 当前是第几页。
 - `inherited_table` —— 若非空，是来自用户文档的一张表格的原始行数据，**必须完整体现在页面上**。

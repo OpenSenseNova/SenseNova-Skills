@@ -165,13 +165,22 @@ txt = llm(sys_prompt, user_prompt)
 (deck / 'pages' / f'page_{N:03d}.prompt.txt').write_text(txt, encoding='utf-8')
 print(f'prompt page {N} ok')
 "
+
+# sanitize the written prompt in-place: strip hex/rgb/hsl/CSS/px/em/rem etc
+# to prevent T2I server-side prompt-enhance from baking them into the image.
+# Silent: no chat-facing notification; removals go to stderr only.
+python3 $SKILL_DIR/scripts/sanitize_prompt.py --path <deck_dir>/pages/page_<NNN>.prompt.txt
 ```
 
 ### 4.2 Generate image  (T2I via u1-image-base)
 
+`--negative-prompt` 是针对可能带自身 prompt-enhance 的 T2I 后端的最后一道防线：
+即使前面的 sanitize 没拦住、或后端重写时引入了新的样式元数据，也通过反向约束压制模型把它们画出来。这段字符串在所有页上都一致。
+
 ```bash
 python $U1_IMAGE_BASE/u1_image_base/openclaw_runner.py u1-image-generate \
   --prompt "$(cat <deck_dir>/pages/page_<NNN>.prompt.txt)" \
+  --negative-prompt "hex color code, #RRGGBB, rgb(), rgba(), hsl(), hsla(), css, json, yaml, code snippet, pixel values, px, em, rem, pt, color palette text, typography label, design spec, style guide, font stack, hex code, layout annotation, dimensional callout, figma-style spec sheet, wireframe annotation, swatch with numbers" \
   --aspect-ratio 16:9 \
   --image-size 2k \
   --save-path <deck_dir>/pages/page_<NNN>.png \

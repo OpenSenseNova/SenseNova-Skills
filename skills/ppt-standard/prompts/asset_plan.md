@@ -61,7 +61,7 @@ If a page NEEDS a chart, table, flowchart, or labeled diagram → **do NOT creat
 
 - image_prompt must be descriptive, concrete, suited for full-frame T2I; no text-in-image requests unless the slot intent is purely typographic.
 - **NEVER include specific numbers, proper nouns, KPIs, process step labels, or any text that must be legible in the final PPT** — T2I models can't reliably render those. If you feel tempted to write "流程图：步骤1 数据采集, 步骤2 清洗, 步骤3 建模" → stop, delete the slot, use `<svg>`/`<table>` instead.
-- Palette / mood must inherit from style_spec.mood_keywords and palette hex values.
+- Palette / mood must inherit from `style_spec.palette` hex values and the chosen `design_style` / `color_tone`.
 
 ### Path / status rules
 

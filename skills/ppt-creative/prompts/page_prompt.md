@@ -50,6 +50,12 @@ prompt 要同时表达四件事，顺序可以混合但都要出现：
 - **必须包含画面尺寸提示**："16:9 widescreen presentation slide" 或同义表达。
 - **headline 文字在图里必须正确拼写一次**（spell it）。
 - **`body_points` 的每一条都必须在 prompt 里按原文照抄**（content / data / section 页）。T2I 模型靠 prompt 里出现的字面文字来烤字，省略了就不会画。
+- **禁止把"技术元数据"当作画面内容描述**——这是为了阻止下游 T2I 后端在自身 prompt-enhance 阶段把这些字面量烤进图：
+  - 禁止出现 hex 色值（`#RRGGBB` / `#RGB` / `#RRGGBBAA`）、`rgb(...)` / `rgba(...)` / `hsl(...)` / `hsla(...)` 数值；描述颜色只写自然语言色名（例"宫墙红"、"深海青"）。
+  - 禁止出现字号/尺寸的数值单位（`48px` / `2rem` / `1.2em` / `14pt` / `100vh` / `50vw`）；字号层级只写相对描述（"超大标题"、"副标题约为标题的一半"）。注意："50% 留白"这种表示**比例**的 `%` 不在禁止范围。
+  - 禁止出现 CSS/JSON/YAML 片段（`color: #xxx`、`font-size: ...`、`background: ...`、任何 `key: value` 形式的样式声明）。描述配色直接在散文里说"以 X 为主色、Y 为辅色"。
+  - 禁止出现英文设计稿标签类词组（`Color Palette:` / `Typography:` / `Design Spec` / `Style Guide` / `Layout Annotation` / `Font Stack` / `HEX Code`）——这些词会让后端增强模型以为是"要显示的设计稿文字"，从而把它们烤进画面。
+  - 禁止在 prompt 里让画面呈现"设计稿 / 规范稿 / 原型图"气质（像带参数标注的 Figma 截图、带色号的 swatch、带尺寸标注的线框）。我们要的是**成品页**，不是**规范稿**。
 - **禁止另起风格**：本页必须严格继承 deck 级 `style_spec`；不得引入 style_spec 没写过的新母题、新配色、新视觉风格。
 - **禁止默认回退到以下母题**（除非 style_spec 明确许可）：
   - prism / spectrum / rainbow refraction

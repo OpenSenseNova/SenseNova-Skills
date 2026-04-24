@@ -2,16 +2,15 @@
 """Single entry point for every ppt-standard stage.
 
 Usage:
-    python run_stage.py preflight      --deck-dir <deck>
-    python run_stage.py style          --deck-dir <deck>
-    python run_stage.py outline        --deck-dir <deck>
-    python run_stage.py asset-plan     --deck-dir <deck>
-    python run_stage.py gen-image      --deck-dir <deck> --page N --slot SLOT
-    python run_stage.py page-html      --deck-dir <deck> --page N
-    python run_stage.py page-review    --deck-dir <deck> --page N
-    python run_stage.py page-rewrite   --deck-dir <deck> --page N
-    python run_stage.py deck-review    --deck-dir <deck>
-    python run_stage.py export         --deck-dir <deck>
+    python run_stage.py preflight       --deck-dir <deck>
+    python run_stage.py style           --deck-dir <deck>
+    python run_stage.py outline         --deck-dir <deck>
+    python run_stage.py asset-plan      --deck-dir <deck>
+    python run_stage.py gen-image       --deck-dir <deck> --page N --slot SLOT
+    python run_stage.py page-html       --deck-dir <deck> --page N
+    python run_stage.py batch-gen-image --deck-dir <deck> [--concurrency 4]
+    python run_stage.py batch-page-html --deck-dir <deck> [--concurrency 4]
+    python run_stage.py export          --deck-dir <deck>
 
 The main agent (in OpenClaw) is expected to call this script **once per
 stage**, with page/slot iteration driven by the agent's own loop of tool_calls.
@@ -46,10 +45,6 @@ if str(LIB_DIR) not in sys.path:
     sys.path.insert(0, str(LIB_DIR))
 
 from model_client import ModelClientError, llm, vlm  # noqa: E402
-
-# Screenshot tool — co-located with the export_pptx Node project so we can
-# reuse its Playwright + chromium installation.
-SCREENSHOT_MJS = SKILL_DIR / "scripts" / "export_pptx" / "screenshot.mjs"
 
 
 # ---------------------------------------------------------------------------
@@ -208,7 +203,7 @@ def _repair_style_triple(data: dict, dims: dict) -> tuple[dict, list[str]]:
         "hex": canonical_hex,
     }
 
-    # Force palette.primary and css_variables --primary to match the hex literally.
+    # Force palette.primary to match the canonical hex literally.
     palette = data.get("palette")
     if not isinstance(palette, dict):
         palette = {}
@@ -220,30 +215,11 @@ def _repair_style_triple(data: dict, dims: dict) -> tuple[dict, list[str]]:
             )
         palette["primary"] = canonical_hex
 
-    css_vars = data.get("css_variables")
-    if isinstance(css_vars, str) and canonical_hex:
-        # Normalize any existing --primary declaration to the canonical hex.
-        new_css, n_subs = re.subn(
-            r"(--primary\s*:\s*)#[0-9A-Fa-f]{3,8}",
-            lambda m: f"{m.group(1)}{canonical_hex}",
-            css_vars,
-        )
-        if n_subs == 0:
-            # No --primary declaration — inject one at the start of :root {}.
-            new_css, n_inject = re.subn(
-                r"(:root\s*\{)",
-                lambda m: f"{m.group(1)} --primary: {canonical_hex};",
-                css_vars,
-                count=1,
-            )
-            if n_inject:
-                notes.append(f"injected --primary: {canonical_hex} into css_variables")
-            else:
-                new_css = css_vars
-                notes.append("css_variables has no :root{} block; left as-is")
-        elif new_css != css_vars:
-            notes.append(f"css_variables --primary normalized to {canonical_hex}")
-        data["css_variables"] = new_css
+    # Drop any stale legacy fields the LLM might still emit out of habit.
+    for stale in ("css_variables", "base_styles", "mood_keywords", "layout_tendency"):
+        if stale in data:
+            data.pop(stale, None)
+            notes.append(f"dropped legacy field {stale!r}")
 
     return data, notes
 
@@ -321,7 +297,6 @@ def cmd_style(deck: Path) -> int:
         "info_pack_query_normalized": ip.get("query_normalized"),
         "info_pack_user_query": ip.get("user_query"),
         "info_pack_document_digest": ip.get("document_digest"),
-        "mood_keywords_hint": "derive from the topic and the speaker/audience combination",
     }, ensure_ascii=False, indent=2)
     try:
         raw = llm(system_prompt, user_prompt)
@@ -878,246 +853,6 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     )
 
 
-def _screenshot_page(deck: Path, page_no: int) -> Path | None:
-    """Render page_{NNN}.html to screenshots/page_{NNN}.png via screenshot.mjs.
-
-    Returns the screenshot path on success, None on failure (caller decides
-    whether to fall back to a text-only review).
-    """
-    import subprocess
-    if not SCREENSHOT_MJS.exists():
-        return None
-    html_path = deck / "pages" / f"page_{page_no:03d}.html"
-    if not html_path.exists():
-        return None
-    out_path = deck / "screenshots" / f"page_{page_no:03d}.png"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        proc = subprocess.run(
-            ["node", str(SCREENSHOT_MJS),
-             "--html", str(html_path),
-             "--out", str(out_path),
-             "--viewport", "1600x900"],
-            capture_output=True, text=True, timeout=60,
-        )
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        return None
-    if proc.returncode != 0 or not out_path.exists() or out_path.stat().st_size == 0:
-        return None
-    return out_path
-
-
-def cmd_screenshot(deck: Path, page_no: int) -> int:
-    """Standalone screenshot subcommand — useful when an agent wants to refresh
-    a single page's screenshot without re-running review."""
-    out = _screenshot_page(deck, page_no)
-    if out is None:
-        return _fail(f"screenshot p{page_no} failed")
-    return _ok(page_no=page_no, path=str(out.relative_to(deck)))
-
-
-# Review / rewrite are temporarily disabled because real-run observations
-# showed the reviewer often demanded changes that made pages worse
-# ("negative optimization"). Flipping this back to True re-enables the full
-# review → rewrite chain with no other changes required. The underlying
-# prompts (page_review.md, page_rewrite.md) and cmd functions below stay
-# in-tree on purpose so we can re-activate after retuning.
-PAGE_REVIEW_ENABLED = False
-
-
-def cmd_page_review(deck: Path, page_no: int) -> int:
-    if not PAGE_REVIEW_ENABLED:
-        return _ok(
-            page_no=page_no,
-            verdict="SKIPPED",
-            skipped=True,
-            reason="page-review disabled (PAGE_REVIEW_ENABLED=False)",
-        )
-    style = _load_json(deck / "style_spec.json")
-    outline = _load_json(deck / "outline.json")
-    plan = _load_json(deck / "asset_plan.json")
-
-    page_outline = next((p for p in outline["pages"] if int(p["page_no"]) == page_no), None)
-    page_plan = next((p for p in plan["pages"] if int(p["page_no"]) == page_no), None)
-    html_path = deck / "pages" / f"page_{page_no:03d}.html"
-    if not html_path.exists():
-        return _fail(f"page_{page_no:03d}.html missing")
-
-    # Render the page to a PNG so the reviewer can SEE the layout, not just
-    # parse the raw HTML. VLM gives much better visual feedback than LLM-only.
-    screenshot = _screenshot_page(deck, page_no)
-
-    html_source = html_path.read_text(encoding="utf-8")
-    # Derive "immutable" flags so the reviewer knows which elements are
-    # verbatim user content / editable chart code and MUST NOT be "fixed" into
-    # something else.
-    has_inherited_table = bool(page_outline and page_outline.get("use_table"))
-    has_inherited_image = (
-        bool(page_outline and page_outline.get("use_image"))
-        or "page_" in html_source and "_inherited" in html_source
-    )
-    has_echarts = "echarts.init(" in html_source or "id=\"chart_" in html_source
-
-    system_prompt = _load_prompt("page_review.md")
-    user_prompt = json.dumps({
-        "style_spec": style,
-        "page_outline": page_outline,
-        "page_asset_plan": page_plan,
-        "has_inherited_table": has_inherited_table,
-        "has_inherited_image": has_inherited_image,
-        "has_echarts": has_echarts,
-        "html_source": html_source,
-        "screenshot_attached": bool(screenshot),
-    }, ensure_ascii=False, indent=2)
-
-    try:
-        if screenshot is not None:
-            review = vlm(system_prompt, user_prompt, images=[screenshot])
-        else:
-            # Fallback: no screenshot available, do a text-only review
-            review = llm(system_prompt, user_prompt)
-    except ModelClientError as e:
-        return _fail(f"page-review p{page_no}: {e}")
-
-    out = deck / "pages" / f"page_{page_no:03d}.review.md"
-    _write_text(out, review)
-    first_line = (review.splitlines() or [""])[0].strip()
-    verdict = "NEEDS_REWRITE" if first_line == "VERDICT: NEEDS_REWRITE" else "CLEAN"
-    return _ok(
-        page_no=page_no,
-        verdict=verdict,
-        path=str(out.relative_to(deck)),
-        screenshot=str(screenshot.relative_to(deck)) if screenshot else None,
-    )
-
-
-def cmd_page_rewrite(deck: Path, page_no: int) -> int:
-    if not PAGE_REVIEW_ENABLED:
-        return _ok(
-            page_no=page_no,
-            skipped=True,
-            reason="page-rewrite disabled (PAGE_REVIEW_ENABLED=False)",
-        )
-    html_path = deck / "pages" / f"page_{page_no:03d}.html"
-    review_path = deck / "pages" / f"page_{page_no:03d}.review.md"
-    if not html_path.exists() or not review_path.exists():
-        return _fail(f"page {page_no}: html or review missing")
-
-    # Skip rewrite entirely if the review already verdicted CLEAN — saves a
-    # model call and prevents the rewriter from "finding things to change"
-    # when it shouldn't.
-    review_md = review_path.read_text(encoding="utf-8")
-    first_line = (review_md.splitlines() or [""])[0].strip()
-    if first_line != "VERDICT: NEEDS_REWRITE":
-        return _ok(page_no=page_no, skipped=True, reason="review verdict is not NEEDS_REWRITE")
-
-    original_html = html_path.read_text(encoding="utf-8")
-
-    # Try to load style/outline for richer context; don't fail if absent.
-    try:
-        style = _load_json(deck / "style_spec.json")
-    except Exception:
-        style = None
-    try:
-        outline = _load_json(deck / "outline.json")
-        page_outline = next(
-            (p for p in outline.get("pages", []) if int(p.get("page_no", -1)) == page_no),
-            None,
-        )
-    except Exception:
-        page_outline = None
-
-    # Re-render the BEFORE screenshot so the rewriter can see exactly what the
-    # reviewer was complaining about — text-only review is often not enough
-    # context to pick the right CSS change.
-    screenshot_before = _screenshot_page(deck, page_no)
-
-    system_prompt = _load_prompt("page_rewrite.md")
-    user_prompt = json.dumps({
-        "style_spec": style,
-        "page_outline": page_outline,
-        "review_md": review_md,
-        "original_html": original_html,
-        "screenshot_attached": bool(screenshot_before),
-    }, ensure_ascii=False, indent=2)
-    try:
-        if screenshot_before is not None:
-            html = vlm(system_prompt, user_prompt, images=[screenshot_before])
-        else:
-            html = llm(system_prompt, user_prompt)
-    except ModelClientError as e:
-        with review_path.open("a", encoding="utf-8") as f:
-            f.write(f"\n\n## Rewrite attempt failed\n{e}\n")
-        return _fail(f"page-rewrite p{page_no}: {e}")
-
-    html = _strip_code_fences(html) if html.lstrip().startswith("```") else html
-
-    # Sanity check: rewriter sometimes returns prose / a partial fragment. If
-    # the output is obviously not a full HTML page, keep the original and log
-    # the failure rather than corrupting a working slide.
-    if not html or "<html" not in html.lower() or "</html>" not in html.lower():
-        with review_path.open("a", encoding="utf-8") as f:
-            f.write("\n\n## Rewrite attempt discarded\nrewriter returned non-HTML output; original kept.\n")
-        return _fail(f"page-rewrite p{page_no}: non-HTML output, kept original",
-                     page_no=page_no, kept_original=True)
-
-    # Normalise img srcs again — rewriter is another place where the model
-    # sometimes hallucinates paths.
-    try:
-        plan = _load_json(deck / "asset_plan.json")
-        page_plan = next(
-            (p for p in plan.get("pages", []) if int(p.get("page_no", -1)) == page_no),
-            {"slots": []},
-        )
-        # Include the inherited-image path (if any) in the allowlist so the
-        # rewriter can reference it even if local_path isn't in asset_plan.
-        extra_paths: list[str] = []
-        for ext in (".png", ".jpg", ".jpeg", ".webp"):
-            candidate = f"images/page_{page_no:03d}_inherited{ext}"
-            if (deck / candidate).exists():
-                extra_paths.append(candidate)
-        html, _ = _normalize_img_srcs(html, page_plan, extra_paths=extra_paths)
-    except Exception:
-        pass
-
-    html_path.write_text(html, encoding="utf-8")
-
-    # Re-screenshot after the rewrite so the human (and any deck-level review)
-    # can see the AFTER state. Best-effort; if screenshot fails, keep going.
-    _screenshot_page(deck, page_no)
-
-    # Report whether anything actually changed so the caller can spot no-op
-    # rewrites at a glance.
-    changed = html.strip() != original_html.strip()
-    len_before = len(original_html)
-    len_after = len(html)
-    return _ok(
-        page_no=page_no,
-        path=str(html_path.relative_to(deck)),
-        changed=changed,
-        len_before=len_before,
-        len_after=len_after,
-    )
-
-
-def cmd_deck_review(deck: Path) -> int:
-    tp = _load_json(deck / "task_pack.json")
-    pages_dir = deck / "pages"
-    parts: list[str] = []
-    for i in range(1, int(tp["params"]["page_count"]) + 1):
-        rp = pages_dir / f"page_{i:03d}.review.md"
-        if rp.exists():
-            parts.append(f"## page_{i:03d}\n\n{rp.read_text(encoding='utf-8')}")
-    system_prompt = _load_prompt("deck_review.md")
-    user_prompt = "\n\n---\n\n".join(parts) or "(no per-page reviews)"
-    try:
-        md = llm(system_prompt, user_prompt)
-    except ModelClientError as e:
-        return _fail(f"deck-review: {e}")
-    _write_text(deck / "review.md", md)
-    return _ok(path="review.md")
-
-
 def cmd_export(deck: Path) -> int:
     import subprocess
     converter = SKILL_DIR / "scripts" / "export_pptx" / "html_to_pptx.mjs"
@@ -1259,90 +994,6 @@ def cmd_batch_page_html(deck: Path, concurrency: int) -> int:
     )
 
 
-def cmd_batch_page_review(deck: Path, concurrency: int) -> int:
-    if not PAGE_REVIEW_ENABLED:
-        return _ok(
-            stage="page-review",
-            skipped=True,
-            reason="page-review disabled (PAGE_REVIEW_ENABLED=False)",
-            submitted=0,
-        )
-    outline_path = deck / "outline.json"
-    if not outline_path.exists():
-        return _fail("outline.json missing")
-    outline = _load_json(outline_path)
-    tasks: list[tuple] = []
-    for page in outline.get("pages", []):
-        pno = int(page.get("page_no", 0))
-        if pno <= 0:
-            continue
-        # Only review pages that have an HTML file; otherwise the review will
-        # just _fail. Saves wasted model calls on half-built decks.
-        if not (deck / "pages" / f"page_{pno:03d}.html").exists():
-            continue
-        tasks.append((cmd_page_review, (deck, pno), {}, f"p{pno:03d}/review"))
-    if not tasks:
-        return _fail("no pages with HTML to review")
-    results = _run_concurrent(tasks, concurrency)
-    clean = [r["label"] for r in results if r["payload"].get("verdict") == "CLEAN"]
-    needs_rewrite = [r["label"] for r in results if r["payload"].get("verdict") == "NEEDS_REWRITE"]
-    failed = [
-        {"label": r["label"], "error": r["payload"].get("error", "")}
-        for r in results if r["exit_code"] != 0
-    ]
-    return _ok(
-        stage="page-review",
-        concurrency=concurrency,
-        submitted=len(tasks),
-        clean=len(clean),
-        needs_rewrite=len(needs_rewrite),
-        failed=len(failed),
-        failed_detail=failed or None,
-    )
-
-
-def cmd_batch_page_rewrite(deck: Path, concurrency: int) -> int:
-    if not PAGE_REVIEW_ENABLED:
-        return _ok(
-            stage="page-rewrite",
-            skipped=True,
-            reason="page-rewrite disabled (PAGE_REVIEW_ENABLED=False)",
-            submitted=0,
-        )
-    outline_path = deck / "outline.json"
-    if not outline_path.exists():
-        return _fail("outline.json missing")
-    outline = _load_json(outline_path)
-    tasks: list[tuple] = []
-    for page in outline.get("pages", []):
-        pno = int(page.get("page_no", 0))
-        if pno <= 0:
-            continue
-        review_path = deck / "pages" / f"page_{pno:03d}.review.md"
-        if not review_path.exists():
-            continue
-        first = (review_path.read_text(encoding="utf-8").splitlines() or [""])[0].strip()
-        if first != "VERDICT: NEEDS_REWRITE":
-            continue
-        tasks.append((cmd_page_rewrite, (deck, pno), {}, f"p{pno:03d}/rewrite"))
-    if not tasks:
-        return _ok(stage="page-rewrite", submitted=0, note="no pages flagged NEEDS_REWRITE")
-    results = _run_concurrent(tasks, concurrency)
-    changed = sum(1 for r in results if r["payload"].get("changed"))
-    failed = [
-        {"label": r["label"], "error": r["payload"].get("error", "")}
-        for r in results if r["exit_code"] != 0
-    ]
-    return _ok(
-        stage="page-rewrite",
-        concurrency=concurrency,
-        submitted=len(tasks),
-        changed=changed,
-        failed=len(failed),
-        failed_detail=failed or None,
-    )
-
-
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -1352,8 +1003,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="run_stage")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    for name in ("preflight", "style", "outline", "asset-plan",
-                 "deck-review", "export"):
+    for name in ("preflight", "style", "outline", "asset-plan", "export"):
         sp = sub.add_parser(name)
         sp.add_argument("--deck-dir", type=Path, required=True)
 
@@ -1362,15 +1012,13 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--page", type=int, required=True)
     sp.add_argument("--slot", type=str, required=True)
 
-    for name in ("page-html", "page-review", "page-rewrite", "screenshot"):
-        sp = sub.add_parser(name)
-        sp.add_argument("--deck-dir", type=Path, required=True)
-        sp.add_argument("--page", type=int, required=True)
+    sp = sub.add_parser("page-html")
+    sp.add_argument("--deck-dir", type=Path, required=True)
+    sp.add_argument("--page", type=int, required=True)
 
     # Batch / concurrent variants (default concurrency=4). Each fans out its
     # per-item work across a thread pool so LLM / VLM / T2I wait times overlap.
-    for name in ("batch-gen-image", "batch-page-html",
-                 "batch-page-review", "batch-page-rewrite"):
+    for name in ("batch-gen-image", "batch-page-html"):
         sp = sub.add_parser(name)
         sp.add_argument("--deck-dir", type=Path, required=True)
         sp.add_argument("--concurrency", type=int, default=4,
@@ -1394,24 +1042,12 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_gen_image(deck, args.page, args.slot)
     if args.cmd == "page-html":
         return cmd_page_html(deck, args.page)
-    if args.cmd == "page-review":
-        return cmd_page_review(deck, args.page)
-    if args.cmd == "page-rewrite":
-        return cmd_page_rewrite(deck, args.page)
-    if args.cmd == "screenshot":
-        return cmd_screenshot(deck, args.page)
-    if args.cmd == "deck-review":
-        return cmd_deck_review(deck)
     if args.cmd == "export":
         return cmd_export(deck)
     if args.cmd == "batch-gen-image":
         return cmd_batch_gen_image(deck, args.concurrency)
     if args.cmd == "batch-page-html":
         return cmd_batch_page_html(deck, args.concurrency)
-    if args.cmd == "batch-page-review":
-        return cmd_batch_page_review(deck, args.concurrency)
-    if args.cmd == "batch-page-rewrite":
-        return cmd_batch_page_rewrite(deck, args.concurrency)
     return _fail(f"unknown command {args.cmd!r}")
 
 
