@@ -47,11 +47,12 @@ class Field:
     Env vars are tried in order; the first env var that is set is returned.
     """
 
-    __slots__ = ("env_names", "required")
+    __slots__ = ("env_names", "required", "secret")
 
-    def __init__(self, *env_names: str, required: bool = False) -> None:
+    def __init__(self, *env_names: str, required: bool = False, secret: bool = False) -> None:
         self.env_names: tuple[str, ...] | None = tuple(env_names) if env_names else None
         self.required = required
+        self.secret = secret
 
     def resolve(self, target_type: type | None = None) -> str | int | float | None:
         """Return the first env var value that is set, converted to target_type.
@@ -86,32 +87,35 @@ class Configs:
     """
 
     # image-generate
-    U1_API_KEY: Annotated[str, Field("U1_API_KEY", required=True)] = ""
+    U1_API_KEY: Annotated[str, Field("U1_API_KEY", required=True, secret=True)] = ""
     U1_IMAGE_GEN_BASE_URL: Annotated[
         str, Field("U1_IMAGE_GEN_BASE_URL", "U1_BASE_URL", required=True)
-    ] = "https://u1-api.sensenova.cn/model"
+    ] = "https://token.sensenova.cn/v1"
     # if U1_IMAGE_GEN_MODEL_TYPE is not "u1", U1_IMAGE_GEN_MODEL must be set
     #   "nano-banana": available models are "gemini-3.1-flash-image-preview", "gemini-3-pro-image-preview"
     U1_IMAGE_GEN_MODEL_TYPE: Annotated[
-        Literal["u1", "nano-banana"],
-        Field("U1_IMAGE_GEN_MODEL_TYPE"),
-    ] = "u1"
-    U1_IMAGE_GEN_MODEL: Annotated[str, Field("U1_IMAGE_GEN_MODEL")] = ""
+        Literal["sensenova", "u1", "nano-banana"], Field("U1_IMAGE_GEN_MODEL_TYPE")
+    ] = "sensenova"
+    U1_IMAGE_GEN_MODEL: Annotated[str, Field("U1_IMAGE_GEN_MODEL")] = "sensenova-u1-fast"
 
     # NOTE: "U1_LM_*" vars are shared between VLM and LLM
     # image-recognize (VLM) — falls back to shared U1_LM_* vars
-    VLM_API_KEY: Annotated[str, Field("VLM_API_KEY", "U1_LM_API_KEY")] = "dummy"
-    VLM_BASE_URL: Annotated[str, Field("VLM_BASE_URL", "U1_LM_BASE_URL")] = ""
-    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "U1_LM_MODEL")] = ""
+    VLM_API_KEY: Annotated[str, Field("VLM_API_KEY", "U1_LM_API_KEY", secret=True)] = ""
+    VLM_BASE_URL: Annotated[str, Field("VLM_BASE_URL", "U1_LM_BASE_URL")] = (
+        "https://token.sensenova.cn/v1"
+    )
+    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "U1_LM_MODEL")] = "sensenova-6.7-flash-lite"
     VLM_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("VLM_TYPE", "U1_LM_TYPE"),
     ] = "openai-completions"
 
     # text-optimize (LLM) — falls back to shared U1_LM_* vars
-    LLM_API_KEY: Annotated[str, Field("LLM_API_KEY", "U1_LM_API_KEY")] = "dummy"
-    LLM_BASE_URL: Annotated[str, Field("LLM_BASE_URL", "U1_LM_BASE_URL")] = ""
-    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "U1_LM_MODEL")] = ""
+    LLM_API_KEY: Annotated[str, Field("LLM_API_KEY", "U1_LM_API_KEY", secret=True)] = ""
+    LLM_BASE_URL: Annotated[str, Field("LLM_BASE_URL", "U1_LM_BASE_URL")] = (
+        "https://token.sensenova.cn/v1"
+    )
+    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "U1_LM_MODEL")] = "sensenova-6.7-flash-lite"
     LLM_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("LLM_TYPE", "U1_LM_TYPE"),
@@ -128,23 +132,39 @@ class Configs:
             if (val := env_var.resolve(actual_type)) is not None:
                 setattr(self, field, val)
 
+    def to_string(self, mask_secrets: bool = True) -> str:
+        rows = []
+        for field_name, hint in get_type_hints(type(self), include_extras=True).items():
+            field = next((a for a in get_args(hint) if isinstance(a, Field)), None)
+            value = getattr(self, field_name, None)
+            v = str(value)
+            if mask_secrets and v and field and field.secret:
+                if len(v) > 10:
+                    v = f"{v[:6]}{'*' * (len(v) - 10)}{v[-4:]}"
+                elif len(v) > 4:
+                    v = f"{v[:4]}{'*' * (len(v) - 4)}"
+                else:
+                    v = "*" * len(v)
+            rows.append(f"{field_name}: {v}")
+        return "\n".join(rows)
+
     def validate_configs(self) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
         field_env_names: dict[str, tuple[str, ...] | str] = {}
         errors: list[tuple[str, str]] = []
-        for field, hint in get_type_hints(type(self), include_extras=True).items():
-            env_var = next((a for a in get_args(hint) if isinstance(a, Field)), None)
-            if env_var is None:
+        for field_name, hint in get_type_hints(type(self), include_extras=True).items():
+            field = next((a for a in get_args(hint) if isinstance(a, Field)), None)
+            if field is None:
                 continue
-            if env_names := env_var.env_names:
+            if env_names := field.env_names:
                 if len(env_names) > 1:
-                    field_env_names[field] = env_names
+                    field_env_names[field_name] = env_names
                 elif len(env_names) == 1:
-                    field_env_names[field] = env_names[0]
-            value = getattr(self, field, None)
+                    field_env_names[field_name] = env_names[0]
+            value = getattr(self, field_name, None)
             if not value:
-                if env_var.required:
-                    msg = f"Field '{field}' is required but not set; try setting the environment variable(s) {env_var.env_names}"
-                    errors.append((field, msg))
+                if field.required:
+                    msg = f"Field '{field_name}' is required but not set; try setting the environment variable(s) {field.env_names}"
+                    errors.append((field_name, msg))
                 continue
 
         # Check fields combination rules:
@@ -152,7 +172,7 @@ class Configs:
             errors.append(
                 (
                     "U1_IMAGE_GEN_MODEL",
-                    "U1_IMAGE_GEN_MODEL is required when U1_IMAGE_GEN_MODEL_TYPE is not 'u1'",
+                    f"U1_IMAGE_GEN_MODEL is required when U1_IMAGE_GEN_MODEL_TYPE is {self.U1_IMAGE_GEN_MODEL_TYPE!r}",
                 )
             )
 
@@ -240,16 +260,10 @@ def is_valid_base_url(url: str) -> bool:
     return False
 
 
-def reload_env(override: bool = True) -> None:
+def reload_env() -> None:
     global global_configs
 
-    try:
-        from dotenv import load_dotenv
-
-        load_dotenv(override=override)
-    except ImportError:
-        print("❌ python-dotenv is not installed, `.env` file will not be loaded on reload")
-
+    prepare_env()
     try:
         global_configs = Configs()
         print("✅ Reloaded global_configs")

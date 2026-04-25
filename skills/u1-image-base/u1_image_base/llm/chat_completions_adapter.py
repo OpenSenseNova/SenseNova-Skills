@@ -4,6 +4,8 @@ Supports any backend that follows the standard ``POST /chat/completions``
 request/response schema. Does NOT support image inputs.
 
 Usage:
+
+    ```python
     from llm.chat_completions_adapter import ChatCompletionsLlmAdapter
 
     adapter = ChatCompletionsLlmAdapter(
@@ -15,6 +17,12 @@ Usage:
         user_prompt="Optimize this text: Hello world",
         system_prompt="You are a text optimization assistant.",
     )
+    ```
+
+    ```bash
+    export U1_LM_API_KEY=sk-xxxxxx
+    python -m u1_image_base.llm.chat_completions_adapter
+    ```
 """
 
 from __future__ import annotations
@@ -24,13 +32,16 @@ from typing import Any
 
 import httpx
 
-from ..utils.error_utils import U1HttpResponseParseError
-from ..utils.httpx_client import httpx_response_raise_for_status_code
+from u1_image_base.configs import is_valid_base_url
+from u1_image_base.exceptions import InvalidBaseUrlError, MissingApiKeyError
+from u1_image_base.utils.error_utils import U1HttpNotFoundError, U1HttpResponseParseError
+from u1_image_base.utils.httpx_client import httpx_response_raise_for_status_code
+
 from .llm_adapter import LlmAdapter
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_REQUEST_TIMEOUT = 1500.0
+DEFAULT_REQUEST_TIMEOUT = 600.0
 
 
 class ChatCompletionsLlmAdapter(LlmAdapter):
@@ -44,7 +55,7 @@ class ChatCompletionsLlmAdapter(LlmAdapter):
       pooling.
     * Model name can be overridden per-call or at initialization.
 
-    This adapter is intentionally generic. No预设 base_url, model, or system prompt.
+    This adapter is intentionally generic. No preset base_url, model, or system prompt.
     All required parameters must be provided by the caller.
     """
 
@@ -65,7 +76,7 @@ class ChatCompletionsLlmAdapter(LlmAdapter):
                 (e.g. ``https://api.openai.com/v1/chat/completions``).
             api_key: Bearer token for the ``Authorization`` header.
             model: Default model name sent in the request payload.
-            timeout: Request timeout in seconds. Defaults to 1500.
+            timeout: Request timeout in seconds. Defaults to 600.
             async_client (httpx.AsyncClient | None, optional):
                 Shared HTTP client supplied by the caller. When
                 provided the adapter reuses it and will *not* close it in
@@ -99,14 +110,14 @@ class ChatCompletionsLlmAdapter(LlmAdapter):
         self,
         user_prompt: str,
         system_prompt: str,
-        model: str | None,
+        model: str,
     ) -> dict[str, Any]:
         """Assemble the full JSON request payload for a text-only call.
 
         Args:
             user_prompt: User-facing text instruction.
             system_prompt: System instruction (may be empty).
-            model: Model name to use (overrides default if provided).
+            model: Resolved model name to use in the request payload.
 
         Returns:
             dict[str, Any]: JSON-serialisable request body.
@@ -116,7 +127,7 @@ class ChatCompletionsLlmAdapter(LlmAdapter):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": user_prompt})
         payload: dict[str, Any] = {
-            "model": model or self._default_model,
+            "model": model,
             "messages": messages,
         }
         if self._reasoning_effort:
@@ -172,18 +183,27 @@ class ChatCompletionsLlmAdapter(LlmAdapter):
             str: Assistant message text extracted from the API response.
 
         Raises:
-            httpx.HTTPStatusError: On non-2xx HTTP responses.
+            U1HttpNotFoundError: On 404 responses, with model context appended.
+            U1HttpResponseParseError: If the HTTP response body is not valid JSON.
+            U1HttpBaseError: On other HTTP errors.
             RuntimeError: If the response contains no ``choices``.
         """
+        model = model or self._default_model
         payload = self._build_payload(user_prompt, system_prompt, model)
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
         }
         resp = await self._get_client().post(self._url, json=payload, headers=headers)
-        httpx_response_raise_for_status_code(resp)
         try:
+            httpx_response_raise_for_status_code(resp)
             data = resp.json()
+        except U1HttpNotFoundError as e:
+            # re-raise with more context
+            raise U1HttpNotFoundError(
+                detail=f"{e.detail} model={model!r}",
+                code=resp.status_code,
+            ) from e
         except ValueError as exc:
             raise U1HttpResponseParseError(
                 detail=f"Failed to parse HTTP response. {resp.request.url}. Response content: {resp.content}",
@@ -199,3 +219,42 @@ class ChatCompletionsLlmAdapter(LlmAdapter):
         if self._external_client is None and self._client is not None:
             await self._client.aclose()
             self._client = None
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    from u1_image_base.configs import global_configs
+
+    async def main():
+        base_url = global_configs.LLM_BASE_URL
+        if not base_url:
+            raise InvalidBaseUrlError(
+                f"No base URL provided for LLM. {global_configs.get_env_var_help('LLM_BASE_URL')}"
+            )
+        if not is_valid_base_url(base_url):
+            raise InvalidBaseUrlError(
+                f"Invalid base URL for LLM: {base_url}. {global_configs.get_env_var_help('LLM_BASE_URL')}"
+            )
+        base_url = base_url.rstrip("/")
+        endpoint = "/chat/completions"
+        endpoint_url = f"{base_url}{endpoint}"
+        api_key = global_configs.LLM_API_KEY
+        if not api_key:
+            raise MissingApiKeyError(
+                f"No API key provided for LLM. {global_configs.get_env_var_help('LLM_API_KEY')}"
+            )
+        model = global_configs.LLM_MODEL
+
+        adapter = ChatCompletionsLlmAdapter(
+            endpoint_url=endpoint_url,
+            api_key=api_key,
+            model=model,
+        )
+        result = await adapter.text_completion(
+            user_prompt="Write a poem about the topic: 'Hello world'",
+            system_prompt="You are a poet.",
+        )
+        print(result)
+
+    asyncio.run(main())

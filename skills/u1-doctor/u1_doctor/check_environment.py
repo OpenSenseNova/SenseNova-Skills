@@ -21,6 +21,7 @@ Checks performed:
 import argparse
 import sys
 from pathlib import Path
+from textwrap import indent
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILLS_DIR = SCRIPT_DIR.parents[1]
@@ -154,13 +155,28 @@ def check_env_vars(root: Path, _verbose: bool) -> bool:
             print(f"    ⚠️ {field}: {msg}")
     else:
         print("  ✅ Environment check passed!")
+    inspect_configs(_verbose)
     return is_ok
 
 
+def inspect_configs(_verbose: bool):
+    global_configs = _load_configs(SKILLS_DIR)
+    if global_configs is None:
+        print(
+            "❌ Cannot import Configs from u1-image-base, skipping config inspection",
+            file=sys.stderr,
+        )
+        return
+
+    print("Resolved configs:")
+    if hasattr(global_configs, "to_string"):
+        print(indent(global_configs.to_string(), "  * "))
+    else:
+        print(indent(str(global_configs), "  * "))
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="SenseNova-Skills environment diagnostic"
-    )
+    parser = argparse.ArgumentParser(description="SenseNova-Skills environment diagnostic")
     parser.add_argument("--verbose", action="store_true", help="Show detailed output")
     args = parser.parse_args()
 

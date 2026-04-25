@@ -14,10 +14,25 @@ class U1BaseError(Exception):
         super().__init__(message)
 
 
-class MissingApiKeyError(U1BaseError):
-    """Raised when API key is not provided via CLI argument or U1_API_KEY environment variable."""
+class BadConfigurationError(U1BaseError):
+    """Raised when the configuration is invalid."""
+
+    DEFAULT_MESSAGE = "The configuration is invalid."
+
+
+class MissingApiKeyError(BadConfigurationError):
+    """Raised when API key is not provided via CLI argument or environment variable."""
 
     DEFAULT_MESSAGE = (
         "API key is required but was not provided. "
         "Set the U1_API_KEY environment variable or pass --api-key explicitly."
+    )
+
+
+class InvalidBaseUrlError(BadConfigurationError):
+    """Raised when base URL is not provided via CLI argument or environment variable."""
+
+    DEFAULT_MESSAGE = (
+        "Base URL is required but was not provided. "
+        "Set the U1_IMAGE_GEN_BASE_URL environment variable or pass --base-url explicitly."
     )
