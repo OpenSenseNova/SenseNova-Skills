@@ -5,8 +5,41 @@ import {
   parseBoxShadow, parseFontFamily, parseBorder, pxToInch, setCanvasWidth,
   extractCssAlpha,
 } from './style_parser.mjs';
+import { echartsOptionToPptx } from './echarts_to_pptx.mjs';
+import { createGradientHandler } from './postprocess_pptx.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+
+// Module-level: chart options captured from the current IR. Set by
+// buildSlideFromIR before flattening, read by flattenIRToElements when it
+// encounters a `<div id="chart_N">` node.
+let _currentChartOptions = {};
+// pptxgenjs exposes ChartType only on *instances*, so we stash the enum from
+// the active pptx instance at slide-build time.
+let _currentChartTypeEnum = null;
+
+// Gradient handler for the current buildPptx() call. buildShapeElement reads
+// this when it encounters a gradient backgroundImage, registers the gradient
+// definition, and uses the returned token as a placeholder shape fill color.
+// After pptxgenjs writes the file, postprocessPptx() swaps each token-bearing
+// <a:solidFill> for the real <a:gradFill>.
+let _currentGradientHandler = null;
+
+/**
+ * Dispatch a chart element to slide.addChart. Handles the 'combo' sentinel
+ * by passing the array of {type,data,options} entries directly.
+ */
+function addChartElement(slide, data) {
+  const opts = { x: data.x, y: data.y, w: data.w, h: data.h, ...data.options };
+  if (data.chartType === 'combo') {
+    // pptxgenjs combo charts: pass an array of chart-spec entries
+    // [{ type: ChartType.bar, data: [...], options: {...} },
+    //  { type: ChartType.line, data: [...], options: {...} }]
+    slide.addChart(data.chartData, opts);
+  } else {
+    slide.addChart(data.chartType, data.chartData, opts);
+  }
+}
 
 const TRANSPARENT_PIXEL_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
@@ -125,6 +158,13 @@ function parseTextShadow(textShadow) {
  */
 function parseRotation(transformStr) {
   if (!transformStr || transformStr === 'none') return null;
+  // L-i: 3D transform 检测 —— OOXML 没有原生 3D 变换支持。
+  // 遇到 perspective / rotate3d / rotateX / rotateY / matrix3d → 跳过 transform，
+  // 让元素以未旋转姿态呈现（比"飞出去"好）。
+  if (/perspective\s*\(|rotate3d\s*\(|rotate[XY]\s*\(|matrix3d\s*\(/.test(transformStr)) {
+    process.stderr.write(`[transform] 3D transform ignored: ${transformStr.slice(0, 100)}\n`);
+    return null;
+  }
   // rotate(Xdeg)
   const rotateMatch = transformStr.match(/rotate\(\s*(-?[\d.]+)deg\s*\)/);
   if (rotateMatch) return parseFloat(rotateMatch[1]);
@@ -614,6 +654,19 @@ export function buildTextElement(node) {
   const s = node.styles || {};
   const b = node.bounds;
 
+  // M-ii: 跳过完全不可见的文字 —— color alpha < 0.05 且无 text-stroke / text-shadow。
+  // 仅 alpha 透明会被 PPTX transparency 精度问题搞成"清晰可见"水印；
+  // 但若有 text-stroke 或 text-shadow，文字仍是设计上要显示的（描边/阴影），
+  // 不能跳过（如用户运营 p12 的 -webkit-text-stroke 数字徽标）。
+  if (s.color && extractCssAlpha(s.color) < 0.05) {
+    const stroke = s.WebkitTextStroke || s.webkitTextStroke;
+    const strokeWidth = s.WebkitTextStrokeWidth || s.webkitTextStrokeWidth;
+    const hasStroke = (stroke && stroke !== 'none' && !stroke.startsWith('0'))
+      || (strokeWidth && parseFloat(strokeWidth) > 0);
+    const hasShadow = s.textShadow && s.textShadow !== 'none';
+    if (!hasStroke && !hasShadow) return null;
+  }
+
   // 文本框宽度余量：PowerPoint 字体渲染比 Chrome 稍宽（尤其字体替换时），
   // 精确匹配 HTML 像素宽度会导致本来一行的文字在 PPT 中换行。
   // 策略：取 5% 比例余量和半个字符宽度中的较大值。
@@ -622,10 +675,22 @@ export function buildTextElement(node) {
   const bufferPx = Math.max(b.w * 0.05, halfCharPx);
   const textW = pxToInch(b.w + bufferPx);
 
+  // E-vi: word-break: keep-all / white-space: nowrap → 不允许 wrap
+  const wb = s.wordBreak;
+  const ws = s.whiteSpace;
+  const keepAll = wb === 'keep-all' || ws === 'nowrap' || ws === 'pre' || ws === 'pre-line';
+
+  // E-iv: 极短文本（≤4 字符）容器经常宽度刚够字符，PPTX 字体细微差异会让
+  // "01" 拆成 "0/1" —— 强制不 wrap，并把文本框略加宽。
+  const shortText = !textRuns && text && text.trim().length <= 4;
+  const shortTextW = shortText
+    ? pxToInch(Math.max(b.w, fontSizePx * text.trim().length * 0.7) + bufferPx)
+    : null;
+
   const options = {
     x: pxToInch(b.x),
     y: pxToInch(b.y),
-    w: textW,
+    w: shortTextW || textW,
     h: pxToInch(b.h),
     fontSize: pxToPt(parseFloat(s.fontSize) || 16),
     fontFace: parseFontFamily(s.fontFamily),
@@ -635,7 +700,9 @@ export function buildTextElement(node) {
     underline: s.textDecoration?.includes('underline') ? { style: 'sng' } : undefined,
     align: mapTextAlign(s.textAlign),
     valign: mapVerticalAlign(s.verticalAlign),
-    autoFit: true,
+    // E-iii: 禁用 autoFit。autoFit 会悄悄把字号缩小或自动 wrap，行为不可预测。
+    // 我们已经从 HTML 测出真实 fontSize 和 bounds，直接用即可。
+    autoFit: false,
   };
 
   // transform: rotate() → pptxgenjs rotate
@@ -652,19 +719,30 @@ export function buildTextElement(node) {
     }
   }
 
-  // 单行文本检测：如果高度 < 字号 × 2，说明浏览器中只有一行，
-  // 设置 wrap: false 避免因字体渲染差异在 PPTX 中意外换行
+  // wrap 决策（E-iii / E-iv / E-vi 综合）：
+  //  - 多 run（混合内容含 br/装饰子元素）→ 强制 wrap=true，让 breakLine 生效
+  //  - keep-all / nowrap / 短文本 → 强制 wrap=false
+  //  - 单行短文本（高度 < 字号 × 2）→ wrap=false，避免字体差异引发意外换行
+  //  - 其余 → wrap=true
   const fsPx = parseFloat(s.fontSize) || 16;
   const isSingleLine = !textRuns && b.h < fsPx * 2;
-  options.wrap = !isSingleLine;
+  if (textRuns && textRuns.length > 1) {
+    options.wrap = true;
+  } else if (keepAll || shortText) {
+    options.wrap = false;
+  } else {
+    options.wrap = !isSingleLine;
+  }
 
   // padding → pptxgenjs margin（文本框内边距）
-  // 仅当节点自身有 text 或 textRuns 时设置（叶子文本节点的 padding 决定文本位置）
+  // G-i 修复：仅对**叶子文本节点**保留 padding。混合内容父节点（textRuns 路径）
+  // 的 padding 已经通过子元素的 bounds 偏移体现在子节点上 —— 在父级 textbox
+  // 再加一次 margin 会产生"双倍缩进"。
   const padTop = parseFloat(s.paddingTop) || 0;
   const padRight = parseFloat(s.paddingRight) || 0;
   const padBottom = parseFloat(s.paddingBottom) || 0;
   const padLeft = parseFloat(s.paddingLeft) || 0;
-  if (padTop > 0 || padRight > 0 || padBottom > 0 || padLeft > 0) {
+  if (!textRuns && (padTop > 0 || padRight > 0 || padBottom > 0 || padLeft > 0)) {
     options.margin = [
       pxToPt(padTop), pxToPt(padRight), pxToPt(padBottom), pxToPt(padLeft),
     ];
@@ -780,14 +858,44 @@ export function buildShapeElement(node) {
   };
 
   // 背景填充（支持 rgba 透明度 + 元素 opacity）
+  // 优先级：渐变 backgroundImage > 纯色 backgroundColor。HTML 里 backgroundColor
+  // 通常是 backgroundImage 渲染失败时的 fallback，渐变能转就转渐变。
+  const hasGradientBgImage =
+    s.backgroundImage && s.backgroundImage !== 'none' && s.backgroundImage.includes('gradient');
   const bgColor = cssColorToHex(s.backgroundColor);
-  if (bgColor) {
+  let gradientApplied = false;
+  if (hasGradientBgImage && _currentGradientHandler) {
+    const grad = parseLinearGradient(s.backgroundImage);
+    const radial = grad ? null : parseRadialGradient(s.backgroundImage);
+    if (grad && grad.stops.length >= 2) {
+      const stops = grad.stops.map((st, i) => ({
+        pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(grad.stops.length - 1, 1)),
+        color: st.color,
+        alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
+      }));
+      const tok = _currentGradientHandler.registerLinear({ angle: grad.angle, stops });
+      shape.fill = { color: tok };
+      gradientApplied = true;
+    } else if (radial && radial.stops && radial.stops.length >= 2) {
+      const stops = radial.stops.map((st, i) => ({
+        pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(radial.stops.length - 1, 1)),
+        color: st.color,
+        alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
+      }));
+      const tok = _currentGradientHandler.registerRadial({ stops });
+      shape.fill = { color: tok };
+      gradientApplied = true;
+    }
+  }
+  if (gradientApplied) {
+    // 渐变已应用，跳过 solid fallback
+  } else if (bgColor) {
     const bgAlpha = extractCssAlpha(s.backgroundColor);
     const elOpacity = s.opacity !== undefined ? parseFloat(s.opacity) : 1;
     const combinedAlpha = bgAlpha * (isNaN(elOpacity) ? 1 : elOpacity);
     const transparency = Math.round((1 - combinedAlpha) * 100);
     shape.fill = { color: bgColor, transparency: transparency > 0 ? transparency : 0 };
-  } else if (s.backgroundImage && s.backgroundImage !== 'none' && s.backgroundImage.includes('gradient')) {
+  } else if (hasGradientBgImage) {
     // backgroundImage 渐变降级：找第一个非透明 stop 作为 solid fallback
     const grad = parseLinearGradient(s.backgroundImage) || parseRadialGradient(s.backgroundImage);
     if (grad && grad.stops.length > 0) {
@@ -1031,8 +1139,14 @@ export function buildListElement(node) {
     if (isOrdered) {
       bullet = { type: 'number', startAt: idx + 1 };
     } else if (item.bulletChar) {
-      // 自定义 bullet 字符：用 Unicode code point
-      bullet = { code: item.bulletChar.codePointAt(0).toString(16).toUpperCase() };
+      const cp = item.bulletChar.codePointAt(0);
+      // I-v: PUA codepoint (U+E000–U+F8FF) 是图标字体的私有区域字符，
+      // 目标客户端没有该字体时会显示成乱码或空方块 → fallback to •
+      if (cp >= 0xE000 && cp <= 0xF8FF) {
+        bullet = { code: '2022' };
+      } else {
+        bullet = { code: cp.toString(16).toUpperCase() };
+      }
     } else {
       bullet = { code: '2022' }; // 默认 • bullet
     }
@@ -1044,6 +1158,8 @@ export function buildListElement(node) {
         fontFace: parseFontFamily(item.styles?.fontFamily),
         color: cssColorToHex(item.styles?.color) || '000000',
         bold: parseInt(item.styles?.fontWeight) >= 700,
+        // I-ii: list item 自身对齐（不被父容器 textAlign 误覆盖）
+        align: mapTextAlign(item.styles?.textAlign) || 'left',
         bullet,
         breakLine: true,
       }
@@ -1064,6 +1180,11 @@ export function buildListElement(node) {
 
 /**
  * 从 SVG 节点构建图片元素（base64 嵌入）
+ *
+ * 直接用 node.svgContent 生成 `data:image/svg+xml;base64,…`。之前尝试过在
+ * dom_extractor 里用 Playwright 对 SVG 的包围盒截图得到 PNG，但 SVG 常常叠在
+ * 其他背景/装饰层之上，包围盒截图会把底层内容也截进来，PPTX 里就变成"截错东西
+ * 的一张 PNG"。所以移除 svgPng 通路，全部走原生 svgBlip。
  */
 export function buildSvgElement(node) {
   if (!node.svgContent) return null;
@@ -1071,8 +1192,9 @@ export function buildSvgElement(node) {
 
   try {
     const svgBase64 = Buffer.from(node.svgContent).toString('base64');
+    const dataUri = `data:image/svg+xml;base64,${svgBase64}`;
     return {
-      data: `data:image/svg+xml;base64,${svgBase64}`,
+      data: dataUri,
       x: pxToInch(b.x),
       y: pxToInch(b.y),
       w: pxToInch(b.w),
@@ -1265,6 +1387,56 @@ export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, paren
     }
   }
 
+  // ECharts chart container: <div id="chart_N"> with a captured option
+  if ((tag === 'DIV' || tag === 'SECTION') && node.id && /^chart_/.test(node.id)) {
+    const entry = _currentChartOptions[node.id];
+    if (entry && entry.option && _currentChartTypeEnum) {
+      const mapped = echartsOptionToPptx(entry.option, _currentChartTypeEnum);
+      if (mapped) {
+        const b = node.bounds;
+        elements.push({
+          type: 'chart',
+          data: {
+            chartType: mapped.chartType,  // may be 'combo' sentinel
+            chartData: mapped.data,
+            x: pxToInch(b.x),
+            y: pxToInch(b.y),
+            w: pxToInch(b.w),
+            h: pxToInch(b.h),
+            options: mapped.options,
+          },
+        });
+        // C7: doughnut center label — overlay a centered textbox on top.
+        if (mapped.centerLabel && mapped.centerLabel.text) {
+          const cl = mapped.centerLabel;
+          const fs = cl.fontSize || 24;
+          const labelH = pxToInch(fs * 2);
+          const labelW = pxToInch(b.w * 0.6);
+          elements.push({
+            type: 'text',
+            data: {
+              text: cl.text,
+              options: {
+                x: pxToInch(b.x) + (pxToInch(b.w) - labelW) / 2,
+                y: pxToInch(b.y) + (pxToInch(b.h) - labelH) / 2,
+                w: labelW,
+                h: labelH,
+                fontSize: typeof fs === 'number' ? fs : pxToPt(parseFloat(fs) || 24),
+                color: (cl.color || '000000').replace('#', '').toUpperCase(),
+                align: 'center',
+                valign: 'middle',
+                bold: true,
+              },
+            },
+          });
+        }
+        return elements;  // don't recurse into chart internals (svg children)
+      }
+      // unsupported chart type: fall through, the inner <svg> will be
+      // rasterized by buildSvgElement like before.
+    }
+  }
+
   // SVG
   if (tag === 'SVG') {
     const svgEl = buildSvgElement(node);
@@ -1289,7 +1461,22 @@ export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, paren
   const currentBgHex = (s.backgroundColor && !isTransparent(s.backgroundColor))
     ? cssColorToHex(s.backgroundColor) : null;
   const effectiveBgColor = currentBgHex || parentBgColor;
-  if (node.children) {
+  // G-iii: 按 z-index 局部排序兄弟节点。
+  // 不做全局排序（会破坏父-子层叠关系），只在同一父级内部排兄弟。
+  // CSS z-index 'auto' / 未设 → 视为 0；显式数字 → parseFloat。
+  if (node.children && node.children.length > 1) {
+    const zOf = (c) => {
+      const z = c.styles?.zIndex;
+      if (!z || z === 'auto' || z === 'normal') return 0;
+      const n = parseFloat(z);
+      return Number.isFinite(n) ? n : 0;
+    };
+    // 稳定排序：z 升序、原顺序 tie-break。Array.prototype.sort 是稳定的（Node ≥ 12）。
+    const sorted = node.children.slice().sort((a, b) => zOf(a) - zOf(b));
+    for (const child of sorted) {
+      elements.push(...flattenIRToElements(child, deckDir, currentRadius || parentBorderRadius, effectiveBgColor));
+    }
+  } else if (node.children) {
     for (const child of node.children) {
       elements.push(...flattenIRToElements(child, deckDir, currentRadius || parentBorderRadius, effectiveBgColor));
     }
@@ -1305,7 +1492,42 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   if (!hasRenderableIR(ir)) {
     throw new Error(ir?.error || '页面 DOM 提取结果为空，无法构建可编辑 PPTX');
   }
+  // Capture ECharts options for this page so flattenIRToElements can route
+  // <div id="chart_N"> nodes to addChart instead of addImage.
+  _currentChartOptions = ir._chartOptions || {};
+  _currentChartTypeEnum = pptx.ChartType;
+
   const slide = pptx.addSlide();
+
+  // === D-ii: 全屏背景渐变 ===
+  // pptxgenjs 的 slide.background 只接受 solid color，无法表达渐变。
+  // 改成在 slide 顶部画一张全屏 shape，fill 用 gradient token，让后处理换成
+  // 真正的 <a:gradFill>。这必须在所有其他 shape 之前 add，确保它在最底层。
+  if (_currentGradientHandler) {
+    const candidates = [ir.wrapperBgImage, ir.bodyBgImage, ir.bg?.styles?.backgroundImage]
+      .filter(s => s && s !== 'none' && s.includes('gradient') && !s.includes('url('));
+    for (const src of candidates) {
+      const linear = parseLinearGradient(src);
+      const radial = !linear ? parseRadialGradient(src) : null;
+      const grad = linear || radial;
+      if (grad && grad.stops.length >= 2) {
+        const stops = grad.stops.map((st, i) => ({
+          pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(grad.stops.length - 1, 1)),
+          color: st.color,
+          alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
+        }));
+        const tok = linear
+          ? _currentGradientHandler.registerLinear({ angle: linear.angle, stops })
+          : _currentGradientHandler.registerRadial({ stops });
+        slide.addShape(pptx.ShapeType.rect, {
+          x: 0, y: 0, w: 10, h: 5.625,
+          fill: { color: tok },
+          line: { type: 'none' },
+        });
+        break;  // 只画一层全屏渐变
+      }
+    }
+  }
 
   // 解析 body / wrapper 背景色，用于 fallback
   const bodyBgHex = cssColorToHex(ir.bodyBgColor) || null;
@@ -1379,6 +1601,9 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
             case 'svg':
               slide.addImage(el.data);
               break;
+            case 'chart':
+              addChartElement(slide, el.data);
+              break;
           }
         }
       }
@@ -1428,6 +1653,9 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
             break;
           case 'svg':
             slide.addImage(el.data);
+            break;
+          case 'chart':
+            addChartElement(slide, el.data);
             break;
           case 'table':
             slide.addTable(el.data.rows, el.data.options);
@@ -1485,6 +1713,9 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
         case 'svg':
           slide.addImage(el.data);
           break;
+        case 'chart':
+          addChartElement(slide, el.data);
+          break;
         case 'table':
           slide.addTable(el.data.rows, el.data.options);
           break;
@@ -1518,6 +1749,9 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
           case 'svg':
             slide.addImage(el.data);
             break;
+          case 'chart':
+            addChartElement(slide, el.data);
+            break;
         }
       }
     } else {
@@ -1544,6 +1778,10 @@ export async function buildPptx(pages, deckDir, outputPath) {
   // 设置 16:9 画布（10" × 5.625"）
   pptx.defineLayout({ name: 'HTML_SLIDE', width: 10, height: 5.625 });
   pptx.layout = 'HTML_SLIDE';
+
+  // 渐变后处理 handler：在 buildShape 阶段注册渐变定义、得到 token 占位色，
+  // 写完 .pptx 后再用 postprocessPptx 把 token 换成真正的 <a:gradFill>。
+  _currentGradientHandler = createGradientHandler();
 
   // 尝试读取 storyboard.json 获取标题
   const storyboardPath = resolve(deckDir, 'storyboard.json');
@@ -1595,6 +1833,13 @@ export async function buildPptx(pages, deckDir, outputPath) {
   }
 
   await pptx.writeFile({ fileName: outputPath });
+
+  // 后处理：将渐变 token 替换为真正的 <a:gradFill> OOXML
+  if (_currentGradientHandler && _currentGradientHandler._replacementsCount() > 0) {
+    const { postprocessPptx } = await import('./postprocess_pptx.mjs');
+    await postprocessPptx(outputPath, [_currentGradientHandler]);
+  }
+  _currentGradientHandler = null;
 
   return { successCount, failCount, totalPages: pages.length, failures };
 }

@@ -32,17 +32,19 @@ triggers:
 
 ## Soft checks (warnings only)
 
-- `PPT_DECK_ROOT` writable (or cwd can create `ppt_decks/`)
+- `$(pwd)/ppt_decks/` creatable and writable (deck_dir parent; fixed — not configurable via env)
 - `ppt-standard/scripts/export_pptx/node_modules` exists (run `npm install` on first use otherwise)
 - Optional env vars (`U1_IMAGE_GEN_*`, `VLM_*`, `LLM_*`) — displays current value or "unset"
 - `pypdf` / `python-docx` Python deps for doc parsing in ppt-entry
 
 ## Invocation
 
+Single-file entry; no package imports, no `-m`, no `PYTHONPATH` needed.
+
 ```bash
-python -m ppt_doctor                # from repo root; interactive
-python -m ppt_doctor --non-interactive
-python -m ppt_doctor --env-path /custom/.env
+python $SKILL_DIR/ppt_doctor/check_environment.py                      # interactive
+python $SKILL_DIR/ppt_doctor/check_environment.py --non-interactive
+python $SKILL_DIR/ppt_doctor/check_environment.py --env-path /custom/.env
 ```
 
 When used inside OpenClaw, `/skill ppt-doctor` runs the same entry.

@@ -30,7 +30,11 @@ def scan(deck: Path) -> dict:
             action = "full"
         pages.append({"page_no": i, "prompt_done": prompt, "png_done": png, "action": action})
 
-    return {"style_spec_done": style, "outline_done": outline, "pages": pages}
+    deck_id = tp.get("deck_id") or deck.name
+    pptx_done = (deck / f"{deck_id}.pptx").exists()
+
+    return {"style_spec_done": style, "outline_done": outline,
+            "pptx_done": pptx_done, "pages": pages}
 
 
 def main(argv: list[str] | None = None) -> int:

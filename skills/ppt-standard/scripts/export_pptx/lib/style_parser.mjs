@@ -398,20 +398,47 @@ export function parseFontFamily(cssValue) {
 
   const GENERIC_NAMES = new Set(Object.keys(GENERIC_MAP));
 
+  // Webfont 图标字体黑名单：把数字/字母 codepoint 映射到 PUA glyph，目标客户端
+  // 没装时显示为乱码（如校园 p5 的 ZCOOL KuaiLe 把"1234"渲染成"ç D Ď Đ"）。
+  // 这些字体名出现在 font-family 列表里时直接跳过，让 fallback 接管。
+  const WEBFONT_KEYWORDS = [
+    'iconfont', 'icon-font',
+    'material icons', 'material symbols',
+    'fontawesome', 'font awesome',
+    'segoe mdl2', 'segoe fluent',
+    'glyphicons',
+  ];
+  function isWebfontIcon(name) {
+    const n = name.toLowerCase();
+    return WEBFONT_KEYWORDS.some(h => n.includes(h));
+  }
+
   // 按逗号分割，去掉引号，trim
   const families = cssValue.split(',').map(f => f.trim().replace(/^['"]|['"]$/g, ''));
 
-  // 先找第一个非通用字体
-  for (const f of families) {
-    if (!GENERIC_NAMES.has(f.toLowerCase()) && f.length > 0) {
-      return f;
-    }
+  // "装饰性字体" 判定：当 family 列表里出现 cursive/fantasy 通用名时，
+  // 它前面所有 specific 字体都被视为装饰字体（如 "ZCOOL KuaiLe", cursive
+  // 表明 ZCOOL KuaiLe 是 cursive 类）。这些字体在目标客户端通常缺失或
+  // 渲染异常 → 跳过它们，让 GENERIC_MAP 接管映射到 Comic Sans MS / Impact 等。
+  const decorativeIdx = families.findIndex(f => {
+    const l = f.toLowerCase();
+    return l === 'cursive' || l === 'fantasy';
+  });
+  const isDecorative = (idx) => decorativeIdx >= 0 && idx < decorativeIdx;
+
+  // 先找第一个非通用、非 webfont、非装饰字体
+  for (let i = 0; i < families.length; i++) {
+    const f = families[i];
+    if (!f || GENERIC_NAMES.has(f.toLowerCase())) continue;
+    if (isWebfontIcon(f)) continue;
+    if (isDecorative(i)) continue;
+    return f;
   }
 
-  // 全是通用族，返回第一个映射值
-  if (families.length > 0) {
-    const lower = families[0].toLowerCase();
-    return GENERIC_MAP[lower] ?? null;
+  // 全部跳过 → 用第一个通用名映射
+  for (const f of families) {
+    const lower = f.toLowerCase();
+    if (GENERIC_MAP[lower]) return GENERIC_MAP[lower];
   }
 
   return null;
