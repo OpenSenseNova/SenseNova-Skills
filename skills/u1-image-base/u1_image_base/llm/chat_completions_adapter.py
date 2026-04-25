@@ -154,6 +154,30 @@ class ChatCompletionsLlmAdapter(LlmAdapter):
 
         Handles both plain-string and list-of-content-blocks message formats.
 
+        Example data structure:
+
+        .. code-block:: json
+
+        [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "reasoning": "Here's a thinking process ..."
+            },
+            "finish_reason": "length"
+          },
+          {
+            "prompt_tokens": 21,
+            "completion_tokens": 1024,
+            "total_tokens": 1045,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            }
+          }
+        ]
+
         Args:
             data: Parsed JSON response body.
 
@@ -186,8 +210,8 @@ class ChatCompletionsLlmAdapter(LlmAdapter):
         finish_reason: str | None = None
         for c in choices:
             msg = c.get("message", {})
+            f_reason = c.get("finish_reason")
             reasoning_val = msg.get("reasoning")
-            f_reason = msg.get("finish_reason")
             content_val = msg.get("content")
             if reasoning_val:
                 reasoning.append(reasoning_val)
