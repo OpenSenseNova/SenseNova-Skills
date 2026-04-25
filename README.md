@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/OpenSenseNova/SenseNova6.7/main/assets/logo.webp" alt="SenseNova logo" width="180" />
+  <img src="assets/logo.webp" alt="SenseNova logo" width="180" />
 </p>
 
 # SenseNova-Skills
