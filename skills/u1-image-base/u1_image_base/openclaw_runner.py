@@ -18,8 +18,6 @@ import time
 from pathlib import Path
 from typing import cast
 
-from u1_image_base.generation.openai_image import OpenAIImageGenerationClient
-
 SCRIPT_DIR = Path(__file__).resolve().parent
 if (d := str(SCRIPT_DIR.parents[1])) not in sys.path:
     sys.path.insert(0, d)
@@ -31,12 +29,14 @@ from u1_image_base.exceptions import (
     MissingApiKeyError,
     U1BaseError,
 )
-from u1_image_base.generation import NanoBananaText2ImageClient, U1Text2ImageClient
-from u1_image_base.generation.sensenova import SensenovaText2ImageClient
-from u1_image_base.llm.anthropic_adapter import AnthropicMessagesAdapter
-from u1_image_base.llm.chat_completions_adapter import ChatCompletionsLlmAdapter
-from u1_image_base.vlm.anthropic_adapter import AnthropicVlmAdapter
-from u1_image_base.vlm.chat_completions_adapter import ChatCompletionsVlmAdapter
+from u1_image_base.generation import (
+    NanoBananaText2ImageClient,
+    OpenAIImageGenerationClient,
+    SensenovaText2ImageClient,
+    U1Text2ImageClient,
+)
+from u1_image_base.llm import AnthropicMessagesAdapter, ChatCompletionsLlmAdapter
+from u1_image_base.vlm import AnthropicVlmAdapter, ChatCompletionsVlmAdapter
 
 
 def _resolve_prompt(
@@ -229,6 +229,7 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             timeout=args.timeout,
             ssl_verify=not args.insecure,
         )
+        print(f"Using SenseNova model {global_configs.U1_IMAGE_GEN_MODEL!r} for image generation")
     elif global_configs.U1_IMAGE_GEN_MODEL_TYPE == "nano-banana":
         if not global_configs.U1_IMAGE_GEN_MODEL:
             env_var_help = global_configs.get_env_var_help("U1_IMAGE_GEN_MODEL")
@@ -240,6 +241,7 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             timeout=args.timeout,
             ssl_verify=not args.insecure,
         )
+        print(f"Using Nano Banana model {global_configs.U1_IMAGE_GEN_MODEL!r} for image generation")
     elif global_configs.U1_IMAGE_GEN_MODEL_TYPE == "openai-image":
         if not global_configs.U1_IMAGE_GEN_MODEL:
             env_var_help = global_configs.get_env_var_help("U1_IMAGE_GEN_MODEL")
@@ -249,6 +251,9 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             base_url=base_url,
             model=global_configs.U1_IMAGE_GEN_MODEL,
         )
+        print(
+            f"Using OpenAI-compatible model {global_configs.U1_IMAGE_GEN_MODEL!r} for image generation"
+        )
     else:
         client = U1Text2ImageClient(
             api_key=api_key,
@@ -257,6 +262,7 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             timeout=args.timeout,
             ssl_verify=not args.insecure,
         )
+        print(f"Using U1 model {global_configs.U1_IMAGE_GEN_MODEL!r} for image generation")
     try:
         result = await client.generate(
             prompt=args.prompt,
@@ -425,12 +431,14 @@ def _build_endpoint_and_adapter(
                 api_key=api_key,
                 model=model,
             )
+            print(f"Using Anthropic VLM adapter for {model!r} on {endpoint_url!r}")
         elif kind == "llm":
             adapter = AnthropicMessagesAdapter(
                 endpoint_url=endpoint_url,
                 api_key=api_key,
                 model=model,
             )
+            print(f"Using Anthropic LLM adapter for {model!r} on {endpoint_url!r}")
         else:
             raise ValueError(f"Unsupported runtime kind: {kind}")
     else:
@@ -442,12 +450,14 @@ def _build_endpoint_and_adapter(
                 api_key=api_key,
                 model=model,
             )
+            print(f"Using OpenAI VLM adapter for {model!r} on {endpoint_url!r}")
         elif kind == "llm":
             adapter = ChatCompletionsLlmAdapter(
                 endpoint_url=endpoint_url,
                 api_key=api_key,
                 model=model,
             )
+            print(f"Using OpenAI LLM adapter for {model!r} on {endpoint_url!r}")
         else:
             raise ValueError(f"Unsupported runtime kind: {kind}")
 

@@ -78,7 +78,7 @@ class OpenAIImageGenerationClient(T2IBaseClient):
         prompt: str,
         *,
         model: str | None = None,
-        image_size: Literal["1K", "2K"] = DEFAULT_RESOLUTION,
+        image_size: Literal["1K", "2K", "1k", "2k"] = DEFAULT_RESOLUTION,
         aspect_ratio: str | None = DEFAULT_ASPECT_RATIO,
         output_path: Path | None = None,
         **kwargs: Any,
@@ -328,6 +328,7 @@ class OpenAIImageGenerationClient(T2IBaseClient):
         aspect_ratio_val: float | None,
     ) -> str:
         """Convert (resolution, aspect_ratio) to a pixel size string."""
+        resolution = resolution.upper()
         if resolution == "1K":
             max_pixel = 1024**2
         elif resolution == "2K":

@@ -325,7 +325,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
             ratio = width / height
         except Exception as e:
             raise ValueError(f"Invalid aspect ratio: {aspect_ratio!r}") from e
-        if ratio >= 16 / 9:
+        if ratio > 16 / 9:
             raise ValueError(f"Aspect ratio {aspect_ratio!r} is too wide. Maximum is 16:9")
         if ratio < 9 / 21:
             raise ValueError(f"Aspect ratio {aspect_ratio!r} is too high. Maximum is 9:21")
