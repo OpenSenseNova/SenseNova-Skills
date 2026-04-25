@@ -40,15 +40,19 @@ skills/
 
 ### 🎨 Image & Visualization
 
+📖 Full guide: [`docs/u1-image-generate_en.md`](docs/u1-image-generate_en.md) (prerequisites, Quick Start, API config, and invocation samples).
+
 
 | Name                                               | Label                          | Description                                                                                                                                                       |
 | -------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`u1-doctor`](skills/u1-doctor/SKILL.md)           | Environment Doctor             | Validates the SenseNova-Skills environment — checks `u1-image-base` install, Python deps, and required env vars; interactively fills missing values into `.env`. |
-| [`u1-image-base`](skills/u1-image-base/SKILL.md)   | Image Base Layer (Tier 0)      | Low-level tools — text-to-image (`u1-image-generate`) and text optimization (`u1-text-optimize`) — exposed through a unified `openclaw_runner.py`, designed to be called by upper-layer skills. |
+| [`u1-image-base`](skills/u1-image-base/SKILL.md)   | Image Base Layer (Tier 0)      | Low-level tools — text-to-image (`u1-image-generate`), image recognition (`u1-image-recognize`), and text optimization (`u1-text-optimize`) — exposed through a unified `openclaw_runner.py`, designed to be called by upper-layer skills. |
 | [`u1-infographic`](skills/u1-infographic/SKILL.md) | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. |
 
 
 ### 📊 Presentations (PPT)
+
+📖 Full guide: [`docs/ppt-generate_en.md`](docs/ppt-generate_en.md) (prerequisites, Quick Start, API config, and invocation samples).
 
 
 | Name                                           | Label                  | Description                                                                                                                                                                                                              |
@@ -61,6 +65,8 @@ skills/
 
 ### 📈 Data Analysis (DA)
 
+📖 Full guide: [`docs/data-analysis_en.md`](docs/data-analysis_en.md) (prerequisites, Quick Start, API config, and invocation samples).
+
 
 | Name                                                               | Label                                | Description                                                                                                                                                            |
 | ------------------------------------------------------------------ | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -70,6 +76,8 @@ skills/
 
 
 ### 🔬 Deep Research
+
+📖 Full guide: [`docs/deep-research_en.md`](docs/deep-research_en.md) (prerequisites, `web_search` precheck, Quick Start, and per-stage invocation).
 
 
 | Name                                                                 | Label                          | Description                                                                                                                                                       |
@@ -83,6 +91,8 @@ skills/
 
 
 ### 🔍 Search
+
+📖 Search skills are documented together with deep research: [`docs/deep-research_en.md`](docs/deep-research_en.md) (includes per-platform API keys, invocation, and unified JSON output).
 
 
 | Name                                                   | Label                  | Description                                                                                                                                |
