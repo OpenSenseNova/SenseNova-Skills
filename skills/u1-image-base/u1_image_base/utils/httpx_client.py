@@ -155,7 +155,7 @@ def httpx_response_raise_for_status_code(response: httpx.Response) -> None:
 
     if response.status_code == 404:
         raise U1HttpNotFoundError(
-            detail=f"{request_method} {request_url!r} not found. Please check the URL.",
+            detail=f"{request_method} {request_url!r} not found. Please check the URL and the model name.",
             code=response.status_code,
         )
     if response.status_code in (401, 403):

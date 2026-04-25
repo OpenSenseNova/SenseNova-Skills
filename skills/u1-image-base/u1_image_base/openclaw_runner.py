@@ -16,14 +16,21 @@ import json
 import sys
 import time
 from pathlib import Path
+from typing import cast
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 if (d := str(SCRIPT_DIR.parents[1])) not in sys.path:
     sys.path.insert(0, d)
 
-from u1_image_base.configs import global_configs
-from u1_image_base.exceptions import MissingApiKeyError
+from u1_image_base.configs import global_configs, is_valid_base_url, urlparse
+from u1_image_base.exceptions import (
+    BadConfigurationError,
+    InvalidBaseUrlError,
+    MissingApiKeyError,
+    U1BaseError,
+)
 from u1_image_base.generation import NanoBananaText2ImageClient, U1Text2ImageClient
+from u1_image_base.generation.sensenova import SensenovaText2ImageClient
 from u1_image_base.llm.anthropic_adapter import AnthropicMessagesAdapter
 from u1_image_base.llm.chat_completions_adapter import ChatCompletionsLlmAdapter
 from u1_image_base.vlm.anthropic_adapter import AnthropicVlmAdapter
@@ -205,15 +212,25 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
 
     base_url = args.base_url or global_configs.U1_IMAGE_GEN_BASE_URL
     if not base_url:
-        raise MissingApiKeyError(
+        raise InvalidBaseUrlError(
             "No base URL provided. Set U1_BASE_URL env var or pass --base-url."
         )
 
-    if global_configs.U1_IMAGE_GEN_MODEL_TYPE == "nano-banana":
+    if global_configs.U1_IMAGE_GEN_MODEL_TYPE == "sensenova":
         if not global_configs.U1_IMAGE_GEN_MODEL:
-            raise MissingApiKeyError(
-                "No model provided. Set U1_IMAGE_GEN_MODEL env var or pass --model."
-            )
+            env_var_help = global_configs.get_env_var_help("U1_IMAGE_GEN_MODEL")
+            raise BadConfigurationError(f"No model provided. {env_var_help}")
+        client = SensenovaText2ImageClient(
+            api_key=api_key,
+            base_url=base_url,
+            model=global_configs.U1_IMAGE_GEN_MODEL,
+            timeout=args.timeout,
+            ssl_verify=not args.insecure,
+        )
+    elif global_configs.U1_IMAGE_GEN_MODEL_TYPE == "nano-banana":
+        if not global_configs.U1_IMAGE_GEN_MODEL:
+            env_var_help = global_configs.get_env_var_help("U1_IMAGE_GEN_MODEL")
+            raise BadConfigurationError(f"No model provided. {env_var_help}")
         client = NanoBananaText2ImageClient(
             api_key=api_key,
             base_url=base_url,
@@ -266,33 +283,11 @@ async def run_image_recognize(args: argparse.Namespace) -> tuple[dict, int]:
         name="system-prompt",
     )
 
-    vlm_type = args.vlm_type or global_configs.VLM_TYPE
-    base_url = args.base_url or global_configs.VLM_BASE_URL
-    model = args.model or global_configs.VLM_MODEL
-    api_key = args.api_key or global_configs.VLM_API_KEY
-    if not api_key:
-        raise MissingApiKeyError(
-            "No API key provided for VLM. Set VLM_API_KEY, U1_LM_API_KEY, or pass --api-key."
-        )
-    if not base_url:
-        raise MissingApiKeyError(
-            "No base URL provided for VLM. Set VLM_BASE_URL, U1_LM_BASE_URL, or pass --base-url."
-        )
-    if not model:
-        raise MissingApiKeyError("No model provided for VLM. Set VLM_MODEL or pass --model.")
-
-    if vlm_type == "anthropic-messages":
-        adapter = AnthropicVlmAdapter(
-            endpoint_url=f"{base_url.rstrip('/')}/v1/messages",
-            api_key=api_key,
-            model=model,
-        )
-    else:
-        adapter = ChatCompletionsVlmAdapter(
-            endpoint_url=f"{base_url.rstrip('/')}/v1/chat/completions",
-            api_key=api_key,
-            model=model,
-        )
+    vlm_type, base_url, model, api_key = _resolve_model_runtime("vlm", args)
+    adapter = cast(
+        "AnthropicVlmAdapter | ChatCompletionsVlmAdapter",
+        _build_endpoint_and_adapter("vlm", vlm_type, base_url, model, api_key),
+    )
     try:
         result_text = await adapter.vision_completion(
             user_prompt=user_prompt,
@@ -335,33 +330,11 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
         name="system-prompt",
     )
 
-    llm_type = args.llm_type or global_configs.LLM_TYPE
-    base_url = args.base_url or global_configs.LLM_BASE_URL
-    model = args.model or global_configs.LLM_MODEL
-    api_key = args.api_key or global_configs.LLM_API_KEY
-    if not api_key:
-        raise MissingApiKeyError(
-            "No API key provided for LLM. Set LLM_API_KEY, U1_LM_API_KEY, or pass --api-key."
-        )
-    if not base_url:
-        raise MissingApiKeyError(
-            "No base URL provided for LLM. Set LLM_BASE_URL, U1_LM_BASE_URL, or pass --base-url."
-        )
-    if not model:
-        raise MissingApiKeyError("No model provided for LLM. Set LLM_MODEL or pass --model.")
-
-    if llm_type == "anthropic-messages":
-        adapter = AnthropicMessagesAdapter(
-            endpoint_url=f"{base_url.rstrip('/')}/v1/messages",
-            api_key=api_key,
-            model=model,
-        )
-    else:
-        adapter = ChatCompletionsLlmAdapter(
-            endpoint_url=f"{base_url.rstrip('/')}/v1/chat/completions",
-            api_key=api_key,
-            model=model,
-        )
+    llm_type, base_url, model, api_key = _resolve_model_runtime("llm", args)
+    adapter = cast(
+        "AnthropicMessagesAdapter | ChatCompletionsLlmAdapter",
+        _build_endpoint_and_adapter("llm", llm_type, base_url, model, api_key),
+    )
     try:
         result_text = await adapter.text_completion(
             user_prompt=user_prompt,
@@ -381,7 +354,96 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
         await adapter.aclose()
 
 
-async def output_result(output_format: str, result: dict, elapsed: float | None = None) -> int:
+def _resolve_model_runtime(kind: str, args: argparse.Namespace) -> tuple[str, str, str, str]:
+    """Resolve and validate model runtime settings for VLM/LLM.
+
+    Returns:
+        tuple[str, str, str, str]:
+            (interface_type, base_url, model, api_key).
+    """
+    if kind == "vlm":
+        iface_type = args.vlm_type or global_configs.VLM_TYPE
+        base_url = args.base_url or global_configs.VLM_BASE_URL
+        model = args.model or global_configs.VLM_MODEL
+        api_key = args.api_key or global_configs.VLM_API_KEY
+        label = "VLM"
+        key_env = "VLM_API_KEY, U1_LM_API_KEY"
+        url_env = "VLM_BASE_URL, U1_LM_BASE_URL"
+        model_env = "VLM_MODEL"
+    elif kind == "llm":
+        iface_type = args.llm_type or global_configs.LLM_TYPE
+        base_url = args.base_url or global_configs.LLM_BASE_URL
+        model = args.model or global_configs.LLM_MODEL
+        api_key = args.api_key or global_configs.LLM_API_KEY
+        label = "LLM"
+        key_env = "LLM_API_KEY, U1_LM_API_KEY"
+        url_env = "LLM_BASE_URL, U1_LM_BASE_URL"
+        model_env = "LLM_MODEL"
+    else:
+        raise ValueError(f"Unsupported runtime kind: {kind}")
+
+    if not api_key:
+        raise MissingApiKeyError(
+            f"No API key provided for {label}. Set {key_env}, or pass --api-key."
+        )
+    if not base_url:
+        raise InvalidBaseUrlError(
+            f"No base URL provided for {label}. Set {url_env}, or pass --base-url."
+        )
+    if not is_valid_base_url(base_url):
+        raise InvalidBaseUrlError(f"Invalid base URL: {base_url}")
+    if not model:
+        raise BadConfigurationError(
+            f"No model provided for {label}. Set {model_env} or pass --model."
+        )
+    return iface_type, base_url, model, api_key
+
+
+def _build_endpoint_and_adapter(
+    kind: str, iface_type: str, base_url: str, model: str, api_key: str
+):
+    """Build endpoint URL and instantiate the matching adapter."""
+    base_url_obj = urlparse(base_url.rstrip("/"))
+
+    if iface_type == "anthropic-messages":
+        endpoint = "/v1/messages" if not base_url_obj.path else "/messages"
+        endpoint_url = f"{base_url_obj.geturl()}{endpoint}"
+        if kind == "vlm":
+            adapter = AnthropicVlmAdapter(
+                endpoint_url=endpoint_url,
+                api_key=api_key,
+                model=model,
+            )
+        elif kind == "llm":
+            adapter = AnthropicMessagesAdapter(
+                endpoint_url=endpoint_url,
+                api_key=api_key,
+                model=model,
+            )
+        else:
+            raise ValueError(f"Unsupported runtime kind: {kind}")
+    else:
+        endpoint = "/v1/chat/completions" if not base_url_obj.path else "/chat/completions"
+        endpoint_url = f"{base_url_obj.geturl()}{endpoint}"
+        if kind == "vlm":
+            adapter = ChatCompletionsVlmAdapter(
+                endpoint_url=endpoint_url,
+                api_key=api_key,
+                model=model,
+            )
+        elif kind == "llm":
+            adapter = ChatCompletionsLlmAdapter(
+                endpoint_url=endpoint_url,
+                api_key=api_key,
+                model=model,
+            )
+        else:
+            raise ValueError(f"Unsupported runtime kind: {kind}")
+
+    return adapter
+
+
+def _output_result(output_format: str, result: dict, elapsed: float | None = None) -> int:
     """Print the result in the specified format and return the appropriate exit code.
 
     Args:
@@ -420,19 +482,19 @@ async def main_async(args: argparse.Namespace) -> int:
     start_time = time.time()
     try:
         if args.command == "u1-image-generate":
-            result, code = await run_image_generate(args)
+            result, _code = await run_image_generate(args)
         elif args.command == "u1-image-recognize":
-            result, code = await run_image_recognize(args)
+            result, _code = await run_image_recognize(args)
         elif args.command == "u1-text-optimize":
-            result, code = await run_text_optimize(args)
+            result, _code = await run_text_optimize(args)
         else:
             print(f"Unknown command: {args.command}", file=sys.stderr)
             return 1
 
         elapsed = round(time.time() - start_time, 2)
-        return await output_result(args.output_format, result, elapsed)
+        return _output_result(args.output_format, result, elapsed)
 
-    except MissingApiKeyError as exc:
+    except U1BaseError as exc:
         elapsed = round(time.time() - start_time, 2)
         if args.output_format == "json":
             print(

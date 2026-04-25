@@ -89,29 +89,32 @@ class Configs:
     U1_API_KEY: Annotated[str, Field("U1_API_KEY", required=True)] = ""
     U1_IMAGE_GEN_BASE_URL: Annotated[
         str, Field("U1_IMAGE_GEN_BASE_URL", "U1_BASE_URL", required=True)
-    ] = "https://u1-api.sensenova.cn/model"
+    ] = "https://token.sensenova.cn/v1"
     # if U1_IMAGE_GEN_MODEL_TYPE is not "u1", U1_IMAGE_GEN_MODEL must be set
     #   "nano-banana": available models are "gemini-3.1-flash-image-preview", "gemini-3-pro-image-preview"
     U1_IMAGE_GEN_MODEL_TYPE: Annotated[
-        Literal["u1", "nano-banana"],
-        Field("U1_IMAGE_GEN_MODEL_TYPE"),
-    ] = "u1"
-    U1_IMAGE_GEN_MODEL: Annotated[str, Field("U1_IMAGE_GEN_MODEL")] = ""
+        Literal["sensenova", "u1", "nano-banana"], Field("U1_IMAGE_GEN_MODEL_TYPE")
+    ] = "sensenova"
+    U1_IMAGE_GEN_MODEL: Annotated[str, Field("U1_IMAGE_GEN_MODEL")] = "sensenova-u1-fast"
 
     # NOTE: "U1_LM_*" vars are shared between VLM and LLM
     # image-recognize (VLM) — falls back to shared U1_LM_* vars
-    VLM_API_KEY: Annotated[str, Field("VLM_API_KEY", "U1_LM_API_KEY")] = "dummy"
-    VLM_BASE_URL: Annotated[str, Field("VLM_BASE_URL", "U1_LM_BASE_URL")] = ""
-    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "U1_LM_MODEL")] = ""
+    VLM_API_KEY: Annotated[str, Field("VLM_API_KEY", "U1_LM_API_KEY")] = ""
+    VLM_BASE_URL: Annotated[str, Field("VLM_BASE_URL", "U1_LM_BASE_URL")] = (
+        "https://token.sensenova.cn/v1"
+    )
+    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "U1_LM_MODEL")] = "sensenova-6.7-flash-lite"
     VLM_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("VLM_TYPE", "U1_LM_TYPE"),
     ] = "openai-completions"
 
     # text-optimize (LLM) — falls back to shared U1_LM_* vars
-    LLM_API_KEY: Annotated[str, Field("LLM_API_KEY", "U1_LM_API_KEY")] = "dummy"
-    LLM_BASE_URL: Annotated[str, Field("LLM_BASE_URL", "U1_LM_BASE_URL")] = ""
-    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "U1_LM_MODEL")] = ""
+    LLM_API_KEY: Annotated[str, Field("LLM_API_KEY", "U1_LM_API_KEY")] = ""
+    LLM_BASE_URL: Annotated[str, Field("LLM_BASE_URL", "U1_LM_BASE_URL")] = (
+        "https://token.sensenova.cn/v1"
+    )
+    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "U1_LM_MODEL")] = "sensenova-6.7-flash-lite"
     LLM_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("LLM_TYPE", "U1_LM_TYPE"),
@@ -152,7 +155,7 @@ class Configs:
             errors.append(
                 (
                     "U1_IMAGE_GEN_MODEL",
-                    "U1_IMAGE_GEN_MODEL is required when U1_IMAGE_GEN_MODEL_TYPE is not 'u1'",
+                    f"U1_IMAGE_GEN_MODEL is required when U1_IMAGE_GEN_MODEL_TYPE is {self.U1_IMAGE_GEN_MODEL_TYPE!r}",
                 )
             )
 
