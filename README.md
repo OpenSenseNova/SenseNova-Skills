@@ -40,15 +40,19 @@ skills/
 
 ### 🎨 图像与可视化
 
+📖 详细使用指南：[`docs/u1-image-generate.md`](docs/u1-image-generate.md)（环境要求、Quick Start、API 配置与调用样例）。
+
 
 | 名称                                                 | 标签            | 描述                                                                                              |
 | -------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
 | [`u1-doctor`](skills/u1-doctor/SKILL.md)           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `u1-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
-| [`u1-image-base`](skills/u1-image-base/SKILL.md)   | 图像基础层（Tier 0） | 提供文生图（`u1-image-generate`）和文本优化（`u1-text-optimize`）两个底层工具，统一通过 `openclaw_runner.py` 调用，供上层技能复用。 |
+| [`u1-image-base`](skills/u1-image-base/SKILL.md)   | 图像基础层（Tier 0） | 提供文生图（`u1-image-generate`）、图像识别（`u1-image-recognize`）与文本优化（`u1-text-optimize`）三个底层工具，统一通过 `openclaw_runner.py` 调用，供上层技能复用。 |
 | [`u1-infographic`](skills/u1-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。                                     |
 
 
 ### 📊 演示文稿（PPT）
+
+📖 详细使用指南：[`docs/ppt-generate.md`](docs/ppt-generate.md)（环境要求、Quick Start、API 配置与调用样例）。
 
 
 | 名称                                             | 标签         | 描述                                                                                                                         |
@@ -61,6 +65,8 @@ skills/
 
 ### 📈 数据分析（DA）
 
+📖 详细使用指南：[`docs/data-analysis.md`](docs/data-analysis.md)（环境要求、Quick Start、API 配置与调用样例）。
+
 
 | 名称                                                                 | 标签         | 描述                                                                               |
 | ------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
@@ -70,6 +76,8 @@ skills/
 
 
 ### 🔬 深度研究
+
+📖 详细使用指南：[`docs/deep-research.md`](docs/deep-research.md)（环境要求、`web_search` 硬检查、Quick Start 与各阶段调用）。
 
 
 | 名称                                                                   | 标签        | 描述                                                                                      |
@@ -83,6 +91,8 @@ skills/
 
 
 ### 🔍 搜索
+
+📖 搜索技能与深度研究合并在同一份文档：[`docs/deep-research.md`](docs/deep-research.md)（含各平台 API key、调用方式与统一 JSON 输出）。
 
 
 | 名称                                                     | 标签     | 描述                                                                                          |
