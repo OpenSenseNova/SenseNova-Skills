@@ -18,6 +18,8 @@ import time
 from pathlib import Path
 from typing import cast
 
+from u1_image_base.generation.openai_image import OpenAIImageGenerationClient
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 if (d := str(SCRIPT_DIR.parents[1])) not in sys.path:
     sys.path.insert(0, d)
@@ -237,6 +239,15 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             model=global_configs.U1_IMAGE_GEN_MODEL,
             timeout=args.timeout,
             ssl_verify=not args.insecure,
+        )
+    elif global_configs.U1_IMAGE_GEN_MODEL_TYPE == "openai-image":
+        if not global_configs.U1_IMAGE_GEN_MODEL:
+            env_var_help = global_configs.get_env_var_help("U1_IMAGE_GEN_MODEL")
+            raise BadConfigurationError(f"No model provided. {env_var_help}")
+        client = OpenAIImageGenerationClient(
+            api_key=api_key,
+            base_url=base_url,
+            model=global_configs.U1_IMAGE_GEN_MODEL,
         )
     else:
         client = U1Text2ImageClient(

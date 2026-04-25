@@ -46,7 +46,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
         ssl_verify: bool = True,
         **kwargs: Any,
     ) -> None:
-        """Initialize the NanoBananaText2ImageClient.
+        """Initialize the SensenovaText2ImageClient.
 
         Args:
             api_key (str):
@@ -112,7 +112,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
             model (str | None, optional):
                 Model name override. Defaults to None.
             image_size (str, optional):
-                Image size preset ("1K", "2K", "4K"). Defaults to DEFAULT_MODEL_SIZE.
+                Image size preset ("1K", "2K", "4K"). Defaults to DEFAULT_RESOLUTION.
             aspect_ratio (str, optional):
                 Aspect ratio (e.g. "16:9", "1:1"). Defaults to DEFAULT_ASPECT_RATIO.
             output_path (Path | None, optional):
@@ -254,25 +254,24 @@ class SensenovaText2ImageClient(T2IBaseClient):
         response_format: Literal["url"] = "url",
         **kwargs: Any,
     ) -> dict[str, Any]:
-        """Build the payload for the OpenAI Image Generation API.
+        """Build the payload for the SenseNova image-generation endpoint.
 
         Args:
             prompt (str): The prompt to generate an image for.
             model (str): The model to use for generation.
-            aspect_ratio (str): The aspect ratio of the image to generate. Defaults to "16:9".
-            image_size (str): The size of the image to generate. Defaults to "2K".
-            modalities (Sequence[str]): The modalities to use for generation. Defaults to ("text", "image").
+            size (str | None): Pixel size string (for example, "1920x1920").
+            modalities (Sequence[str]): Reserved for compatibility; currently not sent.
             output_format (Literal["png"]): The output format of the image. Defaults to "png".
             response_format (Literal["url"]): The response format of the image. Defaults to "url".
             **kwargs (Any, optional): Additional parameters to pass to the API.
 
         Example:
         {
-            "model": "SenseNova-U1",
+            "model": "sensenova-u1-fast",
             "prompt": "A cat wearing a hat",
-            "n": 1,
             "size": "1024x1024",
-            "response_format": "b64_json",
+            "response_format": "url",
+            "output_format": "png",
         }
         """
         payload = {
@@ -335,30 +334,23 @@ class SensenovaText2ImageClient(T2IBaseClient):
 
     @override
     def parse_response(self, response: httpx.Response) -> dict:
-        """Parse the response from the Sensenova text-to-image API.
+        """Parse the response from the SenseNova image-generation endpoint.
 
         Example response data:
 
         ```json
         {
-            "choices": [{
-                "message": {
-                    "role": "assistant",
-                    "content": "这是为你生成的信息图封面:",
-                    "images": [{
-                        "type": "image_url",
-                        "image_url": { "url": "https://cdn.sensenova.dev/gen/..." }
-                    }]
-                }
+            "data": [{
+                "url": "https://cdn.sensenova.dev/gen/..."
             }]
         }
         ```
 
         Args:
-            response: The response from the Sensenova text-to-image API.
+            response: The HTTP response from the SenseNova image-generation endpoint.
 
         Returns:
-            dict: The parsed response.
+            dict: Parsed data with key ``images_urls``.
         """
         raw_data = super().parse_response(response)
 

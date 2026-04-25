@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import base64
+import math
+import re
 import time
 from pathlib import Path
 from typing import Any, Literal
@@ -9,6 +11,7 @@ import httpx
 from typing_extensions import override
 
 from u1_image_base.configs import global_configs, is_valid_base_url
+from u1_image_base.exceptions import BadConfigurationError
 from u1_image_base.utils.error_utils import U1HttpErrorBase
 
 from .core import ensure_output_path
@@ -18,17 +21,18 @@ from .core.client_base import (
     T2IBaseClient,
 )
 
-DEFAULT_MODEL_SIZE: Literal["1K", "2K", "4K"] = "2K"
+DEFAULT_RESOLUTION: Literal["1K", "2K"] = "2K"
 DEFAULT_ASPECT_RATIO = "16:9"
 DEFAULT_POLL_INTERVAL = 5.0
 OUTPUT_DIR = Path("/tmp/openclaw-u1-image")
 
+B64_PARSE_PATTERN = re.compile(r"^data:([a-zA-Z0-9/]+?);base64,([+-/_A-Za-z0-9]+=*)$")
 
-class NanoBananaText2ImageClient(T2IBaseClient):
-    """Async client for Google Nano Banana API."""
 
-    # requires `{model}` placeholder for format string
-    DEFAULT_API_PATH = "/v1beta/models/{model}:generateContent"
+class OpenAIImageGenerationClient(T2IBaseClient):
+    """Async client for OpenAI Image Generation API."""
+
+    DEFAULT_API_PATH = "/images/generations"
 
     def __init__(
         self,
@@ -41,7 +45,7 @@ class NanoBananaText2ImageClient(T2IBaseClient):
         ssl_verify: bool = True,
         **kwargs: Any,
     ) -> None:
-        """Initialize the NanoBananaText2ImageClient.
+        """Initialize the OpenAIImageGenerationClient.
 
         Args:
             api_key (str):
@@ -72,11 +76,10 @@ class NanoBananaText2ImageClient(T2IBaseClient):
     async def generate(
         self,
         prompt: str,
-        negative_prompt: str = "",
         *,
         model: str | None = None,
-        image_size: Literal["1K", "2K", "4K"] = DEFAULT_MODEL_SIZE,
-        aspect_ratio: str = DEFAULT_ASPECT_RATIO,
+        image_size: Literal["1K", "2K"] = DEFAULT_RESOLUTION,
+        aspect_ratio: str | None = DEFAULT_ASPECT_RATIO,
         output_path: Path | None = None,
         **kwargs: Any,
     ) -> dict:
@@ -85,12 +88,10 @@ class NanoBananaText2ImageClient(T2IBaseClient):
         Args:
             prompt (str):
                 Text prompt for image generation.
-            negative_prompt (str, optional):
-                Negative prompt. Defaults to "".
             model (str | None, optional):
                 Model name override. Defaults to None.
             image_size (str, optional):
-                Image size preset ("1K", "2K", "4K"). Defaults to DEFAULT_MODEL_SIZE.
+                Image size preset ("1K", "2K"). Defaults to DEFAULT_RESOLUTION.
             aspect_ratio (str, optional):
                 Aspect ratio (e.g. "16:9", "1:1"). Defaults to DEFAULT_ASPECT_RATIO.
             output_path (Path | None, optional):
@@ -102,14 +103,27 @@ class NanoBananaText2ImageClient(T2IBaseClient):
             dict:
                 Dictionary with keys: status, output (path), message.
         """
-        model = model or self.model
-        # Normalize image_size to uppercase for NanoBanana API
-        image_size = image_size.upper()  # type: ignore[assignment]
+        model = model or self.model or global_configs.U1_IMAGE_GEN_MODEL
+        if not model:
+            raise BadConfigurationError(
+                f"Model is not set. {global_configs.get_env_var_help('U1_IMAGE_GEN_MODEL')}"
+            )
+        if aspect_ratio is None:
+            size = None
+        else:
+            rw, _, rh = aspect_ratio.partition(":")
+            try:
+                aspect_ratio_val: float = float(int(rw) / int(rh))
+            except (ValueError, ZeroDivisionError) as e:
+                raise ValueError(f"Invalid aspect ratio: {aspect_ratio}") from e
+            size = self._resolve_size(
+                resolution=image_size,
+                aspect_ratio_val=aspect_ratio_val,
+            )
         payload = self.build_payload(
             prompt=prompt,
-            negative_prompt=negative_prompt,
-            image_size=image_size,
-            aspect_ratio=aspect_ratio,
+            model=model,
+            size=size,
         )
         headers = self.headers
         api_url = self.get_api_url(model)
@@ -160,8 +174,7 @@ class NanoBananaText2ImageClient(T2IBaseClient):
                     "status": "failed",
                     "error": "No image generated from the model",
                 }
-            image, mime_type = images[-1]
-            image_bytes = base64.b64decode(image)
+            image_bytes, mime_type = images[-1]
             suffix = mime_type_to_suffix(mime_type)
             saved_path = output_path.with_suffix(suffix)
             saved_path.write_bytes(image_bytes)
@@ -221,68 +234,113 @@ class NanoBananaText2ImageClient(T2IBaseClient):
     def build_payload(
         self,
         prompt: str,
-        negative_prompt: str = "",
+        model: str,
         *,
-        image_size: Literal["1K", "2K", "4K"] = DEFAULT_MODEL_SIZE,
-        aspect_ratio: str = DEFAULT_ASPECT_RATIO,
-        max_output_tokens: int = 8192,
+        n: int = 1,
+        size: str | None = None,
         **kwargs: Any,
     ) -> dict:
-        parts: list[dict] = [{"text": prompt}]
-        if (image_b64 := kwargs.get("image_b64")) and (
-            image_mime_type := kwargs.get("image_mime_type")
-        ):
-            if image_mime_type not in ["image/jpeg", "image/png"]:
-                msg = (
-                    f"Unsupported image MIME type: {image_mime_type}. "
-                    "Supported types: image/jpeg, image/png"
-                )
-                raise ValueError(msg)
-            parts.append({"inline_data": {"mime_type": image_mime_type, "data": image_b64}})
-        return {
-            "contents": [{"role": "USER", "parts": parts}],
-            "generationConfig": {
-                "imageConfig": {"aspectRatio": aspect_ratio, "imageSize": image_size},
-                "maxOutputTokens": max_output_tokens,
-            },
-            "safetySettings": [
-                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "OFF"},
-                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "OFF"},
-                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "OFF"},
-                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "OFF"},
-            ],
+        """
+        Example:
+        {
+            "model": "dall-e-3",
+            "prompt": "一只戴着墨镜的猫在赛博朋克城市的街道上喝咖啡, 赛璐璐画风",
+            "n": 1,
+            "size": "1024x1024",
+            "response_format": "b64_json",
         }
+        """
+        size = size or "auto"
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "n": n,
+            "size": size,
+            "response_format": "b64_json",
+            **kwargs,
+        }
+        return payload
 
     @property
     @override
     def headers(self) -> dict[str, str]:
         return {
-            "x-goog-api-key": self.api_key,
+            "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
 
     @override
     def parse_response(self, response: httpx.Response) -> dict:
+        """
+        Example:
+        {
+            "data": [{
+                "b64_json": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABOYA3Q..."
+            }],
+            "created": 1776789055
+            "usage": {
+                "input_tokens":773,
+                "output_tokens":765,
+                "total_tokens":1538,
+                "input_tokens_details": {
+                    "text_tokens":8,
+                    "image_tokens":765
+                }
+            }
+        }
+        """
         raw_data = super().parse_response(response)
 
-        images: list[tuple[str, str]] = []
-        finish_reasons: list[str] = []
-        candidates: list[dict] = raw_data.get("candidates") or []
-        for c in candidates:
-            content: dict[str, Any] = c.get("content") or {}
-            parts: list[dict[str, Any]] = content.get("parts") or []
-            if f_reason := content.get("finishReason"):
-                finish_reasons.append(f_reason)
-            for p in parts:
-                inline_data: dict[str, Any] = p.get("inlineData", {})
-                if inline_data:
-                    mime_type: str = inline_data.get("mimeType")  # pyright: ignore[reportAssignmentType]
-                    data: str = inline_data.get("data")  # pyright: ignore[reportAssignmentType]
-                    images.append((data, mime_type))
+        images: list[tuple[bytes, str]] = []
+        data_items: list[dict] = raw_data.get("data") or []
+        for item in data_items:
+            encoded: str = item.get("b64_json") or ""
+            if not encoded:
+                continue
+
+            if encoded.startswith("data:"):
+                match = B64_PARSE_PATTERN.match(encoded)
+                if match:
+                    mime_type = match.group(1)
+                    b64_data = match.group(2)
+                else:
+                    raise ValueError(
+                        f"Invalid base64 data in response: {encoded[:100]}... (truncated)"
+                    )
+            else:
+                mime_type = "image/png"  # fallback to png
+                b64_data = encoded
+            try:
+                decoded = base64.b64decode(b64_data)
+            except Exception as e:
+                raise ValueError(
+                    f"Failed to decode base64 data in response: {e}. b64_json: {encoded[:100]}... (truncated)"
+                ) from e
+            images.append((decoded, mime_type))
         return {
             "images": images,
-            "finish_reasons": finish_reasons,
         }
+
+    @classmethod
+    def _resolve_size(
+        cls,
+        resolution: str,
+        aspect_ratio_val: float | None,
+    ) -> str:
+        """Convert (resolution, aspect_ratio) to a pixel size string."""
+        if resolution == "1K":
+            max_pixel = 1024**2
+        elif resolution == "2K":
+            max_pixel = 2048**2
+        else:
+            raise ValueError(f"Unsupported resolution: {resolution}")
+        aspect_ratio_val = aspect_ratio_val or 1
+        if aspect_ratio_val < 1 / 3 or aspect_ratio_val > 3:
+            raise ValueError(f"Aspect ratio value must be between [1/3, 3], got {aspect_ratio_val}")
+
+        width: int = round(math.sqrt(max_pixel * aspect_ratio_val))
+        height: int = round(math.sqrt(max_pixel / aspect_ratio_val))
+        return f"{width}x{height}"
 
 
 def mime_type_to_suffix(mime_type: str) -> str:
