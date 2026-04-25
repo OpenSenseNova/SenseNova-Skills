@@ -43,9 +43,9 @@ skills/
 
 | 名称                                                 | 标签            | 描述                                                                                              |
 | -------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
-| `[u1-doctor](skills/u1-doctor/SKILL.md)`           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `u1-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
-| `[u1-image-base](skills/u1-image-base/SKILL.md)`   | 图像基础层（Tier 0） | 提供文生图（`u1-image-generate`）和文本优化（`u1-text-optimize`）两个底层工具，统一通过 `openclaw_runner.py` 调用，供上层技能复用。 |
-| `[u1-infographic](skills/u1-infographic/SKILL.md)` | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。                                     |
+| [`u1-doctor`](skills/u1-doctor/SKILL.md)           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `u1-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
+| [`u1-image-base`](skills/u1-image-base/SKILL.md)   | 图像基础层（Tier 0） | 提供文生图（`u1-image-generate`）和文本优化（`u1-text-optimize`）两个底层工具，统一通过 `openclaw_runner.py` 调用，供上层技能复用。 |
+| [`u1-infographic`](skills/u1-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。                                     |
 
 
 ### 📊 演示文稿（PPT）
@@ -53,10 +53,10 @@ skills/
 
 | 名称                                             | 标签         | 描述                                                                                                                         |
 | ---------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `[ppt-entry](skills/ppt-entry/SKILL.md)`       | **PPT 入口** | **PPT 生成功能的统一入口**，收集角色 / 受众 / 场景 / 页数 / 模式（创意 or 标准），解析 pdf / docx / md / txt 输入，产出 `task_pack.json` + `info_pack.json` 并分派到下游模式。 |
-| `[ppt-doctor](skills/ppt-doctor/SKILL.md)`     | PPT 环境诊断   | PPT 流水线的环境检查，验证 `u1-image-base`、API key、Node 运行时与可选依赖；按需写入 `.env`。                                                         |
-| `[ppt-creative](skills/ppt-creative/SKILL.md)` | PPT 创意模式   | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `u1-image-generate` 一次性出图。                                                                |
-| `[ppt-standard](skills/ppt-standard/SKILL.md)` | PPT 标准模式   | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出 PPTX。                                |
+| [`ppt-entry`](skills/ppt-entry/SKILL.md)       | **PPT 入口** | **PPT 生成功能的统一入口**，收集角色 / 受众 / 场景 / 页数 / 模式（创意 or 标准），解析 pdf / docx / md / txt 输入，产出 `task_pack.json` + `info_pack.json` 并分派到下游模式。 |
+| [`ppt-doctor`](skills/ppt-doctor/SKILL.md)     | PPT 环境诊断   | PPT 流水线的环境检查，验证 `u1-image-base`、API key、Node 运行时与可选依赖；按需写入 `.env`。                                                         |
+| [`ppt-creative`](skills/ppt-creative/SKILL.md) | PPT 创意模式   | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `u1-image-generate` 一次性出图。                                                                |
+| [`ppt-standard`](skills/ppt-standard/SKILL.md) | PPT 标准模式   | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出 PPTX。                                |
 
 
 ### 📈 数据分析（DA）
@@ -64,9 +64,9 @@ skills/
 
 | 名称                                                                 | 标签         | 描述                                                                               |
 | ------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
-| `[da-excel-workflow](skills/da-excel-workflow/SKILL.md)`           | Excel 分析编排 | Excel 多表读取、大文件检测（≥10k 行触发 Parquet 优化）、清洗、条件过滤、跨表聚合、Excel/CSV 导出的全流程编排。           |
-| `[da-image-caption](skills/da-image-caption/SKILL.md)`             | 图像理解与数据提取  | 图像类输入做表格 OCR / 图表解读 / 截图描述 / UI 描述；可解析为 DataFrame、复绘可视化、导出 Excel/CSV。            |
-| `[da-large-file-analysis](skills/da-large-file-analysis/SKILL.md)` | 大文件高性能分析   | ≥10k 行 Excel 的流式读取（openpyxl read_only + iter_rows）、Parquet 转换、内存优化、分块处理与大文件写入模式。 |
+| [`da-excel-workflow`](skills/da-excel-workflow/SKILL.md)           | Excel 分析编排 | Excel 多表读取、大文件检测（≥10k 行触发 Parquet 优化）、清洗、条件过滤、跨表聚合、Excel/CSV 导出的全流程编排。           |
+| [`da-image-caption`](skills/da-image-caption/SKILL.md)             | 图像理解与数据提取  | 图像类输入做表格 OCR / 图表解读 / 截图描述 / UI 描述；可解析为 DataFrame、复绘可视化、导出 Excel/CSV。            |
+| [`da-large-file-analysis`](skills/da-large-file-analysis/SKILL.md) | 大文件高性能分析   | ≥10k 行 Excel 的流式读取（openpyxl read_only + iter_rows）、Parquet 转换、内存优化、分块处理与大文件写入模式。 |
 
 
 ### 🔬 深度研究
@@ -74,12 +74,12 @@ skills/
 
 | 名称                                                                   | 标签        | 描述                                                                                      |
 | -------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
-| `[deep-research](skills/deep-research/SKILL.md)`                     | **深度研究入口** | **深度研究功能的统一入口**，规划 → 分维度取证 → 综合 → 成稿（`report.md`）的全流程编排器，产物落盘到 `report_dir`，支持断点续跑。 |
-| `[research-planning](skills/research-planning/SKILL.md)`             | 研究规划      | 基于 `request.md` 一次性产出 `plan.json`，覆盖定界、报告形态、维度拆解、关键问题、搜索策略、依赖与完成标准。                     |
-| `[dimension-research](skills/dimension-research/SKILL.md)`           | 单维度取证     | 按 `plan.json` 中维度的 `search_strategy` 调用搜索、筛选证据、交叉验证，产出 `sub_reports/{dimension_id}.md`。 |
-| `[research-synthesis](skills/research-synthesis/SKILL.md)`           | 综合判断      | 把多个 `sub_reports` 综合为 `synthesis.md`，明确主线判断、证据强弱、跨维度共识、关键冲突与不确定性。                       |
-| `[research-report](skills/research-report/SKILL.md)`                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
-| `[report-format-discovery](skills/report-format-discovery/SKILL.md)` | 报告形态发现    | 研究"这类报告应该长什么样"，给出章节结构、必备元素与风格约束；可独立使用，也可为 deep-research 的 `report_shape` 提供依据。          |
+| [`deep-research`](skills/deep-research/SKILL.md)                     | **深度研究入口** | **深度研究功能的统一入口**，规划 → 分维度取证 → 综合 → 成稿（`report.md`）的全流程编排器，产物落盘到 `report_dir`，支持断点续跑。 |
+| [`research-planning`](skills/research-planning/SKILL.md)             | 研究规划      | 基于 `request.md` 一次性产出 `plan.json`，覆盖定界、报告形态、维度拆解、关键问题、搜索策略、依赖与完成标准。                     |
+| [`dimension-research`](skills/dimension-research/SKILL.md)           | 单维度取证     | 按 `plan.json` 中维度的 `search_strategy` 调用搜索、筛选证据、交叉验证，产出 `sub_reports/{dimension_id}.md`。 |
+| [`research-synthesis`](skills/research-synthesis/SKILL.md)           | 综合判断      | 把多个 `sub_reports` 综合为 `synthesis.md`，明确主线判断、证据强弱、跨维度共识、关键冲突与不确定性。                       |
+| [`research-report`](skills/research-report/SKILL.md)                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
+| [`report-format-discovery`](skills/report-format-discovery/SKILL.md) | 报告形态发现    | 研究"这类报告应该长什么样"，给出章节结构、必备元素与风格约束；可独立使用，也可为 deep-research 的 `report_shape` 提供依据。          |
 
 
 ### 🔍 搜索
@@ -87,10 +87,10 @@ skills/
 
 | 名称                                                     | 标签     | 描述                                                                                          |
 | ------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------- |
-| `[search-academic](skills/search-academic/SKILL.md)`   | 学术搜索   | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 四平台聚合。        |
-| `[search-code](skills/search-code/SKILL.md)`           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
-| `[search-social-cn](skills/search-social-cn/SKILL.md)` | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
-| `[search-social-en](skills/search-social-en/SKILL.md)` | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
+| [`search-academic`](skills/search-academic/SKILL.md)   | 学术搜索   | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 四平台聚合。        |
+| [`search-code`](skills/search-code/SKILL.md)           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
+| [`search-social-cn`](skills/search-social-cn/SKILL.md) | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
+| [`search-social-en`](skills/search-social-en/SKILL.md) | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
 
 
 ## 输出样例

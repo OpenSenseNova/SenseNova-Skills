@@ -43,9 +43,9 @@ skills/
 
 | Name                                               | Label                          | Description                                                                                                                                                       |
 | -------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `[u1-doctor](skills/u1-doctor/SKILL.md)`           | Environment Doctor             | Validates the SenseNova-Skills environment — checks `u1-image-base` install, Python deps, and required env vars; interactively fills missing values into `.env`. |
-| `[u1-image-base](skills/u1-image-base/SKILL.md)`   | Image Base Layer (Tier 0)      | Low-level tools — text-to-image (`u1-image-generate`) and text optimization (`u1-text-optimize`) — exposed through a unified `openclaw_runner.py`, designed to be called by upper-layer skills. |
-| `[u1-infographic](skills/u1-infographic/SKILL.md)` | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. |
+| [`u1-doctor`](skills/u1-doctor/SKILL.md)           | Environment Doctor             | Validates the SenseNova-Skills environment — checks `u1-image-base` install, Python deps, and required env vars; interactively fills missing values into `.env`. |
+| [`u1-image-base`](skills/u1-image-base/SKILL.md)   | Image Base Layer (Tier 0)      | Low-level tools — text-to-image (`u1-image-generate`) and text optimization (`u1-text-optimize`) — exposed through a unified `openclaw_runner.py`, designed to be called by upper-layer skills. |
+| [`u1-infographic`](skills/u1-infographic/SKILL.md) | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. |
 
 
 ### 📊 Presentations (PPT)
@@ -53,10 +53,10 @@ skills/
 
 | Name                                           | Label                  | Description                                                                                                                                                                                                              |
 | ---------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `[ppt-entry](skills/ppt-entry/SKILL.md)`       | **PPT Entry Point**    | **Unified entry point for PPT generation.** Collects role / audience / scenario / page count / mode (creative or standard), parses uploaded pdf / docx / md / txt, emits `task_pack.json` + `info_pack.json`, and dispatches to the chosen mode. |
-| `[ppt-doctor](skills/ppt-doctor/SKILL.md)`     | PPT Environment Doctor | Environment check for the PPT pipeline — validates `u1-image-base`, API keys, the Node runtime, and optional deps; writes missing required vars into `.env`.                                                             |
-| `[ppt-creative](skills/ppt-creative/SKILL.md)` | PPT Creative Mode      | One full-page 16:9 PNG per slide, generated via `u1-image-generate` with a per-page composed prompt.                                                                                                                     |
-| `[ppt-standard](skills/ppt-standard/SKILL.md)` | PPT Standard Mode      | `style_spec` → outline → asset plan + per-slot images + VLM QC → per-page HTML → per-page review (with optional rewrite) → aggregated `review.md` → PPTX export.                                                         |
+| [`ppt-entry`](skills/ppt-entry/SKILL.md)       | **PPT Entry Point**    | **Unified entry point for PPT generation.** Collects role / audience / scenario / page count / mode (creative or standard), parses uploaded pdf / docx / md / txt, emits `task_pack.json` + `info_pack.json`, and dispatches to the chosen mode. |
+| [`ppt-doctor`](skills/ppt-doctor/SKILL.md)     | PPT Environment Doctor | Environment check for the PPT pipeline — validates `u1-image-base`, API keys, the Node runtime, and optional deps; writes missing required vars into `.env`.                                                             |
+| [`ppt-creative`](skills/ppt-creative/SKILL.md) | PPT Creative Mode      | One full-page 16:9 PNG per slide, generated via `u1-image-generate` with a per-page composed prompt.                                                                                                                     |
+| [`ppt-standard`](skills/ppt-standard/SKILL.md) | PPT Standard Mode      | `style_spec` → outline → asset plan + per-slot images + VLM QC → per-page HTML → per-page review (with optional rewrite) → aggregated `review.md` → PPTX export.                                                         |
 
 
 ### 📈 Data Analysis (DA)
@@ -64,9 +64,9 @@ skills/
 
 | Name                                                               | Label                                | Description                                                                                                                                                            |
 | ------------------------------------------------------------------ | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `[da-excel-workflow](skills/da-excel-workflow/SKILL.md)`           | Excel Analysis Orchestration         | End-to-end Excel pipeline — multi-sheet read, large-file detection (≥10k rows triggers Parquet), cleaning, conditional filtering, cross-sheet aggregation, and Excel/CSV export. |
-| `[da-image-caption](skills/da-image-caption/SKILL.md)`             | Image Understanding & Data Extraction | For image-first inputs — table OCR, chart understanding, screenshot/UI description; parses captions into DataFrames, recreates visualizations, exports Excel/CSV.    |
-| `[da-large-file-analysis](skills/da-large-file-analysis/SKILL.md)` | High-Performance Large-File Analysis | Streaming reads for ≥10k-row Excel datasets (openpyxl read_only + iter_rows), Parquet conversion, memory optimization, chunked processing, large-file writes.        |
+| [`da-excel-workflow`](skills/da-excel-workflow/SKILL.md)           | Excel Analysis Orchestration         | End-to-end Excel pipeline — multi-sheet read, large-file detection (≥10k rows triggers Parquet), cleaning, conditional filtering, cross-sheet aggregation, and Excel/CSV export. |
+| [`da-image-caption`](skills/da-image-caption/SKILL.md)             | Image Understanding & Data Extraction | For image-first inputs — table OCR, chart understanding, screenshot/UI description; parses captions into DataFrames, recreates visualizations, exports Excel/CSV.    |
+| [`da-large-file-analysis`](skills/da-large-file-analysis/SKILL.md) | High-Performance Large-File Analysis | Streaming reads for ≥10k-row Excel datasets (openpyxl read_only + iter_rows), Parquet conversion, memory optimization, chunked processing, large-file writes.        |
 
 
 ### 🔬 Deep Research
@@ -74,12 +74,12 @@ skills/
 
 | Name                                                                 | Label                          | Description                                                                                                                                                       |
 | -------------------------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `[deep-research](skills/deep-research/SKILL.md)`                     | **Deep Research Entry Point**  | **Unified entry point for deep research.** End-to-end orchestrator: planning → per-dimension evidence gathering → synthesis → final `report.md`. Artifacts persist to `report_dir`; supports resumable execution. |
-| `[research-planning](skills/research-planning/SKILL.md)`             | Research Planning              | Produces `plan.json` from `request.md` in a single pass — scoping, report-shape, dimension breakdown, key questions, search strategy, dependencies, and completion criteria. |
-| `[dimension-research](skills/dimension-research/SKILL.md)`           | Per-Dimension Evidence Gathering | Executes one dimension from `plan.json` — runs the dimension's `search_strategy`, filters evidence, cross-validates, and writes `sub_reports/{dimension_id}.md`. |
-| `[research-synthesis](skills/research-synthesis/SKILL.md)`           | Judgment Synthesis             | Synthesizes multiple `sub_reports` into `synthesis.md` — main-thread judgments, evidence strength, cross-dimension consensus, key conflicts, and uncertainties.   |
-| `[research-report](skills/research-report/SKILL.md)`                 | Final Report Writing & Editing | Renders the judgment layer into the final `report.md`; also handles targeted rewrites — restructuring, polishing, table-augmentation — for an existing draft.    |
-| `[report-format-discovery](skills/report-format-discovery/SKILL.md)` | Report-Format Discovery        | Answers "what should this kind of report look like" — derives section structure, required elements, and style constraints. Usable standalone or as the `report_shape` source for deep-research. |
+| [`deep-research`](skills/deep-research/SKILL.md)                     | **Deep Research Entry Point**  | **Unified entry point for deep research.** End-to-end orchestrator: planning → per-dimension evidence gathering → synthesis → final `report.md`. Artifacts persist to `report_dir`; supports resumable execution. |
+| [`research-planning`](skills/research-planning/SKILL.md)             | Research Planning              | Produces `plan.json` from `request.md` in a single pass — scoping, report-shape, dimension breakdown, key questions, search strategy, dependencies, and completion criteria. |
+| [`dimension-research`](skills/dimension-research/SKILL.md)           | Per-Dimension Evidence Gathering | Executes one dimension from `plan.json` — runs the dimension's `search_strategy`, filters evidence, cross-validates, and writes `sub_reports/{dimension_id}.md`. |
+| [`research-synthesis`](skills/research-synthesis/SKILL.md)           | Judgment Synthesis             | Synthesizes multiple `sub_reports` into `synthesis.md` — main-thread judgments, evidence strength, cross-dimension consensus, key conflicts, and uncertainties.   |
+| [`research-report`](skills/research-report/SKILL.md)                 | Final Report Writing & Editing | Renders the judgment layer into the final `report.md`; also handles targeted rewrites — restructuring, polishing, table-augmentation — for an existing draft.    |
+| [`report-format-discovery`](skills/report-format-discovery/SKILL.md) | Report-Format Discovery        | Answers "what should this kind of report look like" — derives section structure, required elements, and style constraints. Usable standalone or as the `report_shape` source for deep-research. |
 
 
 ### 🔍 Search
@@ -87,10 +87,10 @@ skills/
 
 | Name                                                   | Label                  | Description                                                                                                                                |
 | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `[search-academic](skills/search-academic/SKILL.md)`   | Academic Search        | ArXiv (with section-level HTML reading) / Semantic Scholar (with citation counts) / PubMed (with PMC open-access full text) / Wikipedia, in one aggregated interface. |
-| `[search-code](skills/search-code/SKILL.md)`           | Developer Search       | GitHub (repo / code / issue) / Stack Overflow / Hacker News / HuggingFace (models / datasets / spaces), aggregated.                        |
-| `[search-social-cn](skills/search-social-cn/SKILL.md)` | Chinese Social Search  | Bilibili / Zhihu / Douyin search; some platforms require cookie auth.                                                                      |
-| `[search-social-en](skills/search-social-en/SKILL.md)` | English Social Search  | Reddit / Twitter (X) / YouTube search.                                                                                                     |
+| [`search-academic`](skills/search-academic/SKILL.md)   | Academic Search        | ArXiv (with section-level HTML reading) / Semantic Scholar (with citation counts) / PubMed (with PMC open-access full text) / Wikipedia, in one aggregated interface. |
+| [`search-code`](skills/search-code/SKILL.md)           | Developer Search       | GitHub (repo / code / issue) / Stack Overflow / Hacker News / HuggingFace (models / datasets / spaces), aggregated.                        |
+| [`search-social-cn`](skills/search-social-cn/SKILL.md) | Chinese Social Search  | Bilibili / Zhihu / Douyin search; some platforms require cookie auth.                                                                      |
+| [`search-social-en`](skills/search-social-en/SKILL.md) | English Social Search  | Reddit / Twitter (X) / YouTube search.                                                                                                     |
 
 
 ## Sample Outputs
