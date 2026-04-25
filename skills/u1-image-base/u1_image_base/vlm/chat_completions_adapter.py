@@ -29,6 +29,7 @@ Usage:
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 from typing import Any
@@ -37,7 +38,14 @@ import httpx
 
 from u1_image_base.configs import is_valid_base_url
 from u1_image_base.exceptions import InvalidBaseUrlError, MissingApiKeyError
-from u1_image_base.utils.error_utils import U1HttpNotFoundError, U1HttpResponseParseError
+from u1_image_base.utils.error_utils import (
+    U1HttpBadResponseError,
+    U1HttpNotFoundError,
+    U1HttpResponseParseError,
+    error_type_to_error_class,
+    finish_reason_to_error_class,
+    sanitize_base64_in_data,
+)
 from u1_image_base.utils.httpx_client import httpx_response_raise_for_status_code
 
 from .utils import image_to_data_url
@@ -46,6 +54,7 @@ from .vlm_adapter import VlmAdapter
 logger = logging.getLogger(__name__)
 
 DEFAULT_REQUEST_TIMEOUT = 600.0
+DEFAULT_MAX_COMPLETION_TOKENS = 8192
 
 
 class ChatCompletionsVlmAdapter(VlmAdapter):
@@ -136,6 +145,8 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
         images: list[str | bytes],
         system_prompt: str,
         model: str,
+        *,
+        max_completion_tokens: int | None = DEFAULT_MAX_COMPLETION_TOKENS,
     ) -> dict[str, Any]:
         """Assemble the full JSON request payload for a vision call.
 
@@ -144,6 +155,7 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
             images: Images for the user turn.
             system_prompt: System instruction (may be empty).
             model: Resolved model name to use in the request payload.
+            max_completion_tokens: Maximum number of tokens to generate. Defaults to None.
 
         Returns:
             dict[str, Any]: JSON-serialisable request body.
@@ -162,6 +174,8 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
         }
         if self._reasoning_effort:
             payload["reasoning_effort"] = self._reasoning_effort
+        if max_completion_tokens:
+            payload["max_completion_tokens"] = max_completion_tokens
         return payload
 
     @staticmethod
@@ -179,22 +193,70 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
         Raises:
             RuntimeError: If the response contains no ``choices``.
         """
-        choice = (data.get("choices") or [None])[0]
-        if not choice:
-            raise RuntimeError("chat/completions response has no choices.")
-        msg = choice.get("message", {})
-        content_val = msg.get("content")
-        if isinstance(content_val, str):
-            return content_val
-        if isinstance(content_val, list):
-            parts: list[str] = []
-            for block in content_val:
-                if isinstance(block, dict) and block.get("type") == "text":
-                    text = block.get("text")
-                    if isinstance(text, str):
-                        parts.append(text)
-            return "".join(parts)
-        return str(content_val or "")
+        if "error" in data and (error := data["error"]):
+            error_message = error.get("message")
+            error_type = error.get("type")
+            error_code = error.get("code")
+            error_class, explanation = error_type_to_error_class(error_type)
+            raise error_class(
+                explanation,
+                detail=f"chat/completions response has error. Error: {error_message}",
+                code=error_code,
+            )
+
+        choices = data.get("choices") or []
+        if not choices:
+            sanitized_data = sanitize_base64_in_data(data)
+            dumped = json.dumps(sanitized_data, ensure_ascii=False)
+            raise U1HttpBadResponseError(
+                detail=f"chat/completions response has no choices. Response: {dumped}",
+            )
+        reasoning: list[str] = []
+        contents: list[str] = []
+        finish_reason: str | None = None
+        for c in choices:
+            msg = c.get("message", {})
+            reasoning_val = msg.get("reasoning")
+            f_reason = msg.get("finish_reason")
+            content_val = msg.get("content")
+            if reasoning_val:
+                reasoning.append(reasoning_val)
+            if f_reason:
+                finish_reason = f_reason
+            if isinstance(content_val, str):
+                contents.append(content_val)
+            if isinstance(content_val, list):
+                parts: list[str] = []
+                for block in content_val:
+                    if isinstance(block, dict) and block.get("type") == "text":
+                        text = block.get("text")
+                        if isinstance(text, str):
+                            parts.append(text)
+                contents.append("".join(parts))
+        final_content = "".join(contents)
+        if not final_content:
+            sanitized_data = sanitize_base64_in_data(data)
+            dumped = json.dumps(sanitized_data, ensure_ascii=False)
+            detail_msg = ""
+            if finish_reason:
+                detail_msg += f"\n^ Finish reason: {finish_reason}"
+            detail_msg += f"\n^ Response: {dumped}"
+            if finish_reason == "stop":
+                raise U1HttpBadResponseError(
+                    "chat/completions response with empty content.",
+                    detail=detail_msg,
+                )
+            if finish_reason:
+                error_class, explanation = finish_reason_to_error_class(finish_reason)
+                raise error_class(
+                    explanation,
+                    detail=detail_msg,
+                )
+            raise U1HttpBadResponseError(
+                "chat/completions response has no content. No finish reason provided.",
+                detail=detail_msg,
+            )
+        return final_content
 
     async def vision_completion(
         self,
