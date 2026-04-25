@@ -7,6 +7,22 @@ description: 搜索学术论文和百科知识：ArXiv 预印本、Semantic Scho
 
 搜索 ArXiv、Semantic Scholar、PubMed、Wikipedia 四个学术平台，并提供 ArXiv 和 PMC 的**全文章节阅读**能力。全部免费，部分脚本有可选 API key 可提升限额。
 
+## 依赖
+
+运行脚本前先安装本 skill 的 Python 依赖：
+
+```bash
+python3 -m pip install -r skills/search-academic/requirements.txt
+```
+
+如果项目使用 `uv` 环境：
+
+```bash
+uv pip install -r skills/search-academic/requirements.txt
+```
+
+`arxiv_paper.py` 需要 `beautifulsoup4` 解析 ArXiv HTML；其他脚本主要依赖 `httpx` 发起请求。
+
 ## 可用脚本
 
 | 脚本 | 平台 | 用途 | API key |

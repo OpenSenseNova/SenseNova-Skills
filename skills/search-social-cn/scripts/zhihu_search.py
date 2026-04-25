@@ -6,9 +6,6 @@ import re
 import sys
 import tempfile
 from datetime import datetime, timezone
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "_search-common"))
 
 from search_utils import build_parser, get_client, get_key, make_item, make_result, print_json
 

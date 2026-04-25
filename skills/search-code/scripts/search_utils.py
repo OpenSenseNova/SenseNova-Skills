@@ -12,7 +12,19 @@ import os
 import sys
 from typing import Any
 
-import httpx
+try:
+    import httpx
+except ImportError:
+    json.dump(
+        {
+            "success": False,
+            "error": "缺少 httpx，请运行：python3 -m pip install -r skills/search-code/requirements.txt",
+        },
+        sys.stdout,
+        ensure_ascii=False,
+    )
+    sys.stdout.write("\n")
+    sys.exit(1)
 
 # ---------------------------------------------------------------------------
 # 标准输出

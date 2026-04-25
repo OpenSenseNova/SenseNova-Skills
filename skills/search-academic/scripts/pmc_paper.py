@@ -19,10 +19,7 @@ import argparse
 import re
 import sys
 import xml.etree.ElementTree as ET
-from pathlib import Path
 from typing import Any
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "_search-common"))
 
 from search_utils import get_client, print_json
 

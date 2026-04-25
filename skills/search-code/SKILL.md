@@ -7,6 +7,20 @@ description: 搜索开发者资源：GitHub 仓库/代码/Issue、Stack Overflow
 
 搜索 GitHub、Stack Overflow、Hacker News、HuggingFace 四个开发者核心平台。所有脚本无需 API key 即可使用，但 GitHub `--type code` 搜索是例外（见下方说明）。
 
+## 依赖
+
+运行脚本前先安装本 skill 的 Python 依赖：
+
+```bash
+python3 -m pip install -r skills/search-code/requirements.txt
+```
+
+如果项目使用 `uv` 环境：
+
+```bash
+uv pip install -r skills/search-code/requirements.txt
+```
+
 ## 可用脚本
 
 | 脚本 | 平台 | 用途 | API key |

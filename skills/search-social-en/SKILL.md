@@ -7,6 +7,20 @@ description: 搜索英文社交平台：Reddit 帖子、Twitter/X 推文、YouTu
 
 搜索 Reddit、Twitter/X、YouTube 三个英文社交平台。
 
+## 依赖
+
+运行脚本前先安装本 skill 的 Python 依赖：
+
+```bash
+python3 -m pip install -r skills/search-social-en/requirements.txt
+```
+
+如果项目使用 `uv` 环境：
+
+```bash
+uv pip install -r skills/search-social-en/requirements.txt
+```
+
 ## 可用脚本
 
 | 脚本 | 平台 | 用途 | API key |
