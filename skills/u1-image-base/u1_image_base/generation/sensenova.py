@@ -29,7 +29,6 @@ OUTPUT_DIR = Path("/tmp/openclaw-u1-image")
 
 
 IMAGE_GEN_ENDPOINT = "/images/generations"
-IMAGE_EDIT_ENDPOINT = "/images/edits"
 
 
 class SensenovaText2ImageClient(T2IBaseClient):
