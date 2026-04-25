@@ -78,7 +78,7 @@ class OpenAIImageGenerationClient(T2IBaseClient):
         prompt: str,
         *,
         model: str | None = None,
-        image_size: Literal["1K", "2K", "1k", "2k"] = DEFAULT_RESOLUTION,
+        image_size: Literal["1K", "2K", "1k", "2k"] | None = None,
         aspect_ratio: str | None = DEFAULT_ASPECT_RATIO,
         output_path: Path | None = None,
         **kwargs: Any,
@@ -108,6 +108,7 @@ class OpenAIImageGenerationClient(T2IBaseClient):
             raise BadConfigurationError(
                 f"Model is not set. {global_configs.get_env_var_help('U1_IMAGE_GEN_MODEL')}"
             )
+        image_size = image_size or DEFAULT_RESOLUTION
         if aspect_ratio is None:
             size = None
         else:
