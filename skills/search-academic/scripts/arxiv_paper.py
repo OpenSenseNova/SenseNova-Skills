@@ -17,18 +17,35 @@ import argparse
 import json
 import re
 import sys
-from pathlib import Path
 from typing import Any
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "_search-common"))
 
 from search_utils import get_client, print_json
 
-try:
-    from bs4 import BeautifulSoup, NavigableString, Tag
-except ImportError:
-    print('{"success": false, "error": "需要 beautifulsoup4，请在项目环境中运行（uv run）"}')
-    sys.exit(1)
+BeautifulSoup: Any = None
+NavigableString: Any = None
+Tag: Any = None
+
+
+def ensure_bs4() -> None:
+    """Load BeautifulSoup only when the script needs to parse paper HTML."""
+    global BeautifulSoup, NavigableString, Tag
+    if BeautifulSoup is not None:
+        return
+
+    try:
+        from bs4 import BeautifulSoup as Bs4BeautifulSoup
+        from bs4 import NavigableString as Bs4NavigableString
+        from bs4 import Tag as Bs4Tag
+    except ImportError:
+        print_json({
+            "success": False,
+            "error": "缺少 beautifulsoup4，请运行：python3 -m pip install -r skills/search-academic/requirements.txt",
+        })
+        sys.exit(1)
+
+    BeautifulSoup = Bs4BeautifulSoup
+    NavigableString = Bs4NavigableString
+    Tag = Bs4Tag
 
 HTML_BASE = "https://arxiv.org/html"
 ABS_BASE = "https://arxiv.org/abs"
@@ -118,6 +135,7 @@ def extract_sections(html: str) -> list[dict[str, Any]]:
       level  - 层级（0=摘要, 1=h2, 2=h3）
       text   - 正文文本
     """
+    ensure_bs4()
     soup = BeautifulSoup(html, "html.parser")
     sections: list[dict[str, Any]] = []
 

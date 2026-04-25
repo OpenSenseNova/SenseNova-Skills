@@ -4,9 +4,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "_search-common"))
 
 from search_utils import get_client, make_item, print_json
 

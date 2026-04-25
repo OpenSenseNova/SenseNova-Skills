@@ -11,6 +11,20 @@ description: 搜索中文社交平台：B站视频、知乎问答、抖音视频
 
 中文社交平台没有稳定的公开搜索 API，所有脚本依赖内部 API 或第三方库，**可能因平台更新而失效**。
 
+## 依赖
+
+运行脚本前先安装本 skill 的 Python 依赖：
+
+```bash
+python3 -m pip install -r skills/search-social-cn/requirements.txt
+```
+
+如果项目使用 `uv` 环境：
+
+```bash
+uv pip install -r skills/search-social-cn/requirements.txt
+```
+
 | 脚本 | 平台 | 稳定性 | 认证方式 |
 |------|------|--------|---------|
 | `bilibili_search.py` | B站 | 较高 | 无需（可选 cookie 提高质量） |
