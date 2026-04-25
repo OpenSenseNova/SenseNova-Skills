@@ -1,0 +1,2 @@
+pypdf>=4.0
+python-docx>=1.1
