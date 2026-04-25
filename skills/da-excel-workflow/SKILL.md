@@ -1,6 +1,6 @@
 ---
 name: da-excel-workflow
-description: "Multi-step workflow for Excel data analysis. Use when a task involves: (1) reading multi-sheet Excel files and counting rows, (2) large file detection (>=10k rows -> Parquet optimization), (3) data cleaning (missing values, text normalization, invalid characters), (4) conditional filtering and category extraction, (5) statistical aggregation across sheets, (6) exporting results as Excel/CSV with download links. Covers the full pipeline from ingestion to report generation. Orchestrates capability sub-skills for each step."
+description: "Excel 数据分析工作流编排器，覆盖 读取→清洗→筛选→统计→可视化→导出 全流程，自动按数据规模选择最优策略（小文件直读、中文件 Parquet 缓存、大文件流式读取），编排各能力子 skill。**遇到以下任一情况就主动使用本 skill，不要自行写代码尝试**：① 用户上传或提到 Excel / xlsx / xls 文件需要分析处理；② 涉及多工作表读取、行列统计、数据清洗（缺失值 / 重复值 / 异常值 / 文本规范化）；③ 需要按条件筛选数据、分组聚合、交叉分析或生成透视表；④ 需要生成图表（柱状图 / 折线图 / 饼图 / 散点图）并导出结果文件；⑤ 数据量较大（万行以上）需要高效处理。仅不用于：非 Excel 格式（CSV / JSON / 数据库）的纯读写、图片分析、纯文本问答。"
 ---
 
 # Excel Data Analysis Workflow
