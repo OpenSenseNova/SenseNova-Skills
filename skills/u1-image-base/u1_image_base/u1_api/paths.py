@@ -5,9 +5,7 @@ from __future__ import annotations
 from urllib.parse import quote
 
 GENERATION_TEXT_TO_IMAGE = "/v1/generation/text-to-image"
-IMAGE_EDIT = "/v1/generation/image-edit"
 GENERATION_FILES_PREFIX = "/v1/generation/files"
-PROMPTS_EXPAND = "/v1/generation/prompts/expand"
 
 
 def join_base(base_url: str, path: str) -> str:
@@ -57,50 +55,6 @@ def text_to_image_status_url(base_url: str, task_id: str) -> str:
             The full URL for the text-to-image status endpoint.
     """
     return join_base(base_url, f"{GENERATION_TEXT_TO_IMAGE}/{task_id}")
-
-
-def image_edit_create_url(base_url: str) -> str:
-    """Build the URL for submitting an image edit task.
-
-    Args:
-        base_url (str):
-            The API base URL.
-
-    Returns:
-        str:
-            The full URL for the image edit creation endpoint.
-    """
-    return join_base(base_url, IMAGE_EDIT)
-
-
-def image_edit_status_url(base_url: str, task_id: str) -> str:
-    """Build the URL for checking the status of an image edit task.
-
-    Args:
-        base_url (str):
-            The API base URL.
-        task_id (str):
-            The unique identifier of the image edit task.
-
-    Returns:
-        str:
-            The full URL for the image edit status endpoint.
-    """
-    return join_base(base_url, f"{IMAGE_EDIT}/{task_id}")
-
-
-def prompts_expand_url(base_url: str) -> str:
-    """Build the URL for the prompts expand endpoint.
-
-    Args:
-        base_url (str):
-            The API base URL.
-
-    Returns:
-        str:
-            The full URL for the prompts expand endpoint.
-    """
-    return join_base(base_url, PROMPTS_EXPAND)
 
 
 def generation_file_download_url(base_url: str, image_ref: str) -> str:
