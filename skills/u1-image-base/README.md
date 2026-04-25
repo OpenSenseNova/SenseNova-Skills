@@ -19,12 +19,12 @@ The skill provides the following subcommands:
 The skill supports the following models services:
 
 - For image generation:
-  - [SenseNova Token Plan](https://platform.sensenova.cn/)
+  - [SenseNova](https://platform.sensenova.cn/)
   - Nano Banana API
   - OpenAI Image Generation API (e.g. GPT-Image-2)
 
 - For LLM/VLM:
-  - [SenseNova Token Plan](https://platform.sensenova.cn/)
+  - [SenseNova](https://platform.sensenova.cn/)
   - Models via Anthropic Messages API (e.g. Claude Sonnet 4.6)
   - Models via OpenAI Chat Completion API (e.g. GPT and Gemini/Qwen etc. in OpenAI Compatible API format)
 
@@ -32,9 +32,9 @@ The skill supports the following models services:
 
 ### Quick Start
 
-We recommend you to try out our [SenseNova Token Plan](https://platform.sensenova.cn/).
+We recommend you to try out our [SenseNova Token Plan](https://platform.sensenova.cn/token-plan).
 
-Go to <https://platform.sensenova.cn/> to register a free account and get your API key for both image generation and LLM/VLM.
+Go to <https://platform.sensenova.cn/token-plan/> to register a free account and get your API key for both image generation and LLM/VLM.
 
 Set the following environment variables in `~/.openclaw/.env` (or `~/.hermes/.env` if you are using Hermes):
 
@@ -78,7 +78,7 @@ Full configuration for image generation:
 | `U1_IMAGE_GEN_MODEL` | The name of the image generation model to use | `"sensenova-u1-fast"` |
 | `U1_IMAGE_GEN_BASE_URL` | The base URL for the image generation API | `"https://token.sensenova.cn/v1"` |
 
-The default values are recommended for the [SenseNova Token Plan](https://platform.sensenova.cn/).
+The default values are recommended for the [SenseNova](https://platform.sensenova.cn/).
 
 You only need to set the `U1_API_KEY`, and optionally set `U1_IMAGE_GEN_MODEL` to the model name provided by the token plan.
 
@@ -87,7 +87,7 @@ To use non-default image generation models, please:
 1. Set `U1_IMAGE_GEN_MODEL_TYPE` according to the model type, available values are:
 
     ```ini
-    # (Default) For [SenseNova Token Plan](https://platform.sensenova.cn/)
+    # (Default) For [SenseNova](https://platform.sensenova.cn/)
     U1_IMAGE_GEN_MODEL_TYPE="sensenova"
     # For Google's Nano Banana model API
     U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
@@ -98,7 +98,7 @@ To use non-default image generation models, please:
 2. Set `U1_IMAGE_GEN_BASE_URL` to the base URL for the image generation API. For example:
 
     ```ini
-    # (Default) For [SenseNova Token Plan](https://platform.sensenova.cn/)
+    # (Default) For [SenseNova](https://platform.sensenova.cn/)
     U1_IMAGE_GEN_BASE_URL="https://token.sensenova.cn/v1"
     # For Google's Nano Banana model API
     U1_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"
@@ -109,7 +109,7 @@ To use non-default image generation models, please:
 3. Set `U1_IMAGE_GEN_MODEL` to the model name provided by the model type. For example:
 
     ```ini
-    # (Default) For [SenseNova Token Plan](https://platform.sensenova.cn/)
+    # (Default) For [SenseNova](https://platform.sensenova.cn/)
     U1_IMAGE_GEN_MODEL="sensenova-u1-fast"
     # For Google's Nano Banana model API
     U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"
@@ -138,7 +138,7 @@ Full configuration for VLM and LLM (with shared `U1_LM_*` environment variables)
 | `VLM_MODEL` & `LLM_MODEL` (via `U1_LM_MODEL` env var) | The name of the VLM and LLM model to use | `"sensenova-6.7-flash-lite"` |
 | `VLM_TYPE` & `LLM_TYPE` (via `U1_LM_TYPE` env var) | The type of the VLM and LLM API to use | `"openai-completions"` |
 
-The default values are recommended for the [SenseNova Token Plan](https://platform.sensenova.cn/).
+The default values are recommended for the [SenseNova](https://platform.sensenova.cn/).
 
 You only need to set the `U1_LM_API_KEY`, and optionally set `U1_LM_MODEL` to the model name provided by the token plan.
 
@@ -156,7 +156,7 @@ To use non-default shared LM settings, please:
 2. Set `VLM_BASE_URL` & `LLM_BASE_URL` (via `U1_LM_BASE_URL`) to the shared LM endpoint base URL. For example:
 
     ```ini
-    # (Default) For [SenseNova Token Plan](https://platform.sensenova.cn/)
+    # (Default) For [SenseNova](https://platform.sensenova.cn/)
     U1_LM_BASE_URL="https://token.sensenova.cn/v1"
     # For Anthropic Messages API
     U1_LM_BASE_URL="https://api.anthropic.com/v1"

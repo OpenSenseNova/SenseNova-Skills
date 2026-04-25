@@ -79,9 +79,9 @@ pip install -r skills/u1-image-base/requirements.txt
 
 **Minimum Configurations:**
 
-We recommend you to try out our [SenseNova Token Plan](https://platform.sensenova.cn/) to setup these skills.
+We recommend you to try out our [SenseNova Token Plan](https://platform.sensenova.cn/token-plan) to setup these skills.
 
-Go to <https://platform.sensenova.cn/> to register a free account and get your API key.
+Go to <https://platform.sensenova.cn/token-plan/> to register a free account and get your API key.
 
 Set the following environment variables in `~/.openclaw/.env` (for OpenClaw) or `~/.hermes/.env` (for Hermes):
 

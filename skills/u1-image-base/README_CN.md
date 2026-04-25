@@ -19,12 +19,12 @@
 支持的模型服务如下：
 
 - 图像生成：
-  - [SenseNova Token Plan](https://platform.sensenova.cn/)
+  - [SenseNova](https://platform.sensenova.cn/)
   - Nano Banana API
   - OpenAI 图像生成 API（例如 GPT-Image-2）
 
 - LLM/VLM：
-  - [SenseNova Token Plan](https://platform.sensenova.cn/)
+  - [SenseNova](https://platform.sensenova.cn/)
   - 通过 Anthropic Messages API 接入的模型（例如 Claude Sonnet 4.6）
   - 通过 OpenAI Chat Completion API 接入的模型（例如 GPT、Gemini/Qwen 等 OpenAI 兼容格式模型）
 
@@ -32,9 +32,9 @@
 
 ### 快速开始
 
-推荐使用 [SenseNova Token Plan](https://platform.sensenova.cn/)。
+推荐使用 [SenseNova Token Plan](https://platform.sensenova.cn/token-plan)。
 
-前往 <https://platform.sensenova.cn/> 注册免费账号，并获取可用于图像生成和 LLM/VLM 的 API Key。
+前往 <https://platform.sensenova.cn/token-plan/> 注册免费账号，并获取可用于图像生成和 LLM/VLM 的 API Key。
 
 将以下环境变量写入 `~/.openclaw/.env`（OpenClaw）或 `~/.hermes/.env`（Hermes）：
 
@@ -80,7 +80,7 @@ U1_LM_MODEL="sensenova-6.7-flash-lite"   # 或 Token Plan 中可用的其他 LLM
 | `U1_IMAGE_GEN_MODEL` | 图像生成模型名 | `"sensenova-u1-fast"` |
 | `U1_IMAGE_GEN_BASE_URL` | 图像生成 API 的基础 URL | `"https://token.sensenova.cn/v1"` |
 
-默认值适用于 [SenseNova Token Plan](https://platform.sensenova.cn/)。
+默认值适用于 [SenseNova](https://platform.sensenova.cn/)。
 
 通常只需设置 `U1_API_KEY`，并可按需将 `U1_IMAGE_GEN_MODEL` 设置为 token plan 提供的模型名。
 
@@ -89,7 +89,7 @@ U1_LM_MODEL="sensenova-6.7-flash-lite"   # 或 Token Plan 中可用的其他 LLM
 1. 设置 `U1_IMAGE_GEN_MODEL_TYPE` 为对应模型类型，可选值如下：
 
     ```ini
-    # （默认）用于 [SenseNova Token Plan](https://platform.sensenova.cn/)
+    # （默认）用于 [SenseNova](https://platform.sensenova.cn/)
     U1_IMAGE_GEN_MODEL_TYPE="sensenova"
     # 用于 Google Nano Banana 模型 API
     U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
@@ -100,7 +100,7 @@ U1_LM_MODEL="sensenova-6.7-flash-lite"   # 或 Token Plan 中可用的其他 LLM
 2. 设置 `U1_IMAGE_GEN_BASE_URL` 为图像生成 API 的基础 URL，例如：
 
     ```ini
-    # （默认）用于 [SenseNova Token Plan](https://platform.sensenova.cn/)
+    # （默认）用于 [SenseNova](https://platform.sensenova.cn/)
     U1_IMAGE_GEN_BASE_URL="https://token.sensenova.cn/v1"
     # 用于 Google Nano Banana 模型 API
     U1_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"
@@ -111,7 +111,7 @@ U1_LM_MODEL="sensenova-6.7-flash-lite"   # 或 Token Plan 中可用的其他 LLM
 3. 设置 `U1_IMAGE_GEN_MODEL` 为对应类型下的模型名，例如：
 
     ```ini
-    # （默认）用于 [SenseNova Token Plan](https://platform.sensenova.cn/)
+    # （默认）用于 [SenseNova](https://platform.sensenova.cn/)
     U1_IMAGE_GEN_MODEL="sensenova-u1-fast"
     # 用于 Google Nano Banana 模型 API
     U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"
@@ -140,7 +140,7 @@ U1_LM_MODEL="sensenova-6.7-flash-lite"   # 或 Token Plan 中可用的其他 LLM
 | `VLM_MODEL` 与 `LLM_MODEL`（通过 `U1_LM_MODEL` env var） | VLM 与 LLM 模型名 | `"sensenova-6.7-flash-lite"` |
 | `VLM_TYPE` 与 `LLM_TYPE`（通过 `U1_LM_TYPE` env var） | VLM 与 LLM API 类型 | `"openai-completions"` |
 
-默认值适用于 [SenseNova Token Plan](https://platform.sensenova.cn/)。
+默认值适用于 [SenseNova](https://platform.sensenova.cn/)。
 
 通常只需设置 `U1_LM_API_KEY`，并可按需将 `U1_LM_MODEL` 设置为 token plan 提供的模型名。
 
@@ -158,7 +158,7 @@ U1_LM_MODEL="sensenova-6.7-flash-lite"   # 或 Token Plan 中可用的其他 LLM
 2. 将 `VLM_BASE_URL` 与 `LLM_BASE_URL`（配置 `U1_LM_BASE_URL` 环境变量）设置为 VLM/LLM API 的基础 URL，例如：
 
     ```ini
-    # （默认）用于 [SenseNova Token Plan](https://platform.sensenova.cn/)
+    # （默认）用于 [SenseNova](https://platform.sensenova.cn/)
     U1_LM_BASE_URL="https://token.sensenova.cn/v1"
     # 用于 Anthropic Messages API
     U1_LM_BASE_URL="https://api.anthropic.com/v1"
