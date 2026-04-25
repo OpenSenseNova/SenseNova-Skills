@@ -4,6 +4,8 @@ Supports any backend that follows the standard ``POST /chat/completions``
 request/response schema with vision support (image_url content blocks).
 
 Usage:
+
+    ```python
     from vlm.chat_completions_adapter import ChatCompletionsVlmAdapter
 
     adapter = ChatCompletionsVlmAdapter(
@@ -16,21 +18,34 @@ Usage:
         images=["path/to/image.png"],
         system_prompt="You are a helpful assistant.",
     )
+    ```
+
+    ```bash
+    export U1_LM_API_KEY=sk-xxxxxx
+    export IMAGE_PATH=/path/to/image.png
+    python -m u1_image_base.vlm.chat_completions_adapter
+    ```
 """
 
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 import httpx
+
+from u1_image_base.configs import is_valid_base_url
+from u1_image_base.exceptions import InvalidBaseUrlError, MissingApiKeyError
+from u1_image_base.utils.error_utils import U1HttpNotFoundError, U1HttpResponseParseError
+from u1_image_base.utils.httpx_client import httpx_response_raise_for_status_code
 
 from .utils import image_to_data_url
 from .vlm_adapter import VlmAdapter
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_REQUEST_TIMEOUT = 1500.0
+DEFAULT_REQUEST_TIMEOUT = 600.0
 
 
 class ChatCompletionsVlmAdapter(VlmAdapter):
@@ -65,7 +80,7 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
                 (e.g. ``https://api.openai.com/v1/chat/completions``).
             api_key: Bearer token for the ``Authorization`` header.
             model: Default model name sent in the request payload.
-            timeout: Request timeout in seconds. Defaults to 1500.
+            timeout: Request timeout in seconds. Defaults to 600.
             async_client (httpx.AsyncClient | None, optional):
                 Shared HTTP client supplied by the caller. When
                 provided the adapter reuses it and will *not* close it in
@@ -120,7 +135,7 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
         user_prompt: str,
         images: list[str | bytes],
         system_prompt: str,
-        model: str | None,
+        model: str,
     ) -> dict[str, Any]:
         """Assemble the full JSON request payload for a vision call.
 
@@ -128,7 +143,7 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
             user_prompt: User-facing text instruction.
             images: Images for the user turn.
             system_prompt: System instruction (may be empty).
-            model: Model name to use (overrides default if provided).
+            model: Resolved model name to use in the request payload.
 
         Returns:
             dict[str, Any]: JSON-serialisable request body.
@@ -142,7 +157,7 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
         if system_prompt:
             messages.insert(0, {"role": "system", "content": system_prompt})
         payload: dict[str, Any] = {
-            "model": model or self._default_model,
+            "model": model,
             "messages": messages,
         }
         if self._reasoning_effort:
@@ -200,17 +215,33 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
             str: Assistant message text extracted from the API response.
 
         Raises:
-            httpx.HTTPStatusError: On non-2xx HTTP responses.
+            U1HttpNotFoundError: On 404 responses, with model context appended.
+            U1HttpResponseParseError: If the HTTP response body is not valid JSON.
+            U1HttpBaseError: On other HTTP errors.
             RuntimeError: If the response contains no ``choices``.
         """
+        model = model or self._default_model
         payload = self._build_payload(user_prompt, images, system_prompt, model)
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
         }
         resp = await self._get_client().post(self._url, json=payload, headers=headers)
-        resp.raise_for_status()
-        return self._parse_response(resp.json())
+        try:
+            httpx_response_raise_for_status_code(resp)
+            data = resp.json()
+        except U1HttpNotFoundError as e:
+            # re-raise with more context
+            raise U1HttpNotFoundError(
+                detail=f"{e.detail} model={model!r}",
+                code=resp.status_code,
+            ) from e
+        except ValueError as exc:
+            raise U1HttpResponseParseError(
+                detail=f"Failed to parse HTTP response. {resp.request.url}. Response content: {resp.content}",
+                code=resp.status_code,
+            ) from exc
+        return self._parse_response(data)
 
     async def aclose(self) -> None:
         """Close the internal async HTTP client if we own it.
@@ -220,3 +251,49 @@ class ChatCompletionsVlmAdapter(VlmAdapter):
         if self._external_client is None and self._client is not None:
             await self._client.aclose()
             self._client = None
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    from u1_image_base.configs import global_configs
+
+    async def main():
+        base_url = global_configs.VLM_BASE_URL
+        if not base_url:
+            raise InvalidBaseUrlError(
+                f"No base URL provided for VLM. {global_configs.get_env_var_help('VLM_BASE_URL')}"
+            )
+        if not is_valid_base_url(base_url):
+            raise InvalidBaseUrlError(
+                f"Invalid base URL for VLM: {base_url}. {global_configs.get_env_var_help('VLM_BASE_URL')}"
+            )
+        base_url = base_url.rstrip("/")
+        endpoint = "/chat/completions"
+        endpoint_url = f"{base_url}{endpoint}"
+        api_key = global_configs.VLM_API_KEY
+        if not api_key:
+            raise MissingApiKeyError(
+                f"No API key provided for VLM. {global_configs.get_env_var_help('VLM_API_KEY')}"
+            )
+        model = global_configs.VLM_MODEL
+
+        image_path = os.environ.get("IMAGE_PATH")
+        if not image_path or not os.path.exists(image_path):
+            raise ValueError(
+                "Please set an valid `IMAGE_PATH` environment variable for running this script."
+            )
+
+        adapter = ChatCompletionsVlmAdapter(
+            endpoint_url=endpoint_url,
+            api_key=api_key,
+            model=model,
+        )
+        result = await adapter.vision_completion(
+            user_prompt="Describe this image",
+            images=[image_path],
+            system_prompt="You are a helpful assistant.",
+        )
+        print(result)
+
+    asyncio.run(main())

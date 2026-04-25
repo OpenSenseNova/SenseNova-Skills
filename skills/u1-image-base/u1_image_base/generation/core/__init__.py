@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 from pathlib import Path
 from urllib.parse import urlparse
 
 import httpx
 
 from u1_image_base.u1_api.paths import (
-    generation_file_download_url,
     generation_file_presigned_url,
     generation_file_upload_url,
 )
@@ -106,7 +107,8 @@ async def download_image(
         headers (dict[str, str]):
             HTTP headers including authentication.
         image_ref (str):
-            The image reference (URL or cached file key) to download.
+            Absolute URL to download directly, or OSS key (fetches presigned URL
+            then downloads; no fallback to direct files API).
         output_path (Path):
             The local file path where the image will be saved.
 
@@ -117,8 +119,14 @@ async def download_image(
     if is_absolute_url(image_ref):
         response = await client.get(image_ref, headers=headers)
     else:
-        download_url = generation_file_download_url(base_url, image_ref)
-        response = await client.get(download_url, headers=headers)
+        # Presigned OSS GET must not use the same AsyncClient default headers as API
+        # calls (e.g. Content-Type: application/json), or the OSS signature will not match.
+        presigned_url = await generate_presigned_url(client, base_url, headers, image_ref)
+        async with httpx.AsyncClient(
+            timeout=client.timeout,
+            trust_env=True,
+        ) as fetch_client:
+            response = await fetch_client.get(presigned_url)
     response.raise_for_status()
     output_path.write_bytes(response.content)
     return output_path

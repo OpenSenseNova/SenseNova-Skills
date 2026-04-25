@@ -25,9 +25,8 @@ def join_base(base_url: str, path: str) -> str:
             the path prepended with a leading slash if missing.
     """
     base = base_url.rstrip("/")
-    if not path.startswith("/"):
-        path = f"/{path}"
-    return f"{base}{path}"
+    path = path.lstrip("/")
+    return f"{base}/{path}"
 
 
 def text_to_image_create_url(base_url: str) -> str:

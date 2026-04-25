@@ -25,7 +25,7 @@ unfixable = [
     "F401", # unused imports
     "F841", # unused variables
 ]
-ignore = ["E501"]
+ignore = ["E501", "RUF067"]
 
 [lint.per-file-ignores]
 "openclaw_runner.py" = ["E402"]
