@@ -8,11 +8,15 @@ from typing import Any, Literal
 import httpx
 from typing_extensions import override
 
-from u1_image_base.configs import global_configs
+from u1_image_base.configs import global_configs, is_valid_base_url
 from u1_image_base.utils.error_utils import U1HttpErrorBase
 
 from .core import ensure_output_path
-from .core.client_base import DEFAULT_HTTP_REQUEST_TIMEOUT, DEFAULT_MAX_CONNECTIONS, T2IBaseClient
+from .core.client_base import (
+    DEFAULT_HTTP_REQUEST_TIMEOUT,
+    DEFAULT_MAX_CONNECTIONS,
+    T2IBaseClient,
+)
 
 DEFAULT_MODEL_SIZE: Literal["1K", "2K", "4K"] = "2K"
 DEFAULT_ASPECT_RATIO = "16:9"
@@ -22,6 +26,9 @@ OUTPUT_DIR = Path("/tmp/openclaw-u1-image")
 
 class NanoBananaText2ImageClient(T2IBaseClient):
     """Async client for U1 text-to-image-no-enhance API."""
+
+    # requires `{model}` placeholder for format string
+    DEFAULT_API_PATH = "/v1beta/models/{model}:generateContent"
 
     def __init__(
         self,
@@ -123,10 +130,28 @@ class NanoBananaText2ImageClient(T2IBaseClient):
             )
             data = self.parse_response(create_response)
         except U1HttpErrorBase as exc:
+            details = exc.detail or ""
+            field_name = None
+            if exc.code == 404:
+                field_name = "U1_IMAGE_GEN_BASE_URL"
+            elif exc.code == 401:
+                field_name = "U1_API_KEY"
+            if field_name is not None:
+                field_hint = global_configs.get_annotated_field(field_name)
+                if field_hint is not None:
+                    env_names = list(field_hint.env_names) if field_hint.env_names else []
+                    if env_names:
+                        if len(env_names) == 1:
+                            details += (
+                                f"\nIs the environment variable `{env_names[0]}` set correctly?"
+                            )
+                        else:
+                            env_names_str = ", ".join([f"`{n}`" for n in env_names])
+                            details += f"\nIs any of the following environment variable(s) set correctly: {env_names_str}?"
             return {
                 "status": "failed",
                 "error": f"HTTP {exc.code}: {exc.message}",
-                "message": exc.detail,
+                "message": details,
             }
         try:
             images = data["images"]
@@ -178,14 +203,19 @@ class NanoBananaText2ImageClient(T2IBaseClient):
                     global_configs.get_env_var_help("U1_IMAGE_GEN_BASE_URL")
                 )
             )
+        if not is_valid_base_url(base_url):
+            raise ValueError(
+                f"Base URL is not a valid base URL: {base_url}. "
+                f"Try setting environment variable(s): {global_configs.get_env_var_help('U1_IMAGE_GEN_BASE_URL')}"
+            )
         return base_url
 
     @override
     def get_api_url(self, model: str | None = None) -> str:
         model = model or self.model
-        base_url = self.base_url.rstrip("/")
-        base_path = f"{base_url}/v1beta/models/{model}"
-        return f"{base_path}:generateContent"
+        path = self.DEFAULT_API_PATH.format(model=model).lstrip("/")
+        api_url = f"{self.base_url.rstrip('/')}/{path}"
+        return api_url
 
     @override
     def build_payload(

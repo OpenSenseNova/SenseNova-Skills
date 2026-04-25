@@ -17,14 +17,18 @@ from pathlib import Path
 import httpx
 from typing_extensions import Any, Literal, override
 
-from u1_image_base.configs import global_configs
+from u1_image_base.configs import global_configs, is_valid_base_url
 from u1_image_base.u1_api.paths import (
     text_to_image_create_url,
     text_to_image_status_url,
 )
 
 from .core import download_image, ensure_output_path, extract_task_image
-from .core.client_base import DEFAULT_HTTP_REQUEST_TIMEOUT, DEFAULT_MAX_CONNECTIONS, T2IBaseClient
+from .core.client_base import (
+    DEFAULT_HTTP_REQUEST_TIMEOUT,
+    DEFAULT_MAX_CONNECTIONS,
+    T2IBaseClient,
+)
 
 DEFAULT_MODEL_SIZE = "2k"
 DEFAULT_ASPECT_RATIO = "16:9"
@@ -217,6 +221,11 @@ class U1Text2ImageClient(T2IBaseClient):
                 "Base URL is missing: {}".format(
                     global_configs.get_env_var_help("U1_IMAGE_GEN_BASE_URL")
                 )
+            )
+        if not is_valid_base_url(base_url):
+            raise ValueError(
+                f"Base URL is not a valid base URL: {base_url}. "
+                f"Try setting environment variable(s): {global_configs.get_env_var_help('U1_IMAGE_GEN_BASE_URL')}"
             )
         return base_url
 

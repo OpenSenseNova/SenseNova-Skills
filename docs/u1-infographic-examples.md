@@ -1,5 +1,7 @@
 # u1-infographic Examples
 
+English | [简体中文](u1-infographic-examples_CN.md)
+
 Here are infographic examples generated with the `u1-infographic` skill (powered by `u1-image-base`).
 
 ## Example 1｜Financial Product Allocation Mechanism
