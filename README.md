@@ -1,214 +1,127 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/OpenSenseNova/SenseNova6.7/main/assets/logo.webp" alt="SenseNova logo" width="180" />
+</p>
+
 # SenseNova-Skills
 
-English | [简体中文](README_CN.md)
+简体中文 | [English](README_en.md)
 
-<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="SenseNova-Skills Teaser"></p>
+SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/OpenSenseNova/hermes-agent) 等智能体，并借助skills实现更强大的能力。
 
-Skills and tooling for **AIGC** in agent runtimes.
+本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
-## Prerequisites
+技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
 
-- **Python** 3.9 or later.
-- **U1 API** credentials for image generation and LLM/VLM endpoints (`U1_API_KEY`, `U1_LM_API_KEY`; see Quick Start).
+## 什么是 SKILL.md？
 
-## Skills
+`SKILL.md` 是教智能体执行特定任务的 Markdown 文档，通常包含：
 
-### u1-doctor
+- **Frontmatter 元数据**：`name`、`description`，以及可选的 `triggers`、`metadata` 等字段
+- **执行说明**：技能何时触发、按什么顺序做哪些事、产物落在哪里
+- **References**（可选）：补充文档、方法论、示例
+- **Scripts**（可选）：技能调用的可执行脚本
 
-Environment diagnostic skill that checks installation, dependencies, and configuration. See [`skills/u1-doctor/SKILL.md`](skills/u1-doctor/SKILL.md) for full behavior.
+## 目录结构
 
-- Validates `u1-image-base` installation and Python dependencies
-- Checks environment variables and interactively prompts to configure missing required variables
-- Saves configuration to `.env` file and reloads environment automatically
-
-### u1-image-base (Tier 0)
-
-Base-layer infrastructure skill providing two low-level tools. See [`skills/u1-image-base/SKILL.md`](skills/u1-image-base/SKILL.md) for full behavior.
-
-- **u1-image-generate** — text-to-image generation
-- **u1-text-optimize** — text processing using LLM
-
-All tools are invoked through a unified `openclaw_runner.py` entrypoint.
-
-### u1-infographic (Tier 1)
-
-Scene skill for generating professional infographics, built on `u1-image-base`. See [wwwills/u1-infographic/SKILL.md`](skills/u1-infographic/SKILL.md) for full behavior.
-
-- Automatic prompt quality evaluation
-- Content analysis and layout/style selection (87 layouts, 66 styles)
-- Multi-round image generation with VLM review
-- Quality ranking and best-result output
-
-## Quick Start
-
-Use these skills from [OpenClaw](https://openclaw.ai/).
-They follow the [Agent Skills](https://agentskills.io/) layout; see [OpenClaw Skills](https://docs.openclaw.ai/tools/skills) for how OpenClaw discovers and loads skill folders.
-If you have not set up OpenClaw yet, install and configure it from the **[official documentation](https://docs.openclaw.ai/)** (product site: [openclaw.ai](https://openclaw.ai/)).
-
-### 1. Register `u1-image-base` and `u1-infographic`
-
-Clone this repository, then expose **both** skill directories to OpenClaw ([locations and precedence](https://docs.openclaw.ai/tools/skills#locations-and-precedence)). `u1-infographic` depends on `u1-image-base`—install both.
-
-Use one of the following approaches:
-
-| Approach | What to do |
-|----------|------------|
-| **Workspace `skills/`** (typical) | Copy or symlink `skills/u1-image-base` and `skills/u1-infographic` into your agent workspace as `./skills/u1-image-base/` and `./skills/u1-infographic/`. |
-| **Shared on this machine** | Copy or symlink the same two folders under `~/.openclaw/skills/`. |
-| **`openclaw.json`** | Add an absolute path to this repo’s `skills` folder (the parent of both directories) via `skills.load.extraDirs` (example below). |
-
-```json5
-{
-  skills: {
-    load: {
-      extraDirs: ["/absolute/path/to/SenseNova-Skills/skills"],
-    },
-  },
-}
+```
+skills/
+├── <skill-name>/
+│   ├── SKILL.md          # 技能主定义（必需）
+│   ├── references/       # 补充文档（可选）
+│   │   └── *.md
+│   ├── scripts/          # 可执行脚本（可选）
+│   │   └── *.py
+│   ├── prompts/          # 提示词模板（可选）
+│   │   └── *.md
+│   └── requirements.txt  # Python 依赖（可选）
 ```
 
-Replace the path with your clone. Details: [Skills config](https://docs.openclaw.ai/tools/skills-config). Workspace skills win over `extraDirs` if the same name appears twice.
+## 技能列表
 
-### 2. Python dependencies and API keys
+### 🎨 图像与可视化
 
-Install packages and export keys in the **Python environment and process** OpenClaw uses when it runs [`skills/u1-image-base/u1_image_base/openclaw_runner.py`](skills/u1-image-base/u1_image_base/openclaw_runner.py) (the unified runner for these tools):
 
-```bash
-pip install -r skills/u1-image-base/requirements.txt
-```
+| 名称                                                 | 标签            | 描述                                                                                              |
+| -------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
+| `[u1-doctor](skills/u1-doctor/SKILL.md)`           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `u1-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
+| `[u1-image-base](skills/u1-image-base/SKILL.md)`   | 图像基础层（Tier 0） | 提供文生图（`u1-image-generate`）和文本优化（`u1-text-optimize`）两个底层工具，统一通过 `openclaw_runner.py` 调用，供上层技能复用。 |
+| `[u1-infographic](skills/u1-infographic/SKILL.md)` | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。                                     |
 
-**Required** — image generation will not work without these:
 
-```bash
-export U1_API_KEY="your-image-api-key"
-```
+### 📊 演示文稿（PPT）
 
-**Recommended** — shared prefix `U1_LM_*` sets both LLM and VLM; use the specific prefixes (`LLM_*` / `VLM_*`) to override individually:
 
-```bash
-export U1_LM_API_KEY="your-lm-api-key"      # LLM_API_KEY / VLM_API_KEY
-export U1_LM_BASE_URL="your-lm-base-url"    # LLM_BASE_URL / VLM_BASE_URL, e.g. "https://api.anthropic.com" (Not including "/v1" path)
-export U1_LM_MODEL="your-model-name"        # LLM_MODEL / VLM_MODEL
-export U1_LM_TYPE="openai-completions"      # LLM_TYPE / VLM_TYPE — "openai-completions" or "anthropic-messages"
-```
+| 名称                                             | 标签         | 描述                                                                                                                         |
+| ---------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `[ppt-entry](skills/ppt-entry/SKILL.md)`       | **PPT 入口** | **PPT 生成功能的统一入口**，收集角色 / 受众 / 场景 / 页数 / 模式（创意 or 标准），解析 pdf / docx / md / txt 输入，产出 `task_pack.json` + `info_pack.json` 并分派到下游模式。 |
+| `[ppt-doctor](skills/ppt-doctor/SKILL.md)`     | PPT 环境诊断   | PPT 流水线的环境检查，验证 `u1-image-base`、API key、Node 运行时与可选依赖；按需写入 `.env`。                                                         |
+| `[ppt-creative](skills/ppt-creative/SKILL.md)` | PPT 创意模式   | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `u1-image-generate` 一次性出图。                                                                |
+| `[ppt-standard](skills/ppt-standard/SKILL.md)` | PPT 标准模式   | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出 PPTX。                                |
 
-**Optional** - To use Nano Banana models for image generation:
 
-```bash
-export U1_API_KEY="your-api-key-for-nano-banana"                            # Your API key for Nano Banana models
-export U1_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"    # The base URL for Nano Banana models API
-export U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
-export U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"  # Nano Banana model name, e.g. "gemini-3.1-flash-image-preview", "gemini-3-pro-image-preview"
-```
+### 📈 数据分析（DA）
 
-Prefer environment variables or a local `.env` file. Do not commit secrets.
 
-### 3. Invoke in OpenClaw
+| 名称                                                                 | 标签         | 描述                                                                               |
+| ------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
+| `[da-excel-workflow](skills/da-excel-workflow/SKILL.md)`           | Excel 分析编排 | Excel 多表读取、大文件检测（≥10k 行触发 Parquet 优化）、清洗、条件过滤、跨表聚合、Excel/CSV 导出的全流程编排。           |
+| `[da-image-caption](skills/da-image-caption/SKILL.md)`             | 图像理解与数据提取  | 图像类输入做表格 OCR / 图表解读 / 截图描述 / UI 描述；可解析为 DataFrame、复绘可视化、导出 Excel/CSV。            |
+| `[da-large-file-analysis](skills/da-large-file-analysis/SKILL.md)` | 大文件高性能分析   | ≥10k 行 Excel 的流式读取（openpyxl read_only + iter_rows）、Parquet 转换、内存优化、分块处理与大文件写入模式。 |
 
-Check your environment before using the skills:
 
-> /skill u1-doctor
+### 🔬 深度研究
 
-Describe the task in chat, for example:
 
-> "Create an infographic explaining the water cycle"
+| 名称                                                                   | 标签        | 描述                                                                                      |
+| -------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
+| `[deep-research](skills/deep-research/SKILL.md)`                     | **深度研究入口** | **深度研究功能的统一入口**，规划 → 分维度取证 → 综合 → 成稿（`report.md`）的全流程编排器，产物落盘到 `report_dir`，支持断点续跑。 |
+| `[research-planning](skills/research-planning/SKILL.md)`             | 研究规划      | 基于 `request.md` 一次性产出 `plan.json`，覆盖定界、报告形态、维度拆解、关键问题、搜索策略、依赖与完成标准。                     |
+| `[dimension-research](skills/dimension-research/SKILL.md)`           | 单维度取证     | 按 `plan.json` 中维度的 `search_strategy` 调用搜索、筛选证据、交叉验证，产出 `sub_reports/{dimension_id}.md`。 |
+| `[research-synthesis](skills/research-synthesis/SKILL.md)`           | 综合判断      | 把多个 `sub_reports` 综合为 `synthesis.md`，明确主线判断、证据强弱、跨维度共识、关键冲突与不确定性。                       |
+| `[research-report](skills/research-report/SKILL.md)`                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
+| `[report-format-discovery](skills/report-format-discovery/SKILL.md)` | 报告形态发现    | 研究"这类报告应该长什么样"，给出章节结构、必备元素与风格约束；可独立使用，也可为 deep-research 的 `report_shape` 提供依据。          |
 
-Or call the skill by name:
 
-> /skill u1-infographic "The water cycle"
+### 🔍 搜索
 
-## Sample Outputs
 
-Examples for `u1-infographic` (more examples in [`u1-infographic-examples.md`](docs/u1-infographic-examples.md)).
+| 名称                                                     | 标签     | 描述                                                                                          |
+| ------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------- |
+| `[search-academic](skills/search-academic/SKILL.md)`   | 学术搜索   | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 四平台聚合。        |
+| `[search-code](skills/search-code/SKILL.md)`           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
+| `[search-social-cn](skills/search-social-cn/SKILL.md)` | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
+| `[search-social-en](skills/search-social-en/SKILL.md)` | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
 
-### Example 1
 
-**User prompt:** `"HEALTH_CHECK_PROMO"`
+## 输出样例
 
-#### Expanded prompt
+### 🎨 信息图（u1-infographic）
 
-```text
-The infographic is titled "HEALTH_CHECK_PROMO.exe", styled as a retro computer application window with a pink title bar and standard window controls (close, minimize, maximize) in the top-right corner. The overall design mimics a 90s-era software interface with a grid background, pixelated icons, and bold, colorful sections. The primary color scheme includes bright yellow, purple, pink, blue, and green, creating a high-contrast, energetic aesthetic.
+`u1-infographic` 的部分生成效果（更多样例见 [`docs/u1-infographic-examples.md`](docs/u1-infographic-examples.md)）。
 
-At the top, under the title bar, is a section labeled "Campaign Info" with fields for "Event Name:", "Date:", and "Coordinator:". Adjacent to this is an "HP Loading Bar" with a red heart icon, showing a segmented progress bar filled with green, yellow, and pink segments—indicating health or completion status.
+<!-- TODO: 补充信息图样例图片 -->
 
-Below this header, the main content is organized into three vertical columns representing a workflow:
+### 📊 演示文稿（ppt-standard / ppt-creative）
 
-1. **TO PROMOTE** (pink background):
-   - Header: "TO PROMOTE" with a red circle labeled "Urgent".
-   - Contains three blank rectangular input boxes.
-   - Decorated with pixelated yellow band-aids and arrows indicating movement or prioritization.
-   - A ">>>" symbol at the bottom suggests progression.
+`ppt-standard` 与 `ppt-creative` 的部分生成效果（更多样例见 [`docs/ppt-examples.md`](docs/ppt-examples.md)）。
 
-2. **LIVE DOING** (blue background):
-   - Header: "LIVE DOING" with a yellow circle labeled "In-Progress".
-   - Contains three blank rectangular input boxes.
-   - Each box has small black or yellow squares on the left, possibly indicating status or priority.
-   - Pixelated white cursor icons with sparkles point toward each box, suggesting active tasks.
+<!-- TODO: 补充 PPT 样例图片 -->
 
-3. **PUBLISHED** (yellow background):
-   - Header: "PUBLISHED" with a green circle labeled "Healthy/Published".
-   - Contains three blank rectangular input boxes.
-   - Each box has a pink checkmark and a "DONE" stamp in the bottom-right corner, signifying completion.
+### 🔬 深度调研（deep-research） 
 
-Beneath these columns is a section titled "Media Milestones", displayed as a horizontal timeline with a black electrocardiogram (ECG) line. Three pixelated red hearts mark key points along the ECG:
+`deep-research` 编排产出的报告样例（更多样例见 [`docs/deep-research-examples.md`](docs/deep-research-examples.md)）。
 
-- **Milestone 1: Pre-heat**
-- **Milestone 2: Live Coverage**
-- **Milestone 3: Recap & Insights**
+<!-- TODO: 补充深度调研报告样例截图或链接 -->
 
-Each milestone is linked to a blank rectangular box below for additional notes or details.
+## 贡献
 
-At the bottom of the infographic are two side-by-side panels:
+欢迎以本仓库的技能为模板创建你自己的 OpenClaw 技能。一个好技能的核心要素：
 
-- **Med-Team** (pink header):
-  - Contains four circular placeholder icons for team members, each with a plus sign above or below, indicating expandability or addition.
-  - Standard window controls (minimize, maximize, close) are present in the top-right.
+- **清晰的触发条件**：在 `description` 中写明"什么时候用 / 什么时候不用"，让智能体准确识别
+- **聚焦的能力边界**：每个技能只把一件事做好，复杂工作流通过多个技能编排实现
+- **完善的文档**：包含示例、产物约定、边界情况与失败处理
+- **必要的支撑资源**：通过 `references/`、`scripts/`、`prompts/` 提供补充上下文
 
-- **Blockers** (pink header):
-  - Contains a single green pixelated virus/bug icon with a skull face, symbolizing obstacles or issues.
-  - Also includes window controls in the top-right.
+## 许可证
 
-The entire layout is framed by decorative elements: pixelated red crosses (like medical symbols), a pixelated hand cursor on the right, and scattered pixelated handheld gaming devices (resembling Game Boys) in pink and yellow. The background features a split of bright yellow and purple with grid patterns, reinforcing the retro digital theme.
-
-All text is rendered in a bold, pixelated font consistent with early computer graphics. No numerical data beyond the segment counts in the HP bar is explicitly presented; all values are categorical or qualitative. The infographic serves as a dynamic, gamified project management tool for tracking promotional campaigns.
-```
-
-![Sample infographic output — HEALTH_CHECK_PROMO](docs/images/demo8.webp)
-
-### Example 2｜Streaming Media: Borderless Distribution
-
-**User prompt:** `"流媒体：无界分发"`
-
-#### Expanded prompt
-
-```text
-信息图以赛博朋克风格的未来都市为视觉背景，整体采用垂直三段式布局，通过动态画面、科技元素与文字叠加，系统呈现“流媒体：无界分发”的核心主题。主色调为深蓝、紫粉与霓虹青色，营造出雨夜中数据流动的沉浸感，配合大量悬浮屏幕、发光管道与电子符号，强化科技氛围。
-
-顶部标题为“流媒体：无界分发”，字体采用粗体无衬线字型，边缘带有青紫渐变光晕，置于黑色背景条上，极具视觉冲击力。
-
-第一部分（上部）：
-- 背景：高耸摩天大楼林立，布满悬挂式透明显示屏，播放着人物影像或界面内容，部分屏幕可见YouTube图标与视频播放进度条。
-- 文字框1：“在矩阵中，每一次播放，都是跨越终端的灵魂共振。”位于左下方，背景为黑底青边，左侧标注“云端节点”。
-- 视觉细节：建筑上有中文霓虹招牌如“云造街道”、“超清深潜”、“酒”、“食”等，增强场景真实感。
-
-第二部分（中部）：
-- 主体角色：一位女性赛博格形象，身穿紧身高科技战甲，面部有蓝色数据投影，机械臂握持带电蓝色管线，电流闪烁。
-- 面部投影文字包括：“106.750.25&”、“BVB434E”、“B4V69G”、“65365818”、“HOOA: E3R 6Z8”、“000 0X-E4”等模拟数据流。
-- 文字框2：“我能看见每一帧跳动的像素底色。”位于角色右侧，黑底白字，青边框。
-- 文字框3：“解码协议：8K 120fps……无缓冲渲染成功。”位于左下角，黑底白字，青边框，左侧标注“超清深潜”。
-
-第三部分（下部）：
-- 动态场景：同一位女性角色在城市高速飞行，身后拖曳紫色光轨，前方是巨大发光“SHARE”标志。
-- 右侧可视化网络结构：从“SHARE”出发，辐射出多个P2P节点与文件图标（如PDF、MP4、ZIP），用闪电状线条连接，象征数据分发网络。
-- 文字框4：“点击分享，让视界呈指数级扩散。”位于左下角，黑底白字，青边框，下方标注“全网广播”。
-- 文字框5：“多端同步通道已全域开启。”位于右下角，黑底白字，青边框。
-
-整体设计融合了科幻美学与技术叙事，通过三个递进场景——云端传输、超清解码、全球共享——构建完整流媒体服务链条，所有文本均为中文，语言风格充满未来感与诗意，精准传达“无界分发”的技术愿景。
-```
-
-![Sample infographic output — Streaming Media: Borderless Distribution](docs/images/demo2.webp)
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+MIT — 详见 [LICENSE](LICENSE)。
