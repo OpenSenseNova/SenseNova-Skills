@@ -8,7 +8,7 @@ Skills and tooling for **AIGC** in agent runtimes.
 
 ## Prerequisites
 
-- **Python** 3.9 or later.
+- **Python** 3.9 or later (3.10+ recommended).
 - **U1 API** credentials for image generation and LLM/VLM endpoints (`U1_API_KEY`, `U1_LM_API_KEY`; see Quick Start).
 
 ## Skills
@@ -23,7 +23,7 @@ Environment diagnostic skill that checks installation, dependencies, and configu
 
 ### u1-image-base (Tier 0)
 
-Base-layer infrastructure skill providing two low-level tools. See [`skills/u1-image-base/SKILL.md`](skills/u1-image-base/SKILL.md) for full behavior.
+Base-layer infrastructure skill providing low-level tools. See [`skills/u1-image-base/SKILL.md`](skills/u1-image-base/SKILL.md) for full behavior.
 
 - **u1-image-generate** — text-to-image generation
 - **u1-text-optimize** — text processing using LLM
@@ -32,7 +32,7 @@ All tools are invoked through a unified `openclaw_runner.py` entrypoint.
 
 ### u1-infographic (Tier 1)
 
-Scene skill for generating professional infographics, built on `u1-image-base`. See [wwwills/u1-infographic/SKILL.md`](skills/u1-infographic/SKILL.md) for full behavior.
+Scene skill for generating professional infographics, built on `u1-image-base`. See [`skills/u1-infographic/SKILL.md`](skills/u1-infographic/SKILL.md) for full behavior.
 
 - Automatic prompt quality evaluation
 - Content analysis and layout/style selection (87 layouts, 66 styles)
@@ -45,17 +45,17 @@ Use these skills from [OpenClaw](https://openclaw.ai/).
 They follow the [Agent Skills](https://agentskills.io/) layout; see [OpenClaw Skills](https://docs.openclaw.ai/tools/skills) for how OpenClaw discovers and loads skill folders.
 If you have not set up OpenClaw yet, install and configure it from the **[official documentation](https://docs.openclaw.ai/)** (product site: [openclaw.ai](https://openclaw.ai/)).
 
-### 1. Register `u1-image-base` and `u1-infographic`
+### 1. Register skills
 
-Clone this repository, then expose **both** skill directories to OpenClaw ([locations and precedence](https://docs.openclaw.ai/tools/skills#locations-and-precedence)). `u1-infographic` depends on `u1-image-base`—install both.
+Clone this repository, then expose the `skills/` directory to OpenClaw ([locations and precedence](https://docs.openclaw.ai/tools/skills#locations-and-precedence)) (or Hermes).
 
 Use one of the following approaches:
 
 | Approach | What to do |
 |----------|------------|
-| **Workspace `skills/`** (typical) | Copy or symlink `skills/u1-image-base` and `skills/u1-infographic` into your agent workspace as `./skills/u1-image-base/` and `./skills/u1-infographic/`. |
-| **Shared on this machine** | Copy or symlink the same two folders under `~/.openclaw/skills/`. |
-| **`openclaw.json`** | Add an absolute path to this repo’s `skills` folder (the parent of both directories) via `skills.load.extraDirs` (example below). |
+| **Shared on this machine** | Copy or symlink subdirectories under `skills/` to `~/.openclaw/skills/` (OpenClaw) or `~/.hermes/skills/openclaw-imports/` (Hermes). |
+| **Workspace `skills/`** | Copy or symlink `skills/u1-image-base`, `skills/u1-infographic`, and `skills/u1-doctor` into your agent workspace. |
+| **`openclaw.json` (OpenClaw only)** | Add an absolute path to this repo’s `skills` folder (the parent of all skill directories) via `skills.load.extraDirs` (example below). |
 
 ```json5
 {
@@ -77,39 +77,31 @@ Install packages and export keys in the **Python environment and process** OpenC
 pip install -r skills/u1-image-base/requirements.txt
 ```
 
-**Required** — image generation will not work without these:
+**Minimum Configurations:**
 
-```bash
-export U1_API_KEY="your-image-api-key"
+We recommend you to try out our [SenseNova Token Plan](https://platform.sensenova.cn/) to setup these skills.
+
+Go to <https://platform.sensenova.cn/> to register a free account and get your API key.
+
+Set the following environment variables in `~/.openclaw/.env` (for OpenClaw) or `~/.hermes/.env` (for Hermes):
+
+```ini
+U1_API_KEY="your-api-key"
+U1_LM_API_KEY="your-api-key"
 ```
 
-**Recommended** — shared prefix `U1_LM_*` sets both LLM and VLM; use the specific prefixes (`LLM_*` / `VLM_*`) to override individually:
+**Note:** Never commit `.env` files or API keys to git.
 
-```bash
-export U1_LM_API_KEY="your-lm-api-key"      # LLM_API_KEY / VLM_API_KEY
-export U1_LM_BASE_URL="your-lm-base-url"    # LLM_BASE_URL / VLM_BASE_URL, e.g. "https://api.anthropic.com" (Not including "/v1" path)
-export U1_LM_MODEL="your-model-name"        # LLM_MODEL / VLM_MODEL
-export U1_LM_TYPE="openai-completions"      # LLM_TYPE / VLM_TYPE — "openai-completions" or "anthropic-messages"
-```
+**Advanced Configurations:**
 
-**Optional** - To use Nano Banana models for image generation:
+If you want to use different models for image generation (e.g. Nano Banana, GPT-Image-2) and LLM/VLM (e.g. GPT, Claude Sonnet 4.6),
+Please see [`skills/u1-image-base/README.md`](skills/u1-image-base/README.md) for detailed configurations.
 
-```bash
-export U1_API_KEY="your-api-key-for-nano-banana"                            # Your API key for Nano Banana models
-export U1_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"    # The base URL for Nano Banana models API
-export U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
-export U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"  # Nano Banana model name, e.g. "gemini-3.1-flash-image-preview", "gemini-3-pro-image-preview"
-```
+### 3. Invoke in Agent
 
-Configuration precedence in `configs.py` is: `~/.openclaw/.env` (or `~/.hermes/.env`) > current working directory `.env` > process environment variables.
+Check your environment variables before using the skills:
 
-Do not commit secrets.
-
-### 3. Invoke in OpenClaw
-
-Check your environment before using the skills:
-
-> /skill u1-doctor
+> Run the `u1-doctor` skill
 
 Describe the task in chat, for example:
 

@@ -8,7 +8,7 @@
 
 ## 环境要求
 
-- **Python** 3.10 及以上。
+- **Python** 3.9 及以上 (推荐 >=3.10)。
 - **U1 API** 凭证：图像生成与 LLM/VLM 接口需 `U1_API_KEY`、`U1_LM_API_KEY`（见 [快速开始](#快速开始)）。
 
 ## 技能
@@ -45,17 +45,17 @@
 目录需符合 [Agent Skills](https://agentskills.io/) 约定；OpenClaw 如何发现并加载技能文件夹见 [OpenClaw Skills](https://docs.openclaw.ai/tools/skills)。
 若尚未完成 OpenClaw 的安装或配置，请通过 **[官方文档](https://docs.openclaw.ai/)** 进行安装与配置（产品介绍：[openclaw.ai](https://openclaw.ai/)）。
 
-### 1. 注册 `u1-image-base` 与 `u1-infographic`
+### 1. 注册技能
 
-克隆本仓库后，须将 **两个** 技能目录暴露给 OpenClaw（见 [Locations and precedence](https://docs.openclaw.ai/tools/skills#locations-and-precedence)）。`u1-infographic` 依赖 `u1-image-base`，两者皆需安装。
+克隆本仓库后，须将 `skills/` 技能目录暴露给 OpenClaw（见 [Locations and precedence](https://docs.openclaw.ai/tools/skills#locations-and-precedence)）。
 
 可选用以下任一方式：
 
 | 方式 | 做法 |
 |------|------|
-| **工作区 `skills/`**（常用） | 将 `skills/u1-image-base` 与 `skills/u1-infographic` 复制或符号链接到智能体工作区，路径为 `./skills/u1-image-base/` 与 `./skills/u1-infographic/`。 |
-| **本机共享** | 将同样两个目录复制或符号链接到 `~/.openclaw/skills/`。 |
-| **`openclaw.json`** | 通过 `skills.load.extraDirs` 将本仓库的 `skills` 目录（两个技能目录的父目录）配置为绝对路径（示例如下）。 |
+| **本机共享** | 将同样 `skills/` 目录下的子目录复制或符号链接到 `~/.openclaw/skills/` (OpenClaw) 或 `~/.hermes/skills/openclaw-imports/` (Hermes)。 |
+| **工作区 `skills/`** | 将 `skills/u1-image-base`, `skills/u1-infographic`, `skills/u1-doctor` 复制或符号链接到智能体工作区。 |
+| (仅当使用 OpenClaw 时) **`openclaw.json`** | 通过 `skills.load.extraDirs` 将本仓库的 `skills` 目录（两个技能目录的父目录）配置为绝对路径（示例如下）。 |
 
 ```json5
 {
@@ -77,43 +77,35 @@
 pip install -r skills/u1-image-base/requirements.txt
 ```
 
-**必填** — 缺少以下变量时图像生成将无法工作：
+**最小配置：**
+
+推荐使用 [SenseNova Token Plan](https://platform.sensenova.cn/) 来配置这些技能。
+
+前往 <https://platform.sensenova.cn/> 注册免费账号并获取 API key。
+
+将以下环境变量写入 `~/.openclaw/.env`（OpenClaw）或 `~/.hermes/.env`（Hermes）：
 
 ```bash
-export U1_API_KEY="your-image-api-key"
+U1_API_KEY="your-api-key"
+U1_LM_API_KEY="your-api-key"
 ```
 
-**推荐** — 前缀 `U1_LM_*` 的环境变量同时作用于 LLM 和 VLM 设置；如需单独覆盖，可使用各自的前缀（`LLM_*` / `VLM_*`）：
+**注意：** 不要将 `.env` 文件或 API key 提交到 git。
 
-```bash
-export U1_LM_API_KEY="your-lm-api-key"      # LLM_API_KEY / VLM_API_KEY
-export U1_LM_BASE_URL="your-lm-base-url"    # LLM_BASE_URL / VLM_BASE_URL, 例如 "https://api.anthropic.com"（不包括 "/v1" 路径）
-export U1_LM_MODEL="your-model-name"        # LLM_MODEL / VLM_MODEL
-export U1_LM_TYPE="openai-completions"      # LLM_TYPE / VLM_TYPE — "openai-completions" 或 "anthropic-messages"
-```
+**高级配置：**
 
-**可选** — 使用 Nano Banana 系列模型（如 Gemini 3.1 Flash Image Preview）进行图像生成：
+如果你希望使用不同的图像生成模型（例如 Nano Banana、GPT-Image-2）与不同的 LLM/VLM 模型（例如 GPT、Claude Sonnet 4.6），
+请参阅 [`skills/u1-image-base/README.md`](skills/u1-image-base/README.md) 获取详细配置说明。
 
-```bash
-export U1_API_KEY="your-api-key-for-nano-banana"                            # Nano Banana 模型的 API 密钥
-export U1_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"    # Nano Banana 模型 API 的基础 URL
-export U1_IMAGE_GEN_MODEL_TYPE="nano-banana"
-export U1_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"  # Nano Banana 模型名称，例如 "gemini-3.1-flash-image-preview"、"gemini-3-pro-image-preview"
-```
-
-`configs.py` 中的配置优先级为：`~/.openclaw/.env`（或 `~/.hermes/.env`）> 当前工作目录 `.env` > 进程环境变量。
-
-不要将密钥提交到版本库。
-
-### 3. 在 OpenClaw 中调用
+### 3. 在 Agent 中调用
 
 检查环境变量，确保技能可以正常工作：
 
-> /skill u1-doctor
+> 执行 u1-doctor 技能
 
 在对话中描述任务，例如：
 
-> 「做一张解释水循环的信息图」
+> 做一张解释水循环的信息图
 
 或按名称调用技能：
 
