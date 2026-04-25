@@ -97,7 +97,7 @@ skills/
 
 ### 🎨 信息图（u1-infographic）
 
-`u1-infographic` 的部分生成效果（更多样例见 [`docs/u1-infographic-examples.md`](docs/u1-infographic-examples.md)）。
+`u1-infographic` 的部分生成效果（更多样例见 [`docs/u1-infographic-examples_CN.md`](docs/u1-infographic-examples_CN.md)）。
 
 <p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="u1-infographic 生成效果合集"></p>
 
