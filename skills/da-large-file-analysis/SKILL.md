@@ -1,6 +1,6 @@
 ---
 name: da-large-file-analysis
-description: "High-performance analysis for Excel datasets with 10k+ rows. Provides streaming read via openpyxl read_only + iter_rows for 100k+ rows, Parquet conversion, memory optimization, chunked processing, and large-file write patterns. Must load this skill when data >= 10k rows."
+description: "大规模 Excel 文件高性能分析 skill，针对 10k+ 行数据提供流式读取（openpyxl read_only + iter_rows）、Parquet 转换、内存优化与分块处理方案。**遇到以下任一情况就主动使用本 skill**：① 数据总行数 >= 10,000 行需要处理分析，避免 pd.read_excel 内存溢出；② 使用 pd.read_excel 加载文件时出现 OOM 或超时；③ da-excel-workflow 检测到大文件并指示加载本 skill；④ 用户提到"大文件"、"百万行"、"内存不足"、"读取很慢"。仅不用于：行数 < 10,000 的小文件，非 Excel 格式数据。"
 ---
 
 # Large Scale Excel Analysis Skill

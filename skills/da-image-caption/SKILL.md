@@ -1,6 +1,6 @@
 ---
 name: da-image-caption
-description: "Use this skill when image files (.png, .jpg, .jpeg, .gif, .webp, .bmp) are the primary input and the user needs to understand, extract data from, or analyze image content. Provides a pre-configured caption script (scripts/caption.py) that converts images to text descriptions via a vision model — no API key setup needed. Covers: (1) captioning charts/tables/screenshots/diagrams via scripts/caption.py, (2) parsing caption text into structured DataFrames, (3) re-creating visualizations from extracted data, (4) exporting to Excel/CSV. Trigger when user uploads images and wants: data extraction, table OCR, chart analysis, UI description, or diagram understanding. Do NOT trigger for image editing (resize, crop, filter) or image generation."
+description: "图片内容理解与数据提取 skill，提供预配置的 caption 脚本（scripts/caption.py），通过视觉模型将图片转为文字描述再解析为结构化数据，无需额外配置 API key。**遇到以下任一情况就主动使用本 skill**：① 用户上传图片文件（.png / .jpg / .jpeg / .gif / .webp / .bmp）并希望理解或提取其中内容；② 需要识别图表数据（柱状图 / 折线图 / 饼图中的数值、坐标轴、图例）；③ 需要提取截图或扫描件中的表格数据（OCR 类任务）；④ 需要理解 UI 截图、流程图、架构图的结构或内容；⑤ 用户提到"看图"、"识别图片"、"图片里的数据"、"图片转表格"。仅不用于：图片编辑（裁剪 / 缩放 / 滤镜）、图片生成、非图片格式文件。"
 ---
 
 # Image Caption Analysis — 图片描述与数据提取
