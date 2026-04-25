@@ -2,7 +2,7 @@
 // HTML → PPTX 转换器 CLI
 // 用法: node html_to_pptx.mjs --deck-dir <path> [--output <filename>] [--force]
 
-import { existsSync, statSync, mkdirSync } from 'node:fs';
+import { existsSync, statSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
@@ -51,7 +51,7 @@ const { ensureDeckPreconditions } = await import('./lib/cli_guards.mjs');
 const { downloadRemoteImages } = await import('./lib/image_downloader.mjs');
 
 function parseArgs(args) {
-  const result = { deckDir: null, pagesDir: null, output: null, outputDir: null, force: false, batch: false };
+  const result = { deckDir: null, pagesDir: null, output: null, outputDir: null, force: false, batch: false, debug: false };
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--deck-dir' && args[i + 1]) {
       result.deckDir = resolve(args[i + 1]);
@@ -70,6 +70,8 @@ function parseArgs(args) {
     } else if (args[i] === '--batch') {
       result.batch = true;
       result.force = true;
+    } else if (args[i] === '--debug') {
+      result.debug = true;
     }
   }
   return result;
@@ -97,6 +99,23 @@ async function main() {
   // DOM 提取
   console.error('步骤 1/2: 提取 DOM...');
   const pages = await extractPages(htmlFiles);
+
+  // --debug: dump IR 到 <deck_dir>/_debug/<page>.ir.json，便于诊断转换问题。
+  // 不污染 deck 根目录；每页一个文件，避免单文件巨大。
+  if (args.debug && args.deckDir) {
+    const debugDir = resolve(args.deckDir, '_debug');
+    mkdirSync(debugDir, { recursive: true });
+    for (const p of pages) {
+      const baseName = basename(p.path).replace(/\.html?$/i, '');
+      const irPath = resolve(debugDir, `${baseName}.ir.json`);
+      try {
+        writeFileSync(irPath, JSON.stringify({ path: p.path, ir: p.ir, error: p.error }, null, 2));
+      } catch (e) {
+        console.error(`[debug] 写 ${irPath} 失败: ${e.message}`);
+      }
+    }
+    console.error(`[debug] IR dump 完成 → ${debugDir}/`);
+  }
 
   // PPTX 构建：默认文件名与 deck_dir 目录名一致
   const outputFilename = args.output || (basename(args.deckDir) + '.pptx');

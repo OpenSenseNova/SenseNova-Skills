@@ -1,61 +1,57 @@
 # PPT 系 skill 共用约定
 
-所有 `ppt-*` skill 的 SKILL.md 在 shell 示例里使用以下占位符。**main agent 在
-真正发 tool 调用前，负责按字面把它们替换成具体值**。不要依赖 shell 变量导出。
+## 模型调用 = `ppt-standard/lib/model_client.py`
 
-| 占位符 | 解析来源 | 示例值 |
+所有 LLM / VLM / T2I 调用都走 `ppt-standard/lib/model_client.py`（自包含、直接 httpx 打 endpoint、自动 `load_dotenv`）。**不再依赖 `u1-image-base`**。
+
+三个函数：
+
+```python
+from model_client import llm, vlm, t2i
+text = llm(system_prompt, user_prompt)                       # OpenAI-compat /v1/chat/completions
+text = vlm(system_prompt, user_prompt, images=[path1, ...])  # same endpoint, with base64 image blocks
+t2i(prompt, aspect_ratio="16:9", image_size="2k", save_path="...")  # U1 text-to-image
+```
+
+ppt-standard 的 `scripts/run_stage.py` 对每个阶段都封装成 `python run_stage.py <stage> ...` 的 CLI；其它 skill（ppt-entry, ppt-creative）要调模型时直接 `sys.path.insert(ppt-standard/lib)` + `from model_client import llm`。
+
+## 占位符
+
+| 占位符 | 含义 | 示例 |
 |---|---|---|
-| `<SKILL_DIR>` | 当前 skill 的安装目录（openclaw 已知） | `/absolute/path/to/skills/ppt-creative` |
-| `<PPT_ENTRY_DIR>` | `ppt-entry` skill 的安装目录（openclaw 已知；**不要**用 `<U1_IMAGE_BASE>/..` 推导） | `/absolute/path/to/skills/ppt-entry` |
-| `<deck_dir>` | `task_pack.json` 的 `deck_dir` 字段 | `/absolute/path/to/ppt_decks/AI产品发布会_20260318_154500` |
-| `<deck_id>` | `task_pack.json` 的 `deck_id` 字段 | `AI产品发布会_20260318_154500` |
-| `<U1_IMAGE_BASE>` | env `U1_IMAGE_BASE`（最高优先）→ openclaw skill 注册表 → 仓库相对 `skills/u1-image-base/`（**仅在 skills 都在本仓库同级时 work，分发安装时失效**，此时必须依赖前两级） | `/absolute/path/to/skills/u1-image-base` |
-| `<NNN>` | 当前页号，三位补零 | `001`、`012`、`123` |
+| `$SKILL_DIR` | 当前 skill 的安装目录（OpenClaw 自动注入） | `/abs/.../skills/ppt-standard` |
+| `$PPT_STANDARD_DIR` | `ppt-standard` skill 的安装目录（OpenClaw 自动注入，跨 skill 用） | `/abs/.../skills/ppt-standard` |
+| `<deck_dir>` | `task_pack.json` 的 `deck_dir` 字段（主 agent 按任务上下文替换） | `/abs/.../ppt_decks/AI_...` |
+| `<deck_id>` | `task_pack.json` 的 `deck_id` | `AI_20260422_212501` |
+| `<NNN>` | 页号三位补零 | `001` / `012` |
+
+`$NAME` 是 shell 变量（OpenClaw 注入），shell 原生解析；`<name>` 是主 agent 按字面替换。
+
+## `.env` 定位
+
+`model_client.py` 启动时按顺序尝试加载：
+1. `<repo>/.env`
+2. `<repo>/skills/.env`
+3. `cwd/.env`
+
+用户把 `.env` 放哪都行（建议仓库根）。
+
+必填变量：
+- `U1_LM_API_KEY` + `U1_LM_BASE_URL` + `U1_LM_MODEL`（LLM/VLM 默认回退链）
+- `U1_API_KEY` + `U1_IMAGE_GEN_BASE_URL`（或 `U1_BASE_URL`） + `U1_IMAGE_GEN_MODEL`
+
+可选覆盖：`LLM_*` / `VLM_*`（独立配置时；否则走 U1_LM_* fallback）、`LLM_TIMEOUT` 等。
 
 ## 绝对路径原则
 
-见 spec §16：所有落盘到 `deck_dir` 的工件里涉及 path 的字段一律绝对路径。
-shell 示例里的路径也按绝对路径给出（main agent 替换后即绝对路径）。
-**不要依赖 `cd <deck_dir>` 再用相对路径**，因为主 agent 在同一会话里可能
-穿插其他工具调用，cwd 不可靠。
+所有落盘到 `<deck_dir>` 的工件里涉及 path 的字段**一律用绝对路径**，但 **asset_plan.json 的 `local_path` 例外**——它是相对 `<deck_dir>` 的 `images/page_XXX_<slot>.png`，这样下游 HTML 能用 `../images/...` 相对引用。
 
-## `$U1_IMAGE_BASE` 解析
+## 内联注入 `<<<INLINE: path>>>`
 
-main agent 按以下顺序确定 u1-image-base 路径：
+Prompt 文件里出现这种字面量：
 
-1. 环境变量 `U1_IMAGE_BASE`
-2. openclaw 内部 skill 注册表返回的 u1-image-base 目录
-3. 本仓库相对路径 `skills/u1-image-base/`（最后兜底）
-
-解析完成后，替换所有 `<U1_IMAGE_BASE>` 占位符。不要 `export` 后依赖子进程继承。
-
-## `timing.json` 写入契约
-
-三个 mode skill 都要在每阶段进入 / 结束时调用 `timing_helper.py`，通过子进程调用，**不 import**（跨 skill 边界的 Python import 不稳定）。
-
-工件位置：`<deck_dir>/timing.json`，绝对路径。
-
-最小使用模式：
-
-```bash
-# entry 启动时初始化
-python <PPT_ENTRY_DIR>/scripts/timing_helper.py init --path <deck_dir>/timing.json
-
-# 记录一个阶段（entry / style / outline / asset_plan / image_generate / asset_qc / page_html / review / rewrite / pptx_export / review_summary）
-python <PPT_ENTRY_DIR>/scripts/timing_helper.py record-stage --path <deck_dir>/timing.json --stage style --seconds 10.5
-
-# 记录 per-page 粒度（prompt_seconds / image_gen_seconds / html_seconds / review_seconds / rewrite_seconds）
-python <PPT_ENTRY_DIR>/scripts/timing_helper.py record-page --path <deck_dir>/timing.json --page-no 3 --field image_gen_seconds --seconds 14.2
+```
+<<<INLINE: references/html_constraints.md>>>
 ```
 
-**Resume 行为**：同一 stage 被多次写入 → 秒数累加，不重置（见 spec §15.3）。
-
-## 内联注入占位符：`<<<INLINE: path>>>`
-
-某些 prompt 文件里会出现字面量：
-
-    <<<INLINE: references/html_constraints.md>>>
-
-main agent 在发起 `u1-text-optimize` 调用**之前**，用该 prompt 文件**同 skill 目录**下对应路径的**文件全文**替换这条占位符。替换在内存里做，不改原 prompt 文件。
-
-如果占位符指向的文件不存在或读取失败，**abort**（结构性依赖）。
+`run_stage.py` 的 `_load_prompt()` 读 prompt 时自动用同 skill 目录下对应文件的全文替换。主 agent 不用管。
