@@ -99,7 +99,7 @@ skills/
 
 A few `u1-infographic` outputs (more in [`docs/u1-infographic-examples.md`](docs/u1-infographic-examples.md)).
 
-<!-- TODO: add infographic sample images -->
+<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="u1-infographic sample outputs"></p>
 
 ### 📊 Presentations (ppt-standard / ppt-creative)
 

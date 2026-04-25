@@ -99,7 +99,7 @@ skills/
 
 `u1-infographic` 的部分生成效果（更多样例见 [`docs/u1-infographic-examples.md`](docs/u1-infographic-examples.md)）。
 
-<!-- TODO: 补充信息图样例图片 -->
+<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="u1-infographic 生成效果合集"></p>
 
 ### 📊 演示文稿（ppt-standard / ppt-creative）
 
