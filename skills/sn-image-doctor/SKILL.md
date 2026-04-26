@@ -152,11 +152,11 @@ export SN_IMAGE_GEN_BASE_URL="https://your-api-endpoint.com"
 cat > .env << EOF
 SN_API_KEY=your-api-key
 SN_IMAGE_GEN_BASE_URL=https://your-api-endpoint.com
-VLM_BASE_URL=http://127.0.0.1:615
-VLM_MODEL=sensenova-122b
-LLM_BASE_URL=http://127.0.0.1:615
-LLM_MODEL=sensenova-122b
-SN_LM_API_KEY=your-lm-api-key
+SN_CHAT_API_KEY=your-chat-api-key
+SN_CHAT_BASE_URL=http://127.0.0.1:615
+SN_CHAT_TYPE=openai-completions
+SN_TEXT_MODEL=sensenova-122b
+SN_VISION_MODEL=sensenova-122b
 EOF
 
 # Load .env file
