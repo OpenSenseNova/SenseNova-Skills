@@ -111,25 +111,25 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 <p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic 生成效果合集"></p>
 
-### 🧩 内存价格分析 — 端到端流水线
+### 🧩 内存价格分析 — 洞察-分析-汇报-全链路
 
 [`examples/memory-price-end2end-analysis`](examples/memory-price-end2end-analysis/)。智能体先对原始报价 CSV 做字段刻画、品类与时间戳标准化，然后从「整体走势」「分品类涨幅 Top」「服务器级 vs 消费级背离」三个角度刻画本轮上涨，沿途定位 2 月下旬的拐点。把数据结论作为新的研究问题，转入深度调研：按维度规划检索（供给收缩、AI 服务器需求、原厂控产），并在不同来源之间交叉验证证据后再写入报告。数据 + 研究结论一并交给 PPT 生成：先排 16 页大纲、规划每页素材，再生成分页 HTML、做 VLM 评审、最后把分页截图合成 PPTX。最终是一条清晰的三段叙事：价格在涨 → 为什么涨 → 怎么应对。这是仓库里唯一一个完整跑过 数据分析 → 深度调研 → PPT 的端到端样例。
 
 - 依赖技能：[`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md)、[`sn-deep-research`](skills/sn-deep-research/SKILL.md)、[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)、[`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)
 
-### 📊 员工绩效分析 — 独立样例（数据分析）
+### 📊 员工绩效分析 — 数据分析
 
 [`examples/employee-performance-analysis`](examples/employee-performance-analysis/)。智能体先把 10 份分散的月度考核 xlsx 读入，对齐各月列结构，纵向拼成一张长表。在这张表上分别做总体视角（月度均值趋势、得分分布箱线图、等级占比变化、38 个岗位排名）和个体视角（优秀 / 待提升 / 持续进步三类员工，配合个人年度走势）的分析。结论部分把改进建议落到具体岗位和具体员工，并用 8 张图表佐证。同样的内容产出 Word 版（适合下发）和可视化 HTML 版（适合浏览）两种形态。这个样例展示了 `sn-da-excel-workflow` 如何把「一堆零散的小表」当成一次完整分析来处理。
 
 - 依赖技能：[`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md)
 
-### 🔬 具身智能行业调研 — 独立样例（深度调研）
+### 🔬 具身智能行业调研 — 深度调研
 
 [`examples/embodied-ai-deep-research`](examples/embodied-ai-deep-research/)。给定一个行业关键词后，智能体先列出研究维度（市场规模、玩家份额、融资、成本结构、发展路线），而不是直接撒网搜索。每个维度按计划做定向检索、抓取并阅读原始页面，提取数值与定性证据；不同来源之间出现冲突的数字会先做 reconcile 再落到报告里。综合阶段把各维度证据串成一条连贯的行业叙事，而不是一堆互不连接的要点。最终产出是一份图文并茂的报告（Markdown + 可视化 HTML），含 5 张分维度的配图。这个样例展示了 `sn-deep-research` 如何把一句「调研 X」变成「先规划再执行、证据可追溯」的结构化闭环。
 
 - 依赖技能：[`sn-deep-research`](skills/sn-deep-research/SKILL.md)
 
-### 🎯 物业费定价体系 PPT — 独立样例（PPT 生成）
+### 🎯 物业费定价体系 — PPT 生成
 
 [`examples/property-fee-pricing-ppt`](examples/property-fee-pricing-ppt/)。智能体读到一份开放式输入（主题：物业费定价；受众：物业管理人员 + 物业委员会；26 页；黑白温馨风），先确定大纲，再产出符合风格规范的逐页素材计划。每一页以语义化的 HTML 方式构造，而不是直接出整页大图：文案、版式、配图、图标、需要的数据图表都是分槽位规划的。素材按槽位生成或选型，并由 VLM 对照页面意图做质检；每页 HTML 渲染出来后再走一轮评审与按需改写，保证用语和视觉一致性。最后把分页截图合成 PPTX，分页 HTML 也保留下来，便于直接在浏览器里预览或继续修改。这个样例展示了 `sn-ppt-standard` 在一份偏文本、长篇幅的方案稿上如何在每一页都遵守同一套受众和配色约束。
 
