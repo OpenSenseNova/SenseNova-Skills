@@ -21,31 +21,18 @@ def scan(deck: Path) -> dict:
     style = (deck / "style_spec.json").exists()
     outline = (deck / "outline.json").exists()
     asset_plan = (deck / "asset_plan.json").exists()
-    deck_review = (deck / "review.md").exists()
     pptx = (deck / f"{deck_id}.pptx").exists()
 
     pages = []
     for i in range(1, page_count + 1):
         html = (deck / "pages" / f"page_{i:03d}.html").exists()
-        review = (deck / "pages" / f"page_{i:03d}.review.md").exists()
-        if html and review:
-            action = "skip"
-        elif html and not review:
-            action = "review_only"
-        else:
-            action = "full"
         pages.append(
-            {"page_no": i, "html_done": html, "review_done": review, "action": action}
+            {"page_no": i, "html_done": html, "action": "skip" if html else "full"}
         )
 
     # Deck-level next_action
-    if all(p["action"] == "skip" for p in pages) and asset_plan and outline and style:
-        if deck_review and pptx:
-            next_action = "finished"
-        elif deck_review and not pptx:
-            next_action = "export_pptx"
-        else:
-            next_action = "aggregate_review"
+    if all(p["html_done"] for p in pages) and asset_plan and outline and style:
+        next_action = "finished" if pptx else "export_pptx"
     elif style and outline and asset_plan:
         next_action = "per_page"
     elif style and outline:
@@ -59,7 +46,6 @@ def scan(deck: Path) -> dict:
         "style_spec_done": style,
         "outline_done": outline,
         "asset_plan_done": asset_plan,
-        "review_md_done": deck_review,
         "pptx_done": pptx,
         "pages": pages,
         "next_action": next_action,
