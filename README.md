@@ -4,6 +4,10 @@
 
 # SenseNova-Skills
 
+<p align="center">
+  <img src="docs/images/teaser_v2.png" width="100%">
+</p>
+
 English | [简体中文](README_CN.md)
 
 The SenseNova model family plugs directly into agent runtimes such as [OpenClaw](https://openclaw.ai/) and [hermes-agent](https://github.com/NousResearch/hermes-agent), with the skills in this repository extending the models with concrete, end-to-end office capabilities.

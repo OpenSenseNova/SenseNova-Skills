@@ -4,6 +4,10 @@
 
 # SenseNova-Skills
 
+<p align="center">
+  <img src="docs/images/teaser_v2.png" width="100%">
+</p>
+
 简体中文 | [English](README.md)
 
 SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/NousResearch/hermes-agent) 等智能体；本仓库的 skills 则把这些模型扩展为可直接落地的端到端办公能力。
