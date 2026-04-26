@@ -10,7 +10,7 @@ self-contained design so OpenClaw can invoke it via a plain file path.
 
 Sections:
     1. CheckResult dataclass + shared helpers
-    2. Hard checks   (SN_CHAT_API_KEY or SN_TEXT/SN_VISION API keys, SN_API_KEY,
+    2. Hard checks   (SN_CHAT_API_KEY or SN_TEXT/SN_VISION API keys, SN_IMAGE_GEN_API_KEY,
                       SN_IMAGE_BASE discovery, sn_agent_runner executable,
                       Node >= 18)
     3. Soft checks   (PPT_DECK_ROOT writable, optional env vars,
@@ -135,12 +135,12 @@ def check_vision_chat_api_key() -> CheckResult:
 
 
 def check_u1_api_key() -> CheckResult:
-    val = _env("SN_API_KEY")
+    val = _env("SN_IMAGE_GEN_API_KEY")
     return CheckResult(
-        name="SN_API_KEY",
+        name="SN_IMAGE_GEN_API_KEY",
         severity="hard",
         passed=val is not None,
-        detail="set" if val else "SN_API_KEY is required for image generation calls",
+        detail="set" if val else "SN_IMAGE_GEN_API_KEY is required for image generation calls",
     )
 
 
@@ -297,7 +297,6 @@ def check_ppt_deck_root_writable() -> CheckResult:
 
 _OPTIONAL_VARS = [
     "SN_IMAGE_GEN_BASE_URL",
-    "SN_BASE_URL",
     "SN_IMAGE_GEN_MODEL",
     # NOTE: PPT_DECK_ROOT removed — deck_dir is now always $(cwd)/ppt_decks/
     "SN_IMAGE_GEN_MODEL_TYPE",
@@ -408,7 +407,7 @@ def run_all_checks() -> list[CheckResult]:
 
 REQUIRED = [
     ("SN_CHAT_API_KEY", "shared text/vision chat API key"),
-    ("SN_API_KEY", "Image generation API key"),
+    ("SN_IMAGE_GEN_API_KEY", "Image generation API key"),
 ]
 
 

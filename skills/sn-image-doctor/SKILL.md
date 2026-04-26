@@ -60,15 +60,15 @@ python scripts/check_environment.py --verbose
   ✅ All required packages installed
 
 [3/3] Checking environment variables...
-  ❌ SN_API_KEY not set (required)
+  ❌ SN_IMAGE_GEN_API_KEY not set (required)
 
   Some required environment variables are missing.
   Enter values below to save them to /path/to/.env.
   Press Enter to skip a variable.
 
-  SN_API_KEY: <user input>
+  SN_IMAGE_GEN_API_KEY: <user input>
 
-  ✅ Saved to /path/to/.env: SN_API_KEY
+  ✅ Saved to /path/to/.env: SN_IMAGE_GEN_API_KEY
   🔄 Reloading environment...
   ✅ Environment reloaded successfully
 
@@ -79,7 +79,7 @@ python scripts/check_environment.py --verbose
 If reload fails, the output will suggest restarting the agent:
 
 ```
-  ✅ Saved to /path/to/.env: SN_API_KEY
+  ✅ Saved to /path/to/.env: SN_IMAGE_GEN_API_KEY
   🔄 Reloading environment...
   ⚠️  Failed to reload environment: <error message>
   💡 Suggestion: Restart the agent to apply new configuration
@@ -145,12 +145,12 @@ pip install -r skills/sn-image-base/requirements.txt
 
 ```bash
 # Set environment variables in your shell
-export SN_API_KEY="your-api-key"
+export SN_IMAGE_GEN_API_KEY="your-api-key"
 export SN_IMAGE_GEN_BASE_URL="https://your-api-endpoint.com"
 
 # Or create a .env file
 cat > .env << EOF
-SN_API_KEY=your-api-key
+SN_IMAGE_GEN_API_KEY=your-api-key
 SN_IMAGE_GEN_BASE_URL=https://token.sensenova.cn/v1
 SN_CHAT_API_KEY=your-chat-api-key
 SN_CHAT_BASE_URL=https://token.sensenova.cn/v1

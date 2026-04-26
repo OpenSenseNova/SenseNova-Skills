@@ -10,7 +10,7 @@ from pathlib import Path
 
 REQUIRED = [
     ("SN_CHAT_API_KEY", "shared text/vision chat API key"),
-    ("SN_API_KEY", "Image generation API key"),
+    ("SN_IMAGE_GEN_API_KEY", "Image generation API key"),
 ]
 
 

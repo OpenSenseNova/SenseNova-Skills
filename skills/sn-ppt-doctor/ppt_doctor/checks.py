@@ -88,12 +88,12 @@ def check_vision_chat_api_key() -> CheckResult:
 
 
 def check_u1_api_key() -> CheckResult:
-    val = _env("SN_API_KEY")
+    val = _env("SN_IMAGE_GEN_API_KEY")
     return CheckResult(
-        name="SN_API_KEY",
+        name="SN_IMAGE_GEN_API_KEY",
         severity="hard",
         passed=val is not None,
-        detail="set" if val else "SN_API_KEY is required for image generation calls",
+        detail="set" if val else "SN_IMAGE_GEN_API_KEY is required for image generation calls",
     )
 
 
@@ -263,7 +263,6 @@ def check_ppt_deck_root_writable() -> CheckResult:
 
 _OPTIONAL_VARS = [
     "SN_IMAGE_GEN_BASE_URL",
-    "SN_BASE_URL",
     "SN_IMAGE_GEN_MODEL",
     "SN_IMAGE_GEN_MODEL_TYPE",
     "SN_CHAT_BASE_URL",

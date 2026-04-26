@@ -50,7 +50,7 @@ SN_CHAT_API_KEY="your-api-key"
 SN_CHAT_BASE_URL="https://token.sensenova.cn/v1"
 
 # Text-to-image (required for creative mode, on-demand for standard mode)
-SN_API_KEY="your-api-key"
+SN_IMAGE_GEN_API_KEY="your-api-key"
 ```
 
 Optional variables `SN_IMAGE_GEN_*`, `SN_TEXT_*`, and `SN_VISION_*` override default models and timeouts. Full list: [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md).

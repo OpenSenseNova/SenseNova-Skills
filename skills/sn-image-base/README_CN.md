@@ -40,7 +40,7 @@
 
 ```ini
 # 图像生成
-SN_API_KEY="<sensenova-token-plan-api-key>"
+SN_IMAGE_GEN_API_KEY="<sensenova-token-plan-api-key>"
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"   # 或 Token Plan 中可用的其他图像生成模型
 # 文本与视觉 Chat Runtime
 SN_CHAT_API_KEY="<sensenova-token-plan-api-key>"
@@ -75,14 +75,14 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 
 | 配置键 | 说明 | 默认值 |
 | ------ | ---- | ------ |
-| `SN_API_KEY` | SenseNova Token Plan 的 API Key | （必填） |
+| `SN_IMAGE_GEN_API_KEY` | SenseNova Token Plan 的 API Key | （必填） |
 | `SN_IMAGE_GEN_MODEL_TYPE` | 图像生成模型类型 | `"sensenova"` |
 | `SN_IMAGE_GEN_MODEL` | 图像生成模型名 | `"sensenova-u1-fast"` |
 | `SN_IMAGE_GEN_BASE_URL` | 图像生成 API 的基础 URL | `"https://token.sensenova.cn/v1"` |
 
 默认值适用于 [SenseNova](https://platform.sensenova.cn/)。
 
-通常只需设置 `SN_API_KEY`，并可按需将 `SN_IMAGE_GEN_MODEL` 设置为 token plan 提供的模型名。
+通常只需设置 `SN_IMAGE_GEN_API_KEY`，并可按需将 `SN_IMAGE_GEN_MODEL` 设置为 token plan 提供的模型名。
 
 如需使用非默认图像生成模型，请按以下步骤：
 
@@ -119,10 +119,10 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
     SN_IMAGE_GEN_MODEL="gpt-image-2"
     ```
 
-4. （必填）设置 `SN_API_KEY` 为图像生成 API 的密钥：
+4. （必填）设置 `SN_IMAGE_GEN_API_KEY` 为图像生成 API 的密钥：
 
     ```ini
-    SN_API_KEY="sk-your-image-generation-api-key"
+    SN_IMAGE_GEN_API_KEY="sk-your-image-generation-api-key"
     ```
 
 #### 文本与视觉 Chat
@@ -198,7 +198,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ### 缺少 API key
 
 - 现象：报错包含 "required but not set"、"missing api key" 或请求未授权。
-- 处理：图像生成需设置 `SN_API_KEY`；chat 调用需设置 `SN_CHAT_API_KEY`。如果文本和视觉使用不同 provider，可设置 `SN_TEXT_API_KEY` 或 `SN_VISION_API_KEY`。
+- 处理：图像生成需设置 `SN_IMAGE_GEN_API_KEY`；chat 调用需设置 `SN_CHAT_API_KEY`。如果文本和视觉使用不同 provider，可设置 `SN_TEXT_API_KEY` 或 `SN_VISION_API_KEY`。
 
 ### base URL 配置错误
 
