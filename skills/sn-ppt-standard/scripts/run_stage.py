@@ -371,8 +371,11 @@ def cmd_outline(deck: Path) -> int:
         "raw_documents_excerpt": raw_docs or None,
         "available_reference_images": available_reference_images or None,
     }, ensure_ascii=False, indent=2)
-    outline_timeout = _env_float("OUTLINE_LLM_TIMEOUT", _env_float("LLM_TIMEOUT", 300.0))
-    outline_retries = _env_int("OUTLINE_LLM_RETRIES", 1)
+    outline_timeout = _env_float(
+        "OUTLINE_SN_TEXT_TIMEOUT",
+        _env_float("SN_TEXT_TIMEOUT", _env_float("SN_CHAT_TIMEOUT", 300.0)),
+    )
+    outline_retries = _env_int("OUTLINE_SN_TEXT_RETRIES", 1)
     try:
         raw = llm(
             system_prompt, user_prompt,

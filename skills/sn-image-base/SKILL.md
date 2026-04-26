@@ -67,10 +67,10 @@ Image recognition tool that uses VLM (Vision Language Model) to analyze image co
 
 | Parameter | Type | Built-in Default | Env Var | Description |
 |------|------|-----------|---------|------|
-| `--api-key` | string | No hardcoded default | `VLM_API_KEY` → `SN_LM_API_KEY` | Priority: CLI > `VLM_API_KEY` > `SN_LM_API_KEY`; raises `MissingApiKeyError` when all are unset |
-| `--base-url` | string | No hardcoded default | `VLM_BASE_URL` -> `SN_LM_BASE_URL` | API base URL; raises error when all are unset |
-| `--model` | string | No hardcoded default | `VLM_MODEL` | Model name; raises error when all are unset |
-| `--vlm-type` | string | `openai-completions` | `VLM_TYPE` | VLM interface type |
+| `--api-key` | string | No hardcoded default | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
+| `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` | Vision provider base URL; falls back to shared chat provider |
+| `--model` | string | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | Vision-capable model name |
+| `--vlm-type` | string | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` | Chat protocol type override |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
 | `--system-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--system-prompt` |
 
@@ -87,10 +87,10 @@ Text optimization tool that uses LLM (Language Model) to optimize text content. 
 
 | Parameter | Type | Built-in Default | Env Var | Description |
 |------|------|-----------|---------|------|
-| `--api-key` | string | No hardcoded default | `LLM_API_KEY` → `SN_LM_API_KEY` | Priority: CLI > `LLM_API_KEY` > `SN_LM_API_KEY`; raises `MissingApiKeyError` when all are unset |
-| `--base-url` | string | No hardcoded default | `LLM_BASE_URL` -> `SN_LM_BASE_URL` | API base URL; raises error when all are unset |
-| `--model` | string | No hardcoded default | `LLM_MODEL` | Model name; raises error when all are unset |
-| `--llm-type` | string | `openai-completions` | `LLM_TYPE` | LLM interface type |
+| `--api-key` | string | No hardcoded default | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
+| `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` | Text provider base URL; falls back to shared chat provider |
+| `--model` | string | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` | Text model name |
+| `--llm-type` | string | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` | Chat protocol type override |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
 | `--system-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--system-prompt` |
 
@@ -118,7 +118,7 @@ python scripts/sn_agent_runner.py sn-image-generate \
 # Image generation (override base-url)
 python scripts/sn_agent_runner.py sn-image-generate \
     --prompt "..." \
-    --base-url "https://custom-endpoint.com/u1-model"
+    --base-url "https://custom-endpoint.com/v1"
 
 # Image generation (explicitly override api-key)
 python scripts/sn_agent_runner.py sn-image-generate \
@@ -161,18 +161,18 @@ Authentication parameters for `sn-image-generate` have the following default beh
 | `--base-url` | Read from `SN_IMAGE_GEN_BASE_URL` env var | `--base-url "..."` | CLI argument has priority; throws error if env var and CLI value are both missing |
 | `--api-key` | Read from `SN_API_KEY` env var | `--api-key "..."` | CLI argument has priority; throws `MissingApiKeyError` if env var and CLI value are both missing |
 
-`sn-image-recognize` (VLM) and `sn-text-optimize` (LLM) use three-level priority: **CLI argument > environment variable > built-in default**
+`sn-image-recognize` and `sn-text-optimize` use priority: **CLI argument > command-specific env var > shared `SN_CHAT_*` env var > built-in default**.
 
-| Parameter | Built-in Default | VLM Env Var | LLM Env Var |
+| Parameter | Built-in Default | Vision Env Var | Text Env Var |
 |------|-----------|-------------|-------------|
-| `--api-key` | None (must be provided) | `VLM_API_KEY` → `SN_LM_API_KEY` | `LLM_API_KEY` → `SN_LM_API_KEY` |
-| `--base-url` | None (must be provided) | `VLM_BASE_URL` -> `SN_LM_BASE_URL` | `LLM_BASE_URL` -> `SN_LM_BASE_URL` |
-| `--model` | None (must be provided) | `VLM_MODEL` | `LLM_MODEL` |
-| `--vlm-type` / `--llm-type` | `openai-completions` | `VLM_TYPE` | `LLM_TYPE` |
+| `--api-key` | None (must be provided) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` |
+| `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` |
+| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
+| `--vlm-type` / `--llm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
 
-`api_key` resolution order (high to low): CLI `--api-key` > `VLM_API_KEY`/`LLM_API_KEY` (independent) > `SN_LM_API_KEY` (shared fallback). If all are unset, `MissingApiKeyError` is raised.
+`api_key` resolution order (high to low): CLI `--api-key` > command-specific key (`SN_VISION_API_KEY`/`SN_TEXT_API_KEY`) > `SN_CHAT_API_KEY`. If all are unset, `MissingApiKeyError` is raised.
 
-All parameters except `--vlm-type`/`--llm-type` must be provided via CLI arguments or environment variables.
+Only `--api-key` must be provided via CLI or environment; base URL, model, and interface type have shared chat defaults.
 
 ## Agent Configuration Integration
 
@@ -202,9 +202,9 @@ Different API types have different requirements for base-url format:
 
 | Type | `--llm-type` / `--vlm-type` | base-url Example | Code Appended Path | Final URL Example |
 |------|------------------------------|---------------|--------------|---------------|
-| LLM | `openai-completions` | `http://127.0.0.1:615` | `/v1/chat/completions` | `http://127.0.0.1:615/v1/chat/completions` |
+| LLM | `openai-completions` | `https://token.sensenova.cn` | `/v1/chat/completions` | `https://token.sensenova.cn/v1/chat/completions` |
 | LLM | `anthropic-messages` | `https://api.anthropic.com` | `/v1/messages` | `https://api.anthropic.com/v1/messages` |
-| VLM | `openai-completions` | `http://127.0.0.1:615` | `/v1/chat/completions` | `http://127.0.0.1:615/v1/chat/completions` |
+| VLM | `openai-completions` | `https://token.sensenova.cn` | `/v1/chat/completions` | `https://token.sensenova.cn/v1/chat/completions` |
 | VLM | `anthropic-messages` | `https://api.anthropic.com` | `/v1/messages` | `https://api.anthropic.com/v1/messages` |
 
 **Note**:
@@ -227,8 +227,8 @@ JSON output for `sn-image-recognize` and `sn-text-optimize` also includes `model
 {
   "status": "ok",
   "result": "...",
-  "model": "sensenova-122b",
-  "base_url": "http://127.0.0.1:615",
+  "model": "sensenova-6.7-flash-lite",
+  "base_url": "https://token.sensenova.cn",
   "interface_type": "openai-completions",
   "elapsed_seconds": 1.23
 }

@@ -23,7 +23,7 @@ The skill supports the following models services:
   - Nano Banana API
   - OpenAI Image Generation API (e.g. GPT-Image-2)
 
-- For LLM/VLM:
+- For text and vision chat:
   - [SenseNova](https://platform.sensenova.cn/)
   - Models via Anthropic Messages API (e.g. Claude Sonnet 4.6)
   - Models via OpenAI Chat Completion API (e.g. GPT and Gemini/Qwen etc. in OpenAI Compatible API format)
@@ -34,7 +34,7 @@ The skill supports the following models services:
 
 We recommend you to try out our [SenseNova Token Plan](https://platform.sensenova.cn/token-plan).
 
-Go to <https://platform.sensenova.cn/token-plan/> to register a free account and get your API key for both image generation and LLM/VLM.
+Go to <https://platform.sensenova.cn/token-plan/> to register a free account and get your API key for image generation and chat calls.
 
 Set the following environment variables in `~/.openclaw/.env` (or `~/.hermes/.env` if you are using Hermes):
 
@@ -42,9 +42,9 @@ Set the following environment variables in `~/.openclaw/.env` (or `~/.hermes/.en
 # Image generation
 SN_API_KEY="<sensenova-token-plan-api-key>"
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"   # or other image generation models available in the SenseNova Token Plan
-# LLM/VLM
-SN_LM_API_KEY="<sensenova-token-plan-api-key>"
-SN_LM_MODEL="sensenova-6.7-flash-lite"   # or other LLM/VLM models available in the SenseNova Token Plan
+# Text and vision chat runtime
+SN_CHAT_API_KEY="<sensenova-token-plan-api-key>"
+SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ```
 
 ### Detailed Configurations
@@ -123,119 +123,87 @@ To use non-default image generation models, please:
     SN_API_KEY="sk-your-image-generation-api-key"
     ```
 
-#### VLM and LLM
+#### Text and Vision Chat
 
-If you're not intended to use different models for VLM and LLM, you can use the same `SN_LM_*` variables to configure both VLM and LLM, and skip the following VLM and LLM configurations.
+##### Configure the shared chat runtime
 
-##### Use the same VLM and LLM models
-
-Full configuration for VLM and LLM (with shared `SN_LM_*` environment variables):
+Text optimization and image recognition now share one chat runtime. Configure the
+protocol, endpoint, API key, and default model once, then override text or vision
+models only when needed:
 
 | Config Keys | Description | Default |
 | ----------- | ----------- | ------- |
-| `VLM_API_KEY` & `LLM_API_KEY` (via `SN_LM_API_KEY` env var) | The API key for the VLM and LLM API | (Required) |
-| `VLM_BASE_URL` & `LLM_BASE_URL` (via `SN_LM_BASE_URL` env var) | The base URL for the VLM and LLM API | `"https://token.sensenova.cn/v1"` |
-| `VLM_MODEL` & `LLM_MODEL` (via `SN_LM_MODEL` env var) | The name of the VLM and LLM model to use | `"sensenova-6.7-flash-lite"` |
-| `VLM_TYPE` & `LLM_TYPE` (via `SN_LM_TYPE` env var) | The type of the VLM and LLM API to use | `"openai-completions"` |
+| `SN_CHAT_API_KEY` | API key for text and vision chat calls | (Required) |
+| `SN_CHAT_BASE_URL` | Shared base URL for the chat API | `"https://token.sensenova.cn/v1"` |
+| `SN_CHAT_TYPE` | Shared chat protocol type | `"openai-completions"` |
+| `SN_CHAT_MODEL` | Shared default model for text and vision chat calls | `"sensenova-6.7-flash-lite"` |
+| `SN_TEXT_API_KEY` | Optional text-only provider API key | `SN_CHAT_API_KEY` |
+| `SN_TEXT_BASE_URL` | Optional text-only provider base URL | `SN_CHAT_BASE_URL` |
+| `SN_TEXT_TYPE` | Optional text-only protocol type | `SN_CHAT_TYPE` |
+| `SN_TEXT_MODEL` | Optional model override for `sn-text-optimize` | `SN_CHAT_MODEL` |
+| `SN_VISION_API_KEY` | Optional vision provider API key | `SN_CHAT_API_KEY` |
+| `SN_VISION_BASE_URL` | Optional vision provider base URL | `SN_CHAT_BASE_URL` |
+| `SN_VISION_TYPE` | Optional vision protocol type | `SN_CHAT_TYPE` |
+| `SN_VISION_MODEL` | Optional vision-capable model override for `sn-image-recognize` | `SN_CHAT_MODEL` |
 
 The default values are recommended for the [SenseNova](https://platform.sensenova.cn/).
 
-You only need to set the `SN_LM_API_KEY`, and optionally set `SN_LM_MODEL` to the model name provided by the token plan.
+Configure `SN_TEXT_*` or `SN_VISION_*` only when a command needs a different provider than the shared `SN_CHAT_*` provider.
 
-To use non-default shared LM settings, please:
+To use non-default shared chat settings, please:
 
-1. Set `VLM_TYPE` & `LLM_TYPE` (via `SN_LM_TYPE`) according to the shared LM API interface type. Available values are:
+1. Set `SN_CHAT_TYPE` according to the chat API protocol. Available values are:
 
     ```ini
     # (Default) OpenAI-compatible `/chat/completions` interface (most widely supported)
-    SN_LM_TYPE="openai-completions"
+    SN_CHAT_TYPE="openai-completions"
     # Anthropic Messages `/messages` interface
-    SN_LM_TYPE="anthropic-messages"
+    SN_CHAT_TYPE="anthropic-messages"
     ```
 
-2. Set `VLM_BASE_URL` & `LLM_BASE_URL` (via `SN_LM_BASE_URL`) to the shared LM endpoint base URL. For example:
+2. Set `SN_CHAT_BASE_URL` to the shared chat endpoint base URL. For example:
 
     ```ini
     # (Default) For [SenseNova](https://platform.sensenova.cn/)
-    SN_LM_BASE_URL="https://token.sensenova.cn/v1"
+    SN_CHAT_BASE_URL="https://token.sensenova.cn/v1"
     # For Anthropic Messages API
-    SN_LM_BASE_URL="https://api.anthropic.com/v1"
+    SN_CHAT_BASE_URL="https://api.anthropic.com/v1"
     # For OpenAI's chat completion API
-    SN_LM_BASE_URL="https://api.openai.com/v1"
+    SN_CHAT_BASE_URL="https://api.openai.com/v1"
     # For Google Gemini API (OpenAI-compatible)
-    SN_LM_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/"
+    SN_CHAT_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/"
     ```
 
-3. Set `VLM_MODEL` & `LLM_MODEL` (via `SN_LM_MODEL`) to the shared LM model name. For example:
+3. Set `SN_CHAT_MODEL`, or set `SN_TEXT_MODEL` / `SN_VISION_MODEL` only when a command needs a different model:
 
     ```ini
     # (Default) SenseNova 6.7 Flash Lite
-    SN_LM_MODEL="sensenova-6.7-flash-lite"
+    SN_CHAT_MODEL="sensenova-6.7-flash-lite"
     # Anthropic Claude Sonnet 4.6
-    SN_LM_MODEL="claude-sonnet-4-6"
+    SN_VISION_MODEL="claude-sonnet-4-6"
     # Google Gemini 3 Flash Preview
-    SN_LM_MODEL="gemini-3-flash-preview"
+    SN_VISION_MODEL="gemini-3-flash-preview"
     # OpenAI GPT 5.5
-    SN_LM_MODEL="gpt-5.5"
+    SN_TEXT_MODEL="gpt-5.5"
     ```
 
-4. (**Required**) Set `VLM_API_KEY` & `LLM_API_KEY` (via `SN_LM_API_KEY`) to the API key for the shared LM endpoint.
+4. (**Required**) Set `SN_CHAT_API_KEY` to the API key for the shared chat endpoint.
 
     ```ini
-    SN_LM_API_KEY="sk-your-api-key"
+    SN_CHAT_API_KEY="sk-your-api-key"
     ```
-
-##### Use different VLM and LLM models
-
-If you want to use different models for VLM and LLM, you can configure the VLM (Image Recognition) API and LLM (Text Optimization) API with different environment variables.
-
-> **Variable precedence (explicit rule)**
->
-> When multiple variables can configure the same runtime field, the first configured env var in `configs.py` wins.
->
-> - For VLM model: if both `VLM_MODEL` and `SN_LM_MODEL` are set, `VLM_MODEL` wins.
-> - For LLM model: if both `LLM_MODEL` and `SN_LM_MODEL` are set, `LLM_MODEL` wins.
->
-> Tiny conflict example:
->
-> ```ini
-> SN_LM_MODEL="sensenova-6.7-flash-lite"
-> VLM_MODEL="claude-sonnet-4-6"
-> ```
->
-> In this case, VLM uses `claude-sonnet-4-6`, while LLM still uses `sensenova-6.7-flash-lite` (unless `LLM_MODEL` is also set).
-
-Independent environment variables for VLM:
-
-| Config Key | Description | Default |
-| ---------- | ----------- | ------- |
-| `VLM_API_KEY` | The API key for the VLM API | (Required) |
-| `VLM_BASE_URL` | The base URL for the VLM API | `"https://token.sensenova.cn/v1"` |
-| `VLM_MODEL` | The name of the VLM model to use | `"sensenova-6.7-flash-lite"` |
-| `VLM_TYPE` | The type of the VLM API to use | `"openai-completions"` |
-
-Independent environment variables for LLM:
-
-| Config Key | Description | Default |
-| ---------- | ----------- | ------- |
-| `LLM_API_KEY` | The API key for the LLM API | (Required) |
-| `LLM_BASE_URL` | The base URL for the LLM API | `"https://token.sensenova.cn/v1"` |
-| `LLM_MODEL` | The name of the LLM model to use | `"sensenova-6.7-flash-lite"` |
-| `LLM_TYPE` | The type of the LLM API to use | `"openai-completions"` |
-
-Use the above environment variables to override the `SN_LM_*` variables for VLM and LLM.
 
 ## Troubleshooting
 
 ### Missing API key
 
 - Symptom: errors like "required but not set", "missing api key", or request unauthorized.
-- Fix: set `SN_API_KEY` for image generation, and set either `SN_LM_API_KEY` or task-specific keys (`VLM_API_KEY` / `LLM_API_KEY`).
+- Fix: set `SN_API_KEY` for image generation, and set `SN_CHAT_API_KEY` for chat calls. Use `SN_TEXT_API_KEY` or `SN_VISION_API_KEY` when text and vision use different providers.
 
 ### Wrong base URL
 
 - Symptom: request fails immediately, or URL validation/auth endpoint errors.
-- Fix: verify `SN_IMAGE_GEN_BASE_URL`, `SN_LM_BASE_URL`, `VLM_BASE_URL`, `LLM_BASE_URL` are full base URLs (with scheme + host), for example `https://token.sensenova.cn/v1`.
+- Fix: verify `SN_IMAGE_GEN_BASE_URL`, `SN_CHAT_BASE_URL`, `SN_TEXT_BASE_URL`, and `SN_VISION_BASE_URL` are full base URLs (with scheme + host), for example `https://token.sensenova.cn/v1`.
 
 ### Unsupported model name
 

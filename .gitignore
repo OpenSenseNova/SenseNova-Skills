@@ -6,3 +6,4 @@ __pycache__/
 
 # Worktrees (managed by `git worktree`)
 .worktrees/
+tmp/

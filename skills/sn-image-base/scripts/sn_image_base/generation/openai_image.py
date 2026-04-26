@@ -97,7 +97,7 @@ class OpenAIImageGenerationClient(T2IBaseClient):
             output_path (Path | None, optional):
                 Output path for the generated image. Defaults to None.
             **kwargs:
-                Additional arguments (ignored, for compatibility with U1Text2ImageClient).
+                Additional arguments reserved for backend compatibility.
 
         Returns:
             dict:

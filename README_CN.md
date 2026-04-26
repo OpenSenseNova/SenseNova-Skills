@@ -6,11 +6,24 @@
 
 简体中文 | [English](README.md)
 
-SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/nousresearch/hermes-agent) 等智能体，并借助skills实现更强大的能力。
+SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/NousResearch/hermes-agent) 等智能体；本仓库的 skills 则把这些模型扩展为可直接落地的端到端办公能力。
 
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
 技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
+
+## 🦝 在小浣熊中开箱即用
+
+本仓库的最新模型与全系 Cowork-Skill，已整体集成进 [**小浣熊 Pro**](https://xiaohuanxiong.com/) 套餐，提供企业级安全防护与开箱即用的丝滑体验——如果你不想自己搭环境、配 API key，可以直接通过小浣熊使用这些能力。
+
+小浣熊本次迎来产品能力与客户端体验的全面升级：
+
+- **三大核心办公能力全面增强**：依托 SenseNova 6.7 Flash 与 Cowork-Skill，数据分析、PPT 生成、任务规划进一步强化，覆盖多文件清洗分析、正式汇报 PPT、行业研究 / 竞品分析 / 投研报告等复杂知识工作的完整闭环。
+- **新增信息图生成功能**：基于 SenseNova U1 模型，将复杂数据、长篇报告与业务洞察压缩为高密度、结构化、视觉化的信息图，让复杂内容更易理解、更适合传播。
+- **全新客户端 + 本地 Agent OS**：云端模型负责复杂推理与多模态理解，本地 Agent OS 围绕本地文件、工作上下文与个人使用习惯，带来更个性化、本地化、安全化的 AI 原生办公体验。
+- **规模化验证**：1500 万个人用户、数千家企业用户的共同选择。
+
+> 👉 立即体验：[xiaohuanxiong.com](https://xiaohuanxiong.com/)
 
 ## 如何使用
 
@@ -21,7 +34,7 @@ SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-
 | 智能体 | 目标目录 |
 |--------|---------|
 | [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
-| [hermes-agent](https://github.com/nousresearch/hermes-agent) | `~/.hermes/skills/` |
+| [hermes-agent](https://github.com/NousResearch/hermes-agent) | `~/.hermes/skills/` |
 
 例如，把全部技能复制到 OpenClaw：
 
@@ -111,17 +124,29 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 <p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic 生成效果合集"></p>
 
-### 📊 演示文稿（sn-ppt-standard / sn-ppt-creative）
+### 🧩 内存价格分析 — 洞察-分析-汇报-全链路
 
-`sn-ppt-standard` 与 `sn-ppt-creative` 的部分生成效果（更多样例见 [`docs/ppt-examples.md`](docs/ppt-examples.md)）。
+[`examples/memory-price-end2end-analysis`](examples/memory-price-end2end-analysis/)。智能体先对原始报价 CSV 做字段刻画、品类与时间戳标准化，然后从「整体走势」「分品类涨幅 Top」「服务器级 vs 消费级背离」三个角度刻画本轮上涨，沿途定位 2 月下旬的拐点。把数据结论作为新的研究问题，转入深度调研：按维度规划检索（供给收缩、AI 服务器需求、原厂控产），并在不同来源之间交叉验证证据后再写入报告。数据 + 研究结论一并交给 PPT 生成：先排 16 页大纲、规划每页素材，再生成分页 HTML、做 VLM 评审、最后把分页截图合成 PPTX。最终是一条清晰的三段叙事：价格在涨 → 为什么涨 → 怎么应对。这是仓库里唯一一个完整跑过 数据分析 → 深度调研 → PPT 的端到端样例。
 
-<!-- TODO: 补充 PPT 样例图片 -->
+- 依赖技能：[`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md)、[`sn-deep-research`](skills/sn-deep-research/SKILL.md)、[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)、[`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)
 
-### 🔬 深度调研（sn-deep-research）
+### 📊 员工绩效分析 — 数据分析
 
-`sn-deep-research` 编排产出的报告样例（更多样例见 [`docs/deep-research-examples.md`](docs/deep-research-examples.md)）。
+[`examples/employee-performance-analysis`](examples/employee-performance-analysis/)。智能体先把 10 份分散的月度考核 xlsx 读入，对齐各月列结构，纵向拼成一张长表。在这张表上分别做总体视角（月度均值趋势、得分分布箱线图、等级占比变化、38 个岗位排名）和个体视角（优秀 / 待提升 / 持续进步三类员工，配合个人年度走势）的分析。结论部分把改进建议落到具体岗位和具体员工，并用 8 张图表佐证。同样的内容产出 Word 版（适合下发）和可视化 HTML 版（适合浏览）两种形态。这个样例展示了 `sn-da-excel-workflow` 如何把「一堆零散的小表」当成一次完整分析来处理。
 
-<!-- TODO: 补充深度调研报告样例截图或链接 -->
+- 依赖技能：[`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md)
+
+### 🔬 具身智能行业调研 — 深度调研
+
+[`examples/embodied-ai-deep-research`](examples/embodied-ai-deep-research/)。给定一个行业关键词后，智能体先列出研究维度（市场规模、玩家份额、融资、成本结构、发展路线），而不是直接撒网搜索。每个维度按计划做定向检索、抓取并阅读原始页面，提取数值与定性证据；不同来源之间出现冲突的数字会先做 reconcile 再落到报告里。综合阶段把各维度证据串成一条连贯的行业叙事，而不是一堆互不连接的要点。最终产出是一份图文并茂的报告（Markdown + 可视化 HTML），含 5 张分维度的配图。这个样例展示了 `sn-deep-research` 如何把一句「调研 X」变成「先规划再执行、证据可追溯」的结构化闭环。
+
+- 依赖技能：[`sn-deep-research`](skills/sn-deep-research/SKILL.md)
+
+### 🎯 物业费定价体系 — PPT 生成
+
+[`examples/property-fee-pricing-ppt`](examples/property-fee-pricing-ppt/)。智能体读到一份开放式输入（主题：物业费定价；受众：物业管理人员 + 物业委员会；26 页；黑白温馨风），先确定大纲，再产出符合风格规范的逐页素材计划。每一页以语义化的 HTML 方式构造，而不是直接出整页大图：文案、版式、配图、图标、需要的数据图表都是分槽位规划的。素材按槽位生成或选型，并由 VLM 对照页面意图做质检；每页 HTML 渲染出来后再走一轮评审与按需改写，保证用语和视觉一致性。最后把分页截图合成 PPTX，分页 HTML 也保留下来，便于直接在浏览器里预览或继续修改。这个样例展示了 `sn-ppt-standard` 在一份偏文本、长篇幅的方案稿上如何在每一页都遵守同一套受众和配色约束。
+
+- 依赖技能：[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
 
 ## 贡献
 

@@ -28,7 +28,7 @@
 | 名称 | 角色 | 说明 |
 |------|------|------|
 | [`sn-search-academic`](../skills/sn-search-academic/SKILL.md) | 学术搜索 | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数与正反向引用链）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 多语言聚合。 |
-| [`sn-search-code`](../skills/sn-search-code/SKILL.md) | 开发者搜索 | GitHub（仓库 / 代码 / Issue）/ Stack Overflow（按标签 / 票数）/ HuggingFace（模型 / 数据集 / Space）/ Hacker News 四平台聚合。 |
+| [`sn-search-code`](../skills/sn-search-code/SKILL.md) | 开发者搜索 | GitHub（仓库 / 代码 / Issue）/ Stack Overflow（按标签 / 票数）/ Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
 | [`sn-search-social-cn`](../skills/sn-search-social-cn/SKILL.md) | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；知乎、抖音必须配 cookie，B 站 cookie 可选。 |
 | [`sn-search-social-en`](../skills/sn-search-social-en/SKILL.md) | 英文社交搜索 | Reddit（按 subreddit / 排序 / 时间）/ Twitter (X)（经 TikHub）/ YouTube（API key）。 |
 
@@ -122,7 +122,7 @@ ZHIHU_COOKIE="..." python3 skills/sn-search-social-cn/scripts/zhihu_search.py "P
 - `synthesis.md` —— 综合判断（主线、共识、冲突、不确定性）
 - `report.md` —— 最终报告
 
-更多样例参见 [`docs/sn-deep-research-examples.md`](sn-deep-research-examples.md)（待补充）。
+_更多端到端样例参见仓库根目录 [`README_CN.md`](../README_CN.md#输出样例) 中的「输出样例」章节。_
 
 ### 搜索
 

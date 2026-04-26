@@ -19,7 +19,7 @@ This document collects the PPT generation skills (`sn-ppt-entry`, `sn-ppt-doctor
 | [`sn-ppt-creative`](../skills/sn-ppt-creative/SKILL.md) | PPT creative mode | One full-page 16:9 PNG per slide, generated via `sn-image-generate` from a per-page composed prompt; exports PPTX. |
 | [`sn-ppt-standard`](../skills/sn-ppt-standard/SKILL.md) | PPT standard mode | `style_spec` → outline → asset plan + per-slot images + VLM QA → per-page HTML → per-page review (optional rewrite) → summary `review.md` → PPTX export. |
 
-`sn-ppt-creative` depends on `sn-image-base` for text-to-image; `sn-ppt-standard` ships its own model invocation scripts (`scripts/run_stage.py`).
+`sn-ppt-creative` depends on `sn-image-base` for text-to-image; `sn-ppt-standard` ships its own LLM / VLM invocation scripts (`scripts/run_stage.py`) but still routes text-to-image through `sn-image-base`.
 
 ## Quick Start
 
@@ -46,14 +46,14 @@ Set the following in `~/.openclaw/.env` (OpenClaw) or `~/.hermes/.env` (Hermes):
 
 ```ini
 # LLM (outline, style_spec, content planning)
-SN_LM_API_KEY="your-api-key"
-SN_LM_BASE_URL="https://token.sensenova.cn/v1"
+SN_CHAT_API_KEY="your-api-key"
+SN_CHAT_BASE_URL="https://token.sensenova.cn/v1"
 
 # Text-to-image (required for creative mode, on-demand for standard mode)
 SN_API_KEY="your-api-key"
 ```
 
-Optional variables `SN_IMAGE_GEN_*`, `VLM_*`, `LLM_*` override default models and timeouts. Full list: [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md).
+Optional variables `SN_IMAGE_GEN_*`, `SN_TEXT_*`, and `SN_VISION_*` override default models and timeouts. Full list: [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md).
 
 Run environment doctor before invoking:
 
@@ -74,9 +74,9 @@ Or call by name:
 Decks are written to `$(pwd)/ppt_decks/<topic>_<timestamp>/`, containing:
 
 - `task_pack.json` / `info_pack.json` — parsed task parameters from `sn-ppt-entry`
-- `style_spec.md`, `outline.json` — style and outline (standard mode)
+- `style_spec.json` (standard mode) / `style_spec.md` (creative mode), `outline.json` — style and outline
 - `pages/page_*.png` — full-page images (creative) or HTML-rendered slides (standard)
 - `review.md` — per-page review summary (standard mode)
 - `<deck_id>.pptx` — final PPTX
 
-More samples: [`docs/ppt-examples.md`](ppt-examples.md) (TBD).
+_See the "Sample Outputs" section in the top-level [`README.md`](../README.md#sample-outputs) for end-to-end examples._
