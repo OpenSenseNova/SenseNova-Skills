@@ -114,6 +114,20 @@ def _parse_json_loose(s: str) -> dict:
         raise
 
 
+def _env_float(name: str, default: float) -> float:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return float(raw)
+    except ValueError:
+        return default
+
+
+def _env_int(name: str, default: int) -> int:
+    return int(_env_float(name, default))
+
+
 _STYLE_DIMENSIONS_PATH = SKILL_DIR.parent.parent / "reference" / "style_dimensions.json"
 
 
@@ -357,8 +371,13 @@ def cmd_outline(deck: Path) -> int:
         "raw_documents_excerpt": raw_docs or None,
         "available_reference_images": available_reference_images or None,
     }, ensure_ascii=False, indent=2)
+    outline_timeout = _env_float("OUTLINE_LLM_TIMEOUT", _env_float("LLM_TIMEOUT", 300.0))
+    outline_retries = _env_int("OUTLINE_LLM_RETRIES", 1)
     try:
-        raw = llm(system_prompt, user_prompt)
+        raw = llm(
+            system_prompt, user_prompt,
+            timeout=outline_timeout, retries=outline_retries, request_name="outline",
+        )
         data = _parse_json_loose(raw)
     except (ModelClientError, json.JSONDecodeError) as e:
         return _fail(f"outline: {e}")

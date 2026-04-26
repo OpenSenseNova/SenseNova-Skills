@@ -32,6 +32,38 @@ let _currentCanvasW = 1280;
 let _currentCanvasH = 720;
 
 /**
+ * Split a CSS multi-layer background-image string into top-level layers,
+ * preserving balanced parentheses (so nested rgba() / radial() inside a
+ * gradient layer doesn't break the split).
+ *
+ * Example input:
+ *   `linear-gradient(white, transparent), radial-gradient(at 80% 20%, ...), none`
+ * Returns:
+ *   ['linear-gradient(white, transparent)', 'radial-gradient(at 80% 20%, ...)', 'none']
+ *
+ * In CSS multi-layer backgrounds, the **first** layer is on top and the
+ * **last** layer is on the bottom (closest to the element's background-color).
+ * For background filling purposes, the last gradient layer is the one to
+ * use as the slide底色; earlier layers are decorative overlays.
+ */
+function splitBackgroundLayers(bg) {
+  const layers = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < bg.length; i++) {
+    const c = bg[i];
+    if (c === '(') depth++;
+    else if (c === ')') depth--;
+    else if (c === ',' && depth === 0) {
+      layers.push(bg.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  const tail = bg.slice(start).trim();
+  if (tail) layers.push(tail);
+  return layers;
+}
+
+/**
  * Unified element dispatch — write any IR element type to the slide.
  *
  * Used by every overlay/header/ct/footer/rest path so that no element type
@@ -462,6 +494,20 @@ export function buildBackground(bgIR, bodyBgColor, deckDir) {
 
   if (!bgIR || !bgIR.styles) return result.slideBackground ? result : null;
 
+  // 方案 4：检测 #bg 是否实际覆盖整张 slide。若它只是局部装饰（如党委 p5 的
+  // 380×900 左侧红色 sidebar，仅占 24% 宽度），不要把它的 background-color/image
+  // 提升为 slide 全屏背景；保留 wrapper/body solid 作底色，让 #bg 走常规递归。
+  if (bgIR.bounds) {
+    const bgArea = (bgIR.bounds.w || 0) * (bgIR.bounds.h || 0);
+    const cw = _currentCanvasW || 1280;
+    const ch = _currentCanvasH || 720;
+    const slideArea = cw * ch;
+    if (slideArea > 0 && bgArea / slideArea < 0.85) {
+      // #bg 覆盖率不足 85% → 不当全屏背景。返回仅含 wrapper/body solid 的结果。
+      return result.slideBackground ? result : null;
+    }
+  }
+
   const { backgroundColor, backgroundImage, opacity } = bgIR.styles;
   let bgOpacity = opacity !== undefined ? parseFloat(opacity) : 1;
 
@@ -570,47 +616,86 @@ export function buildBackground(bgIR, bodyBgColor, deckDir) {
   }
 
   // --- 情况 3：仅 gradient（无图片 url）---
-  // pptxgenjs 不支持 gradient fill，SVG addImage 会产生 svgBlip 导致 PowerPoint 损坏。
-  // 用多层 solid fill shape 近似渐变（取首尾两个可见 stop）。
+  // CSS 多层背景：前面的层是装饰，最后一层是底色。
+  // 之前直接 parseLinearGradient(整个字符串) 会把所有层 stops 混在一起，
+  // 取出装饰层的颜色当底色（叉车 p4 黑底变金黄、宝可梦 p2 深蓝变橄榄黄）。
+  // 改为 splitLayers 后取**最后一层 gradient** 解析底色；装饰层不在这里画
+  // （由 D-ii 的 ellipse 路径处理）。
   if (backgroundImage && backgroundImage !== 'none') {
-    const linearGrad = parseLinearGradient(backgroundImage);
-    const radialGrad = !linearGrad ? parseRadialGradient(backgroundImage) : null;
-    const grad = linearGrad || radialGrad;
-    if (grad && grad.stops.length >= 2) {
-      const visibleStops = grad.stops.filter(st => !st.isTransparent);
-      if (visibleStops.length > 0) {
-        // 底色：第一个可见 stop
-        result.slideBackground = { fill: visibleStops[0].color };
-        // 如果有第二个不同颜色的 stop，叠加一个半透明层模拟渐变过渡
-        if (visibleStops.length >= 2 && visibleStops[visibleStops.length - 1].color !== visibleStops[0].color) {
-          const lastStop = visibleStops[visibleStops.length - 1];
-          const lastAlpha = lastStop.rawColor ? extractCssAlpha(lastStop.rawColor) : 1;
+    const layers = splitBackgroundLayers(backgroundImage);
+    // 找最底层 gradient（CSS：最后一个 layer 在底）
+    let bottomGrad = null;
+    for (let i = layers.length - 1; i >= 0; i--) {
+      const layer = layers[i];
+      if (!layer || layer === 'none') continue;
+      if (/^linear-gradient\s*\(/i.test(layer)) {
+        bottomGrad = parseLinearGradient(layer);
+        break;
+      }
+      if (/^radial-gradient\s*\(/i.test(layer)) {
+        bottomGrad = parseRadialGradient(layer);
+        break;
+      }
+    }
+    if (bottomGrad && bottomGrad.stops && bottomGrad.stops.length > 0) {
+      const visibleStops = bottomGrad.stops.filter(st => !st.isTransparent);
+      // 如果可见 stops 只有 1 个且 alpha 很低（< 0.5），这是装饰层不是底色 →
+      // 跳到下面的"情况 4 纯色背景"用 backgroundColor 作底色（叉车 p4 的黑底）
+      const onlyDecorStop = visibleStops.length === 1
+        && (() => {
+          const a = visibleStops[0].rawColor ? extractCssAlpha(visibleStops[0].rawColor) : 1;
+          return a < 0.5;
+        })();
+      if (visibleStops.length >= 2) {
+        // 底色取**最不透明**的 stop（radial 底色 fill 模式：最后 stop alpha=1）
+        let bestStop = visibleStops[0];
+        let bestAlpha = bestStop.rawColor ? extractCssAlpha(bestStop.rawColor) : 1;
+        for (const st of visibleStops) {
+          const a = st.rawColor ? extractCssAlpha(st.rawColor) : 1;
+          if (a > bestAlpha) { bestStop = st; bestAlpha = a; }
+        }
+        result.slideBackground = { fill: bestStop.color };
+        // 叠加首个不同色 stop 作为方向感（仅 linear，radial 由 D-ii ellipse 处理）
+        if (bottomGrad.type === 'linear' && visibleStops[0] !== bestStop
+            && visibleStops[0].color !== bestStop.color) {
+          const firstAlpha = visibleStops[0].rawColor ? extractCssAlpha(visibleStops[0].rawColor) : 1;
           result.bgElements.push({
             type: 'shape',
             data: {
               x: 0, y: 0, w: 10, h: 5.625,
-              fill: { color: lastStop.color, transparency: Math.round((1 - lastAlpha * 0.5) * 100) },
+              fill: { color: visibleStops[0].color, transparency: Math.round((1 - firstAlpha * 0.5) * 100) },
             }
           });
         }
-      }
-      return result;
-    }
-    // single-stop gradient or other type → degrade to first color
-    if (linearGrad && linearGrad.stops.length > 0) {
-      result.slideBackground = { fill: linearGrad.stops[0].color };
-      return result;
-    }
-    if (radialGrad && radialGrad.stops.length > 0) {
-      result.slideBackground = { fill: radialGrad.stops[0].color };
-      return result;
-    }
-    const colorMatch = backgroundImage.match(/(?:rgb|rgba)\s*\([^)]*\)|#[0-9a-fA-F]{3,8}/);
-    if (colorMatch) {
-      const hex = cssColorToHex(colorMatch[0]);
-      if (hex) {
-        result.slideBackground = { fill: hex };
         return result;
+      }
+      if (visibleStops.length === 1 && !onlyDecorStop) {
+        result.slideBackground = { fill: visibleStops[0].color };
+        return result;
+      }
+      // onlyDecorStop=true → 装饰光晕，不当底色，跳到情况 4 用 backgroundColor
+      if (onlyDecorStop) {
+        // skip colorMatch fallback below; continue to case 4
+      } else {
+        // 没找到任何 visible stop，再尝试 colorMatch（最坏 fallback）
+        const colorMatch = backgroundImage.match(/(?:rgb|rgba)\s*\([^)]*\)|#[0-9a-fA-F]{3,8}/);
+        if (colorMatch) {
+          const hex = cssColorToHex(colorMatch[0]);
+          if (hex) {
+            result.slideBackground = { fill: hex };
+            return result;
+          }
+        }
+      }
+    } else {
+      // 整个字符串 parse 不出 gradient，最坏 fallback
+      const colorMatch = backgroundImage.match(/(?:rgb|rgba)\s*\([^)]*\)|#[0-9a-fA-F]{3,8}/);
+      if (colorMatch) {
+        const hex = cssColorToHex(colorMatch[0]);
+        if (hex) {
+          result.slideBackground = { fill: hex };
+          return result;
+        }
       }
     }
   }
@@ -1451,14 +1536,19 @@ export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, paren
       // 显示尺寸（object-fit workaround 会改 imgEl.w/h 为原始尺寸）
       const displayW = imgEl.sizing ? imgEl.sizing.w : imgEl.w;
       const displayH = imgEl.sizing ? imgEl.sizing.h : imgEl.h;
-      // 图片 opacity < 1 → 叠加黑色半透明遮罩模拟暗化
+      // 图片 opacity < 1 → 叠加底色半透明遮罩模拟"图片淡入底色"效果。
+      // 之前用 '000000' 黑色硬编码遮罩，浅色 deck 会被盖死整页；
+      // 改用 parentBgColor / wrapper 底色，使图片淡到只剩底色而非黑。
+      // 对 opacity < 0.1 的纯装饰图（如 bg-grid 0.04）直接跳过遮罩 —— 那种
+      // HTML 里几乎不可见，PPT 里强行模拟反而引入伪影。
       const imgOpacity = s.opacity !== undefined ? parseFloat(s.opacity) : 1;
-      if (imgOpacity < 1 && imgOpacity > 0) {
+      if (imgOpacity < 1 && imgOpacity >= 0.1) {
+        const maskColor = parentBgColor || 'FFFFFF';
         elements.push({
           type: 'shape',
           data: {
             x: imgEl.x, y: imgEl.y, w: displayW, h: displayH,
-            fill: { color: '000000', transparency: Math.round(imgOpacity * 100) },
+            fill: { color: maskColor, transparency: Math.round(imgOpacity * 100) },
             ...(parentBorderRadius > 0 ? { rectRadius: pxToInch(parentBorderRadius) } : {}),
           }
         });
@@ -1618,28 +1708,10 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
     const candidates = [ir.wrapperBgImage, ir.bodyBgImage, ir.bg?.styles?.backgroundImage]
       .filter(s => s && s !== 'none' && s.includes('gradient') && !s.includes('url('));
 
-    // 在多层背景里精确提取每个顶层 gradient 子串（保留括号平衡）
-    function splitLayers(bg) {
-      const layers = [];
-      let depth = 0, start = 0;
-      for (let i = 0; i < bg.length; i++) {
-        const c = bg[i];
-        if (c === '(') depth++;
-        else if (c === ')') depth--;
-        else if (c === ',' && depth === 0) {
-          layers.push(bg.slice(start, i).trim());
-          start = i + 1;
-        }
-      }
-      const tail = bg.slice(start).trim();
-      if (tail) layers.push(tail);
-      return layers;
-    }
-
     let bgRendered = false;
     for (const src of candidates) {
       if (bgRendered) break;
-      const layers = splitLayers(src);
+      const layers = splitBackgroundLayers(src);
       const linearLayer = layers.find(l => /^linear-gradient\s*\(/i.test(l));
       const radialLayers = layers.filter(l => /^radial-gradient\s*\(/i.test(l));
 
@@ -1674,15 +1746,30 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
       }
 
       // --- 步骤 2：radial 装饰层（每个 → 半透明 ellipse） ---
-      // CSS radial-gradient(circle at cx% cy%, color α 0%, transparent 50%) 在 OOXML 里
-      // 用一个椭圆 shape 模拟：圆心定位在 cx/cy，半径由最远 stop 的位置决定，
-      // 整个 shape 给 alpha 0.15-0.25 的 transparency（够柔和不突兀）。
+      // CSS radial-gradient 有两种使用模式：
+      //   A. 全屏底色 radial：最后 stop alpha=1 实色（如 `radial(yellow 0%, blue 100%)`
+      //      或 `radial(transparent 0%, rgb(13,33,55) 60%)`，最后 stop 是底色填充）
+      //   B. 装饰光晕 radial：最后 stop alpha=0 透明（如 `radial(yellow 0%, transparent 50%)`
+      //      → 角落光晕，叠在底色上）
+      // 类型 A 应该把最后 stop 作为 slide.background（不画 ellipse 装饰，避免重影）；
+      // 类型 B 走原 ellipse glow 路径。
       const SLIDE_W = 10, SLIDE_H = 5.625;  // inch
       for (const rl of radialLayers) {
         const r = parseRadialGradient(rl);
         if (!r || !r.stops || r.stops.length < 1) continue;
-        // 取首个非透明的 stop 作 glow 中心颜色。CSS radial 通常是
-        // "中心色 → 透明"，stop[0] 就是中心色。alpha 可能是 0.05-1.0 任意值。
+
+        // 检测类型 A：最后一个 stop alpha=1 → 这是底色，不是装饰
+        const lastStop = r.stops[r.stops.length - 1];
+        const lastAlpha = lastStop.rawColor ? extractCssAlpha(lastStop.rawColor) : 1;
+        if (!lastStop.isTransparent && lastAlpha >= 0.95) {
+          // 类型 A：把最后 stop 作 slide.background solid 底色（覆盖之前可能的 wrapper/body）
+          slide.background = { fill: lastStop.color };
+          bottomLaid = true;
+          // 不画 ellipse glow（避免和全屏底色重叠扰动）
+          continue;
+        }
+
+        // 类型 B：装饰光晕，走 ellipse glow 路径
         const visible = r.stops.find(st => !st.isTransparent
           && (!st.rawColor || extractCssAlpha(st.rawColor) > 0.02));
         if (!visible) continue;
@@ -1781,10 +1868,21 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   }
 
   // 1c. 渲染 #bg 的子元素（装饰层：mesh-gradient、grid-overlay、SVG motif 等）
-  if (ir.bg && ir.bg.children && ir.bg.children.length > 0) {
-    for (const child of ir.bg.children) {
-      const bgChildElements = flattenIRToElements(child, deckDir, 0, bodyBgHex);
-      for (const el of bgChildElements) addElement(pptx, slide, el);
+  // 方案 4：若 #bg 是局部装饰（不全屏，党委 p5 类），把 #bg 节点本身也走 flatten
+  // 路径输出（含其自身的 shape + 所有 children）。全屏 bg 时只渲染 children
+  // （shape 已被 buildBackground 提升为 slide.background，避免重复）。
+  if (ir.bg) {
+    const bgArea = (ir.bg.bounds?.w || 0) * (ir.bg.bounds?.h || 0);
+    const slideArea = (ir.canvasWidth || 1280) * (ir.canvasHeight || 720);
+    const bgIsPartial = slideArea > 0 && bgArea / slideArea < 0.85;
+    if (bgIsPartial) {
+      const bgEls = flattenIRToElements(ir.bg, deckDir, 0, bodyBgHex);
+      for (const el of bgEls) addElement(pptx, slide, el);
+    } else if (ir.bg.children && ir.bg.children.length > 0) {
+      for (const child of ir.bg.children) {
+        const bgChildElements = flattenIRToElements(child, deckDir, 0, bodyBgHex);
+        for (const el of bgChildElements) addElement(pptx, slide, el);
+      }
     }
   }
 
