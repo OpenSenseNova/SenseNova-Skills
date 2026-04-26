@@ -21,21 +21,6 @@ SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-
 - **References**（可选）：补充文档、方法论、示例
 - **Scripts**（可选）：技能调用的可执行脚本
 
-## 目录结构
-
-```
-skills/
-├── <skill-name>/
-│   ├── SKILL.md          # 技能主定义（必需）
-│   ├── references/       # 补充文档（可选）
-│   │   └── *.md
-│   ├── scripts/          # 可执行脚本（可选）
-│   │   └── *.py
-│   ├── prompts/          # 提示词模板（可选）
-│   │   └── *.md
-│   └── requirements.txt  # Python 依赖（可选）
-```
-
 ## 如何使用
 
 克隆本仓库后，把 `skills/` 下的子目录复制（或软链接）到所用智能体加载的 skills 目录：
