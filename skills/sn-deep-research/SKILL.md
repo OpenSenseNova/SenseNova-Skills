@@ -24,8 +24,9 @@ description: 深度调研编排器，覆盖 规划→分维度取证→综合→
 sn-deep-research 需要 OpenClaw web_search 可用，但当前未确认 web_search 可用。
 
 请先任选一种方式配置：
-1. 按所选 provider 设置环境变量；Gateway 安装可写入 `~/.openclaw/.env`
-2. 或用 `openclaw config set tools.web.search.provider <provider>` 等命令直接写入 OpenClaw 配置（含 `plugins.entries.<plugin>.config.webSearch.*` 下的相关字段）
+1. 运行 `openclaw configure --section web`
+2. 或按所选 provider 设置环境变量；Gateway 安装可写入 `~/.openclaw/.env`
+3. 或在 OpenClaw 配置中写入 `plugins.entries.<plugin>.config.webSearch.*`
 
 配置后重启或刷新 OpenClaw 会话，再重新发起 sn-deep-research。
 ```
