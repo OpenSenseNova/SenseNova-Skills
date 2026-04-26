@@ -118,34 +118,15 @@ openclaw doctor
 
 #### 2.A.4 Configure the SenseNova LLM
 
-Edit `~/.openclaw/openclaw.json` (create it if missing):
-
-```json5
-{
-  models: {
-    providers: {
-      openai: {
-        baseUrl: "https://token.sensenova.cn/v1",
-        apiKey: "<paste your API key here>"
-      }
-    }
-  },
-  agents: {
-    defaults: {
-      model: { primary: "openai/sensenova-6.7-flash-lite" }
-    }
-  }
-}
-```
-
-You can also keep the API key in an environment variable (recommended):
+Run the three commands below — they register SenseNova as a custom OpenAI-compatible provider and set it as the default model. Replace the placeholder with the API key you generated in §0.
 
 ```bash
-echo 'export OPENAI_API_KEY="<your API key>"' >> ~/.bashrc   # or ~/.zshrc
-source ~/.bashrc
+openclaw config unset models.providers.sensenova
+openclaw config set models.providers.custom '{"baseUrl":"https://token.sensenova.cn/v1","api":"openai-completions","apiKey":"<paste your API key here>","models":[{"id":"sensenova-6.7-flash-lite","name":"SenseNova 6.7 Flash Lite"}]}'
+openclaw config set agents.defaults.model.primary "custom/sensenova-6.7-flash-lite"
 ```
 
-…and drop the `apiKey` field from the JSON above.
+> The first `unset` is a safety step — it clears any earlier `sensenova` provider entry so the new `custom` provider is the only one in play.
 
 #### 2.A.5 Verify the LLM connection
 

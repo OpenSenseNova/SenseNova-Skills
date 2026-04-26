@@ -118,34 +118,15 @@ openclaw doctor
 
 #### 2.A.4 配置 SenseNova LLM
 
-编辑配置文件 `~/.openclaw/openclaw.json`（不存在则新建），写入：
-
-```json5
-{
-  models: {
-    providers: {
-      openai: {
-        baseUrl: "https://token.sensenova.cn/v1",
-        apiKey: "<把你的 API Key 粘贴在这里>"
-      }
-    }
-  },
-  agents: {
-    defaults: {
-      model: { primary: "openai/sensenova-6.7-flash-lite" }
-    }
-  }
-}
-```
-
-也可以把 API Key 放进环境变量（推荐）：
+执行下面三条命令 —— 它们会把 SenseNova 注册为一个 custom 的 OpenAI 兼容 provider，并设为默认模型。把占位符换成 §0 中申请到的 API Key。
 
 ```bash
-echo 'export OPENAI_API_KEY="<你的 API Key>"' >> ~/.bashrc   # 或 ~/.zshrc
-source ~/.bashrc
+openclaw config unset models.providers.sensenova
+openclaw config set models.providers.custom '{"baseUrl":"https://token.sensenova.cn/v1","api":"openai-completions","apiKey":"这里填入你上面申请的 API Key","models":[{"id":"sensenova-6.7-flash-lite","name":"SenseNova 6.7 Flash Lite"}]}'
+openclaw config set agents.defaults.model.primary "custom/sensenova-6.7-flash-lite"
 ```
 
-并把上面 JSON 中的 `apiKey` 字段去掉。
+> 第一条 `unset` 是兜底动作 —— 清掉可能存在的旧 `sensenova` provider 条目，确保新建的 `custom` provider 是唯一生效的那个。
 
 #### 2.A.5 验证 LLM 通路
 
