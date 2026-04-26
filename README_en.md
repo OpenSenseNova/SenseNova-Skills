@@ -21,22 +21,9 @@ A `SKILL.md` is a Markdown document that teaches an AI agent how to perform a sp
 - **References** (optional): supporting docs, methodology notes, examples
 - **Scripts** (optional): executable scripts the skill calls into
 
-## Directory Structure
-
-```
-skills/
-├── <skill-name>/
-│   ├── SKILL.md          # Main skill definition (required)
-│   ├── references/       # Supporting docs (optional)
-│   │   └── *.md
-│   ├── scripts/          # Executable scripts (optional)
-│   │   └── *.py
-│   ├── prompts/          # Prompt templates (optional)
-│   │   └── *.md
-│   └── requirements.txt  # Python deps (optional)
-```
-
 ## How to Use
+
+> These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent — for the best experience, pair them with [OpenClaw](https://openclaw.ai/) or [hermes-agent](https://github.com/NousResearch/hermes-agent). See [`INSTALL.md`](INSTALL.md) for the full install + LLM configuration walkthrough.
 
 Clone this repository, then copy subdirectories under `skills/` into the skills directory your agent loads from:
 
