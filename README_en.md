@@ -6,7 +6,7 @@
 
 English | [简体中文](README.md)
 
-The SenseNova model family plugs directly into agent runtimes such as [OpenClaw](https://openclaw.ai/) and [hermes-agent](https://github.com/OpenSenseNova/hermes-agent), and gains stronger capabilities through skills.
+The SenseNova model family plugs directly into agent runtimes such as [OpenClaw](https://openclaw.ai/) and [hermes-agent](https://github.com/nousresearch/hermes-agent), and gains stronger capabilities through skills.
 
 In this repository each skill lives in its own directory and declares triggers, capabilities, and execution flow through a `SKILL.md` file, following the [Agent Skills](https://agentskills.io/) convention.
 
@@ -30,7 +30,7 @@ Clone this repository, then copy subdirectories under `skills/` into the skills 
 | Agent | Target directory |
 |-------|------------------|
 | [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
-| [hermes-agent](https://github.com/OpenSenseNova/hermes-agent) | `~/.hermes/skills/` |
+| [hermes-agent](https://github.com/nousresearch/hermes-agent) | `~/.hermes/skills/` |
 
 For example, copy all skills into OpenClaw:
 
