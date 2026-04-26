@@ -4,9 +4,6 @@ from __future__ import annotations
 
 import sys
 import xml.etree.ElementTree as ET
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "_search-common"))
 
 from search_utils import build_parser, get_client, make_item, make_result, print_json
 
