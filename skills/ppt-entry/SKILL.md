@@ -50,7 +50,17 @@ Run `ppt-doctor` hard checks (U1_LM_API_KEY / U1_LM_BASE_URL / U1_API_KEY / node
    - On success: write `document_digest` JSON into `info_pack.document_digest`.
    - On failure: degrade — set `info_pack.document_digest = null`, continue (do NOT abort entry).
 6. Write `task_pack.json` + `info_pack.json` to deck_dir (see "Schemas" below). All path-bearing fields **absolute**.
-7. Dispatch to `ppt-creative` or `ppt-standard` based on `task_pack.ppt_mode`.
+7. **Caption every image once with VLM** (mandatory, idempotent — runs after `info_pack.json` is written so both pools are visible):
+   ```bash
+   python3 $SKILL_DIR/scripts/caption_images.py --deck-dir <deck_dir>
+   ```
+   This script is the **single source of truth** for image-content descriptions:
+   - Pool A — doc-embedded images (`raw_documents.json` `documents[*].inherited_images[*]`): caption written into the same JSON as `vlm_caption`.
+   - Pool B — standalone uploads (`info_pack.user_assets.reference_images`): caption written into a sister field `info_pack.user_assets.reference_image_captions: {abs_path: caption}`.
+   - Already-captioned images are **skipped silently**, so re-running is cheap and safe. Only newly added images incur a VLM call.
+   - Failures don't abort: the script reports them in the JSON status; downstream stages fall back to filename / alt / digest hint when a caption is missing.
+   Downstream (ppt-standard `cmd_page_html`) reads these cached captions and **never** re-captions — that's the "single source of truth" rule. If you change image files in a deck, delete their `vlm_caption` (or `reference_image_captions[path]`) entry and re-run this script to refresh.
+8. Dispatch to `ppt-creative` or `ppt-standard` based on `task_pack.ppt_mode`.
 
 ## ask_user boundary conditions
 

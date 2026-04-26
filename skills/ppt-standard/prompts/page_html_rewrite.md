@@ -24,7 +24,13 @@
 - `page_no` —— 当前是第几页。
 - `inherited_table` —— 若非空，是来自用户文档的一张表格的原始行数据，**必须完整体现在页面上**。
 - `inherited_image_local_path` —— 若非空，是来自用户文档的一张图片的相对路径，**必须作为页面前景图片使用**（不得当背景）。
-- `available_slot_images` —— 本页可用的 T2I 生成图的相对路径列表（可能为空）。
+- `inherited_image_size` —— 若非空，给出该图片的原生像素尺寸 `{w, h, aspect}`。aspect = 宽/高。query 里要把这个尺寸 / 长宽比讲给生成器，让它给图片容器选合适的 width / height（保持长宽比，不压扁不拉长）。
+- `inherited_image_alt` —— 若非空，是该图片的简短 alt 文本（来自原文档的 alt 属性或文件名派生，例 `"fig3 dram market share"`）—— 兜底用，质量参差。
+- `inherited_image_caption_hint` —— **优先使用这条**作为图的内容描述基准。来源解析顺序（最优 → 兜底）：(1) ppt-entry 的 `caption_images.py` 用 VLM 真看图后写的中文 caption（最准）；(2) digest LLM 基于文档文字猜的 caption_hint（次之）；(3) 都没有就靠 `inherited_image_alt` 兜底。**必须在 query 里明文把这条写出来**，并据此引导生成器写贴合图片内容的 caption / 副标题 / 配文，而不是只放一张图不解释。
+- `available_slot_images` —— 本页可用的 T2I 生成图的列表，每项是 `{path, slot_id, intent, image_prompt, w?, h?, aspect?}`：
+  - `intent` 是大纲里给这个 slot 写的"用途说明"（例 `"hero photo of a server room"`）
+  - `image_prompt` 是真正送给 T2I 模型生成这张图的完整 prompt
+  - 这两个字段是模型了解每张 slot 图内容的唯一线索；query 里**必须**用 intent（首选）或 image_prompt（次选）的语义来描述每张图画的是什么，让生成器据此写贴合的 caption / 标签 / 配文。**禁止只说"这页有一张配图 path=..."而不交代图的内容**。
 - `language` —— zh / en。
 
 ## 重写要求
@@ -40,8 +46,19 @@
 4. **继承 style_spec**：把 deck 的整体风格用一两句自然语言带出来（例："风格专业清新，主色是宝石蓝，辅以浅灰和小范围的琥珀色点缀；字体以黑体为主"），不要只说 "现代、简洁、专业" 这种套话。具体 hex 值、字体名可以写进去。
 5. **不要在 query 里重复 HTML 机械规范**：`.wrapper` 结构、`#bg` / `#ct` 分层、1600×900 画布、ECharts 容器 id 命名、`{renderer:'svg'}`、`__pptxChartsReady` 计数器、`../assets/echarts.min.js` script 路径、伪元素 `<span>` 包裹、单层背景、图片 `../images/` 前缀 —— 这些统一由下游生成器的 system prompt 管理，rewriter 只负责**内容、版面、风格指引**。忽略这条规则的唯一例外是 inherited_image 的具体相对路径（见下条），那个必须在 query 里显式写出来让生成器知道用哪张图。
 6. **处理 inherited_table**：如果输入里有 `inherited_table`，query 里必须明确说出 "这一页的核心是一张表格，包含以下几列……第一行是表头，内容如下……"，并把所有单元格原样列出（可以写成"第 1 行 X 列 Y，值为 …"这样的自然语言描述，或者直接用句子把每行写清楚）。
-7. **处理 inherited_image（硬性要求，不得忽略）**：如果输入里有 `inherited_image_local_path`，query 里必须**明确、显著、不可省略地**写出：页面有一张来自原始文档的配图，相对路径是 `../<那个路径>`（必须是这个字符串的确切引用，前缀 `../` 不能丢），`alt` 描述可以作为图像标题 / 注释使用，应该作为前景 `<img>` 放在版面中显著位置（建议占页面 30-50% 的视觉面积，视 page_kind 而定）。**不能当成背景（background-image）、不能放在蒙版下、不能用遮罩/渐变压暗覆盖文字**。如果页面还有要点和数据，应该与这张图形成"图 + 文"的并列布局而不是牺牲图。宁可删减部分文字也要保住这张图的可见性。
-8. **处理 available_slot_images**：如果 `available_slot_images` 非空，query 里要点名"这页还可以用这几张配图：……"并说明放在哪里；如果为空，query 要明说"这页没有可用的配图，请用纯文字 + CSS 装饰把版面填满，不要留大片空白"。
+7. **处理 inherited_image（硬性要求，不得忽略）**：如果输入里有 `inherited_image_local_path`，query 里必须**明确、显著、不可省略地**写出：
+   - 路径：`../<那个路径>`（精确引用，前缀 `../` 不能丢）。
+   - **图的内容描述**：取 `inherited_image_caption_hint`（首选）或 `inherited_image_alt`（备选）作为这张图"画的是什么"的语义说明，明文写进 query。例："这张图是 DRAM 市场份额饼图，三大原厂占比对比"。**没有这一条，生成器只能瞎猜，写出的配文会跑题**。
+   - **图的尺寸**：若 `inherited_image_size` 非空，把宽高 + aspect 也明文写出（例："原生 1280×720，aspect 约 1.78"），并给生成器一个具体的 width / height 建议（例："建议在版面里占 800px 宽，按原生比例算高约 450px"），保持图片不失真、不留黑边。
+   - 摆放：作为前景 `<img>` 放在版面中显著位置（建议占页面 30-50% 视觉面积）。**不能当成背景（background-image）、不能放在蒙版下、不能用遮罩/渐变压暗覆盖文字**。
+   - 如果页面还有要点和数据，应该与这张图形成"图 + 文"的并列布局；宁可删减部分文字也要保住这张图的可见性。
+8. **处理 available_slot_images（硬性）**：如果 `available_slot_images` 非空，query 里要**逐张点名**，每张都讲清楚：
+   - **path**（必写）。
+   - **图的内容描述**（必写）：取 `intent`（首选）或 `image_prompt`（次选）的语义，用一句中文写明这张图画的是什么。例："`images/page_005_hero.png` 是一张服务器机房氛围照，远景蓝光 + 机柜剪影"。
+   - **尺寸**（如有 `w`/`h`/`aspect`）：把宽高 + aspect 明文写出，并给出建议显示尺寸（保持原生 aspect ratio，绝不强制拉伸）。例："原生 1280×768、aspect 约 1.67，建议放在右侧约占 600×360 的区域里"。
+   - **位置和用途**：建议这张图在版面中的位置（左 / 右 / 上 / 下 / 满版），并基于其内容描述给出贴合的 caption / 标签 / 配文方向。
+   - 如果某项没有 w/h（读取失败），就跳过尺寸只写 path + 内容描述 + 位置。
+   - 如果 `available_slot_images` 为空，query 要明说"这页没有可用的配图，请用纯文字 + CSS 装饰把版面填满，不要留大片空白"。
 
 ## 输出
 

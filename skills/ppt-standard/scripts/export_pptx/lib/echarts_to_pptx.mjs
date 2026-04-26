@@ -92,20 +92,23 @@ function extractCategoryLabels(option) {
 
 /**
  * Convert ECharts axis formatter to pptxgenjs format code.
- *   '{value}%'      → '0%'
- *   '{value}元'     → '0"元"'
- *   '{value} 万'    → '0" 万"'
- *   function | rich → null (can't convert)
+ *
+ * IMPORTANT: pptxgenjs uses Excel-style format codes. `'0%'` means
+ * "multiply by 100 and append %" — i.e. it expects a fraction (0.68 → 68%).
+ * But ECharts data is usually already in percentage form (68 not 0.68).
+ * If we return `'0%'`, pptxgenjs writes 6800% for a 68 value.
+ *
+ * Therefore: for `{value}%`, return `'0"%"'` (a literal % suffix that does
+ * NOT scale the number). All other suffixes are also literal text.
  */
 function formatterToCode(fmt) {
   if (typeof fmt !== 'string') return null;
   if (!fmt.includes('{value}')) return null;
-  // %   → 0%
-  if (/^\s*\{value\}\s*%\s*$/.test(fmt)) return '0%';
-  // {value}<suffix>
   const m = fmt.match(/^\s*\{value\}(.*)$/);
-  if (m) return `0"${m[1].replace(/"/g, '\\"')}"`;
-  return null;
+  if (!m) return null;
+  const suffix = m[1];
+  if (!suffix) return '0';
+  return `0"${suffix.replace(/"/g, '\\"')}"`;
 }
 
 function extractValueAxisFormatCode(option, axisName) {
@@ -177,11 +180,12 @@ function extractDataLabelOptions(series) {
   if (withFmt) {
     const fmt = withFmt.label.formatter;
     if (typeof fmt === 'string') {
-      // {c} → value, {c}% → 0%
-      if (/^\s*\{c\}\s*%\s*$/.test(fmt)) out.dataLabelFormatCode = '0%';
-      else {
-        const m = fmt.match(/^\s*\{c\}(.*)$/);
-        if (m) out.dataLabelFormatCode = `0"${m[1].replace(/"/g, '\\"')}"`;
+      // ECharts data is already in percentage form (e.g. 68 not 0.68);
+      // use literal "%" suffix (not '0%' which would multiply by 100).
+      const m = fmt.match(/^\s*\{c\}(.*)$/);
+      if (m) {
+        const suffix = m[1];
+        out.dataLabelFormatCode = suffix ? `0"${suffix.replace(/"/g, '\\"')}"` : '0';
       }
     }
   }

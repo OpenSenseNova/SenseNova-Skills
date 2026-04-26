@@ -25,6 +25,54 @@ let _currentChartTypeEnum = null;
 // <a:solidFill> for the real <a:gradFill>.
 let _currentGradientHandler = null;
 
+// Wrapper canvas dimensions (px) for the current slide. Used by
+// buildShapeElement to detect off-canvas decorative circles that HTML hides
+// via wrapper overflow:hidden but PPT shows in full.
+let _currentCanvasW = 1280;
+let _currentCanvasH = 720;
+
+/**
+ * Unified element dispatch — write any IR element type to the slide.
+ *
+ * Used by every overlay/header/ct/footer/rest path so that no element type
+ * gets silently dropped. Earlier versions had per-path switch statements
+ * that only handled shape/text/image/line, causing table/chart/svg/list
+ * elements in overlays/header/footer to vanish (e.g. semiconductor deck
+ * p4/p9 tables sitting under .wrapper > overlays were lost entirely).
+ */
+function addElement(pptx, slide, el) {
+  switch (el.type) {
+    case 'shape': {
+      const shapeType = el.data._isEllipse
+        ? pptx.ShapeType.ellipse
+        : (el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect);
+      slide.addShape(shapeType, el.data);
+      break;
+    }
+    case 'text':
+      slide.addText(el.data.text, el.data.options);
+      break;
+    case 'image':
+      slide.addImage(el.data);
+      break;
+    case 'line':
+      slide.addShape(pptx.ShapeType.line, el.data);
+      break;
+    case 'svg':
+      slide.addImage(el.data);
+      break;
+    case 'chart':
+      addChartElement(slide, el.data);
+      break;
+    case 'table':
+      slide.addTable(el.data.rows, el.data.options);
+      break;
+    case 'list':
+      slide.addText(el.data.text, el.data.options);
+      break;
+  }
+}
+
 /**
  * Dispatch a chart element to slide.addChart. Handles the 'combo' sentinel
  * by passing the array of {type,data,options} entries directly.
@@ -669,10 +717,13 @@ export function buildTextElement(node) {
 
   // 文本框宽度余量：PowerPoint 字体渲染比 Chrome 稍宽（尤其字体替换时），
   // 精确匹配 HTML 像素宽度会导致本来一行的文字在 PPT 中换行。
-  // 策略：取 5% 比例余量和半个字符宽度中的较大值。
+  //
+  // R4 修复（Turn-2）：之前 buffer = max(5%, 半字符)，禁用 autoFit 后字体差异
+  // 导致 "智能物业系统" 拆成 "智能物业系\n统"、单字落单等问题。改为更宽的
+  // buffer：12% 比例 + 1 个字符宽度。
   const fontSizePx = parseFloat(s.fontSize) || 16;
-  const halfCharPx = fontSizePx * 0.6;  // 半个中文字符 ≈ 0.6em
-  const bufferPx = Math.max(b.w * 0.05, halfCharPx);
+  const oneCharPx = fontSizePx * 1.0;
+  const bufferPx = Math.max(b.w * 0.12, oneCharPx);
   const textW = pxToInch(b.w + bufferPx);
 
   // E-vi: word-break: keep-all / white-space: nowrap → 不允许 wrap
@@ -850,6 +901,24 @@ export function buildShapeElement(node) {
   const b = node.bounds;
   if (!hasVisualDecoration(node)) return null;
 
+  // 跳过"装饰圆/椭圆 + 越界"组合：HTML 这种通常靠 wrapper overflow:hidden
+  // 实现"角落弧形光晕"，PPT 没遮罩 → 整圆完整暴露成大同心圆扩散。
+  // 启发式：宽高近似相等 + border-radius>=50% + 半径 ≥ 200px + bounds
+  // 部分超出 wrapper（按 1280×720 估算，越界即半径以上、原点为负或超过画布）。
+  const r = parseFloat(s.borderRadius);
+  const isCircular = r > 0 && Math.abs(b.w - b.h) < Math.max(b.w, b.h) * 0.1
+    && (s.borderRadius?.includes('%') ? parseFloat(s.borderRadius) >= 50
+        : (r / Math.min(b.w, b.h)) * 100 >= 50);
+  const hasGradFill = s.backgroundImage && s.backgroundImage !== 'none'
+    && s.backgroundImage.includes('gradient');
+  const isLargeRadius = b.w >= 200 && b.h >= 200;
+  const isOffCanvas = b.x < -10 || b.y < -10
+    || (b.x + b.w) > (_currentCanvasW + 10)
+    || (b.y + b.h) > (_currentCanvasH + 10);
+  if (isCircular && hasGradFill && isLargeRadius && isOffCanvas) {
+    return null;  // 装饰圆 + 越界 → 跳过，避免 OOXML 大同心圆扩散
+  }
+
   const shape = {
     x: pxToInch(b.x),
     y: pxToInch(b.y),
@@ -877,14 +946,42 @@ export function buildShapeElement(node) {
       shape.fill = { color: tok };
       gradientApplied = true;
     } else if (radial && radial.stops && radial.stops.length >= 2) {
-      const stops = radial.stops.map((st, i) => ({
-        pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(radial.stops.length - 1, 1)),
-        color: st.color,
-        alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
-      }));
-      const tok = _currentGradientHandler.registerRadial({ stops });
-      shape.fill = { color: tok };
-      gradientApplied = true;
+      // 元素自身用 radial-gradient 作 background-image：
+      //  - 如果 shape 形状是圆/椭圆（border-radius 50% 且宽高近似相等）→
+      //    OOXML radial fill 限定在 ellipse 内，几何匹配，可走 token 路径
+      //  - 否则 shape 是 rect → OOXML radial fill 在 rect 上是中心扩散
+      //    同心圆，与 CSS radial 视觉相去甚远（用户反馈"难看的同心圆"）。
+      //    退化为 solid color：取首个非透明 stop。
+      const isEllipseShape = (() => {
+        const r = parseFloat(s.borderRadius);
+        if (!r || r <= 0) return false;
+        const radiusPct = s.borderRadius?.includes('%') ? parseFloat(s.borderRadius)
+          : (r / Math.min(b.w, b.h)) * 100;
+        return radiusPct >= 50 && Math.abs(b.w - b.h) < Math.max(b.w, b.h) * 0.1;
+      })();
+      if (isEllipseShape) {
+        const stops = radial.stops.map((st, i) => ({
+          pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(radial.stops.length - 1, 1)),
+          color: st.color,
+          alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
+        }));
+        const tok = _currentGradientHandler.registerRadial({ stops });
+        shape.fill = { color: tok };
+        gradientApplied = true;
+      } else {
+        // rect 形状：退化 solid。取首个非透明 stop 作中心色，alpha 保留。
+        const firstVisible = radial.stops.find(st => !st.isTransparent);
+        if (firstVisible) {
+          const alpha = firstVisible.rawColor ? extractCssAlpha(firstVisible.rawColor) : 1;
+          const elOpacity = s.opacity !== undefined ? parseFloat(s.opacity) : 1;
+          const combinedAlpha = alpha * (isNaN(elOpacity) ? 1 : elOpacity);
+          shape.fill = {
+            color: firstVisible.color,
+            transparency: Math.round((1 - combinedAlpha) * 100),
+          };
+          gradientApplied = true;  // 标记 fill 已设
+        }
+      }
     }
   }
   if (gradientApplied) {
@@ -1495,37 +1592,139 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   // Capture ECharts options for this page so flattenIRToElements can route
   // <div id="chart_N"> nodes to addChart instead of addImage.
   _currentChartOptions = ir._chartOptions || {};
+  _currentCanvasW = ir.canvasWidth || 1280;
+  _currentCanvasH = ir.canvasHeight || 720;
   _currentChartTypeEnum = pptx.ChartType;
 
   const slide = pptx.addSlide();
 
-  // === D-ii: 全屏背景渐变 ===
-  // pptxgenjs 的 slide.background 只接受 solid color，无法表达渐变。
-  // 改成在 slide 顶部画一张全屏 shape，fill 用 gradient token，让后处理换成
-  // 真正的 <a:gradFill>。这必须在所有其他 shape 之前 add，确保它在最底层。
+  // === D-ii: 全屏背景渐变（方案 3 — radial 用半透明 ellipse 装饰层模拟）===
+  //
+  // CSS 多层背景里 radial-gradient 几乎全部用作"角落微微泛色光晕装饰"
+  // 配 linear-gradient 底色：
+  //   `radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.08), transparent),
+  //    linear-gradient(135deg, white, rgb(245, 240, 235))`
+  //
+  // OOXML radial fill 只能"中心扩散"，无法表达 CSS 的偏心圆心 + alpha → 透明
+  // → 强行映射会变成又大又突兀的高饱和同心圆。
+  //
+  // 方案：
+  //   1. 底色：取多层背景里的 linear 层（在最后 / 最底层）画全屏 shape；
+  //      若没有 linear → 用 wrapper/body solidcolor 或白色作 slide.background。
+  //   2. 装饰层：每个 radial 层 → 在对应圆心位置画一个 ellipse shape，
+  //      尺寸由半径（最远 stop 位置）决定，fill 用 stops 第一个非透明色 + 低 alpha。
+  //      这模拟 HTML 那种"四角光晕"效果，避免 OOXML radial 的中心同心圆问题。
   if (_currentGradientHandler) {
     const candidates = [ir.wrapperBgImage, ir.bodyBgImage, ir.bg?.styles?.backgroundImage]
       .filter(s => s && s !== 'none' && s.includes('gradient') && !s.includes('url('));
+
+    // 在多层背景里精确提取每个顶层 gradient 子串（保留括号平衡）
+    function splitLayers(bg) {
+      const layers = [];
+      let depth = 0, start = 0;
+      for (let i = 0; i < bg.length; i++) {
+        const c = bg[i];
+        if (c === '(') depth++;
+        else if (c === ')') depth--;
+        else if (c === ',' && depth === 0) {
+          layers.push(bg.slice(start, i).trim());
+          start = i + 1;
+        }
+      }
+      const tail = bg.slice(start).trim();
+      if (tail) layers.push(tail);
+      return layers;
+    }
+
+    let bgRendered = false;
     for (const src of candidates) {
-      const linear = parseLinearGradient(src);
-      const radial = !linear ? parseRadialGradient(src) : null;
-      const grad = linear || radial;
-      if (grad && grad.stops.length >= 2) {
-        const stops = grad.stops.map((st, i) => ({
-          pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(grad.stops.length - 1, 1)),
-          color: st.color,
-          alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
-        }));
-        const tok = linear
-          ? _currentGradientHandler.registerLinear({ angle: linear.angle, stops })
-          : _currentGradientHandler.registerRadial({ stops });
-        slide.addShape(pptx.ShapeType.rect, {
-          x: 0, y: 0, w: 10, h: 5.625,
+      if (bgRendered) break;
+      const layers = splitLayers(src);
+      const linearLayer = layers.find(l => /^linear-gradient\s*\(/i.test(l));
+      const radialLayers = layers.filter(l => /^radial-gradient\s*\(/i.test(l));
+
+      // --- 步骤 1：底色 ---
+      let bottomLaid = false;
+      if (linearLayer) {
+        const linear = parseLinearGradient(linearLayer);
+        if (linear && linear.stops.length >= 2) {
+          const stops = linear.stops.map((st, i) => ({
+            pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(linear.stops.length - 1, 1)),
+            color: st.color,
+            alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
+          }));
+          if (Math.max(...stops.map(s => s.alpha)) >= 0.3) {
+            const tok = _currentGradientHandler.registerLinear({ angle: linear.angle, stops });
+            slide.addShape(pptx.ShapeType.rect, {
+              x: 0, y: 0, w: 10, h: 5.625,
+              fill: { color: tok },
+              line: { type: 'none' },
+            });
+            bottomLaid = true;
+          }
+        }
+      }
+      // 若没有 linear 兜底，用 wrapper/body 的 solid background-color 作底色
+      // （典型 HTML 模式：body 是浅色 solid，wrapper 上叠 radial 装饰光晕）。
+      if (!bottomLaid && radialLayers.length > 0) {
+        const bottomColor = cssColorToHex(ir.wrapperBgColor)
+          || cssColorToHex(ir.bodyBgColor) || 'FFFFFF';
+        slide.background = { fill: bottomColor };
+        bottomLaid = true;
+      }
+
+      // --- 步骤 2：radial 装饰层（每个 → 半透明 ellipse） ---
+      // CSS radial-gradient(circle at cx% cy%, color α 0%, transparent 50%) 在 OOXML 里
+      // 用一个椭圆 shape 模拟：圆心定位在 cx/cy，半径由最远 stop 的位置决定，
+      // 整个 shape 给 alpha 0.15-0.25 的 transparency（够柔和不突兀）。
+      const SLIDE_W = 10, SLIDE_H = 5.625;  // inch
+      for (const rl of radialLayers) {
+        const r = parseRadialGradient(rl);
+        if (!r || !r.stops || r.stops.length < 1) continue;
+        // 取首个非透明的 stop 作 glow 中心颜色。CSS radial 通常是
+        // "中心色 → 透明"，stop[0] 就是中心色。alpha 可能是 0.05-1.0 任意值。
+        const visible = r.stops.find(st => !st.isTransparent
+          && (!st.rawColor || extractCssAlpha(st.rawColor) > 0.02));
+        if (!visible) continue;
+        const stopAlpha = visible.rawColor ? extractCssAlpha(visible.rawColor) : 1;
+
+        // 半径估算：最远透明 stop 的位置百分比（默认 50%，按短边算半径）
+        const farStop = r.stops[r.stops.length - 1];
+        let radiusPct = 50;
+        if (farStop.position !== undefined) radiusPct = farStop.position;
+        // 限定在 [20, 80]：太小看不见，太大就盖住整张
+        radiusPct = Math.max(20, Math.min(80, radiusPct));
+
+        // 椭圆 bounds：圆心 cx%/cy%，半径用 SLIDE_W/H × radiusPct/100
+        const radiusW = SLIDE_W * radiusPct / 100;
+        const radiusH = SLIDE_H * radiusPct / 100;
+        const x = SLIDE_W * r.cx / 100 - radiusW;
+        const y = SLIDE_H * r.cy / 100 - radiusH;
+        const w = radiusW * 2;
+        const h = radiusH * 2;
+
+        // 用 ellipse + 内部 radial gradient（中心实色 → 边缘透明）模拟 CSS 光晕
+        // 软过渡，避免 solid ellipse 的硬边。OOXML radial gradFill 在 ellipse 内
+        // 的渲染是限定在 ellipse 范围里的（不会像全屏 shape 那样扩散到整张），
+        // 几何上和 CSS radial-gradient 等价。
+        //
+        // peakAlpha 设计：CSS 的 stopAlpha 已含意图（设计师定的强度），但纯实色
+        // alpha=1 在 PPT 里仍会显眼，cap 到 0.4 以保持"装饰"质感而非"主元素"。
+        const peakAlpha = Math.min(0.4, stopAlpha * 0.8);
+        const tok = _currentGradientHandler.registerRadial({
+          stops: [
+            { pos: 0, color: visible.color, alpha: peakAlpha },
+            { pos: 100, color: visible.color, alpha: 0 },
+          ],
+        });
+        slide.addShape(pptx.ShapeType.ellipse, {
+          x, y, w, h,
           fill: { color: tok },
           line: { type: 'none' },
         });
-        break;  // 只画一层全屏渐变
       }
+
+      if (bottomLaid || radialLayers.length > 0) bgRendered = true;
     }
   }
 
@@ -1583,51 +1782,17 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
 
   // 1c. 渲染 #bg 的子元素（装饰层：mesh-gradient、grid-overlay、SVG motif 等）
   if (ir.bg && ir.bg.children && ir.bg.children.length > 0) {
-      for (const child of ir.bg.children) {
-        const bgChildElements = flattenIRToElements(child, deckDir, 0, bodyBgHex);
-        for (const el of bgChildElements) {
-          switch (el.type) {
-            case 'shape': {
-              const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-              slide.addShape(shapeType, el.data);
-              break;
-            }
-            case 'text':
-              slide.addText(el.data.text, el.data.options);
-              break;
-            case 'image':
-              slide.addImage(el.data);
-              break;
-            case 'svg':
-              slide.addImage(el.data);
-              break;
-            case 'chart':
-              addChartElement(slide, el.data);
-              break;
-          }
-        }
-      }
+    for (const child of ir.bg.children) {
+      const bgChildElements = flattenIRToElements(child, deckDir, 0, bodyBgHex);
+      for (const el of bgChildElements) addElement(pptx, slide, el);
     }
+  }
 
   // 2. 遮罩层（.wrapper 中的 overlay 元素，如半透明渐变遮罩）
   if (ir.overlays && ir.overlays.length > 0) {
     for (const overlay of ir.overlays) {
       const overlayElements = flattenIRToElements(overlay, deckDir, 0, bodyBgHex);
-      for (const el of overlayElements) {
-        switch (el.type) {
-          case 'shape': {
-            const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-            slide.addShape(shapeType, el.data);
-            break;
-          }
-          case 'text':
-            slide.addText(el.data.text, el.data.options);
-            break;
-          case 'image':
-            slide.addImage(el.data);
-            break;
-        }
-      }
+      for (const el of overlayElements) addElement(pptx, slide, el);
     }
   }
 
@@ -1635,125 +1800,27 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   if (ir.rest && ir.rest.length > 0) {
     for (const restNode of ir.rest) {
       const restElements = flattenIRToElements(restNode, deckDir, 0, bodyBgHex);
-      for (const el of restElements) {
-        switch (el.type) {
-          case 'shape': {
-            const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-            slide.addShape(shapeType, el.data);
-            break;
-          }
-          case 'text':
-            slide.addText(el.data.text, el.data.options);
-            break;
-          case 'image':
-            slide.addImage(el.data);
-            break;
-          case 'line':
-            slide.addShape(pptx.ShapeType.line, el.data);
-            break;
-          case 'svg':
-            slide.addImage(el.data);
-            break;
-          case 'chart':
-            addChartElement(slide, el.data);
-            break;
-          case 'table':
-            slide.addTable(el.data.rows, el.data.options);
-            break;
-          case 'list':
-            slide.addText(el.data.text, el.data.options);
-            break;
-        }
-      }
+      for (const el of restElements) addElement(pptx, slide, el);
     }
   }
 
   // 3. 页头（#header，通常包含页面标题）
   if (ir.header) {
     const headerElements = flattenIRToElements(ir.header, deckDir, 0, bodyBgHex);
-    for (const el of headerElements) {
-      switch (el.type) {
-        case 'text':
-          slide.addText(el.data.text, el.data.options);
-          break;
-        case 'shape': {
-          const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-          slide.addShape(shapeType, el.data);
-          break;
-        }
-        case 'line':
-          slide.addShape(pptx.ShapeType.line, el.data);
-          break;
-        case 'image':
-          slide.addImage(el.data);
-          break;
-      }
-    }
+    for (const el of headerElements) addElement(pptx, slide, el);
   }
 
   // 4. 内容区
   if (ir.ct) {
     const elements = flattenIRToElements(ir.ct, deckDir, 0, bodyBgHex);
-    for (const el of elements) {
-      switch (el.type) {
-        case 'text':
-          slide.addText(el.data.text, el.data.options);
-          break;
-        case 'image':
-          slide.addImage(el.data);
-          break;
-        case 'shape': {
-          const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-          slide.addShape(shapeType, el.data);
-          break;
-        }
-        case 'line':
-          slide.addShape(pptx.ShapeType.line, el.data);
-          break;
-        case 'svg':
-          slide.addImage(el.data);
-          break;
-        case 'chart':
-          addChartElement(slide, el.data);
-          break;
-        case 'table':
-          slide.addTable(el.data.rows, el.data.options);
-          break;
-        case 'list':
-          slide.addText(el.data.text, el.data.options);
-          break;
-      }
-    }
+    for (const el of elements) addElement(pptx, slide, el);
   }
 
   // 5. 页脚（与页头/内容区一样完整处理子元素）
   if (ir.footer) {
     const footerElements = flattenIRToElements(ir.footer, deckDir, 0, bodyBgHex);
     if (footerElements.length > 0) {
-      for (const el of footerElements) {
-        switch (el.type) {
-          case 'text':
-            slide.addText(el.data.text, el.data.options);
-            break;
-          case 'shape': {
-            const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-            slide.addShape(shapeType, el.data);
-            break;
-          }
-          case 'image':
-            slide.addImage(el.data);
-            break;
-          case 'line':
-            slide.addShape(pptx.ShapeType.line, el.data);
-            break;
-          case 'svg':
-            slide.addImage(el.data);
-            break;
-          case 'chart':
-            addChartElement(slide, el.data);
-            break;
-        }
-      }
+      for (const el of footerElements) addElement(pptx, slide, el);
     } else {
       // 回退：如果 flattenIRToElements 为空（纯文本 footer），直接构建文本
       const footerText = buildTextElement(ir.footer);
