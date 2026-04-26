@@ -29,19 +29,15 @@ Place `芯片价格汇总.csv` in the working directory and prompt the agent:
 Please read 芯片价格汇总.csv and clean / analyze the recent storage chip quote data.
 ```
 
-The agent triggers `sn-da-excel-workflow` and emits a Markdown summary report. This run produced:
-
-- [`result/半导体-数据分析-汇总分析报告.md`](result/半导体-数据分析-汇总分析报告.md)
+The agent triggers `sn-da-excel-workflow` and emits a Markdown summary report.
 
 > **Data analysis takeaway**: storage prices are trending up overall, with select DRAM and NAND products posting the largest gains. The inflection appeared in late February, accelerated through March, and the rebound is uneven across categories — server-grade products lead while consumer-grade products lag, indicating that key categories drove the rally rather than a synchronous broad-based move.
 
-You can ask the agent to render the Markdown into HTML for easier browsing:
+You can also ask the agent to render the Markdown into HTML for easier browsing:
 
 ```text
 Use the sn-md-to-html-report skill to convert the markdown output into an html file.
 ```
-
-Output: [`result/半导体-数据分析-汇总分析报告.html`](result/半导体-数据分析-汇总分析报告.html)
 
 ### Step 2: Deep research
 
@@ -81,8 +77,6 @@ Routed via `sn-ppt-entry` into `sn-ppt-standard`, which produces:
 ```
 result/
 ├── 芯片价格汇总.csv                                       # Input
-├── 半导体-数据分析-汇总分析报告.md                          # Step 1 (Markdown)
-├── 半导体-数据分析-汇总分析报告.html                        # Step 1 (HTML)
 ├── 内存条价格暴涨原因分析/
 │   ├── 深度调研-内存条价格暴涨原因分析.md                   # Step 2 (Markdown)
 │   ├── 深度调研-内存条价格暴涨原因分析.html                 # Step 2 (HTML)
