@@ -5,10 +5,7 @@ from urllib.parse import urlparse
 
 import httpx
 
-from sn_image_base.u1_api.paths import (
-    generation_file_presigned_url,
-    generation_file_upload_url,
-)
+from sn_image_base.u1_api.paths import generation_file_presigned_url
 
 
 def ensure_output_path(path: Path) -> Path:
@@ -40,36 +37,6 @@ def is_absolute_url(value: str) -> bool:
     """
     parsed = urlparse(value)
     return bool(parsed.scheme and parsed.netloc)
-
-
-def extract_task_input(task: dict) -> dict:
-    """Extract the input parameters from a task dictionary.
-
-    Args:
-        task (dict):
-            The task dictionary, typically from an API response.
-
-    Returns:
-        dict:
-            The input parameters if available, otherwise a subset of
-            fields (prompt, negative_prompt, image_size, aspect_ratio,
-            seed, unet_name) from the task.
-    """
-    task_input = task.get("input")
-    if isinstance(task_input, dict):
-        return task_input
-    return {
-        key: task.get(key)
-        for key in (
-            "prompt",
-            "negative_prompt",
-            "image_size",
-            "aspect_ratio",
-            "seed",
-            "unet_name",
-        )
-        if key in task
-    }
 
 
 def extract_task_image(task: dict) -> dict | None:
@@ -132,45 +99,6 @@ async def download_image(
     return output_path
 
 
-async def upload_local_image(
-    client: httpx.AsyncClient,
-    base_url: str,
-    headers: dict[str, str],
-    image_path: Path,
-) -> str:
-    """Upload a local image file to the generation service.
-
-    Args:
-        client (httpx.AsyncClient):
-            The HTTP client for making requests.
-        base_url (str):
-            The API base URL.
-        headers (dict[str, str]):
-            HTTP headers including authentication.
-        image_path (Path):
-            Path to the local image file to upload.
-
-    Returns:
-        str:
-            The OSS path returned by the server after successful upload.
-
-    Raises:
-        ValueError:
-            If the server response is not a non-empty string.
-    """
-    with open(image_path, "rb") as image_file:
-        response = await client.post(
-            generation_file_upload_url(base_url),
-            headers=headers,
-            files={"upload_file": (image_path.name, image_file)},
-        )
-    response.raise_for_status()
-    body = response.json()
-    if not isinstance(body, str) or not body:
-        raise ValueError(f"unexpected upload response: {body}")
-    return body
-
-
 async def generate_presigned_url(
     client: httpx.AsyncClient,
     base_url: str,
@@ -207,35 +135,3 @@ async def generate_presigned_url(
     if not isinstance(body, str) or not body:
         raise ValueError(f"unexpected presigned url response: {body}")
     return body
-
-
-async def resolve_image_ref(
-    client: httpx.AsyncClient,
-    base_url: str,
-    headers: dict[str, str],
-    image_value: str,
-) -> str:
-    """Resolve an image reference to a URL.
-
-    Args:
-        client (httpx.AsyncClient):
-            The HTTP client for making requests.
-        base_url (str):
-            The API base URL.
-        headers (dict[str, str]):
-            HTTP headers including authentication.
-        image_value (str):
-            An image reference: absolute URL, local file path, or cached key.
-
-    Returns:
-        str:
-            A URL suitable for use in API requests. If image_value is an
-            absolute URL, it is returned as-is. If it is a local file,
-            the file is uploaded and a presigned URL is returned.
-    """
-    if is_absolute_url(image_value):
-        return image_value
-    if Path(image_value).is_file():
-        uploaded_path = await upload_local_image(client, base_url, headers, Path(image_value))
-        return await generate_presigned_url(client, base_url, headers, uploaded_path)
-    return image_value
