@@ -12,6 +12,19 @@ SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-
 
 技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
 
+## 🦝 在小浣熊中开箱即用
+
+本仓库的最新模型与全系 Cowork-Skill，已整体集成进 [**小浣熊 Pro**](https://xiaohuanxiong.com/) 套餐，提供企业级安全防护与开箱即用的丝滑体验——如果你不想自己搭环境、配 API key，可以直接通过小浣熊使用这些能力。
+
+小浣熊本次迎来产品能力与客户端体验的全面升级：
+
+- **三大核心办公能力全面增强**：依托 SenseNova 6.7 Flash 与 Cowork-Skill，数据分析、PPT 生成、任务规划进一步强化，覆盖多文件清洗分析、正式汇报 PPT、行业研究 / 竞品分析 / 投研报告等复杂知识工作的完整闭环。
+- **新增信息图生成功能**：基于 SenseNova U1 模型，将复杂数据、长篇报告与业务洞察压缩为高密度、结构化、视觉化的信息图，让复杂内容更易理解、更适合传播。
+- **全新客户端 + 本地 Agent OS**：云端模型负责复杂推理与多模态理解，本地 Agent OS 围绕本地文件、工作上下文与个人使用习惯，带来更个性化、本地化、安全化的 AI 原生办公体验。
+- **规模化验证**：1500 万个人用户、数千家企业用户的共同选择。
+
+> 👉 立即体验：[xiaohuanxiong.com](https://xiaohuanxiong.com/)
+
 ## 如何使用
 
 **本仓库的 skill 需要配合支持 [Agent Skills](https://agentskills.io/) 规范的智能体使用，推荐 [OpenClaw](https://openclaw.ai/) 或 [hermes-agent](https://github.com/NousResearch/hermes-agent) 获得最佳效果。完整的安装、LLM 配置与 skill 加载流程请参考 [`INSTALL_CN.md`](INSTALL_CN.md)。**
