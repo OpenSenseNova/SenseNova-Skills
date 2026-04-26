@@ -1,57 +1,59 @@
-# 安装与配置
+# Install & Configure
 
-本文档引导你在 Windows / macOS / Linux 上安装 [OpenClaw](https://openclaw.ai/) 或 [hermes-agent](https://github.com/NousResearch/hermes-agent)，对接 [SenseNova](https://platform.sensenova.cn/) 大模型，并加载 `SenseNova-Skills` 中的技能，得到完整可用的 skill-driven agent。
+English | [简体中文](INSTALL_CN.md)
 
-> 两个 agent 任选其一。OpenClaw 与 hermes-agent 均遵循 [Agent Skills](https://agentskills.io/) 规范，本仓库的 skill 在两边都能直接使用。
+This guide walks you through installing [OpenClaw](https://openclaw.ai/) or [hermes-agent](https://github.com/NousResearch/hermes-agent) on Windows / macOS / Linux, wiring it up to a [SenseNova](https://platform.sensenova.cn/) LLM, and loading the skills in this repository — giving you a fully working skill-driven agent.
 
----
-
-## 0. 先准备 SenseNova API Key 与端点
-
-后续两种 agent 都会用到下面这组配置：
-
-| 字段       | 值                                                                                                |
-| -------- | ------------------------------------------------------------------------------------------------ |
-| Base URL | `https://token.sensenova.cn/v1`                                                                  |
-| API Key  | 在 [SenseNova 控制台 · token-plan](https://platform.sensenova.cn/token-plan) 免费申请并复制。 |
-| 模型名      | `sensenova-6.7-flash-lite`                                                                       |
-
-> 端点是 OpenAI 兼容协议，可在任何"OpenAI compatible"配置位填写。
+> Pick **either** agent. Both OpenClaw and hermes-agent follow the [Agent Skills](https://agentskills.io/) convention, so the skills in this repo work in either runtime without modification.
 
 ---
 
-## 1. 平台准备
+## 0. Prepare your SenseNova API key and endpoint
 
-### 1.1 Windows（必须使用 WSL2）
+Both agents below will use the same three values:
 
-OpenClaw 在 Windows 上推荐 WSL2，hermes-agent 在 Windows 上**仅支持** WSL2，两者都先把 WSL2 装好。
+| Field      | Value                                                                                                          |
+| ---------- | -------------------------------------------------------------------------------------------------------------- |
+| Base URL   | `https://token.sensenova.cn/v1`                                                                                |
+| API key    | Get one for free at [SenseNova Console · token-plan](https://platform.sensenova.cn/token-plan) and copy it. |
+| Model name | `sensenova-6.7-flash-lite`                                                                                     |
 
-要求：Windows 10 22H2+ 或 Windows 11。
+> The endpoint speaks the OpenAI-compatible protocol, so it fits any "OpenAI compatible" provider slot.
 
-1. 以**管理员身份**打开 PowerShell：
+---
+
+## 1. Platform prep
+
+### 1.1 Windows (WSL2 required)
+
+OpenClaw recommends running under WSL2 on Windows; hermes-agent **only supports** WSL2 on Windows. Either way, install WSL2 first.
+
+Requirements: Windows 10 22H2+ or Windows 11.
+
+1. Open PowerShell **as Administrator**:
    ```powershell
    wsl --install
    ```
-   该命令会启用所需的 Windows 功能并安装默认的 Ubuntu 发行版。
-2. 重启电脑。
-3. 重启后会自动启动 Ubuntu 终端，按提示设置 UNIX 用户名与密码。
-4. 检查 WSL 版本与发行版：
+   This enables the required Windows features and installs the default Ubuntu distribution.
+2. Reboot the machine.
+3. After reboot, the Ubuntu terminal launches automatically — set your UNIX username and password as prompted.
+4. Verify the WSL version and distribution:
    ```powershell
    wsl -l -v
    ```
-   `VERSION` 一列应为 `2`。
+   The `VERSION` column should read `2`.
 
-之后所有命令都在 **Ubuntu (WSL2) 终端**里执行，而不是 PowerShell。
+From here on, run every command in the **Ubuntu (WSL2) terminal**, not in PowerShell.
 
 ### 1.2 macOS
 
-需要 macOS 12+ 与命令行工具：
+Requires macOS 12+ and the command line developer tools:
 
 ```bash
-xcode-select --install   # 若已安装可忽略
+xcode-select --install   # skip if already installed
 ```
 
-建议预先装好 Homebrew：
+We also recommend installing Homebrew up front:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -59,7 +61,7 @@ xcode-select --install   # 若已安装可忽略
 
 ### 1.3 Linux
 
-主流发行版（Ubuntu 22.04+ / Debian 12+ / Fedora 39+ 等）原生支持。确保已安装 `curl`、`git`：
+Mainstream distributions (Ubuntu 22.04+ / Debian 12+ / Fedora 39+, etc.) work out of the box. Make sure `curl` and `git` are installed:
 
 ```bash
 # Ubuntu / Debian
@@ -71,110 +73,91 @@ sudo dnf install -y curl git
 
 ---
 
-## 2. 二选一：安装 Agent
+## 2. Pick one: install the agent
 
-### 路线 A：安装 OpenClaw
+### Path A: install OpenClaw
 
-OpenClaw 需要 **Node.js 24（推荐）或 22.14+**。
+OpenClaw needs **Node.js 24 (recommended) or 22.14+**.
 
-#### 2.A.1 安装 Node.js
+#### 2.A.1 Install Node.js
 
-任选其一：
+Pick any one option:
 
-- **官方安装包**：从 <https://nodejs.org/> 下载 LTS。
-- **Homebrew（macOS）**：`brew install node@24`
-- **nvm（推荐 Linux/WSL2/macOS）**：
+- **Official installer**: download the LTS from <https://nodejs.org/>.
+- **Homebrew (macOS)**: `brew install node@24`
+- **nvm (recommended for Linux/WSL2/macOS)**:
   ```bash
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
   exec $SHELL
   nvm install 24
   ```
 
-#### 2.A.2 安装 OpenClaw
+#### 2.A.2 Install OpenClaw
 
-macOS / Linux / WSL2：
+macOS / Linux / WSL2:
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-或通过 npm：
+Or via npm:
 
 ```bash
 npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-> Windows 用户请在 **WSL2 内**执行上述命令。OpenClaw 文档也提供了原生 PowerShell 安装脚本（`iwr -useb https://openclaw.ai/install.ps1 | iex`），但 WSL2 路线运行更稳定。
+> Windows users: run the commands above **inside WSL2**. OpenClaw also ships a native PowerShell installer (`iwr -useb https://openclaw.ai/install.ps1 | iex`), but the WSL2 path is more stable.
 
-#### 2.A.3 验证
+#### 2.A.3 Verify
 
 ```bash
 openclaw --version
 openclaw doctor
 ```
 
-#### 2.A.4 配置 SenseNova LLM
+#### 2.A.4 Configure the SenseNova LLM
 
-编辑配置文件 `~/.openclaw/openclaw.json`（不存在则新建），写入：
-
-```json5
-{
-  models: {
-    providers: {
-      openai: {
-        baseUrl: "https://token.sensenova.cn/v1",
-        apiKey: "<把你的 API Key 粘贴在这里>"
-      }
-    }
-  },
-  agents: {
-    defaults: {
-      model: { primary: "openai/sensenova-6.7-flash-lite" }
-    }
-  }
-}
-```
-
-也可以把 API Key 放进环境变量（推荐）：
+Run the three commands below — they register SenseNova as a custom OpenAI-compatible provider and set it as the default model. Replace the placeholder with the API key you generated in §0.
 
 ```bash
-echo 'export OPENAI_API_KEY="<你的 API Key>"' >> ~/.bashrc   # 或 ~/.zshrc
-source ~/.bashrc
+openclaw config unset models.providers.sensenova
+openclaw config set models.providers.custom '{"baseUrl":"https://token.sensenova.cn/v1","api":"openai-completions","apiKey":"<paste your API key here>","models":[{"id":"sensenova-6.7-flash-lite","name":"SenseNova 6.7 Flash Lite"}]}'
+openclaw config set agents.defaults.model.primary "custom/sensenova-6.7-flash-lite"
 ```
 
-并把上面 JSON 中的 `apiKey` 字段去掉。
+> The first `unset` is a safety step — it clears any earlier `sensenova` provider entry so the new `custom` provider is the only one in play.
 
-#### 2.A.5 验证 LLM 通路
+#### 2.A.5 Verify the LLM connection
 
 ```bash
-openclaw agent --message "你好，自我介绍一下"
+openclaw agent --message "Hi, please introduce yourself"
 ```
 
-能返回中文回答即配置成功。
+If you get an English (or Chinese) reply, the LLM is wired up.
 
 ---
 
-### 路线 B：安装 hermes-agent
+### Path B: install hermes-agent
 
-hermes-agent 由 [Nous Research](https://nousresearch.com/) 维护，安装脚本会自动准备 `uv`、Python 3.11、Node 22、`ripgrep`、`ffmpeg` 等依赖。
+hermes-agent is maintained by [Nous Research](https://nousresearch.com/). Its installer auto-installs `uv`, Python 3.11, Node 22, `ripgrep`, `ffmpeg`, and other dependencies.
 
-> Windows 用户请确保前面已装好 WSL2，所有命令都在 WSL2 终端中运行。
+> Windows users: make sure WSL2 is set up (see §1.1). All commands below run inside the WSL2 terminal.
 
-#### 2.B.1 安装
+#### 2.B.1 Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
 ```
 
-完成后重新加载 shell：
+Reload your shell after install completes:
 
 ```bash
 source ~/.bashrc          # bash
-# 或：source ~/.zshrc     # macOS 默认 zsh
+# or: source ~/.zshrc     # default on macOS
 ```
 
-或者从源码安装：
+Or install from source:
 
 ```bash
 git clone https://github.com/NousResearch/hermes-agent.git
@@ -182,116 +165,116 @@ cd hermes-agent
 ./setup-hermes.sh
 ```
 
-#### 2.B.2 验证
+#### 2.B.2 Verify
 
 ```bash
 hermes --version
 hermes doctor
 ```
 
-#### 2.B.3 配置 SenseNova LLM
+#### 2.B.3 Configure the SenseNova LLM
 
-最快方式 — 用 `hermes config set`：
+Fastest path — use `hermes config set`:
 
 ```bash
 hermes config set model.provider custom
 hermes config set model.base_url https://token.sensenova.cn/v1
-hermes config set model.api_key "<你的 API Key>"
+hermes config set model.api_key "<your API key>"
 hermes config set model.name sensenova-6.7-flash-lite
 ```
 
-`hermes config set` 会自动把 `api_key` 这类秘钥写到 `~/.hermes/.env`，把其它配置写到 `~/.hermes/config.yaml`，无需手动区分。
+`hermes config set` automatically writes secrets such as `api_key` into `~/.hermes/.env` and everything else into `~/.hermes/config.yaml`, so you don't have to split them by hand.
 
-也可以一步走完整向导：
+You can also run the full wizard:
 
 ```bash
-hermes setup        # 全量向导
-# 或
-hermes model        # 仅交互式选择/配置 LLM
+hermes setup        # full setup wizard
+# or
+hermes model        # just the LLM provider step
 ```
 
-向导询问 provider 时选 `custom (OpenAI-compatible)`，然后依次填入：
+When the wizard asks for a provider, pick `custom (OpenAI-compatible)` and enter:
 
-- Base URL：`https://token.sensenova.cn/v1`
-- API Key：上面申请到的 key
-- Model name：`sensenova-6.7-flash-lite`
+- Base URL: `https://token.sensenova.cn/v1`
+- API key: the one you generated above
+- Model name: `sensenova-6.7-flash-lite`
 
-#### 2.B.4 验证 LLM 通路
+#### 2.B.4 Verify the LLM connection
 
 ```bash
 hermes
 ```
 
-进入交互界面后随便问一句"你好"，能返回中文回答即配置成功。
+In the interactive prompt, type something like "hello" — a coherent reply means everything is wired up.
 
 ---
 
-## 3. 加载本仓库的 Skill
+## 3. Load this repo's skills
 
-### 3.1 先克隆仓库
+### 3.1 Clone the repo
 
 ```bash
 git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
 cd SenseNova-Skills
 ```
 
-### 3.2 安装方式一：手动复制 skill 目录
+### 3.2 Option 1: copy the skill directories manually
 
-OpenClaw：
+OpenClaw:
 
 ```bash
 mkdir -p ~/.openclaw/skills
 cp -r skills/* ~/.openclaw/skills/
 ```
 
-hermes-agent：
+hermes-agent:
 
 ```bash
 mkdir -p ~/.hermes/skills
 cp -r skills/* ~/.hermes/skills/
 ```
 
-> 想保持与仓库同步可以用软链接代替 `cp -r`，例如：
+> Want skills to track this repo? Use symlinks instead of `cp -r`:
 > ```bash
 > ln -s "$PWD"/skills/* ~/.openclaw/skills/
 > ```
-> 之后 `git pull` 就能自动获得 skill 更新。
+> Then `git pull` automatically pulls in skill updates.
 
-### 3.3 安装方式二：直接交给 agent 安装
+### 3.3 Option 2: ask the agent to install them
 
-启动 agent 后，把下面这条消息发给它：
+Once your agent is up, send it the message below. It will use its own shell tool to do the `mkdir` + `cp` + listing for you.
 
-> 把当前目录 `SenseNova-Skills/skills/` 下所有子目录复制到 OpenClaw 的 skill 目录（`~/.openclaw/skills/`）。完成后列出已安装的 skill 名称。
+> Copy every subdirectory under `SenseNova-Skills/skills/` (in the current directory) into OpenClaw's skill directory (`~/.openclaw/skills/`). When you're done, list the installed skills.
 
-把"OpenClaw"和路径换成 `hermes-agent` / `~/.hermes/skills/` 即可用于 hermes。Agent 会通过自己的 shell 工具完成 `mkdir` + `cp` + 列目录的动作，并把结果回报给你。
+Swap "OpenClaw" and the path for `hermes-agent` / `~/.hermes/skills/` to use this with hermes.
 
-> 这种方式适合按需挑选 skill，例如："只把 `sn-image-*` 和 `deep-research` 这几个 skill 复制过去"。
+> This option works well for picking and choosing — e.g., "only copy `sn-image-*` and `deep-research`."
 
-### 3.4 各分类 skill 的额外依赖
+### 3.4 Per-category skill prerequisites
 
-部分 skill 有自己的 Python 依赖、API key 或运行时要求，请按需查阅对应的使用指南：
+Some skills need extra Python deps, API keys, or runtime tools. Check the relevant guide:
 
-- 图像与可视化：[`docs/sn-image-generate.md`](docs/sn-image-generate.md)
-- 演示文稿：[`docs/ppt-generate.md`](docs/ppt-generate.md)
-- 数据分析：[`docs/data-analysis.md`](docs/data-analysis.md)
-- 深度研究 / 搜索：[`docs/deep-research.md`](docs/deep-research.md)
-
----
-
-## 4. 验证整体可用
-
-启动 agent，发送：
-
-> 列出当前可用的 skill，并给出每个 skill 的一句话说明。
-
-如果 agent 能列出 `sn-infographic`、`ppt-entry`、`deep-research` 等本仓库的 skill，说明 LLM 与 skill 都已就绪。
+- Image & visualization: [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md)
+- Presentations: [`docs/ppt-generate_en.md`](docs/ppt-generate_en.md)
+- Data analysis: [`docs/data-analysis_en.md`](docs/data-analysis_en.md)
+- Deep research / search: [`docs/deep-research_en.md`](docs/deep-research_en.md)
 
 ---
 
-## 5. 常见问题
+## 4. End-to-end smoke test
 
-- **`wsl --install` 提示找不到命令**：需要 Windows 10 22H2+ / Windows 11，并以管理员身份打开 PowerShell。
-- **Node 版本太低**：`node -v` 必须 ≥ 22.14。用 nvm 切换：`nvm install 24 && nvm use 24`。
-- **`openclaw doctor` / `hermes doctor` 报错**：按报告中的提示逐项修复，缺什么装什么。
-- **LLM 调用 401 / 403**：检查 `OPENAI_API_KEY` 或配置文件中的 key 是否填错；确认 [token-plan](https://platform.sensenova.cn/token-plan) 中 key 仍在有效额度内。
-- **WSL2 中 `curl` 慢/卡**：确认 WSL2 网络模式（`wsl --status`），必要时切到 `mirrored` 网络模式或使用代理。
+Start the agent and ask:
+
+> List the available skills, with a one-line description for each.
+
+If the agent enumerates skills like `sn-infographic`, `ppt-entry`, and `deep-research` from this repo, the LLM and skill setup is good to go.
+
+---
+
+## 5. Troubleshooting
+
+- **`wsl --install` not found**: needs Windows 10 22H2+ / Windows 11, run PowerShell as Administrator.
+- **Node version too low**: `node -v` must be ≥ 22.14. Switch with nvm: `nvm install 24 && nvm use 24`.
+- **`openclaw doctor` / `hermes doctor` complains**: follow the report's hints — install whatever's missing.
+- **LLM returns 401 / 403**: double-check `OPENAI_API_KEY` or the key in the config file; confirm your key still has free quota in [token-plan](https://platform.sensenova.cn/token-plan).
+- **Slow `curl` inside WSL2**: check the WSL2 networking mode (`wsl --status`); switch to `mirrored` networking or use a proxy if needed.
