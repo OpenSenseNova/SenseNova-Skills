@@ -288,7 +288,7 @@ async def main_async(
         api_key (str):
             API key for authentication.
         base_url (str | None, optional):
-            API base URL. If None, reads from SN_BASE_URL env var.
+            API base URL. If None, reads from SN_IMAGE_GEN_BASE_URL env var.
         negative_prompt (str, optional):
             Negative prompt. Defaults to "".
         image_size (str, optional):

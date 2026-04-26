@@ -158,7 +158,7 @@ Authentication parameters for `sn-image-generate` have the following default beh
 
 | Parameter | Default | Override | Description |
 |------|--------|----------|------|
-| `--base-url` | Read from `SN_BASE_URL` env var | `--base-url "..."` | CLI argument has priority; throws error if env var and CLI value are both missing |
+| `--base-url` | Read from `SN_IMAGE_GEN_BASE_URL` env var | `--base-url "..."` | CLI argument has priority; throws error if env var and CLI value are both missing |
 | `--api-key` | Read from `SN_API_KEY` env var | `--api-key "..."` | CLI argument has priority; throws `MissingApiKeyError` if env var and CLI value are both missing |
 
 `sn-image-recognize` (VLM) and `sn-text-optimize` (LLM) use three-level priority: **CLI argument > environment variable > built-in default**
