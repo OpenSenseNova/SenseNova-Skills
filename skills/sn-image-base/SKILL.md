@@ -69,7 +69,7 @@ Image recognition tool that uses VLM (Vision Language Model) to analyze image co
 |------|------|-----------|---------|------|
 | `--api-key` | string | No hardcoded default | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
 | `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` | Vision provider base URL; falls back to shared chat provider |
-| `--model` | string | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` | Vision-capable model name |
+| `--model` | string | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | Vision-capable model name |
 | `--vlm-type` | string | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` | Chat protocol type override |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
 | `--system-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--system-prompt` |
@@ -89,7 +89,7 @@ Text optimization tool that uses LLM (Language Model) to optimize text content. 
 |------|------|-----------|---------|------|
 | `--api-key` | string | No hardcoded default | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
 | `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` | Text provider base URL; falls back to shared chat provider |
-| `--model` | string | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` | Text model name |
+| `--model` | string | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` | Text model name |
 | `--llm-type` | string | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` | Chat protocol type override |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
 | `--system-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--system-prompt` |
@@ -167,12 +167,12 @@ Authentication parameters for `sn-image-generate` have the following default beh
 |------|-----------|-------------|-------------|
 | `--api-key` | None (must be provided) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` |
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` |
-| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` | `SN_TEXT_MODEL` |
+| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
 | `--vlm-type` / `--llm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
 
 `api_key` resolution order (high to low): CLI `--api-key` > command-specific key (`SN_VISION_API_KEY`/`SN_TEXT_API_KEY`) > `SN_CHAT_API_KEY`. If all are unset, `MissingApiKeyError` is raised.
 
-All parameters except `--vlm-type`/`--llm-type` must be provided via CLI arguments or environment variables.
+Only `--api-key` must be provided via CLI or environment; base URL, model, and interface type have shared chat defaults.
 
 ## Agent Configuration Integration
 

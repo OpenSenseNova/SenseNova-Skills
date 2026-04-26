@@ -44,8 +44,7 @@ SN_API_KEY="<sensenova-token-plan-api-key>"
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"   # or other image generation models available in the SenseNova Token Plan
 # Text and vision chat runtime
 SN_CHAT_API_KEY="<sensenova-token-plan-api-key>"
-SN_TEXT_MODEL="sensenova-6.7-flash-lite"
-SN_VISION_MODEL="sensenova-6.7-flash-lite"
+SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ```
 
 ### Detailed Configurations
@@ -129,21 +128,23 @@ To use non-default image generation models, please:
 ##### Configure the shared chat runtime
 
 Text optimization and image recognition now share one chat runtime. Configure the
-protocol, endpoint, and API key once, then choose text and vision models separately:
+protocol, endpoint, API key, and default model once, then override text or vision
+models only when needed:
 
 | Config Keys | Description | Default |
 | ----------- | ----------- | ------- |
 | `SN_CHAT_API_KEY` | API key for text and vision chat calls | (Required) |
 | `SN_CHAT_BASE_URL` | Shared base URL for the chat API | `"https://token.sensenova.cn/v1"` |
 | `SN_CHAT_TYPE` | Shared chat protocol type | `"openai-completions"` |
+| `SN_CHAT_MODEL` | Shared default model for text and vision chat calls | `"sensenova-6.7-flash-lite"` |
 | `SN_TEXT_API_KEY` | Optional text-only provider API key | `SN_CHAT_API_KEY` |
 | `SN_TEXT_BASE_URL` | Optional text-only provider base URL | `SN_CHAT_BASE_URL` |
 | `SN_TEXT_TYPE` | Optional text-only protocol type | `SN_CHAT_TYPE` |
-| `SN_TEXT_MODEL` | Model for `sn-text-optimize` | `"sensenova-6.7-flash-lite"` |
+| `SN_TEXT_MODEL` | Optional model override for `sn-text-optimize` | `SN_CHAT_MODEL` |
 | `SN_VISION_API_KEY` | Optional vision provider API key | `SN_CHAT_API_KEY` |
 | `SN_VISION_BASE_URL` | Optional vision provider base URL | `SN_CHAT_BASE_URL` |
 | `SN_VISION_TYPE` | Optional vision protocol type | `SN_CHAT_TYPE` |
-| `SN_VISION_MODEL` | Vision-capable model for `sn-image-recognize` | `"sensenova-6.7-flash-lite"` |
+| `SN_VISION_MODEL` | Optional vision-capable model override for `sn-image-recognize` | `SN_CHAT_MODEL` |
 
 The default values are recommended for the [SenseNova](https://platform.sensenova.cn/).
 
@@ -173,12 +174,11 @@ To use non-default shared chat settings, please:
     SN_CHAT_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/"
     ```
 
-3. Set `SN_TEXT_MODEL` and `SN_VISION_MODEL`. They may point to the same model if it supports both text and image input:
+3. Set `SN_CHAT_MODEL`, or set `SN_TEXT_MODEL` / `SN_VISION_MODEL` only when a command needs a different model:
 
     ```ini
     # (Default) SenseNova 6.7 Flash Lite
-    SN_TEXT_MODEL="sensenova-6.7-flash-lite"
-    SN_VISION_MODEL="sensenova-6.7-flash-lite"
+    SN_CHAT_MODEL="sensenova-6.7-flash-lite"
     # Anthropic Claude Sonnet 4.6
     SN_VISION_MODEL="claude-sonnet-4-6"
     # Google Gemini 3 Flash Preview

@@ -302,6 +302,7 @@ _OPTIONAL_VARS = [
     # NOTE: PPT_DECK_ROOT removed — deck_dir is now always $(cwd)/ppt_decks/
     "SN_IMAGE_GEN_MODEL_TYPE",
     "SN_CHAT_BASE_URL",
+    "SN_CHAT_MODEL",
     "SN_CHAT_TYPE",
     "SN_CHAT_TIMEOUT",
     "SN_TEXT_API_KEY",

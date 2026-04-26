@@ -114,7 +114,7 @@ Configured via `.env` at the repo root (or `<repo>/skills/.env`). `model_client.
 - `SN_CHAT_API_KEY` for shared text/vision chat auth, or per-kind overrides `SN_TEXT_API_KEY` / `SN_VISION_API_KEY`
 - `SN_API_KEY`, `SN_IMAGE_GEN_BASE_URL` (or `SN_BASE_URL`), `SN_IMAGE_GEN_MODEL`
 
-Optional `SN_CHAT_BASE_URL` / `SN_TEXT_BASE_URL` / `SN_VISION_BASE_URL`, `SN_TEXT_MODEL` / `SN_VISION_MODEL`, and `SN_CHAT_TIMEOUT` / `SN_TEXT_TIMEOUT` / `SN_VISION_TIMEOUT` override defaults.
+Optional `SN_CHAT_BASE_URL` / `SN_TEXT_BASE_URL` / `SN_VISION_BASE_URL`, `SN_CHAT_MODEL` / `SN_TEXT_MODEL` / `SN_VISION_MODEL`, and `SN_CHAT_TIMEOUT` / `SN_TEXT_TIMEOUT` / `SN_VISION_TIMEOUT` override defaults.
 
 Run `python $SKILL_DIR/lib/model_client.py health` to verify env before running the pipeline.
 

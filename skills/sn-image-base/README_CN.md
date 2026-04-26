@@ -44,8 +44,7 @@ SN_API_KEY="<sensenova-token-plan-api-key>"
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"   # 或 Token Plan 中可用的其他图像生成模型
 # 文本与视觉 Chat Runtime
 SN_CHAT_API_KEY="<sensenova-token-plan-api-key>"
-SN_TEXT_MODEL="sensenova-6.7-flash-lite"
-SN_VISION_MODEL="sensenova-6.7-flash-lite"
+SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ```
 
 **注意：不要将 `.env` 文件或 API key 提交到 git。**
@@ -130,21 +129,22 @@ SN_VISION_MODEL="sensenova-6.7-flash-lite"
 
 ##### 配置共享 Chat Runtime
 
-文本优化和图像识别现在共享一套 chat runtime。协议、endpoint、API key 配置一次，文本和视觉场景分别选择模型：
+文本优化和图像识别现在共享一套 chat runtime。协议、endpoint、API key 与默认模型配置一次，仅在需要时分别覆盖文本或视觉模型：
 
 | 配置键 | 说明 | 默认值 |
 | ------ | ---- | ------ |
 | `SN_CHAT_API_KEY` | text/vision chat 调用共用 API key | （必填） |
 | `SN_CHAT_BASE_URL` | 共享 Chat API 基础 URL | `"https://token.sensenova.cn/v1"` |
 | `SN_CHAT_TYPE` | 共享 Chat 协议类型 | `"openai-completions"` |
+| `SN_CHAT_MODEL` | text/vision chat 调用共用默认模型 | `"sensenova-6.7-flash-lite"` |
 | `SN_TEXT_API_KEY` | 可选文本 provider API key | `SN_CHAT_API_KEY` |
 | `SN_TEXT_BASE_URL` | 可选文本 provider 基础 URL | `SN_CHAT_BASE_URL` |
 | `SN_TEXT_TYPE` | 可选文本协议类型 | `SN_CHAT_TYPE` |
-| `SN_TEXT_MODEL` | `sn-text-optimize` 使用的模型 | `"sensenova-6.7-flash-lite"` |
+| `SN_TEXT_MODEL` | 可选的 `sn-text-optimize` 模型覆盖 | `SN_CHAT_MODEL` |
 | `SN_VISION_API_KEY` | 可选视觉 provider API key | `SN_CHAT_API_KEY` |
 | `SN_VISION_BASE_URL` | 可选视觉 provider 基础 URL | `SN_CHAT_BASE_URL` |
 | `SN_VISION_TYPE` | 可选视觉协议类型 | `SN_CHAT_TYPE` |
-| `SN_VISION_MODEL` | `sn-image-recognize` 使用的视觉模型 | `"sensenova-6.7-flash-lite"` |
+| `SN_VISION_MODEL` | 可选的 `sn-image-recognize` 视觉模型覆盖 | `SN_CHAT_MODEL` |
 
 默认值适用于 [SenseNova](https://platform.sensenova.cn/)。
 
@@ -174,12 +174,11 @@ SN_VISION_MODEL="sensenova-6.7-flash-lite"
     SN_CHAT_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/"
     ```
 
-3. 设置 `SN_TEXT_MODEL` 与 `SN_VISION_MODEL`。如果模型同时支持文本和图片输入，可以设置为同一个模型：
+3. 设置 `SN_CHAT_MODEL`，仅在文本或视觉命令需要不同模型时再设置 `SN_TEXT_MODEL` / `SN_VISION_MODEL`：
 
     ```ini
     # （默认）SenseNova 6.7 Flash Lite
-    SN_TEXT_MODEL="sensenova-6.7-flash-lite"
-    SN_VISION_MODEL="sensenova-6.7-flash-lite"
+    SN_CHAT_MODEL="sensenova-6.7-flash-lite"
     # Anthropic Claude Sonnet 4.6
     SN_VISION_MODEL="claude-sonnet-4-6"
     # Google Gemini 3 Flash Preview

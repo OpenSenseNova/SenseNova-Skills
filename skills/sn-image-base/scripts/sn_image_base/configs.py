@@ -105,20 +105,25 @@ class Configs:
     SN_CHAT_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"], Field("SN_CHAT_TYPE")
     ] = "openai-completions"
-    SN_TEXT_API_KEY: Annotated[str, Field("SN_TEXT_API_KEY", secret=True)] = ""
-    SN_TEXT_BASE_URL: Annotated[str, Field("SN_TEXT_BASE_URL")] = ""
+    SN_CHAT_MODEL: Annotated[str, Field("SN_CHAT_MODEL")] = "sensenova-6.7-flash-lite"
+    SN_TEXT_API_KEY: Annotated[str, Field("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", secret=True)] = ""
+    SN_TEXT_BASE_URL: Annotated[str, Field("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL")] = ""
     SN_TEXT_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
-        Field("SN_TEXT_TYPE"),
+        Field("SN_TEXT_TYPE", "SN_CHAT_TYPE"),
     ] = ""
-    SN_TEXT_MODEL: Annotated[str, Field("SN_TEXT_MODEL")] = "sensenova-6.7-flash-lite"
-    SN_VISION_API_KEY: Annotated[str, Field("SN_VISION_API_KEY", secret=True)] = ""
-    SN_VISION_BASE_URL: Annotated[str, Field("SN_VISION_BASE_URL")] = ""
+    SN_TEXT_MODEL: Annotated[str, Field("SN_TEXT_MODEL", "SN_CHAT_MODEL")] = (
+        "sensenova-6.7-flash-lite"
+    )
+    SN_VISION_API_KEY: Annotated[str, Field("SN_VISION_API_KEY", "SN_CHAT_API_KEY", secret=True)] = ""
+    SN_VISION_BASE_URL: Annotated[str, Field("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL")] = ""
     SN_VISION_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
-        Field("SN_VISION_TYPE"),
+        Field("SN_VISION_TYPE", "SN_CHAT_TYPE"),
     ] = ""
-    SN_VISION_MODEL: Annotated[str, Field("SN_VISION_MODEL")] = "sensenova-6.7-flash-lite"
+    SN_VISION_MODEL: Annotated[str, Field("SN_VISION_MODEL", "SN_CHAT_MODEL")] = (
+        "sensenova-6.7-flash-lite"
+    )
 
     def __init__(self) -> None:
         for field, hint in get_type_hints(type(self), include_extras=True).items():
@@ -178,13 +183,13 @@ class Configs:
             "text": {
                 "api_key": ("SN_TEXT_API_KEY", "SN_CHAT_API_KEY"),
                 "base_url": ("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL"),
-                "model": ("SN_TEXT_MODEL",),
+                "model": ("SN_TEXT_MODEL", "SN_CHAT_MODEL"),
                 "type": ("SN_TEXT_TYPE", "SN_CHAT_TYPE"),
             },
             "vision": {
                 "api_key": ("SN_VISION_API_KEY", "SN_CHAT_API_KEY"),
                 "base_url": ("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL"),
-                "model": ("SN_VISION_MODEL",),
+                "model": ("SN_VISION_MODEL", "SN_CHAT_MODEL"),
                 "type": ("SN_VISION_TYPE", "SN_CHAT_TYPE"),
             },
         }

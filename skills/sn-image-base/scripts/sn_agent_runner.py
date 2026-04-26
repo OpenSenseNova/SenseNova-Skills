@@ -144,7 +144,7 @@ def build_parser() -> argparse.ArgumentParser:
     recog_parser.add_argument(
         "--model",
         default=None,
-        help="Vision model name (CLI > SN_VISION_MODEL)",
+        help="Vision model name (CLI > SN_VISION_MODEL > SN_CHAT_MODEL)",
     )
     recog_parser.add_argument(
         "--vlm-type",
@@ -179,7 +179,7 @@ def build_parser() -> argparse.ArgumentParser:
     opt_parser.add_argument(
         "--model",
         default=None,
-        help="Text model name (CLI > SN_TEXT_MODEL)",
+        help="Text model name (CLI > SN_TEXT_MODEL > SN_CHAT_MODEL)",
     )
     opt_parser.add_argument(
         "--llm-type",
@@ -374,7 +374,7 @@ RUNTIME_PROFILES = {
         "label": "vision",
         "key_env": "SN_VISION_API_KEY or SN_CHAT_API_KEY",
         "url_env": "SN_VISION_BASE_URL or SN_CHAT_BASE_URL",
-        "model_env": "SN_VISION_MODEL",
+        "model_env": "SN_VISION_MODEL or SN_CHAT_MODEL",
         "type_env": "SN_VISION_TYPE or SN_CHAT_TYPE",
     },
     "llm": {
@@ -386,7 +386,7 @@ RUNTIME_PROFILES = {
         "label": "text",
         "key_env": "SN_TEXT_API_KEY or SN_CHAT_API_KEY",
         "url_env": "SN_TEXT_BASE_URL or SN_CHAT_BASE_URL",
-        "model_env": "SN_TEXT_MODEL",
+        "model_env": "SN_TEXT_MODEL or SN_CHAT_MODEL",
         "type_env": "SN_TEXT_TYPE or SN_CHAT_TYPE",
     },
 }

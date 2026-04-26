@@ -78,7 +78,7 @@ class LLMConfig:
         return cls(
             api_key=_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY"),
             base_url=_env("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
-            model=_env("SN_TEXT_MODEL", default=_DEFAULT_CHAT_MODEL),
+            model=_env("SN_TEXT_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
             timeout=float(_env("SN_TEXT_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
         )
 
@@ -95,7 +95,7 @@ class VLMConfig:
         return cls(
             api_key=_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY"),
             base_url=_env("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
-            model=_env("SN_VISION_MODEL", default=_DEFAULT_CHAT_MODEL),
+            model=_env("SN_VISION_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
             timeout=float(_env("SN_VISION_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
         )
 
@@ -158,7 +158,7 @@ def llm(system_prompt: str, user_prompt: str, *, model: str | None = None,
 
     url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
     payload: dict[str, Any] = {
-        "model": model or _require(cfg.model, "SN_TEXT_MODEL"),
+        "model": model or _require(cfg.model, "SN_TEXT_MODEL / SN_CHAT_MODEL"),
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -217,7 +217,7 @@ def vlm(system_prompt: str, user_prompt: str, images: list[str | Path], *,
 
     url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
     payload = {
-        "model": model or _require(cfg.model, "SN_VISION_MODEL"),
+        "model": model or _require(cfg.model, "SN_VISION_MODEL / SN_CHAT_MODEL"),
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": content},

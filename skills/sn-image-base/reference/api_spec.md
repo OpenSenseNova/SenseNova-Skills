@@ -124,7 +124,7 @@ python sn_agent_runner.py sn-image-recognize \
 | `--images` | string[] | **Yes** | - | List of image paths (supports multiple) |
 | `--api-key` | string | No | No hardcoded default | CLI > `SN_VISION_API_KEY` > `SN_CHAT_API_KEY`; raises `MissingApiKeyError` if all are empty |
 | `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_VISION_BASE_URL` > `SN_CHAT_BASE_URL` |
-| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_VISION_MODEL` |
+| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_VISION_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
 | `--vlm-type` | string | No | `openai-completions` | CLI > `SN_VISION_TYPE` > `SN_CHAT_TYPE` |
@@ -158,13 +158,13 @@ This image shows an adorable orange cat napping in the sunlight.
 
 ### Parameter Priority
 
-`--api-key`, `--base-url`, `--model`, and `--vlm-type` all follow a two-level priority: **CLI parameter > environment variable** (no built-in defaults except `--vlm-type`; must be provided via one of the two methods).
+`--api-key`, `--base-url`, `--model`, and `--vlm-type` use priority: **CLI parameter > command-specific environment variable > shared `SN_CHAT_*` environment variable > built-in default**.
 
 | Parameter | Built-in Default | Environment Variable |
 |-----------|-----------------|---------------------|
 | `--api-key` | None (required) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` |
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` |
-| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` |
+| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` |
 | `--vlm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` |
 
 ---
@@ -195,7 +195,7 @@ python sn_agent_runner.py sn-text-optimize \
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
 | `--api-key` | string | No | No hardcoded default | CLI > `SN_TEXT_API_KEY` > `SN_CHAT_API_KEY`; raises `MissingApiKeyError` if all are empty |
 | `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_TEXT_BASE_URL` > `SN_CHAT_BASE_URL` |
-| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_TEXT_MODEL` |
+| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_TEXT_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
 | `--llm-type` | string | No | `openai-completions` | CLI > `SN_TEXT_TYPE` > `SN_CHAT_TYPE` |
@@ -229,13 +229,13 @@ Optimized text content...
 
 ### Parameter Priority
 
-`--api-key`, `--base-url`, `--model`, and `--llm-type` all follow a two-level priority: **CLI parameter > environment variable** (`--llm-type` has a built-in default of `openai-completions`; other parameters have no built-in defaults and must be provided via one of the two methods).
+`--api-key`, `--base-url`, `--model`, and `--llm-type` use priority: **CLI parameter > command-specific environment variable > shared `SN_CHAT_*` environment variable > built-in default**.
 
 | Parameter | Built-in Default | Environment Variable |
 |-----------|-----------------|---------------------|
 | `--api-key` | None (required) | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` |
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` |
-| `--model` | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` |
+| `--model` | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
 | `--llm-type` | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
 
 ---

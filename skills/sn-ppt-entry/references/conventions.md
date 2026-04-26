@@ -40,7 +40,7 @@ sn-ppt-standard 的 `scripts/run_stage.py` 对每个阶段都封装成 `python r
 - `SN_CHAT_API_KEY`（LLM/VLM 默认共享 key；可用 `SN_TEXT_API_KEY` / `SN_VISION_API_KEY` 分别覆盖）
 - `SN_API_KEY` + `SN_IMAGE_GEN_BASE_URL`（或 `SN_BASE_URL`） + `SN_IMAGE_GEN_MODEL`
 
-可选覆盖：`SN_CHAT_BASE_URL` / `SN_CHAT_TYPE`、`SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_TIMEOUT` 等。
+可选覆盖：`SN_CHAT_BASE_URL` / `SN_CHAT_TYPE` / `SN_CHAT_MODEL`、`SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_TIMEOUT` 等。
 
 ## 绝对路径原则
 
