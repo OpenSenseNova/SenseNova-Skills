@@ -61,14 +61,14 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ### 🎨 Image & Visualization
 
-📖 Full guide: [`docs/u1-image-generate_en.md`](docs/u1-image-generate_en.md) (prerequisites, Quick Start, API config, and invocation samples).
+📖 Full guide: [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md) (prerequisites, Quick Start, API config, and invocation samples).
 
 
 | Name                                               | Label                          | Description                                                                                                                                                       |
 | -------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`u1-doctor`](skills/u1-doctor/SKILL.md)           | Environment Doctor             | Validates the SenseNova-Skills environment — checks `u1-image-base` install, Python deps, and required env vars; interactively fills missing values into `.env`. |
-| [`u1-image-base`](skills/u1-image-base/SKILL.md)   | Image Base Layer (Tier 0)      | Low-level tools — text-to-image (`u1-image-generate`), image recognition (`u1-image-recognize`), and text optimization (`u1-text-optimize`) — exposed through a unified `openclaw_runner.py`, designed to be called by upper-layer skills. |
-| [`u1-infographic`](skills/u1-infographic/SKILL.md) | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. |
+| [`sn-image-doctor`](skills/sn-image-doctor/SKILL.md)           | Environment Doctor             | Validates the SenseNova-Skills environment — checks `sn-image-base` install, Python deps, and required env vars; interactively fills missing values into `.env`. |
+| [`sn-image-base`](skills/sn-image-base/SKILL.md)   | Image Base Layer (Tier 0)      | Low-level tools — text-to-image (`sn-image-generate`), image recognition (`sn-image-recognize`), and text optimization (`sn-text-optimize`) — exposed through a unified `sn_agent_runner.py`, designed to be called by upper-layer skills. |
+| [`sn-infographic`](skills/sn-infographic/SKILL.md) | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. |
 
 
 ### 📊 Presentations (PPT)
@@ -79,8 +79,8 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | Name                                           | Label                  | Description                                                                                                                                                                                                              |
 | ---------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [`ppt-entry`](skills/ppt-entry/SKILL.md)       | **PPT Entry Point**    | **Unified entry point for PPT generation.** Collects role / audience / scenario / page count / mode (creative or standard), parses uploaded pdf / docx / md / txt, emits `task_pack.json` + `info_pack.json`, and dispatches to the chosen mode. |
-| [`ppt-doctor`](skills/ppt-doctor/SKILL.md)     | PPT Environment Doctor | Environment check for the PPT pipeline — validates `u1-image-base`, API keys, the Node runtime, and optional deps; writes missing required vars into `.env`.                                                             |
-| [`ppt-creative`](skills/ppt-creative/SKILL.md) | PPT Creative Mode      | One full-page 16:9 PNG per slide, generated via `u1-image-generate` with a per-page composed prompt.                                                                                                                     |
+| [`ppt-doctor`](skills/ppt-doctor/SKILL.md)     | PPT Environment Doctor | Environment check for the PPT pipeline — validates `sn-image-base`, API keys, the Node runtime, and optional deps; writes missing required vars into `.env`.                                                             |
+| [`ppt-creative`](skills/ppt-creative/SKILL.md) | PPT Creative Mode      | One full-page 16:9 PNG per slide, generated via `sn-image-generate` with a per-page composed prompt.                                                                                                                     |
 | [`ppt-standard`](skills/ppt-standard/SKILL.md) | PPT Standard Mode      | `style_spec` → outline → asset plan + per-slot images + VLM QC → per-page HTML → per-page review (with optional rewrite) → aggregated `review.md` → PPTX export.                                                         |
 
 
@@ -126,11 +126,11 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ## Sample Outputs
 
-### 🎨 Infographic (u1-infographic)
+### 🎨 Infographic (sn-infographic)
 
-A few `u1-infographic` outputs (more in [`docs/u1-infographic-examples.md`](docs/u1-infographic-examples.md)).
+A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md)).
 
-<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="u1-infographic sample outputs"></p>
+<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic sample outputs"></p>
 
 ### 📊 Presentations (ppt-standard / ppt-creative)
 

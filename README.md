@@ -61,14 +61,14 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 🎨 图像与可视化
 
-📖 详细使用指南：[`docs/u1-image-generate.md`](docs/u1-image-generate.md)（环境要求、Quick Start、API 配置与调用样例）。
+📖 详细使用指南：[`docs/sn-image-generate.md`](docs/sn-image-generate.md)（环境要求、Quick Start、API 配置与调用样例）。
 
 
 | 名称                                                 | 标签            | 描述                                                                                              |
 | -------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
-| [`u1-doctor`](skills/u1-doctor/SKILL.md)           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `u1-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
-| [`u1-image-base`](skills/u1-image-base/SKILL.md)   | 图像基础层（Tier 0） | 提供文生图（`u1-image-generate`）、图像识别（`u1-image-recognize`）与文本优化（`u1-text-optimize`）三个底层工具，统一通过 `openclaw_runner.py` 调用，供上层技能复用。 |
-| [`u1-infographic`](skills/u1-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。                                     |
+| [`sn-image-doctor`](skills/sn-image-doctor/SKILL.md)           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `sn-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
+| [`sn-image-base`](skills/sn-image-base/SKILL.md)   | 图像基础层（Tier 0） | 提供文生图（`sn-image-generate`）、图像识别（`sn-image-recognize`）与文本优化（`sn-text-optimize`）三个底层工具，统一通过 `sn_agent_runner.py` 调用，供上层技能复用。 |
+| [`sn-infographic`](skills/sn-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。                                     |
 
 
 ### 📊 演示文稿（PPT）
@@ -79,8 +79,8 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | 名称                                             | 标签         | 描述                                                                                                                         |
 | ---------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
 | [`ppt-entry`](skills/ppt-entry/SKILL.md)       | **PPT 入口** | **PPT 生成功能的统一入口**，收集角色 / 受众 / 场景 / 页数 / 模式（创意 or 标准），解析 pdf / docx / md / txt 输入，产出 `task_pack.json` + `info_pack.json` 并分派到下游模式。 |
-| [`ppt-doctor`](skills/ppt-doctor/SKILL.md)     | PPT 环境诊断   | PPT 流水线的环境检查，验证 `u1-image-base`、API key、Node 运行时与可选依赖；按需写入 `.env`。                                                         |
-| [`ppt-creative`](skills/ppt-creative/SKILL.md) | PPT 创意模式   | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `u1-image-generate` 一次性出图。                                                                |
+| [`ppt-doctor`](skills/ppt-doctor/SKILL.md)     | PPT 环境诊断   | PPT 流水线的环境检查，验证 `sn-image-base`、API key、Node 运行时与可选依赖；按需写入 `.env`。                                                         |
+| [`ppt-creative`](skills/ppt-creative/SKILL.md) | PPT 创意模式   | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `sn-image-generate` 一次性出图。                                                                |
 | [`ppt-standard`](skills/ppt-standard/SKILL.md) | PPT 标准模式   | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出 PPTX。                                |
 
 
@@ -126,11 +126,11 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ## 输出样例
 
-### 🎨 信息图（u1-infographic）
+### 🎨 信息图（sn-infographic）
 
-`u1-infographic` 的部分生成效果（更多样例见 [`docs/u1-infographic-examples_CN.md`](docs/u1-infographic-examples_CN.md)）。
+`sn-infographic` 的部分生成效果（更多样例见 [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md)）。
 
-<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="u1-infographic 生成效果合集"></p>
+<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic 生成效果合集"></p>
 
 ### 📊 演示文稿（ppt-standard / ppt-creative）
 
@@ -138,7 +138,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 <!-- TODO: 补充 PPT 样例图片 -->
 
-### 🔬 深度调研（deep-research） 
+### 🔬 深度调研（deep-research）
 
 `deep-research` 编排产出的报告样例（更多样例见 [`docs/deep-research-examples.md`](docs/deep-research-examples.md)）。
 
