@@ -36,6 +36,27 @@ skills/
 │   └── requirements.txt  # Python 依赖（可选）
 ```
 
+## 如何使用
+
+克隆本仓库后，把 `skills/` 下的子目录复制（或软链接）到所用智能体加载的 skills 目录：
+
+| 智能体 | 目标目录 |
+|--------|---------|
+| [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
+| [hermes-agent](https://github.com/OpenSenseNova/hermes-agent) | `~/.hermes/skills/` |
+
+例如，把全部技能复制到 OpenClaw：
+
+```bash
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+mkdir -p ~/.openclaw/skills
+cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
+```
+
+Hermes 把目录换成 `~/.hermes/skills/` 即可。
+
+各分类技能的 Python 依赖、API key 与调用示例同样请参考对应分类的 📖 详细使用指南。
+
 ## 技能列表
 
 ### 🎨 图像与可视化
