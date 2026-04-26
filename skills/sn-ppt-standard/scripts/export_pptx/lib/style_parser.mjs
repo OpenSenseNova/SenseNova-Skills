@@ -247,13 +247,53 @@ export function parseRadialGradient(cssValue) {
 
   if (parts.length < 2) return null;
 
-  // 第一部分可能是 shape/position 描述（circle at 80% 20%），跳过
+  // 第一部分可能是 shape/position 描述（circle at 80% 20%）
+  // 默认圆心 50% 50%（CSS 默认）
+  let cx = 50, cy = 50;
   let stopParts = parts;
-  const firstPart = parts[0].trim().toLowerCase();
-  if (firstPart.includes('circle') || firstPart.includes('ellipse') ||
-      firstPart.includes('at ') || firstPart.includes('closest') ||
-      firstPart.includes('farthest')) {
+  const firstPart = parts[0].trim();
+  const firstLower = firstPart.toLowerCase();
+  if (firstLower.includes('circle') || firstLower.includes('ellipse') ||
+      firstLower.includes('at ') || firstLower.includes('closest') ||
+      firstLower.includes('farthest')) {
     stopParts = parts.slice(1);
+    // 解析 `at X% Y%`（也支持 px / 单值如 `at center` / 关键词 left/right/top/bottom）
+    const atMatch = firstPart.match(/at\s+([^,]+)$/i);
+    if (atMatch) {
+      const posStr = atMatch[1].trim();
+      const tokens = posStr.split(/\s+/);
+      const KEY = { left: 0, center: 50, right: 100, top: 0, bottom: 50 };
+      function parsePosToken(tok, axis) {
+        if (!tok) return axis === 'x' ? 50 : 50;
+        const lower = tok.toLowerCase();
+        if (lower in KEY) {
+          // 'top' is y=0, 'bottom' y=100, 'left' x=0, 'right' x=100, 'center' both 50
+          if (lower === 'top') return 0;
+          if (lower === 'bottom') return 100;
+          if (lower === 'left') return 0;
+          if (lower === 'right') return 100;
+          return 50;
+        }
+        const m = lower.match(/^(-?[\d.]+)\s*(%|px)?$/);
+        if (m) {
+          const n = parseFloat(m[1]);
+          // px 估算：以 1280 宽 / 720 高（slide 默认）换算到百分比，仅供近似
+          if (m[2] === 'px') {
+            return axis === 'x' ? (n / 1280) * 100 : (n / 720) * 100;
+          }
+          return n;
+        }
+        return 50;
+      }
+      if (tokens.length >= 2) {
+        cx = parsePosToken(tokens[0], 'x');
+        cy = parsePosToken(tokens[1], 'y');
+      } else if (tokens.length === 1) {
+        // 单值：通常是关键词 like 'center'
+        cx = parsePosToken(tokens[0], 'x');
+        cy = parsePosToken(tokens[0], 'y');
+      }
+    }
   }
 
   // 解析颜色停止点（保留 transparent stop）
@@ -284,7 +324,7 @@ export function parseRadialGradient(cssValue) {
 
   if (stops.length === 0) return null;
 
-  return { type: 'radial', stops };
+  return { type: 'radial', stops, cx, cy };
 }
 
 // ---------------------------------------------------------------------------

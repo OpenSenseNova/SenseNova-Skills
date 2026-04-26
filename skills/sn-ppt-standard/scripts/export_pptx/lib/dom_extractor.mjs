@@ -289,6 +289,12 @@ underline: cs.getPropertyValue('text-decoration-line').includes('underline'),
         // 这样父文本框排版的水平空间和 HTML 一致。装饰子元素同时作为独立 IR child
         // 输出 shape+text，z-order 上由后输出的子节点覆盖父文本（见 extractNode 的
         // hasMixedContent 分支为它们追加 children）。
+        //
+        // R5 修复（Turn-2）：父 textRuns 中装饰子元素的文字渲染为父样式，但子 shape
+        // 边界与父 textbox 字符位置存在像素级差异，导致父文字从子 shape 边缘漏出
+        // 形成"重影"。对策：把装饰 run 的文字保留（保排版宽度），但 color 设为
+        // 透明 → 父 textbox 只占位不渲染该段文字，子 textbox 是唯一实际显示。
+        const isDecorated = hasOwnDecoration(node);
 
         const text = node.innerText || '';
         if (!text) return;
@@ -300,11 +306,13 @@ underline: cs.getPropertyValue('text-decoration-line').includes('underline'),
           bold: cs.getPropertyValue('font-weight') >= 600 || cs.getPropertyValue('font-weight') === 'bold',
           italic: cs.getPropertyValue('font-style') === 'italic',
           fontSize: cs.getPropertyValue('font-size'),
-          color: cs.getPropertyValue('color'),
+          // R5: 装饰子元素的文字在父 textbox 中用透明色占位（不实际渲染），
+          // 真正的文字由它独立的 IR child shape+textbox 显示。
+          color: isDecorated ? 'rgba(0, 0, 0, 0)' : cs.getPropertyValue('color'),
           fontFamily: cs.getPropertyValue('font-family'),
           // I-vi: 用 text-decoration-line（非继承）代替 text-decoration（继承），
-// 避免父节点的 underline 误传给子文本 run（如 company-11th p2 黄色下划线 bug）
-underline: cs.getPropertyValue('text-decoration-line').includes('underline'),
+          // 避免父节点的 underline 误传给子文本 run（如 company-11th p2 黄色下划线 bug）
+          underline: cs.getPropertyValue('text-decoration-line').includes('underline'),
           isBlock,
         });
       }

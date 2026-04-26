@@ -8,9 +8,11 @@ Usage:
     python run_stage.py asset-plan      --deck-dir <deck>
     python run_stage.py gen-image       --deck-dir <deck> --page N --slot SLOT
     python run_stage.py page-html       --deck-dir <deck> --page N
-    python run_stage.py batch-gen-image --deck-dir <deck> [--concurrency 4]
-    python run_stage.py batch-page-html --deck-dir <deck> [--concurrency 4]
-    python run_stage.py export          --deck-dir <deck>
+    python run_stage.py batch-gen-image    --deck-dir <deck> [--concurrency 4]
+    python run_stage.py batch-page-html    --deck-dir <deck> [--concurrency 4]
+    python run_stage.py refine-page        --deck-dir <deck> --page N
+    python run_stage.py batch-refine-page  --deck-dir <deck> [--concurrency 4]
+    python run_stage.py export             --deck-dir <deck>
 
 The main agent (in OpenClaw) is expected to call this script **once per
 stage**, with page/slot iteration driven by the agent's own loop of tool_calls.
@@ -110,6 +112,20 @@ def _parse_json_loose(s: str) -> dict:
         if start != -1 and end > start:
             return json.loads(s[start:end + 1])
         raise
+
+
+def _env_float(name: str, default: float) -> float:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return float(raw)
+    except ValueError:
+        return default
+
+
+def _env_int(name: str, default: int) -> int:
+    return int(_env_float(name, default))
 
 
 _STYLE_DIMENSIONS_PATH = SKILL_DIR.parent.parent / "reference" / "style_dimensions.json"
@@ -355,8 +371,13 @@ def cmd_outline(deck: Path) -> int:
         "raw_documents_excerpt": raw_docs or None,
         "available_reference_images": available_reference_images or None,
     }, ensure_ascii=False, indent=2)
+    outline_timeout = _env_float("OUTLINE_LLM_TIMEOUT", _env_float("LLM_TIMEOUT", 300.0))
+    outline_retries = _env_int("OUTLINE_LLM_RETRIES", 1)
     try:
-        raw = llm(system_prompt, user_prompt)
+        raw = llm(
+            system_prompt, user_prompt,
+            timeout=outline_timeout, retries=outline_retries, request_name="outline",
+        )
         data = _parse_json_loose(raw)
     except (ModelClientError, json.JSONDecodeError) as e:
         return _fail(f"outline: {e}")
@@ -661,6 +682,63 @@ def _normalize_img_srcs(html: str, page_plan: dict, extra_paths: list[str] | Non
     return new_html, count_holder["n"]
 
 
+def _read_image_size(path: Path) -> dict | None:
+    """Return `{w, h, aspect}` for a local image file, or None if unreadable.
+
+    Decodes only the dimensions (no full pixel buffer), so it's fine to call
+    on every image once per page. Supports PNG / JPEG / GIF / WebP / BMP /
+    SVG (with a width/height attribute). aspect is rounded to 3 decimals.
+
+    Used by `cmd_page_html` to feed the rewriter accurate intrinsic dimensions
+    for the inherited-image and asset-slot images, so the generator can size
+    container width/height to match each image's natural aspect ratio.
+    """
+    try:
+        if not path.exists() or not path.is_file():
+            return None
+        head = path.read_bytes()[:64]  # generous header for SVG
+    except OSError:
+        return None
+
+    w = h = 0
+
+    # PNG: 8-byte sig + 4-byte length + 'IHDR' + 4-byte width + 4-byte height
+    if head[:8] == b"\x89PNG\r\n\x1a\n" and head[12:16] == b"IHDR":
+        w = int.from_bytes(head[16:20], "big")
+        h = int.from_bytes(head[20:24], "big")
+
+    # GIF: 'GIF8' + version + 2-byte width LE + 2-byte height LE
+    elif head[:4] == b"GIF8":
+        w = int.from_bytes(head[6:8], "little")
+        h = int.from_bytes(head[8:10], "little")
+
+    # BMP: 'BM' + 18..22 width LE + 22..26 height LE
+    elif head[:2] == b"BM":
+        w = int.from_bytes(head[18:22], "little")
+        h = int.from_bytes(head[22:26], "little")
+
+    # WebP: 'RIFF' .... 'WEBP' 'VP8 ' / 'VP8L' / 'VP8X' — only handle VP8X for size
+    elif head[:4] == b"RIFF" and head[8:12] == b"WEBP":
+        if head[12:16] == b"VP8X":
+            # 24..27 width-1 LE, 27..30 height-1 LE
+            w = int.from_bytes(head[24:27], "little") + 1
+            h = int.from_bytes(head[27:30], "little") + 1
+
+    # JPEG / SVG / etc — fall back to a Pillow read if available; otherwise we
+    # just don't return a size (the rewriter will work without it).
+    if w <= 0 or h <= 0:
+        try:
+            from PIL import Image  # noqa: WPS433 — optional dep
+            with Image.open(path) as im:
+                w, h = im.size
+        except Exception:
+            return None
+
+    if w <= 0 or h <= 0:
+        return None
+    return {"w": int(w), "h": int(h), "aspect": round(w / h, 3)}
+
+
 def _resolve_inherited_table(ip: dict, page_outline: dict) -> dict | None:
     ref = page_outline.get("use_table")
     if not ref:
@@ -796,13 +874,96 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     inherited_table = _resolve_inherited_table(ip, page_outline)
     inherited_image = _resolve_inherited_image(ip, page_outline, deck, page_no)
 
+    # Inherited image: collect every textual hint the upstream pipeline
+    # already produced. Resolution order (best → worst):
+    #   1. ppt-entry's `caption_images.py` (VLM, actual image content)
+    #      Pool A → raw_documents.json[doc_index].inherited_images[image_index].vlm_caption
+    #      Pool B → info_pack.user_assets.reference_image_captions[abs_path]
+    #   2. document_digest LLM's caption_hint (text-only guess; legacy)
+    #   3. alt text from doc parser / filename
+    # Cached fields are read directly — we never re-caption here ("single source
+    # of truth": ppt-entry/scripts/caption_images.py owns image captioning).
+    inherited_image_size = None
+    inherited_image_caption_hint = None
+    if inherited_image and inherited_image.get("local_path"):
+        inherited_image_size = _read_image_size(deck / inherited_image["local_path"])
+        ref = page_outline.get("use_image") or {}
+        digest = ip.get("document_digest") or {}
+        ua = ip.get("user_assets") or {}
+
+        # Pool B (reference_image_index): look up the absolute upload path,
+        # then check the `reference_image_captions` map.
+        if "reference_image_index" in ref:
+            try:
+                idx = int(ref["reference_image_index"])
+                ref_imgs = ua.get("reference_images") or []
+                if 0 <= idx < len(ref_imgs):
+                    abs_path = ref_imgs[idx]
+                    captions = ua.get("reference_image_captions") or {}
+                    cap = (captions.get(abs_path) or "").strip()
+                    if cap:
+                        inherited_image_caption_hint = cap
+            except (TypeError, ValueError):
+                pass
+
+        # Pool A (doc_index / image_index): prefer raw_documents.json's
+        # `vlm_caption` over the digest's `caption_hint`.
+        if inherited_image_caption_hint is None and "doc_index" in ref and "image_index" in ref:
+            rde = ip.get("raw_document_excerpts") or {}
+            raw_path = rde.get("path")
+            if raw_path and Path(raw_path).exists():
+                try:
+                    raw = _load_json(Path(raw_path))
+                    di = int(ref["doc_index"])
+                    ii = int(ref["image_index"])
+                    img_entry = raw["documents"][di]["inherited_images"][ii]
+                    if isinstance(img_entry, dict):
+                        cap = (img_entry.get("vlm_caption") or "").strip()
+                        if cap:
+                            inherited_image_caption_hint = cap
+                except (KeyError, IndexError, TypeError, json.JSONDecodeError):
+                    pass
+
+        # Fallback: digest's caption_hint (LLM guess based on doc text only).
+        if inherited_image_caption_hint is None:
+            for entry in digest.get("inherited_images") or []:
+                if not isinstance(entry, dict):
+                    continue
+                if "reference_image_index" in ref and "reference_image_index" in entry:
+                    if entry["reference_image_index"] == ref["reference_image_index"]:
+                        inherited_image_caption_hint = entry.get("caption_hint")
+                        break
+                elif "doc_index" in ref and "image_index" in ref:
+                    if (entry.get("doc_index") == ref["doc_index"]
+                            and entry.get("image_index") == ref["image_index"]):
+                        inherited_image_caption_hint = entry.get("caption_hint")
+                        break
+
     # Only expose slots the rewriter should actually mention in the query —
     # failed slots are hidden so the rewriter describes a text-first layout.
-    available_slot_images: list[str] = []
+    # Each slot carries its real pixel dimensions PLUS the upstream textual
+    # context (intent from outline + image_prompt that produced it) so the
+    # rewriter / generator can write captions that match the image content.
+    intent_by_slot: dict[str, str] = {
+        s.get("slot_id"): s.get("intent") or ""
+        for s in (page_outline.get("asset_slots") or [])
+        if s.get("slot_id")
+    }
+    available_slot_images: list[dict] = []
     for slot in page_plan.get("slots") or []:
-        if slot.get("status") != "failed" and slot.get("local_path"):
-            # Relative to <deck_dir>, which pages/ HTML references as "../<path>"
-            available_slot_images.append(slot["local_path"])
+        if slot.get("status") == "failed" or not slot.get("local_path"):
+            continue
+        local_path = slot["local_path"]
+        size = _read_image_size(deck / local_path)
+        entry: dict = {
+            "path": local_path,
+            "slot_id": slot.get("slot_id"),
+            "intent": intent_by_slot.get(slot.get("slot_id")) or "",
+            "image_prompt": slot.get("image_prompt") or "",
+        }
+        if size:
+            entry.update(size)  # adds w / h / aspect
+        available_slot_images.append(entry)
 
     # --- Step 1: rewrite structured data → natural-language user prompt ---
     rewrite_system = _load_prompt("page_html_rewrite.md")
@@ -812,6 +973,9 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
         "page_no": page_no,
         "inherited_table": inherited_table,
         "inherited_image_local_path": (inherited_image or {}).get("local_path"),
+        "inherited_image_size": inherited_image_size,
+        "inherited_image_alt": (inherited_image or {}).get("alt") or None,
+        "inherited_image_caption_hint": inherited_image_caption_hint,
         "available_slot_images": available_slot_images,
         "language": tp.get("params", {}).get("language", "zh"),
     }
@@ -827,8 +991,21 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     if not rewritten_query:
         return _fail(f"page-html rewrite p{page_no}: empty rewrite output", page_no=page_no)
 
+    # Persist the rewritten query for debugging / manual re-run.
+    query_path = deck / "pages" / f"page_{page_no:03d}.query.txt"
+    _write_text(query_path, rewritten_query)
+
     # --- Step 2: generate HTML from the rewritten query ---
     gen_system = _load_prompt("page_html.md")
+
+    # Persist the exact payload (system + user) sent to the generator BEFORE
+    # the API call, so the artifact is preserved even if the call fails.
+    prompt_path = deck / "pages" / f"page_{page_no:03d}.prompt.txt"
+    _write_text(
+        prompt_path,
+        f"=== SYSTEM ===\n{gen_system.rstrip()}\n\n=== USER ===\n{rewritten_query}\n",
+    )
+
     try:
         html = llm(gen_system, rewritten_query)
     except ModelClientError as e:
@@ -849,6 +1026,8 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     return _ok(
         page_no=page_no,
         path=str(out_path.relative_to(deck)),
+        query_path=str(query_path.relative_to(deck)),
+        prompt_path=str(prompt_path.relative_to(deck)),
         img_srcs_fixed=fixed,
     )
 
@@ -875,6 +1054,146 @@ def cmd_export(deck: Path) -> int:
     except Exception:
         pass
     return _ok(pages=pages, converted=converted, failed=failed)
+
+
+# ---------------------------------------------------------------------------
+# Refine pipeline (screenshot → critique → apply revisions)
+# ---------------------------------------------------------------------------
+#
+# Standalone, NOT wired into the main pipeline. Invoke via the `refine-page`
+# subcommand on a page whose HTML already exists. Three steps:
+#
+#   1. Screenshot the rendered HTML at 1600×900 via export_pptx/screenshot.mjs.
+#   2. Send (image + HTML source) to a VLM with the `refine_review.md` system
+#      prompt → produces a numbered Chinese critique list. Saved to
+#      `pages/page_NNN.review.md`.
+#   3. Send (HTML + critique) to an LLM with the `refine_apply.md` system
+#      prompt → produces a refined HTML. Saved as `pages/page_NNN.refined.html`
+#      so it's easy to diff against the original.
+#
+# The original `page_NNN.html` is preserved untouched; nothing in the export
+# pipeline picks up the .refined.html automatically. To adopt the refined
+# version, manually overwrite `page_NNN.html` with `page_NNN.refined.html`.
+
+_SCREENSHOT_MJS = SKILL_DIR / "scripts" / "export_pptx" / "screenshot.mjs"
+
+
+def _screenshot_page(deck: Path, page_no: int, *, viewport: str = "1600x900") -> Path | None:
+    """Render `pages/page_NNN.html` to `screenshots/page_NNN.png` via the
+    co-located screenshot.mjs (Playwright + chromium).
+
+    Returns the screenshot path on success, None on failure (caller decides
+    whether to error out). screenshot.mjs is element-aware — it captures the
+    first matching `.wrapper` / `.slide.canvas` / `.slide` / body element by
+    boundingBox, so even if the rendered slide is smaller than the viewport,
+    the PNG is cropped to the slide canvas.
+    """
+    import subprocess
+    if not _SCREENSHOT_MJS.exists():
+        return None
+    html_path = deck / "pages" / f"page_{page_no:03d}.html"
+    if not html_path.exists():
+        return None
+    out_path = deck / "screenshots" / f"page_{page_no:03d}.png"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        proc = subprocess.run(
+            ["node", str(_SCREENSHOT_MJS),
+             "--html", str(html_path),
+             "--out", str(out_path),
+             "--viewport", viewport,
+             "--wait", "800"],  # extra slack for ECharts setOption
+            capture_output=True, text=True, timeout=60,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return None
+    if proc.returncode != 0 or not out_path.exists() or out_path.stat().st_size == 0:
+        return None
+    return out_path
+
+
+def cmd_refine_page(deck: Path, page_no: int) -> int:
+    """Three-step page refinement (screenshot → VLM critique → LLM apply).
+
+    Outputs (per page):
+      - `screenshots/page_NNN.png`  (rendered slide image)
+      - `pages/page_NNN.review.md`  (numbered Chinese critique list)
+      - `pages/page_NNN.refined.html`  (refined HTML, kept side-by-side with
+        the original — does NOT overwrite `page_NNN.html`)
+    """
+    html_path = deck / "pages" / f"page_{page_no:03d}.html"
+    if not html_path.exists():
+        return _fail(f"page_{page_no:03d}.html missing", page_no=page_no)
+
+    # --- Step 1: screenshot ---
+    screenshot = _screenshot_page(deck, page_no)
+    if screenshot is None:
+        return _fail(f"refine p{page_no}: screenshot failed", page_no=page_no)
+
+    html_source = html_path.read_text(encoding="utf-8")
+
+    # --- Step 2: visual critique (VLM) ---
+    # User-message format mirrors the training-data sample:
+    #   "<image>\n请根据这页 PPT 的真实渲染图和下方 HTML 初稿..."
+    # The literal "<image>" token is a placeholder; the real image goes via
+    # the `images=` kwarg as an OpenAI image_url part.
+    review_system = _load_prompt("refine_review.md")
+    review_user = (
+        "<image>\n"
+        "请根据这页 PPT 的真实渲染图和下方 HTML 初稿，给出视觉审稿意见。"
+        "请只输出 3 到 6 条中文编号列表，每条一句话，"
+        "直接包含问题判断和修改建议，不要输出 JSON、标题、解释或额外说明。\n\n"
+        "HTML 初稿如下：\n"
+        "<draft_html>\n"
+        f"{html_source}\n"
+        "</draft_html>"
+    )
+    try:
+        review = vlm(review_system, review_user, images=[screenshot])
+    except ModelClientError as e:
+        return _fail(f"refine p{page_no} review: {e}", page_no=page_no)
+    review = (review or "").strip()
+    if not review:
+        return _fail(f"refine p{page_no}: empty review output", page_no=page_no)
+
+    review_path = deck / "pages" / f"page_{page_no:03d}.review.md"
+    _write_text(review_path, review)
+
+    # --- Step 3: apply revisions (LLM) ---
+    apply_system = _load_prompt("refine_apply.md")
+    apply_user = (
+        "下方是当前 HTML 初稿和审稿意见。请按审稿意见修改 HTML，"
+        "只输出修改后的完整 HTML 文档。\n\n"
+        "<draft_html>\n"
+        f"{html_source}\n"
+        "</draft_html>\n\n"
+        "审稿意见：\n"
+        f"{review}"
+    )
+    try:
+        refined = llm(apply_system, apply_user)
+    except ModelClientError as e:
+        return _fail(f"refine p{page_no} apply: {e}", page_no=page_no)
+
+    refined = _strip_code_fences(refined) if refined.lstrip().startswith("```") else refined
+    refined = refined.strip()
+    if not refined or "<html" not in refined.lower() or "</html>" not in refined.lower():
+        return _fail(
+            f"refine p{page_no}: model returned non-HTML; review still saved",
+            page_no=page_no, review_path=str(review_path.relative_to(deck)),
+        )
+
+    refined_path = deck / "pages" / f"page_{page_no:03d}.refined.html"
+    _write_text(refined_path, refined)
+
+    return _ok(
+        page_no=page_no,
+        screenshot=str(screenshot.relative_to(deck)),
+        review_path=str(review_path.relative_to(deck)),
+        refined_path=str(refined_path.relative_to(deck)),
+        review_chars=len(review),
+        refined_chars=len(refined),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -994,6 +1313,47 @@ def cmd_batch_page_html(deck: Path, concurrency: int) -> int:
     )
 
 
+def cmd_batch_refine_page(deck: Path, concurrency: int) -> int:
+    """Fan out the standalone `refine-page` workflow over every page that has
+    a built HTML file. Each per-page task does its own screenshot → VLM
+    critique → LLM apply, three calls in series per worker. Workers run in
+    parallel up to `concurrency`.
+
+    Like `refine-page`, this NEVER overwrites `page_NNN.html` — only emits
+    `page_NNN.review.md` + `page_NNN.refined.html` side-by-side, so the agent
+    can A/B compare before adopting.
+    """
+    pages_dir = deck / "pages"
+    if not pages_dir.exists():
+        return _fail("pages/ missing")
+    tasks: list[tuple] = []
+    for hp in sorted(pages_dir.glob("page_*.html")):
+        # Skip ".refined.html" outputs from prior runs.
+        if hp.name.endswith(".refined.html"):
+            continue
+        try:
+            pno = int(hp.stem.split("_")[1])
+        except (IndexError, ValueError):
+            continue
+        tasks.append((cmd_refine_page, (deck, pno), {}, f"p{pno:03d}/refine"))
+    if not tasks:
+        return _fail("no page_*.html files to refine")
+    results = _run_concurrent(tasks, concurrency)
+    ok = sum(1 for r in results if r["exit_code"] == 0)
+    failed = [
+        {"label": r["label"], "error": r["payload"].get("error", "")}
+        for r in results if r["exit_code"] != 0
+    ]
+    return _ok(
+        stage="refine-page",
+        concurrency=concurrency,
+        submitted=len(tasks),
+        ok=ok,
+        failed=len(failed),
+        failed_detail=failed or None,
+    )
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -1016,9 +1376,17 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--deck-dir", type=Path, required=True)
     sp.add_argument("--page", type=int, required=True)
 
+    # `refine-page` is a STANDALONE per-page tool: screenshot → VLM critique →
+    # LLM apply. NOT wired into the main pipeline; the agent only runs it on
+    # demand. Outputs page_NNN.review.md + page_NNN.refined.html (alongside
+    # the original page_NNN.html, which is preserved untouched).
+    sp = sub.add_parser("refine-page")
+    sp.add_argument("--deck-dir", type=Path, required=True)
+    sp.add_argument("--page", type=int, required=True)
+
     # Batch / concurrent variants (default concurrency=4). Each fans out its
     # per-item work across a thread pool so LLM / VLM / T2I wait times overlap.
-    for name in ("batch-gen-image", "batch-page-html"):
+    for name in ("batch-gen-image", "batch-page-html", "batch-refine-page"):
         sp = sub.add_parser(name)
         sp.add_argument("--deck-dir", type=Path, required=True)
         sp.add_argument("--concurrency", type=int, default=4,
@@ -1042,12 +1410,16 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_gen_image(deck, args.page, args.slot)
     if args.cmd == "page-html":
         return cmd_page_html(deck, args.page)
+    if args.cmd == "refine-page":
+        return cmd_refine_page(deck, args.page)
     if args.cmd == "export":
         return cmd_export(deck)
     if args.cmd == "batch-gen-image":
         return cmd_batch_gen_image(deck, args.concurrency)
     if args.cmd == "batch-page-html":
         return cmd_batch_page_html(deck, args.concurrency)
+    if args.cmd == "batch-refine-page":
+        return cmd_batch_refine_page(deck, args.concurrency)
     return _fail(f"unknown command {args.cmd!r}")
 
 

@@ -17,6 +17,7 @@ import json
 import mimetypes
 import os
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -123,11 +124,33 @@ def _require(value: str, name: str) -> str:
     return value
 
 
-def llm(system_prompt: str, user_prompt: str, *, model: str | None = None) -> str:
+_LLM_CONNECT_TIMEOUT_S = 10.0
+_LLM_WRITE_TIMEOUT_S = 30.0
+_RETRIABLE_STATUS_CODES = {502, 503, 504}
+
+
+def _build_llm_timeout(timeout_s: float) -> httpx.Timeout:
+    return httpx.Timeout(timeout_s, connect=_LLM_CONNECT_TIMEOUT_S, write=_LLM_WRITE_TIMEOUT_S)
+
+
+def _is_transient_llm_error(exc: httpx.HTTPError) -> bool:
+    if isinstance(exc, (httpx.ReadTimeout, httpx.ConnectTimeout, httpx.ConnectError)):
+        return True
+    if isinstance(exc, httpx.HTTPStatusError):
+        return exc.response.status_code in _RETRIABLE_STATUS_CODES
+    return False
+
+
+def llm(system_prompt: str, user_prompt: str, *, model: str | None = None,
+        timeout: float | None = None, retries: int = 0,
+        request_name: str = "llm") -> str:
     """Call the LLM chat endpoint. Returns the assistant message text."""
     cfg = LLMConfig.from_env()
     _require(cfg.api_key, "LLM_API_KEY / SN_LM_API_KEY")
     _require(cfg.base_url, "LLM_BASE_URL / SN_LM_BASE_URL")
+    timeout_s = float(cfg.timeout if timeout is None else timeout)
+    max_attempts = max(1, int(retries) + 1)
+    timeout_cfg = _build_llm_timeout(timeout_s)
 
     url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
     payload: dict[str, Any] = {
@@ -141,20 +164,32 @@ def llm(system_prompt: str, user_prompt: str, *, model: str | None = None) -> st
         "Authorization": f"Bearer {cfg.api_key}",
         "Content-Type": "application/json",
     }
-    try:
-        resp = httpx.post(url, json=payload, headers=headers, timeout=cfg.timeout)
-        resp.raise_for_status()
-    except httpx.HTTPError as e:
-        body = ""
-        if isinstance(e, httpx.HTTPStatusError):
-            body = e.response.text[:500]
-        raise ModelClientError(f"LLM call failed: {e} | body: {body}") from e
+    for attempt in range(1, max_attempts + 1):
+        started_at = time.monotonic()
+        try:
+            resp = httpx.post(url, json=payload, headers=headers, timeout=timeout_cfg)
+            resp.raise_for_status()
+        except httpx.HTTPError as e:
+            body = ""
+            if isinstance(e, httpx.HTTPStatusError):
+                body = e.response.text[:500]
+            elapsed = time.monotonic() - started_at
+            if _is_transient_llm_error(e) and attempt < max_attempts:
+                sys.stderr.write(
+                    f"[llm:{request_name}] transient {type(e).__name__} on attempt {attempt}/{max_attempts} after {elapsed:.1f}s, retrying\n"
+                )
+                continue
+            raise ModelClientError(
+                f"LLM call failed [{request_name}] attempt {attempt}/{max_attempts}: {type(e).__name__}: {e} after {elapsed:.1f}s | body: {body}"
+            ) from e
 
-    data = resp.json()
-    try:
-        return data["choices"][0]["message"]["content"]
-    except (KeyError, IndexError, TypeError) as e:
-        raise ModelClientError(f"LLM response shape unexpected: {json.dumps(data)[:500]}") from e
+        data = resp.json()
+        try:
+            return data["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError) as e:
+            raise ModelClientError(
+                f"LLM response shape unexpected [{request_name}]: {json.dumps(data)[:500]}"
+            ) from e
 
 
 def vlm(system_prompt: str, user_prompt: str, images: list[str | Path], *,
