@@ -149,8 +149,8 @@ This image shows an adorable orange cat napping in the sunlight.
 {
   "status": "ok",
   "result": "This image shows an adorable orange cat napping in the sunlight.",
-  "model": "sensenova-122b",
-  "base_url": "http://127.0.0.1:615",
+  "model": "sensenova-6.7-flash-lite",
+  "base_url": "https://token.sensenova.cn",
   "interface_type": "openai-completions",
   "elapsed_seconds": 2.15
 }
@@ -220,8 +220,8 @@ Optimized text content...
 {
   "status": "ok",
   "result": "Optimized text content...",
-  "model": "sensenova-122b",
-  "base_url": "http://127.0.0.1:615",
+  "model": "sensenova-6.7-flash-lite",
+  "base_url": "https://token.sensenova.cn",
   "interface_type": "openai-completions",
   "elapsed_seconds": 0.83
 }

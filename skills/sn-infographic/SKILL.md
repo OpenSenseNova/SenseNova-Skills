@@ -314,7 +314,7 @@ System prompt comes from `reference/prompts-critic-system.md`, user prompt is pr
   "reasoning": "<Reasoning process, empty string when max_rounds=1>",
   "timing": {
     "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
-    "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-122b" }
+    "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
   }
 }
 ```
@@ -346,9 +346,9 @@ After Worker Agent completes, its last message must be and only be the following
   "early_terminated": true,
   "timing": {
     "total_elapsed_seconds": 35.12,
-    "prompt_detection": { "elapsed_seconds": 2.11, "model": "sensenova-122b" },
-    "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-122b" },
-    "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-122b" }
+    "prompt_detection": { "elapsed_seconds": 2.11, "model": "sensenova-6.7-flash-lite" },
+    "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-6.7-flash-lite" },
+    "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-6.7-flash-lite" }
   },
   "rounds": [
     {
@@ -360,7 +360,7 @@ After Worker Agent completes, its last message must be and only be the following
       "reasoning": "<Reasoning process, empty string when max_rounds=1>",
       "timing": {
         "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
-        "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-122b" }
+        "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
       }
     }
   ]

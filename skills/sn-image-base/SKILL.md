@@ -202,9 +202,9 @@ Different API types have different requirements for base-url format:
 
 | Type | `--llm-type` / `--vlm-type` | base-url Example | Code Appended Path | Final URL Example |
 |------|------------------------------|---------------|--------------|---------------|
-| LLM | `openai-completions` | `http://127.0.0.1:615` | `/v1/chat/completions` | `http://127.0.0.1:615/v1/chat/completions` |
+| LLM | `openai-completions` | `https://token.sensenova.cn` | `/v1/chat/completions` | `https://token.sensenova.cn/v1/chat/completions` |
 | LLM | `anthropic-messages` | `https://api.anthropic.com` | `/v1/messages` | `https://api.anthropic.com/v1/messages` |
-| VLM | `openai-completions` | `http://127.0.0.1:615` | `/v1/chat/completions` | `http://127.0.0.1:615/v1/chat/completions` |
+| VLM | `openai-completions` | `https://token.sensenova.cn` | `/v1/chat/completions` | `https://token.sensenova.cn/v1/chat/completions` |
 | VLM | `anthropic-messages` | `https://api.anthropic.com` | `/v1/messages` | `https://api.anthropic.com/v1/messages` |
 
 **Note**:
@@ -227,8 +227,8 @@ JSON output for `sn-image-recognize` and `sn-text-optimize` also includes `model
 {
   "status": "ok",
   "result": "...",
-  "model": "sensenova-122b",
-  "base_url": "http://127.0.0.1:615",
+  "model": "sensenova-6.7-flash-lite",
+  "base_url": "https://token.sensenova.cn",
   "interface_type": "openai-completions",
   "elapsed_seconds": 1.23
 }
