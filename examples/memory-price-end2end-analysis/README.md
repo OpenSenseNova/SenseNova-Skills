@@ -47,11 +47,11 @@ Building on Step 1, follow up to dig into the "why":
 Based on the data analysis, research the main causes of memory and flash price volatility since 2026.
 ```
 
-The agent triggers `sn-deep-research`, calling its search/fetch/synthesis sub-skills, and produces an illustrated deep-dive report:
+The agent triggers `sn-deep-research`, calling its search/fetch/synthesis sub-skills, and produces an illustrated deep-dive report packaged as [`result/内存条价格暴涨原因分析.zip`](result/内存条价格暴涨原因分析.zip). Inside the zip, the directory `内存条价格暴涨原因分析/` contains:
 
-- [`result/内存条价格暴涨原因分析/深度调研-内存条价格暴涨原因分析.md`](result/内存条价格暴涨原因分析/深度调研-内存条价格暴涨原因分析.md)
-- [`result/内存条价格暴涨原因分析/深度调研-内存条价格暴涨原因分析.html`](result/内存条价格暴涨原因分析/深度调研-内存条价格暴涨原因分析.html)
-- [`result/内存条价格暴涨原因分析/figures/`](result/内存条价格暴涨原因分析/figures/): 9 figures referenced by the report
+- `深度调研-内存条价格暴涨原因分析.md`: Markdown report
+- `深度调研-内存条价格暴涨原因分析.html`: visualized HTML report
+- `figures/`: 9 figures referenced by the report
 
 > **Deep research takeaway**: this round of price hikes is driven by supply contraction, surging AI-server demand, and proactive output discipline by some vendors. Short term, sentiment and restocking amplify volatility; medium term, this looks more like a structural rebalance. If high-end demand persists and vendors keep supply tight, prices may continue to climb or oscillate at elevated levels.
 
@@ -77,10 +77,7 @@ Routed via `sn-ppt-entry` into `sn-ppt-standard`, which produces:
 ```
 result/
 ├── 芯片价格汇总.csv                                       # Input
-├── 内存条价格暴涨原因分析/
-│   ├── 深度调研-内存条价格暴涨原因分析.md                   # Step 2 (Markdown)
-│   ├── 深度调研-内存条价格暴涨原因分析.html                 # Step 2 (HTML)
-│   └── figures/                                          # 9 figures
+├── 内存条价格暴涨原因分析.zip                               # Step 2 (Markdown + HTML + 9 figures)
 ├── 半导体存储市场研究报告_20260426_015200.pptx              # Step 3 (PPTX)
 └── 半导体存储市场研究报告_20260426_015200.zip               # Step 3 (HTML sources)
 ```
