@@ -36,6 +36,27 @@ skills/
 │   └── requirements.txt  # Python deps (optional)
 ```
 
+## How to Use
+
+Clone this repository, then copy (or symlink) subdirectories under `skills/` into the skills directory your agent loads from:
+
+| Agent | Target directory |
+|-------|------------------|
+| [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
+| [hermes-agent](https://github.com/OpenSenseNova/hermes-agent) | `~/.hermes/skills/openclaw-imports/` |
+
+For example, symlink all skills into OpenClaw:
+
+```bash
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+mkdir -p ~/.openclaw/skills
+ln -s "$(pwd)/SenseNova-Skills/skills/"* ~/.openclaw/skills/
+```
+
+For Hermes, swap the target to `~/.hermes/skills/openclaw-imports/`. You can also link only the skills you need (e.g. `u1-image-base`, `u1-infographic`). OpenClaw additionally supports pointing `skills.load.extraDirs` in `openclaw.json` at the repo's `skills/` folder; see the 📖 Full guide under each category below.
+
+Per-category Python dependencies, API keys, and invocation examples are documented in the 📖 Full guide for each section.
+
 ## Skills List
 
 ### 🎨 Image & Visualization
