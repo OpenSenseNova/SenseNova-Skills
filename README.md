@@ -12,11 +12,11 @@ In this repository each skill lives in its own directory and declares triggers, 
 
 The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, and **deep research** — usable standalone or composed into end-to-end workflows.
 
-## 🦝 Available out-of-the-box in Xiaohuanxiong
+## 🦝 Available out-of-the-box in Raccoon
 
-The latest SenseNova models and the full Cowork-Skill suite in this repo are bundled into the [**Xiaohuanxiong (小浣熊) Pro**](https://xiaohuanxiong.com/) plan, with enterprise-grade security and a zero-setup experience — if you'd rather not provision env, API keys, and runtimes yourself, you can use these capabilities directly through Xiaohuanxiong.
+The latest SenseNova models and the full Cowork-Skill suite in this repo are bundled into the [**Raccoon (小浣熊) Pro**](https://xiaohuanxiong.com/) plan, with enterprise-grade security and a zero-setup experience — if you'd rather not provision env, API keys, and runtimes yourself, you can use these capabilities directly through Raccoon.
 
-Xiaohuanxiong now ships a full upgrade across product capability and client experience:
+Raccoon now ships a full upgrade across product capability and client experience:
 
 - **Three core office capabilities, strengthened**: powered by SenseNova 6.7 Flash + Cowork-Skill, data analysis, PPT generation, and task planning each take a step up — covering the full loop from multi-file cleaning/analysis to formal report decks, industry/competitive research, and investment memos.
 - **New: infographic generation**: built on the SenseNova U1 model, compresses complex data, long reports, and business insights into dense, structured, visual infographics that are easier to digest and share.
