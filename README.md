@@ -111,7 +111,7 @@ A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs
 
 <p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic sample outputs"></p>
 
-### 🧩 Memory price analysis — insight → analysis → presentation full chain
+### 🧩 Memory price analysis — insight → analysis → presentation → end-to-end workflow
 
 [`examples/memory-price-end2end-analysis`](examples/memory-price-end2end-analysis/). Starting from a raw quote CSV, the agent profiles fields, normalizes categories and timestamps, then attacks the rally from three angles — overall trend, top movers per category, and the gap between server-grade and consumer-grade SKUs — locating a late-February inflection along the way. Treating those findings as the research question, it switches to deep research: planning per-dimension web searches over supply contraction, AI-server demand, and vendor output discipline, then triaging and cross-checking evidence across sources before committing it to the report. The data and research conclusions are then handed to PPT generation, which lays out a 16-page outline, plans per-slot imagery, renders per-page HTML, runs VLM review, and finally composites screenshots into the PPTX. The result is a clear three-step storyline: prices *are* rising → *here is why* → *here is what to do*. This is the only example that exercises the full data analysis → deep research → PPT chain end-to-end.
 
