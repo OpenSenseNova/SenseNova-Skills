@@ -43,17 +43,17 @@ skills/
 | 智能体 | 目标目录 |
 |--------|---------|
 | [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
-| [hermes-agent](https://github.com/OpenSenseNova/hermes-agent) | `~/.hermes/skills/openclaw-imports/` |
+| [hermes-agent](https://github.com/OpenSenseNova/hermes-agent) | `~/.hermes/skills/` |
 
-例如，把全部技能软链到 OpenClaw：
+例如，把全部技能复制到 OpenClaw：
 
 ```bash
 git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
 mkdir -p ~/.openclaw/skills
-ln -s "$(pwd)/SenseNova-Skills/skills/"* ~/.openclaw/skills/
+cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
 
-Hermes 把目录换成 `~/.hermes/skills/openclaw-imports/` 即可。也可以只链需要的子目录（如 `u1-image-base`、`u1-infographic`）。OpenClaw 还支持通过 `openclaw.json` 的 `skills.load.extraDirs` 直接指向 `skills/`，详见下方各分类的 📖 详细使用指南。
+Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 各分类技能的 Python 依赖、API key 与调用示例同样请参考对应分类的 📖 详细使用指南。
 
