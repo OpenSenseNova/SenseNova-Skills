@@ -12,18 +12,9 @@ In this repository each skill lives in its own directory and declares triggers, 
 
 The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, and **deep research** — usable standalone or composed into end-to-end workflows.
 
-## What is a SKILL.md?
-
-A `SKILL.md` is a Markdown document that teaches an AI agent how to perform a specific task. It typically contains:
-
-- **Frontmatter metadata**: `name`, `description`, plus optional fields such as `triggers` and `metadata`
-- **Instructions**: when the skill triggers, what steps to run in what order, and where the artifacts land
-- **References** (optional): supporting docs, methodology notes, examples
-- **Scripts** (optional): executable scripts the skill calls into
-
 ## How to Use
 
-> These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent — for the best experience, pair them with [OpenClaw](https://openclaw.ai/) or [hermes-agent](https://github.com/NousResearch/hermes-agent). See [`INSTALL.md`](INSTALL.md) for the full install + LLM configuration walkthrough.
+**These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent — for the best experience, pair them with [OpenClaw](https://openclaw.ai/) or [hermes-agent](https://github.com/NousResearch/hermes-agent). See [`INSTALL.md`](INSTALL.md) for the full install + LLM configuration walkthrough.**
 
 Clone this repository, then copy subdirectories under `skills/` into the skills directory your agent loads from:
 

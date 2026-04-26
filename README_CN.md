@@ -12,18 +12,9 @@ SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-
 
 技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
 
-## 什么是 SKILL.md？
-
-`SKILL.md` 是教智能体执行特定任务的 Markdown 文档，通常包含：
-
-- **Frontmatter 元数据**：`name`、`description`，以及可选的 `triggers`、`metadata` 等字段
-- **执行说明**：技能何时触发、按什么顺序做哪些事、产物落在哪里
-- **References**（可选）：补充文档、方法论、示例
-- **Scripts**（可选）：技能调用的可执行脚本
-
 ## 如何使用
 
-> 本仓库的 skill 需要配合支持 [Agent Skills](https://agentskills.io/) 规范的智能体使用，推荐 [OpenClaw](https://openclaw.ai/) 或 [hermes-agent](https://github.com/NousResearch/hermes-agent) 获得最佳效果。完整的安装、LLM 配置与 skill 加载流程请参考 [`INSTALL_CN.md`](INSTALL_CN.md)。
+**本仓库的 skill 需要配合支持 [Agent Skills](https://agentskills.io/) 规范的智能体使用，推荐 [OpenClaw](https://openclaw.ai/) 或 [hermes-agent](https://github.com/NousResearch/hermes-agent) 获得最佳效果。完整的安装、LLM 配置与 skill 加载流程请参考 [`INSTALL_CN.md`](INSTALL_CN.md)。**
 
 克隆本仓库后，把 `skills/` 下的子目录复制（或软链接）到所用智能体加载的 skills 目录：
 
