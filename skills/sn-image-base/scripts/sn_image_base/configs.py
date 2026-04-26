@@ -92,7 +92,7 @@ class Configs:
         str, Field("SN_IMAGE_GEN_BASE_URL", "SN_BASE_URL", required=True)
     ] = "https://token.sensenova.cn/v1"
     SN_IMAGE_GEN_MODEL_TYPE: Annotated[
-        Literal["sensenova", "nano-banana", "u1"], Field("SN_IMAGE_GEN_MODEL_TYPE")
+        Literal["sensenova", "nano-banana", "openai-image"], Field("SN_IMAGE_GEN_MODEL_TYPE")
     ] = "sensenova"
     SN_IMAGE_GEN_MODEL: Annotated[str, Field("SN_IMAGE_GEN_MODEL")] = "sensenova-u1-fast"
 

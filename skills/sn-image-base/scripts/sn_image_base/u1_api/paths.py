@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from urllib.parse import quote
-
 GENERATION_TEXT_TO_IMAGE = "/v1/generation/text-to-image"
 GENERATION_FILES_PREFIX = "/v1/generation/files"
 
@@ -55,38 +53,6 @@ def text_to_image_status_url(base_url: str, task_id: str) -> str:
             The full URL for the text-to-image status endpoint.
     """
     return join_base(base_url, f"{GENERATION_TEXT_TO_IMAGE}/{task_id}")
-
-
-def generation_file_download_url(base_url: str, image_ref: str) -> str:
-    """Build the URL for downloading a generated file.
-
-    Args:
-        base_url (str):
-            The API base URL.
-        image_ref (str):
-            The file reference (key) for the generated image.
-
-    Returns:
-        str:
-            The full URL for the file download endpoint, with the image
-            key URL-encoded.
-    """
-    image_key = image_ref.lstrip("/")
-    return f"{join_base(base_url, GENERATION_FILES_PREFIX)}/{quote(image_key, safe='/')}"
-
-
-def generation_file_upload_url(base_url: str) -> str:
-    """Build the URL for uploading generation files.
-
-    Args:
-        base_url (str):
-            The API base URL.
-
-    Returns:
-        str:
-            The full URL for the file upload endpoint.
-    """
-    return join_base(base_url, GENERATION_FILES_PREFIX)
 
 
 def generation_file_presigned_url(base_url: str) -> str:
