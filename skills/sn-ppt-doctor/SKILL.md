@@ -26,7 +26,7 @@ triggers:
 
 1. Text chat API key is available via `SN_TEXT_API_KEY` or shared `SN_CHAT_API_KEY`
 2. Vision chat API key is available via `SN_VISION_API_KEY` or shared `SN_CHAT_API_KEY`
-3. `SN_API_KEY` is set
+3. `SN_IMAGE_GEN_API_KEY` is set
 4. `sn-image-base` is discoverable and `sn_agent_runner.py --help` works
 5. `node --version` >= 18
 

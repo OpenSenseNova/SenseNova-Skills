@@ -22,7 +22,7 @@ triggers:
 
 ## Hard preconditions
 
-Run `sn-ppt-doctor` hard checks (SN_CHAT_API_KEY or SN_TEXT/SN_VISION API keys / SN_API_KEY / node / sn-image-base) at the start of this skill. If any fails, stop and tell the user to run `/skill sn-ppt-doctor`.
+Run `sn-ppt-doctor` hard checks (SN_CHAT_API_KEY or SN_TEXT/SN_VISION API keys / SN_IMAGE_GEN_API_KEY / node / sn-image-base) at the start of this skill. If any fails, stop and tell the user to run `/skill sn-ppt-doctor`.
 
 ## Flow
 

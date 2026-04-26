@@ -37,7 +37,7 @@ python sn_agent_runner.py sn-image-generate \
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `--prompt` | string | **Yes** | - | Text prompt |
-| `--api-key` | string | No | Reads `SN_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
+| `--api-key` | string | No | Reads `SN_IMAGE_GEN_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
 | `--image-size` | string | No | `"2k"` | Image size: `1k` or `2k` |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
@@ -80,18 +80,18 @@ Image generated successfully
 
 ### API Key Notes
 
-`--api-key` is optional. CLI parameter takes precedence; if not provided, reads from `SN_API_KEY` env var. If both are empty, raises `MissingApiKeyError`:
+`--api-key` is optional. CLI parameter takes precedence; if not provided, reads from `SN_IMAGE_GEN_API_KEY` env var. If both are empty, raises `MissingApiKeyError`:
 
 **text format**:
 
 ```
-Error: API key is required but was not provided. Set the SN_API_KEY environment variable or pass --api-key explicitly.
+Error: API key is required but was not provided. Set the SN_IMAGE_GEN_API_KEY environment variable or pass --api-key explicitly.
 ```
 
 **json format**:
 
 ```json
-{"status": "failed", "error": "API key is required but was not provided. Set the SN_API_KEY environment variable or pass --api-key explicitly.", "elapsed_seconds": 0.05}
+{"status": "failed", "error": "API key is required but was not provided. Set the SN_IMAGE_GEN_API_KEY environment variable or pass --api-key explicitly.", "elapsed_seconds": 0.05}
 ```
 
 ---
@@ -273,7 +273,7 @@ Error messages are written to stderr and do not affect stdout content.
 
 | Tool | Environment Variables (high → low priority) | Notes |
 |------|---------------------------------------------|-------|
-| `sn-image-generate` | `SN_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
+| `sn-image-generate` | `SN_IMAGE_GEN_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
 | `sn-image-recognize` | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | CLI > command-specific key > shared chat key; raises `MissingApiKeyError` if all are empty |
 | `sn-text-optimize` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` | CLI > command-specific key > shared chat key; raises `MissingApiKeyError` if all are empty |
 

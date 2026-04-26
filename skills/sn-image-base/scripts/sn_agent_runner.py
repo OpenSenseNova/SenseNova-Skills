@@ -103,7 +103,7 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument("--seed", type=int, default=None, help="Random seed")
     gen_parser.add_argument("--unet-name", dest="unet_name", default=None, help="UNet model name")
     gen_parser.add_argument(
-        "--api-key", default="", help="API key (falls back to SN_API_KEY env var)"
+        "--api-key", default="", help="API key (falls back to SN_IMAGE_GEN_API_KEY env var)"
     )
     gen_parser.add_argument(
         "--base-url",
@@ -204,7 +204,7 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             output (image path), task_id, and message. exit_code is 0 on
             success and 1 on failure.
     """
-    api_key = args.api_key or global_configs.SN_API_KEY
+    api_key = args.api_key or global_configs.SN_IMAGE_GEN_API_KEY
     if not api_key:
         raise MissingApiKeyError()
 

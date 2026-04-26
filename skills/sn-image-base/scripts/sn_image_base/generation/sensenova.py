@@ -63,10 +63,12 @@ class SensenovaText2ImageClient(T2IBaseClient):
             ssl_verify (bool, optional):
                 If True, enable TLS verification. Defaults to True.
         """
-        api_key = api_key or global_configs.SN_API_KEY
+        api_key = api_key or global_configs.SN_IMAGE_GEN_API_KEY
         if not api_key:
             raise MissingApiKeyError(
-                "API key is missing: {}".format(global_configs.get_env_var_help("SN_API_KEY"))
+                "API key is missing: {}".format(
+                    global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY")
+                )
             )
         base_url = base_url or global_configs.SN_IMAGE_GEN_BASE_URL
         if not base_url:
@@ -159,7 +161,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
             if exc.code == 404:
                 field_name = "SN_IMAGE_GEN_BASE_URL"
             elif exc.code == 401:
-                field_name = "SN_API_KEY"
+                field_name = "SN_IMAGE_GEN_API_KEY"
             # elif exc.code == 400:
             #     warnings.warn(f"Bad request: {exc.message}; body: {payload}", stacklevel=2)
             if field_name is not None:
@@ -211,10 +213,12 @@ class SensenovaText2ImageClient(T2IBaseClient):
     @property
     @override
     def api_key(self) -> str:
-        api_key = self._api_key or global_configs.SN_API_KEY
+        api_key = self._api_key or global_configs.SN_IMAGE_GEN_API_KEY
         if not api_key:
             raise ValueError(
-                "API key is missing: {}".format(global_configs.get_env_var_help("SN_API_KEY"))
+                "API key is missing: {}".format(
+                    global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY")
+                )
             )
         return api_key
 
@@ -291,7 +295,9 @@ class SensenovaText2ImageClient(T2IBaseClient):
     def headers(self) -> dict[str, str]:
         if not self.api_key:
             raise MissingApiKeyError(
-                "API key is missing: {}".format(global_configs.get_env_var_help("SN_API_KEY"))
+                "API key is missing: {}".format(
+                    global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY")
+                )
             )
         return {
             "Authorization": f"Bearer {self.api_key}",
@@ -488,7 +494,7 @@ if __name__ == "__main__":
 
     async def main_async():
         client = SensenovaText2ImageClient(
-            api_key=global_configs.SN_API_KEY,
+            api_key=global_configs.SN_IMAGE_GEN_API_KEY,
             base_url=global_configs.SN_IMAGE_GEN_BASE_URL,
         )
 

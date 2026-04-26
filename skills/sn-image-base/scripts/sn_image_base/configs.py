@@ -87,9 +87,11 @@ class Configs:
     """
 
     # image-generate
-    SN_API_KEY: Annotated[str, Field("SN_API_KEY", required=True, secret=True)] = ""
+    SN_IMAGE_GEN_API_KEY: Annotated[
+        str, Field("SN_IMAGE_GEN_API_KEY", required=True, secret=True)
+    ] = ""
     SN_IMAGE_GEN_BASE_URL: Annotated[
-        str, Field("SN_IMAGE_GEN_BASE_URL", "SN_BASE_URL", required=True)
+        str, Field("SN_IMAGE_GEN_BASE_URL", required=True)
     ] = "https://token.sensenova.cn/v1"
     SN_IMAGE_GEN_MODEL_TYPE: Annotated[
         Literal["sensenova", "nano-banana", "openai-image"], Field("SN_IMAGE_GEN_MODEL_TYPE")
