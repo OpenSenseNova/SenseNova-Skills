@@ -259,11 +259,19 @@ cp -r skills/* ~/.hermes/skills/
 
 ### 3.3 安装方式二：直接交给 agent 安装
 
-启动 agent 后，把下面这条消息发给它：
+启动 agent 后，可以试试下面两条指令任选其一。Agent 会通过自己的 shell 工具完成 clone / `mkdir` / `cp` / 列目录等动作，并把结果回报给你。
+
+**指令 A — 一句话整包安装（最省事）：**
+
+> 帮我安装 <https://github.com/OpenSenseNova/SenseNova-Skills/> 这个 repo 下的 skill。
+
+Agent 会自行完成"clone 仓库 → 找到 `skills/` → 复制到当前 agent 对应的 skill 目录（OpenClaw 的 `~/.openclaw/skills/` 或 hermes-agent 的 `~/.hermes/skills/`）"。
+
+**指令 B — 已 clone 好仓库时的精确指令：**
 
 > 把当前目录 `SenseNova-Skills/skills/` 下所有子目录复制到 OpenClaw 的 skill 目录（`~/.openclaw/skills/`）。完成后列出已安装的 skill 名称。
 
-把"OpenClaw"和路径换成 `hermes-agent` / `~/.hermes/skills/` 即可用于 hermes。Agent 会通过自己的 shell 工具完成 `mkdir` + `cp` + 列目录的动作，并把结果回报给你。
+把"OpenClaw"和路径换成 `hermes-agent` / `~/.hermes/skills/` 即可用于 hermes。
 
 > 这种方式适合按需挑选 skill，例如："只把 `sn-image-*` 和 `deep-research` 这几个 skill 复制过去"。
 
