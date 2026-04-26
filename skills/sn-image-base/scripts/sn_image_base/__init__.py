@@ -1,0 +1,1 @@
+# sn-image-base scripts
