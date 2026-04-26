@@ -55,7 +55,7 @@ All API calls in this skill are executed through the `sn_agent_runner.py` of the
 |-----------|------|---------------------------|-------------|
 | **LLM** | sn-text-optimize (evaluation/expansion) | Default reads `SN_TEXT_API_KEY` / `SN_CHAT_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
 | **VLM** | sn-image-recognize (image review) | Default reads `SN_VISION_API_KEY` / `SN_CHAT_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
-| **Image Generation** | sn-image-generate | Default reads `SN_API_KEY` environment variable | Default uses image generation configuration of `sn-image-base` |
+| **Image Generation** | sn-image-generate | Default reads `SN_IMAGE_GEN_API_KEY` environment variable | Default uses image generation configuration of `sn-image-base` |
 
 **When encountering `MissingApiKeyError` or needing to specify a model**: pass explicitly via CLI parameters, parameter reference `$SN_IMAGE_BASE/reference/api_spec.md`.
 

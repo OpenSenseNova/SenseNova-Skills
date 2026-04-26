@@ -50,7 +50,7 @@ SN_CHAT_API_KEY="your-api-key"
 SN_CHAT_BASE_URL="https://token.sensenova.cn/v1"
 
 # 文生图（创意模式必填，标准模式按需）
-SN_API_KEY="your-api-key"
+SN_IMAGE_GEN_API_KEY="your-api-key"
 ```
 
 可选环境变量：`SN_IMAGE_GEN_*`、`SN_TEXT_*`、`SN_VISION_*` 用于覆盖默认模型与超时。详细列表见 [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md)。

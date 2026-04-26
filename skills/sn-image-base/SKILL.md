@@ -52,7 +52,7 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--aspect-ratio` | string | `16:9` | Aspect ratio, e.g. `1:1`, `16:9`, `9:16` |
 | `--seed` | int | `None` | Random seed for reproducible generation |
 | `--unet-name` | string | `None` | Specify a UNet model name |
-| `--api-key` | string | Read from `SN_API_KEY` env var | API key (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
+| `--api-key` | string | Read from `SN_IMAGE_GEN_API_KEY` env var | API key (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
 | `--base-url` | string | Read from `SN_IMAGE_GEN_BASE_URL` env var | API base URL (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
 | `--poll-interval` | float | `5.0` | Polling interval (seconds) |
 | `--timeout` | float | `300.0` | Timeout (seconds) |
@@ -158,8 +158,8 @@ Authentication parameters for `sn-image-generate` have the following default beh
 
 | Parameter | Default | Override | Description |
 |------|--------|----------|------|
-| `--base-url` | Read from `SN_BASE_URL` env var | `--base-url "..."` | CLI argument has priority; throws error if env var and CLI value are both missing |
-| `--api-key` | Read from `SN_API_KEY` env var | `--api-key "..."` | CLI argument has priority; throws `MissingApiKeyError` if env var and CLI value are both missing |
+| `--base-url` | Read from `SN_IMAGE_GEN_BASE_URL` env var | `--base-url "..."` | CLI argument has priority; throws error if env var and CLI value are both missing |
+| `--api-key` | Read from `SN_IMAGE_GEN_API_KEY` env var | `--api-key "..."` | CLI argument has priority; throws `MissingApiKeyError` if env var and CLI value are both missing |
 
 `sn-image-recognize` and `sn-text-optimize` use priority: **CLI argument > command-specific env var > shared `SN_CHAT_*` env var > built-in default**.
 

@@ -40,7 +40,7 @@ Set the following environment variables in `~/.openclaw/.env` (or `~/.hermes/.en
 
 ```ini
 # Image generation
-SN_API_KEY="<sensenova-token-plan-api-key>"
+SN_IMAGE_GEN_API_KEY="<sensenova-token-plan-api-key>"
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"   # or other image generation models available in the SenseNova Token Plan
 # Text and vision chat runtime
 SN_CHAT_API_KEY="<sensenova-token-plan-api-key>"
@@ -73,14 +73,14 @@ Full configuration for image generation:
 
 | Config Key | Description | Default |
 | ---------- | ----------- | ------- |
-| `SN_API_KEY` | The API key for the SenseNova Token Plan | (Required) |
+| `SN_IMAGE_GEN_API_KEY` | The API key for the SenseNova Token Plan | (Required) |
 | `SN_IMAGE_GEN_MODEL_TYPE` | The type of image generation model to use | `"sensenova"` |
 | `SN_IMAGE_GEN_MODEL` | The name of the image generation model to use | `"sensenova-u1-fast"` |
 | `SN_IMAGE_GEN_BASE_URL` | The base URL for the image generation API | `"https://token.sensenova.cn/v1"` |
 
 The default values are recommended for the [SenseNova](https://platform.sensenova.cn/).
 
-You only need to set the `SN_API_KEY`, and optionally set `SN_IMAGE_GEN_MODEL` to the model name provided by the token plan.
+You only need to set the `SN_IMAGE_GEN_API_KEY`, and optionally set `SN_IMAGE_GEN_MODEL` to the model name provided by the token plan.
 
 To use non-default image generation models, please:
 
@@ -117,10 +117,10 @@ To use non-default image generation models, please:
     SN_IMAGE_GEN_MODEL="gpt-image-2"
     ```
 
-4. (**Required**) Set `SN_API_KEY` to the API key for the image generation API.
+4. (**Required**) Set `SN_IMAGE_GEN_API_KEY` to the API key for the image generation API.
 
     ```ini
-    SN_API_KEY="sk-your-image-generation-api-key"
+    SN_IMAGE_GEN_API_KEY="sk-your-image-generation-api-key"
     ```
 
 #### Text and Vision Chat
@@ -198,7 +198,7 @@ To use non-default shared chat settings, please:
 ### Missing API key
 
 - Symptom: errors like "required but not set", "missing api key", or request unauthorized.
-- Fix: set `SN_API_KEY` for image generation, and set `SN_CHAT_API_KEY` for chat calls. Use `SN_TEXT_API_KEY` or `SN_VISION_API_KEY` when text and vision use different providers.
+- Fix: set `SN_IMAGE_GEN_API_KEY` for image generation, and set `SN_CHAT_API_KEY` for chat calls. Use `SN_TEXT_API_KEY` or `SN_VISION_API_KEY` when text and vision use different providers.
 
 ### Wrong base URL
 
