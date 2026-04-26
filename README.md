@@ -111,25 +111,25 @@ A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs
 
 <p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic sample outputs"></p>
 
-### 🧩 Memory price analysis — end-to-end pipeline
+### 🧩 Memory price analysis — insight → analysis → presentation → end-to-end workflow
 
 [`examples/memory-price-end2end-analysis`](examples/memory-price-end2end-analysis/). Starting from a raw quote CSV, the agent profiles fields, normalizes categories and timestamps, then attacks the rally from three angles — overall trend, top movers per category, and the gap between server-grade and consumer-grade SKUs — locating a late-February inflection along the way. Treating those findings as the research question, it switches to deep research: planning per-dimension web searches over supply contraction, AI-server demand, and vendor output discipline, then triaging and cross-checking evidence across sources before committing it to the report. The data and research conclusions are then handed to PPT generation, which lays out a 16-page outline, plans per-slot imagery, renders per-page HTML, runs VLM review, and finally composites screenshots into the PPTX. The result is a clear three-step storyline: prices *are* rising → *here is why* → *here is what to do*. This is the only example that exercises the full data analysis → deep research → PPT chain end-to-end.
 
 - Depends on: [`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md), [`sn-deep-research`](skills/sn-deep-research/SKILL.md), [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md), [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md), [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)
 
-### 📊 Employee performance analysis — single-skill case (data analysis)
+### 📊 Employee performance analysis — data analysis
 
 [`examples/employee-performance-analysis`](examples/employee-performance-analysis/). The agent reads 10 separate monthly review xlsx files, aligns column schemas across months and joins them into one longitudinal table. From that table it produces aggregate views — monthly average trend, score-distribution boxplots, grade mix change, and a 38-role ranking — and individual views — top performers, needs-attention, and consistently-improving cohorts plus per-employee year trends. The findings are written up with explicit improvement suggestions tied to specific roles and individuals, backed by 8 supporting charts. The same content is delivered as a Word doc (for distribution) and a visualized HTML report (for browsing). The example shows how `sn-da-excel-workflow` handles "many small spreadsheets that should be one analysis" rather than a single big file.
 
 - Depends on: [`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md)
 
-### 🔬 Embodied AI industry research — single-skill case (deep research)
+### 🔬 Embodied AI industry research — deep research
 
 [`examples/embodied-ai-deep-research`](examples/embodied-ai-deep-research/). Given only an industry name, the agent first commits to a research plan — market size, vendor share, financing, cost structure, development roadmap — instead of jumping straight into search. For each dimension it runs targeted web searches, fetches and reads source pages, and extracts both numeric and qualitative evidence; conflicting figures across sources are explicitly reconciled before being trusted. A synthesis stage stitches the per-dimension evidence into a coherent industry narrative rather than a stack of disconnected bullets. The output is an illustrated report (Markdown + visualized HTML) with 5 dimension-specific charts. The example shows how `sn-deep-research` turns "go research X" into a structured plan-then-execute loop with traceable evidence.
 
 - Depends on: [`sn-deep-research`](skills/sn-deep-research/SKILL.md)
 
-### 🎯 Property fee pricing PPT — single-skill case (PPT generation)
+### 🎯 Property fee pricing — PPT generation
 
 [`examples/property-fee-pricing-ppt`](examples/property-fee-pricing-ppt/). The agent takes a free-form brief — topic (property fee pricing), audience (property staff + committee), 26 pages, black-and-white warm style — and first commits to an outline plus a per-page asset plan that conforms to the style spec. Each slide is then built as semantic per-page HTML rather than free-form image generation: copy, layout, illustrations, icons, and any data charts are reasoned about per slot. Imagery is produced or selected per slot and VLM-checked against the page's intent; each rendered page goes through a review pass with optional rewrite for coherence and copy quality. Final pages are screenshotted and composited into the PPTX, with the per-page HTML kept alongside for direct browser preview or re-editing. The example demonstrates `sn-ppt-standard` style consistency on a long, prose-heavy deck where every slide must obey the same audience and palette constraints.
 
