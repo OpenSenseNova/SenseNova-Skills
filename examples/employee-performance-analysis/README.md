@@ -8,7 +8,7 @@ This example shows how to use SenseNova-Skills' **data analysis** ability on a s
 
 ## Input
 
-- [`result/风电事业部月度绩效考核表/`](result/风电事业部月度绩效考核表/): the wind-power business unit's monthly individual performance review spreadsheets, 2024-12 through 2025-09 (10 months, anonymized, xlsx).
+- [`result/风电事业部月度绩效考核表.zip`](result/风电事业部月度绩效考核表.zip): the wind-power business unit's monthly individual performance review spreadsheets, 2024-12 through 2025-09 (10 months, anonymized, xlsx). Unzipped directory `风电事业部月度绩效考核表/` contains the 10 xlsx files.
 
 ## Skills involved
 
@@ -21,7 +21,7 @@ This example shows how to use SenseNova-Skills' **data analysis** ability on a s
 
 ### Step 1: Data analysis
 
-Place the 10 xlsx files from `风电事业部月度绩效考核表/` in the working directory and prompt the agent:
+Unzip `风电事业部月度绩效考核表.zip`, place the 10 xlsx files in the working directory, and prompt the agent:
 
 ```text
 Based on the wind-power business unit's monthly performance review spreadsheets I uploaded, produce an
@@ -50,7 +50,7 @@ You'll get a browser-friendly visualization, packaged as [`result/员工绩效�
 
 ```
 result/
-├── 风电事业部月度绩效考核表/                       # Input: 10 monthly review xlsx files (anonymized)
+├── 风电事业部月度绩效考核表.zip                    # Input: 10 monthly review xlsx files (anonymized)
 ├── 风电事业部2024-2025年度员工绩效分析报告.docx     # Data analysis artifact (Word)
 └── 员工绩效分析-output.zip                       # Data analysis artifact (HTML + 8 figures)
 ```
