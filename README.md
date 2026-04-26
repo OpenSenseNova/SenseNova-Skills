@@ -1,143 +1,145 @@
+<p align="center">
+  <img src="assets/logo.webp" alt="SenseNova logo" width="180" />
+</p>
+
 # SenseNova-Skills
 
-English | [简体中文](README_CN.md)
+简体中文 | [English](README_en.md)
 
-<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="SenseNova-Skills Teaser"></p>
+SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/nousresearch/hermes-agent) 等智能体，并借助skills实现更强大的能力。
 
-Skills and tooling for **AIGC** in agent runtimes.
+本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
-## Prerequisites
+技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
 
-- **Python** 3.9 or later.
-- **U1 API** credentials for image generation and LLM/VLM endpoints (`U1_API_KEY`, `U1_LM_API_KEY`; see Quick Start).
+## 什么是 SKILL.md？
 
-## Skills
+`SKILL.md` 是教智能体执行特定任务的 Markdown 文档，通常包含：
 
-### u1-doctor
+- **Frontmatter 元数据**：`name`、`description`，以及可选的 `triggers`、`metadata` 等字段
+- **执行说明**：技能何时触发、按什么顺序做哪些事、产物落在哪里
+- **References**（可选）：补充文档、方法论、示例
+- **Scripts**（可选）：技能调用的可执行脚本
 
-Environment diagnostic skill that checks installation, dependencies, and configuration. See [`skills/u1-doctor/SKILL.md`](skills/u1-doctor/SKILL.md) for full behavior.
+## 如何使用
 
-- Validates `u1-image-base` installation and Python dependencies
-- Checks environment variables and interactively prompts to configure missing required variables
-- Saves configuration to `.env` file and reloads environment automatically
+> 本仓库的 skill 需要配合支持 [Agent Skills](https://agentskills.io/) 规范的智能体使用，推荐 [OpenClaw](https://openclaw.ai/) 或 [hermes-agent](https://github.com/NousResearch/hermes-agent) 获得最佳效果。完整的安装、LLM 配置与 skill 加载流程请参考 [`INSTALL.md`](INSTALL.md)。
 
-### u1-image-base (Tier 0)
+克隆本仓库后，把 `skills/` 下的子目录复制（或软链接）到所用智能体加载的 skills 目录：
 
-Base-layer infrastructure skill providing two low-level tools. See [`skills/u1-image-base/SKILL.md`](skills/u1-image-base/SKILL.md) for full behavior.
+| 智能体 | 目标目录 |
+|--------|---------|
+| [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
+| [hermes-agent](https://github.com/nousresearch/hermes-agent) | `~/.hermes/skills/` |
 
-- **u1-image-generate** — text-to-image generation
-- **u1-text-optimize** — text processing using LLM
-
-All tools are invoked through a unified `openclaw_runner.py` entrypoint.
-
-### u1-infographic (Tier 1)
-
-Scene skill for generating professional infographics, built on `u1-image-base`. See [wwwills/u1-infographic/SKILL.md`](skills/u1-infographic/SKILL.md) for full behavior.
-
-- Automatic prompt quality evaluation
-- Content analysis and layout/style selection (87 layouts, 66 styles)
-- Multi-round image generation with VLM review
-- Quality ranking and best-result output
-
-## Quick Start
-
-Use these skills from [OpenClaw](https://openclaw.ai/).
-They follow the [Agent Skills](https://agentskills.io/) layout; see [OpenClaw Skills](https://docs.openclaw.ai/tools/skills) for how OpenClaw discovers and loads skill folders.
-If you have not set up OpenClaw yet, install and configure it from the **[official documentation](https://docs.openclaw.ai/)** (product site: [openclaw.ai](https://openclaw.ai/)).
-
-### 1. Register `u1-image-base` and `u1-infographic`
-
-Clone this repository, then expose **both** skill directories to OpenClaw ([locations and precedence](https://docs.openclaw.ai/tools/skills#locations-and-precedence)). `u1-infographic` depends on `u1-image-base`—install both.
-
-Use one of the following approaches:
-
-| Approach | What to do |
-|----------|------------|
-| **Workspace `skills/`** (typical) | Copy or symlink `skills/u1-image-base` and `skills/u1-infographic` into your agent workspace as `./skills/u1-image-base/` and `./skills/u1-infographic/`. |
-| **Shared on this machine** | Copy or symlink the same two folders under `~/.openclaw/skills/`. |
-| **`openclaw.json`** | Add an absolute path to this repo’s `skills` folder (the parent of both directories) via `skills.load.extraDirs` (example below). |
-
-```json5
-{
-  skills: {
-    load: {
-      extraDirs: ["/absolute/path/to/SenseNova-Skills/skills"],
-    },
-  },
-}
-```
-
-Replace the path with your clone. Details: [Skills config](https://docs.openclaw.ai/tools/skills-config). Workspace skills win over `extraDirs` if the same name appears twice.
-
-### 2. Python dependencies and API keys
-
-Install packages and export keys in the **Python environment and process** OpenClaw uses when it runs [`skills/u1-image-base/u1_image_base/openclaw_runner.py`](skills/u1-image-base/u1_image_base/openclaw_runner.py) (the unified runner for these tools):
+例如，把全部技能复制到 OpenClaw：
 
 ```bash
-pip install -r skills/u1-image-base/requirements.txt
-# for image generation
-export U1_API_KEY="your-image-api-key"
-# for LLM and VLM
-export U1_LM_API_KEY="your-lm-api-key"
-export U1_LM_BASE_URL="your-lm-base-url"
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+mkdir -p ~/.openclaw/skills
+cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
 
-Prefer environment variables or a local `.env` file. Do not commit secrets.
+Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
-### 3. Invoke in OpenClaw
+各分类技能的 Python 依赖、API key 与调用示例同样请参考对应分类的 📖 详细使用指南。
 
-Check your environment and configure missing variables interactively:
+## 技能列表
 
-> /skill u1-doctor
+### 🎨 图像与可视化
 
-Describe the task in chat, for example:
+📖 详细使用指南：[`docs/sn-image-generate.md`](docs/sn-image-generate.md)（环境要求、Quick Start、API 配置与调用样例）。
 
-> "Create an infographic explaining the water cycle"
 
-Or call the skill by name:
+| 名称                                                 | 标签            | 描述                                                                                              |
+| -------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
+| [`sn-image-doctor`](skills/sn-image-doctor/SKILL.md)           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `sn-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
+| [`sn-image-base`](skills/sn-image-base/SKILL.md)   | 图像基础层（Tier 0） | 提供文生图（`sn-image-generate`）、图像识别（`sn-image-recognize`）与文本优化（`sn-text-optimize`）三个底层工具，统一通过 `sn_agent_runner.py` 调用，供上层技能复用。 |
+| [`sn-infographic`](skills/sn-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。                                     |
 
-> /skill u1-infographic "The water cycle"
 
-## Sample Outputs
+### 📊 演示文稿（PPT）
 
-Examples for `u1-infographic` (more examples in [`u1-infographic-examples.md`](docs/u1-infographic-examples.md)).
+📖 详细使用指南：[`docs/ppt-generate.md`](docs/ppt-generate.md)（环境要求、Quick Start、API 配置与调用样例）。
 
-### Example 1 — hotel linen hygiene
 
-**User prompt:** `"Operational Excellence: Standards for Hotel Linen Hygiene and Disposable Supplies"`
+| 名称                                             | 标签         | 描述                                                                                                                         |
+| ---------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [`ppt-entry`](skills/ppt-entry/SKILL.md)       | **PPT 入口** | **PPT 生成功能的统一入口**，收集角色 / 受众 / 场景 / 页数 / 模式（创意 or 标准），解析 pdf / docx / md / txt 输入，产出 `task_pack.json` + `info_pack.json` 并分派到下游模式。 |
+| [`ppt-doctor`](skills/ppt-doctor/SKILL.md)     | PPT 环境诊断   | PPT 流水线的环境检查，验证 `sn-image-base`、API key、Node 运行时与可选依赖；按需写入 `.env`。                                                         |
+| [`ppt-creative`](skills/ppt-creative/SKILL.md) | PPT 创意模式   | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `sn-image-generate` 一次性出图。                                                                |
+| [`ppt-standard`](skills/ppt-standard/SKILL.md) | PPT 标准模式   | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出 PPTX。                                |
 
-**Expanded prompt**
 
-```
-Technical blueprint style: six operational modules arranged vertically, light grey grid background, deep navy blue borders.
-Section 1 — Linen Hygiene Lifecycle: a seven-node horizontal flow; icons: waste bin → sealed cart → sort bin → washer → iron → shelf → delivery cart. Three color zones: red (soiled zone: collection and transport), yellow (processing zone: sort → wash → finish), green (clean zone: store and distribute).
-Section 2 — Laundering Parameters: cutaway of an industrial washer, labeled: 71°C/160°F (temperature), 50–100 ppm chlorine (chemical disinfection), pH 6.5–7.5, 45–60 min cycle, 80%+ moisture removal.
-Section 3 — Linen Quality Tiers: a three-column matrix: Clean (standard linen) → Sanitized (≥99.9% pathogen reduction) → Sterile (121°C autoclave, medical use).
-Section 4 — Quality Control Checklist: ✓ no stains ✓ no damage ✓ no odor ✓ correct fold ✓ documented traceability; "QC Passed" stamp.
-Section 5 — Disposable Supplies Control: dashboard-style stock for three lines: amenities, housekeeping, food service; color bands: green (sufficient) → yellow (low) → red (reorder).
-Section 6 — Compliance Documentation: stacked files and badges: ISO 9001, health-code compliant, brand certified.
-```
+### 📈 数据分析（DA）
 
-<p align="center"><img src="docs/images/01-info.webp" width="720" alt="Sample infographic output — hotel linen hygiene"></p>
+📖 详细使用指南：[`docs/data-analysis.md`](docs/data-analysis.md)（环境要求、Quick Start、API 配置与调用样例）。
 
-### Example 2 — lemon guide
 
-**User prompt:** `"Lemons: complete uses & reference guide"`
+| 名称                                                                 | 标签         | 描述                                                                               |
+| ------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------- |
+| [`da-excel-workflow`](skills/da-excel-workflow/SKILL.md)           | Excel 分析编排 | Excel 多表读取、大文件检测（≥10k 行触发 Parquet 优化）、清洗、条件过滤、跨表聚合、Excel/CSV 导出的全流程编排。           |
+| [`da-image-caption`](skills/da-image-caption/SKILL.md)             | 图像理解与数据提取  | 图像类输入做表格 OCR / 图表解读 / 截图描述 / UI 描述；可解析为 DataFrame、复绘可视化、导出 Excel/CSV。            |
+| [`da-large-file-analysis`](skills/da-large-file-analysis/SKILL.md) | 大文件高性能分析   | ≥10k 行 Excel 的流式读取（openpyxl read_only + iter_rows）、Parquet 转换、内存优化、分块处理与大文件写入模式。 |
 
-**Expanded prompt**
 
-```
-The title of this infographic is "The Lemon: Nature's Multi-Purpose Fruit" and it uses a modern minimalist matrix layout with botanical illustration accents.
-Overall layout: a modular bento-style grid, clear sections, yellowed-paper texture on a light grey grid; bold serif titles plus a narrow monospaced data face; palette: bright lemon yellow, leaf green, and clean white.
-Top-left quadrant: detailed botanical cutaway of a lemon (flesh, peel, juice sacs). Labels: Citrus limon, pH ~2.3, 50–70 ml juice per average fruit. Three round variety icons: Eureka, Lisbon, Meyer (lemon hybrid). Origin: northeastern India, northern Myanmar, or China. Season: winter through early summer.
-Top-right quadrant: culinary uses grid with food icons: salad-dressing bowl, lemonade glass, ceviche plate, lemon cake, preserved-lemon jar. Categories: fresh juice, zest and garnish, preserved, cooking, beverages.
-Center-left: health and nutrition—badge: ~53 mg vitamin C per 100 g (about 88% DV); icons: immune support, antioxidant, digestive aid, skin health, kidney-stone prevention; note hesperidin and diosmin.
-Center-right: household hacks—lemon half + salt for cutting boards, microwave to deodorize the fridge, descale a kettle, natural laundry bleach, wood polish with oil.
-Bottom: selection and storage—good: heavy for size, firm skin, bright yellow, thin skin. Avoid: soft spots, mold, greenish tint. Storage: room temp ~1 week; fridge ~3–4 weeks. Tips: roll on the counter before cutting; freeze juice in ice-cube trays; zest before juicing; avoid the white pith.
-```
+### 🔬 深度研究
 
-<p align="center"><img src="docs/images/05-info.webp" width="720" alt="Sample infographic output — lemon guide"></p>
+📖 详细使用指南：[`docs/deep-research.md`](docs/deep-research.md)（环境要求、`web_search` 硬检查、Quick Start 与各阶段调用）。
 
-## License
 
-MIT — see [LICENSE](LICENSE).
+| 名称                                                                   | 标签        | 描述                                                                                      |
+| -------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
+| [`deep-research`](skills/deep-research/SKILL.md)                     | **深度研究入口** | **深度研究功能的统一入口**，规划 → 分维度取证 → 综合 → 成稿（`report.md`）的全流程编排器，产物落盘到 `report_dir`，支持断点续跑。 |
+| [`research-planning`](skills/research-planning/SKILL.md)             | 研究规划      | 基于 `request.md` 一次性产出 `plan.json`，覆盖定界、报告形态、维度拆解、关键问题、搜索策略、依赖与完成标准。                     |
+| [`dimension-research`](skills/dimension-research/SKILL.md)           | 单维度取证     | 按 `plan.json` 中维度的 `search_strategy` 调用搜索、筛选证据、交叉验证，产出 `sub_reports/{dimension_id}.md`。 |
+| [`research-synthesis`](skills/research-synthesis/SKILL.md)           | 综合判断      | 把多个 `sub_reports` 综合为 `synthesis.md`，明确主线判断、证据强弱、跨维度共识、关键冲突与不确定性。                       |
+| [`research-report`](skills/research-report/SKILL.md)                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
+| [`report-format-discovery`](skills/report-format-discovery/SKILL.md) | 报告形态发现    | 研究"这类报告应该长什么样"，给出章节结构、必备元素与风格约束；可独立使用，也可为 deep-research 的 `report_shape` 提供依据。          |
+
+
+### 🔍 搜索
+
+📖 搜索技能与深度研究合并在同一份文档：[`docs/deep-research.md`](docs/deep-research.md)（含各平台 API key、调用方式与统一 JSON 输出）。
+
+
+| 名称                                                     | 标签     | 描述                                                                                          |
+| ------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------- |
+| [`search-academic`](skills/search-academic/SKILL.md)   | 学术搜索   | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 四平台聚合。        |
+| [`search-code`](skills/search-code/SKILL.md)           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
+| [`search-social-cn`](skills/search-social-cn/SKILL.md) | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
+| [`search-social-en`](skills/search-social-en/SKILL.md) | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
+
+
+## 输出样例
+
+### 🎨 信息图（sn-infographic）
+
+`sn-infographic` 的部分生成效果（更多样例见 [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md)）。
+
+<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic 生成效果合集"></p>
+
+### 📊 演示文稿（ppt-standard / ppt-creative）
+
+`ppt-standard` 与 `ppt-creative` 的部分生成效果（更多样例见 [`docs/ppt-examples.md`](docs/ppt-examples.md)）。
+
+<!-- TODO: 补充 PPT 样例图片 -->
+
+### 🔬 深度调研（deep-research）
+
+`deep-research` 编排产出的报告样例（更多样例见 [`docs/deep-research-examples.md`](docs/deep-research-examples.md)）。
+
+<!-- TODO: 补充深度调研报告样例截图或链接 -->
+
+## 贡献
+
+欢迎以本仓库的技能为模板创建你自己的 OpenClaw 技能。一个好技能的核心要素：
+
+- **清晰的触发条件**：在 `description` 中写明"什么时候用 / 什么时候不用"，让智能体准确识别
+- **聚焦的能力边界**：每个技能只把一件事做好，复杂工作流通过多个技能编排实现
+- **完善的文档**：包含示例、产物约定、边界情况与失败处理
+- **必要的支撑资源**：通过 `references/`、`scripts/`、`prompts/` 提供补充上下文
+
+## 许可证
+
+MIT — 详见 [LICENSE](LICENSE)。
