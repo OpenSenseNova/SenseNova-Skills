@@ -248,7 +248,7 @@ Once your agent is up, send it the message below. It will use its own shell tool
 
 Swap "OpenClaw" and the path for `hermes-agent` / `~/.hermes/skills/` to use this with hermes.
 
-> This option works well for picking and choosing — e.g., "only copy `sn-image-*` and `deep-research`."
+> This option works well for picking and choosing — e.g., "only copy `sn-image-*` and `sn-deep-research`."
 
 ### 3.4 Per-category skill prerequisites
 
@@ -267,7 +267,7 @@ Start the agent and ask:
 
 > List the available skills, with a one-line description for each.
 
-If the agent enumerates skills like `sn-infographic`, `ppt-entry`, and `deep-research` from this repo, the LLM and skill setup is good to go.
+If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, and `sn-deep-research` from this repo, the LLM and skill setup is good to go.
 
 ---
 

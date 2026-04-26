@@ -248,7 +248,7 @@ cp -r skills/* ~/.hermes/skills/
 
 把"OpenClaw"和路径换成 `hermes-agent` / `~/.hermes/skills/` 即可用于 hermes。Agent 会通过自己的 shell 工具完成 `mkdir` + `cp` + 列目录的动作，并把结果回报给你。
 
-> 这种方式适合按需挑选 skill，例如："只把 `sn-image-*` 和 `deep-research` 这几个 skill 复制过去"。
+> 这种方式适合按需挑选 skill，例如："只把 `sn-image-*` 和 `sn-deep-research` 这几个 skill 复制过去"。
 
 ### 3.4 各分类 skill 的额外依赖
 
@@ -267,7 +267,7 @@ cp -r skills/* ~/.hermes/skills/
 
 > 列出当前可用的 skill，并给出每个 skill 的一句话说明。
 
-如果 agent 能列出 `sn-infographic`、`ppt-entry`、`deep-research` 等本仓库的 skill，说明 LLM 与 skill 都已就绪。
+如果 agent 能列出 `sn-infographic`、`sn-ppt-entry`、`sn-deep-research` 等本仓库的 skill，说明 LLM 与 skill 都已就绪。
 
 ---
 
