@@ -46,14 +46,14 @@ Set the following in `~/.openclaw/.env` (OpenClaw) or `~/.hermes/.env` (Hermes):
 
 ```ini
 # LLM (outline, style_spec, content planning)
-SN_LM_API_KEY="your-api-key"
-SN_LM_BASE_URL="https://token.sensenova.cn/v1"
+SN_CHAT_API_KEY="your-api-key"
+SN_CHAT_BASE_URL="https://token.sensenova.cn/v1"
 
 # Text-to-image (required for creative mode, on-demand for standard mode)
 SN_API_KEY="your-api-key"
 ```
 
-Optional variables `SN_IMAGE_GEN_*`, `VLM_*`, `LLM_*` override default models and timeouts. Full list: [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md).
+Optional variables `SN_IMAGE_GEN_*`, `SN_TEXT_*`, and `SN_VISION_*` override default models and timeouts. Full list: [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md).
 
 Run environment doctor before invoking:
 
