@@ -53,9 +53,9 @@ All API calls in this skill are executed through the `sn_agent_runner.py` of the
 
 | Call Type | Tool | Authentication Parameters | Description |
 |-----------|------|---------------------------|-------------|
-| **LLM** | sn-text-optimize (evaluation/expansion) | Default reads `LLM_API_KEY` / `SN_LM_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
-| **VLM** | sn-image-recognize (image review) | Default reads `VLM_API_KEY` / `SN_LM_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
-| **Image Generation** | sn-image-generate | Default reads `SN_API_KEY` environment variable | Default uses U1 API configuration of `sn-image-base` |
+| **LLM** | sn-text-optimize (evaluation/expansion) | Default reads `SN_TEXT_API_KEY` / `SN_CHAT_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
+| **VLM** | sn-image-recognize (image review) | Default reads `SN_VISION_API_KEY` / `SN_CHAT_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
+| **Image Generation** | sn-image-generate | Default reads `SN_API_KEY` environment variable | Default uses image generation configuration of `sn-image-base` |
 
 **When encountering `MissingApiKeyError` or needing to specify a model**: pass explicitly via CLI parameters, parameter reference `$SN_IMAGE_BASE/reference/api_spec.md`.
 
@@ -314,7 +314,7 @@ System prompt comes from `reference/prompts-critic-system.md`, user prompt is pr
   "reasoning": "<Reasoning process, empty string when max_rounds=1>",
   "timing": {
     "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
-    "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-122b" }
+    "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
   }
 }
 ```
@@ -346,9 +346,9 @@ After Worker Agent completes, its last message must be and only be the following
   "early_terminated": true,
   "timing": {
     "total_elapsed_seconds": 35.12,
-    "prompt_detection": { "elapsed_seconds": 2.11, "model": "sensenova-122b" },
-    "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-122b" },
-    "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-122b" }
+    "prompt_detection": { "elapsed_seconds": 2.11, "model": "sensenova-6.7-flash-lite" },
+    "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-6.7-flash-lite" },
+    "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-6.7-flash-lite" }
   },
   "rounds": [
     {
@@ -360,7 +360,7 @@ After Worker Agent completes, its last message must be and only be the following
       "reasoning": "<Reasoning process, empty string when max_rounds=1>",
       "timing": {
         "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
-        "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-122b" }
+        "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
       }
     }
   ]

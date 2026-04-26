@@ -7,7 +7,7 @@
 ## 环境要求
 
 - **Python** 3.9 或更高版本（推荐 3.10+）。
-- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（`SN_API_KEY`、`SN_LM_API_KEY`，详见 Quick Start）。
+- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（`SN_API_KEY`、`SN_CHAT_API_KEY`，详见 Quick Start）。
 
 ## 技能介绍
 
@@ -86,7 +86,7 @@ pip install -r skills/sn-image-base/requirements.txt
 
 ```ini
 SN_API_KEY="your-api-key"
-SN_LM_API_KEY="your-api-key"
+SN_CHAT_API_KEY="your-api-key"
 ```
 
 **注意：** 切勿将 `.env` 或 API Key 提交到 git。
