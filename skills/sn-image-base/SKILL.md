@@ -118,7 +118,7 @@ python scripts/sn_agent_runner.py sn-image-generate \
 # Image generation (override base-url)
 python scripts/sn_agent_runner.py sn-image-generate \
     --prompt "..." \
-    --base-url "https://custom-endpoint.com/u1-model"
+    --base-url "https://custom-endpoint.com/v1"
 
 # Image generation (explicitly override api-key)
 python scripts/sn_agent_runner.py sn-image-generate \

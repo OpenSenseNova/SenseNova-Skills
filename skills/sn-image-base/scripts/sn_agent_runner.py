@@ -33,7 +33,6 @@ from sn_image_base.generation import (
     NanoBananaText2ImageClient,
     OpenAIImageGenerationClient,
     SensenovaText2ImageClient,
-    U1Text2ImageClient,
 )
 from sn_image_base.llm import AnthropicMessagesAdapter, ChatCompletionsLlmAdapter
 from sn_image_base.vlm import AnthropicVlmAdapter, ChatCompletionsVlmAdapter
@@ -78,9 +77,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # sn-image-generate
-    gen_parser = subparsers.add_parser(
-        "sn-image-generate", help="Generate image from text prompt (U1 API)"
-    )
+    gen_parser = subparsers.add_parser("sn-image-generate", help="Generate image from text prompt")
     gen_parser.add_argument("--prompt", required=True, help="Text prompt for image generation")
     gen_parser.add_argument("--negative-prompt", default="", help="Negative prompt")
     gen_parser.add_argument(
@@ -197,7 +194,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
-    """Run image-generate command using the U1 text-to-image API.
+    """Run image-generate command using the configured image backend.
 
     Args:
         args: Parsed command-line arguments from ``image-generate`` subcommand.
@@ -255,14 +252,11 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             f"Using OpenAI-compatible model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation"
         )
     else:
-        client = U1Text2ImageClient(
-            api_key=api_key,
-            base_url=base_url,
-            poll_interval=args.poll_interval,
-            timeout=args.timeout,
-            ssl_verify=not args.insecure,
+        supported_types = "sensenova, nano-banana, openai-image"
+        raise BadConfigurationError(
+            f"Unsupported SN_IMAGE_GEN_MODEL_TYPE {global_configs.SN_IMAGE_GEN_MODEL_TYPE!r}. "
+            f"Supported values: {supported_types}."
         )
-        print(f"Using U1 model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation")
     try:
         result = await client.generate(
             prompt=args.prompt,

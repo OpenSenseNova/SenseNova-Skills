@@ -11,7 +11,7 @@
 
 ## sn-image-generate
 
-Image generation tool that calls the U1 text-to-image-no-enhance API.
+Image generation tool that calls the configured image generation backend.
 
 ### Command Format
 

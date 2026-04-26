@@ -166,7 +166,7 @@ class Configs:
                 continue
 
         # Check fields combination rules:
-        if self.SN_IMAGE_GEN_MODEL_TYPE != "u1" and not self.SN_IMAGE_GEN_MODEL:
+        if not self.SN_IMAGE_GEN_MODEL:
             errors.append((
                 "SN_IMAGE_GEN_MODEL",
                 f"SN_IMAGE_GEN_MODEL is required when SN_IMAGE_GEN_MODEL_TYPE is {self.SN_IMAGE_GEN_MODEL_TYPE!r}",
