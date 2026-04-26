@@ -356,14 +356,28 @@ Rules:
 
 ### verbose mode
 
-Send structured summary:
-
-1. Reference short caption
-2. Key style/layout cues (briefly extracted from reference long caption + blueprint)
-3. New long caption used for generation
-4. Attempt-by-attempt similarity scores and major deviations
-5. Timing summary
-6. Final image
+```
+Style imitation result
+---
+Reference short caption: <reference_short_caption>
+---
+Style/layout cues:
+<brief extraction from reference_long_caption + layout_blueprint>
+---
+New long caption:
+<new_long_caption>
+---
+#1 attempt=<n> layout_score=<0.00> style_score=<0.00> pass=<true|false> [selected]
+  deviations: <major_deviations or none>
+#2 attempt=<n> layout_score=<0.00> style_score=<0.00> pass=<true|false>
+  deviations: <major_deviations or none>
+...
+---
+Layout threshold: <0.75> | Passed: <true|false> | Selected: attempt <n>
+Time statistics: Total <total>s | Annotation <t>s | Rewrite <t>s | Generation <t>s×<n> attempts | Review <t>s×<n> attempts
+---
+Images (selected image)
+```
 
 ## Call Relationship
 
