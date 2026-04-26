@@ -111,17 +111,29 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 <p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic 生成效果合集"></p>
 
-### 📊 演示文稿（sn-ppt-standard / sn-ppt-creative）
+### 🧩 内存价格分析 — 端到端流水线
 
-`sn-ppt-standard` 与 `sn-ppt-creative` 的部分生成效果（更多样例见 [`docs/ppt-examples.md`](docs/ppt-examples.md)）。
+[`examples/memory-price-end2end-analysis`](examples/memory-price-end2end-analysis/) — 端到端样例：串联 数据分析 → 深度调研 → PPT 生成。从一份价格 CSV 出发，产出数据分析 Markdown / HTML 报告、图文深度调研报告，以及 16 页 PPTX。
 
-<!-- TODO: 补充 PPT 样例图片 -->
+- 依赖技能：[`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md)、[`sn-deep-research`](skills/sn-deep-research/SKILL.md)、[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)、[`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)
 
-### 🔬 深度调研（sn-deep-research）
+### 📊 员工绩效分析 — 独立样例（数据分析）
 
-`sn-deep-research` 编排产出的报告样例（更多样例见 [`docs/deep-research-examples.md`](docs/deep-research-examples.md)）。
+[`examples/employee-performance-analysis`](examples/employee-performance-analysis/) — 从 10 份月度绩效考核表汇总出 Word 版绩效报告，并补一份含 8 张图表的可视化 HTML 报告。
 
-<!-- TODO: 补充深度调研报告样例截图或链接 -->
+- 依赖技能：[`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md)
+
+### 🔬 具身智能行业调研 — 独立样例（深度调研）
+
+[`examples/embodied-ai-deep-research`](examples/embodied-ai-deep-research/) — 仅凭一句 prompt、无任何输入文件，产出行业调研报告，含 5 张图表（市场规模、份额、融资、成本、路线图）。
+
+- 依赖技能：[`sn-deep-research`](skills/sn-deep-research/SKILL.md)
+
+### 🎯 物业费定价体系 PPT — 独立样例（PPT 生成）
+
+[`examples/property-fee-pricing-ppt`](examples/property-fee-pricing-ppt/) — 仅凭一句 prompt 产出的 26 页黑白温馨风 PPTX，附分页 HTML 源。
+
+- 依赖技能：[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
 
 ## 贡献
 

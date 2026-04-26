@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>半导体存储市场价格汇总分析报告</title>
+<style>
+:root {
+  --primary: #0f766e;
+  --primary-dark: #155e75;
+  --primary-light: #1d4ed8;
+  --bg: #f3f4f6;
+  --paper: #ffffff;
+  --text: #1f2937;
+  --text-light: #4b5563;
+  --border: #e5e7eb;
+  --line: #d1d5db;
+  --accent-bg: #f0fdfa;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 28px;
+  gap: 28px;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .toc-panel { display: none !important; }
+}
+
+/* TOC Panel */
+.toc-panel {
+  position: sticky;
+  top: 28px;
+  align-self: start;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  padding: 20px 16px;
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+.toc-panel h3 {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.toc-panel ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.toc-panel li {
+  font-size: 13px;
+  margin: 6px 0;
+}
+
+.toc-panel a {
+  color: var(--text-light);
+  text-decoration: none;
+  display: block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.toc-panel a:hover {
+  background: var(--accent-bg);
+  color: var(--primary);
+}
+
+.toc-panel .toc-h2 { padding-left: 0; }
+.toc-panel .toc-h3 { padding-left: 16px; }
+.toc-panel .toc-h4 { padding-left: 32px; }
+
+.active-toc {
+  background: var(--accent-bg) !important;
+  color: var(--primary) !important;
+  font-weight: 600;
+}
+
+/* Main Content */
+main {
+  background: var(--paper);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+article {
+  padding: 46px min(6vw, 76px) 68px;
+}
+
+@media (max-width: 600px) {
+  article { padding: 24px 16px 36px; }
+}
+
+/* Title */
+h1 {
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+/* Headers */
+h2 {
+  font-size: clamp(22px, 2.3vw, 30px);
+  margin: 48px 0 20px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+}
+
+h3 {
+  font-size: 21px;
+  margin: 32px 0 16px;
+  color: #374151;
+}
+
+h4 {
+  font-size: 18px;
+  margin: 24px 0 12px;
+  color: #4b5563;
+}
+
+/* Paragraphs */
+p {
+  margin: 16px 0;
+  color: var(--text-light);
+}
+
+/* Blockquote */
+blockquote {
+  background: var(--accent-bg);
+  border-left: 4px solid var(--primary);
+  padding: 16px 20px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+  color: var(--text);
+}
+
+/* Tables */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 24px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+th {
+  background: #f9fafb;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text);
+}
+
+td {
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-light);
+}
+
+tr:last-child td { border-bottom: none; }
+
+/* Code */
+pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 24px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Lists */
+ul, ol {
+  margin: 16px 0;
+  padding-left: 28px;
+}
+
+li {
+  margin: 8px 0;
+}
+
+/* Links */
+a {
+  color: var(--primary-light);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* HR */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 40px 0;
+}
+
+/* Images */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 24px auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(15,23,42,0.08);
+}
+
+/* Progress bar */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  z-index: 1000;
+  transition: width 0.15s;
+}
+
+/* Back to top */
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(15,118,110,0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.back-to-top:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+/* Print styles */
+@media print {
+  .toc-panel, .progress-bar, .back-to-top { display: none !important; }
+  body { background: white; }
+  main { box-shadow: none; border: none; }
+  h1 { -webkit-text-fill-color: var(--text); background: none; color: var(--text); }
+  .table-scroll { overflow: visible; }
+  img { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="layout">
+  <aside class="toc-panel">
+    <h3>📑 目录</h3>
+    <ul id="tocList"></ul>
+  </aside>
+
+  <main>
+    <article>
+<h1 id="h1-0">半导体存储市场价格汇总分析报告</h1>
+<p><strong>数据来源：</strong> China Flash Market  </p>
+<p><strong>数据时间范围：</strong> 2026-01-22 ~ 2026-04-21  </p>
+<p><strong>报告生成时间：</strong> 2026-04-22  </p>
+<p><strong>数据总量：</strong> 1835 条记录，涵盖 5 大类、15 个子类、77 种产品</p>
+<hr>
+<h2 id="h2-6">一、数据概览</h2>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>统计项</th>
+  <th>数值</th>
+</tr></thead>
+<tbody><tr>
+  <td>总记录数</td>
+  <td>1835 条</td>
+</tr></tbody>
+<tbody><tr>
+  <td>产品种类</td>
+  <td>77 种</td>
+</tr></tbody>
+<tbody><tr>
+  <td>大类数量</td>
+  <td>5 个</td>
+</tr></tbody>
+<tbody><tr>
+  <td>子类数量</td>
+  <td>15 个</td>
+</tr></tbody>
+<tbody><tr>
+  <td>日期跨度</td>
+  <td>约 3 个月（2026-01-22 ~ 2026-04-21）</td>
+</tr></tbody>
+</table></div>
+<h3 id="h3-34">各大类数据分布</h3>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>大类</th>
+  <th>记录数</th>
+  <th>产品数</th>
+  <th>占比</th>
+</tr></thead>
+<tbody><tr>
+  <td>移动存储</td>
+  <td>885</td>
+  <td>15</td>
+  <td>48.2%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>PC</td>
+  <td>336</td>
+  <td>22</td>
+  <td>18.3%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>芯片</td>
+  <td>332</td>
+  <td>12</td>
+  <td>18.1%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>Mobile</td>
+  <td>264</td>
+  <td>22</td>
+  <td>14.4%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>服务器</td>
+  <td>18</td>
+  <td>6</td>
+  <td>1.0%</td>
+</tr></tbody>
+</table></div>
+<hr>
+<h2 id="h2-75">二、整体市场走势</h2>
+<h3 id="h3-76">涨跌统计</h3>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>类别</th>
+  <th>数量</th>
+  <th>占比</th>
+</tr></thead>
+<tbody><tr>
+  <td>📈 价格上涨产品</td>
+  <td>**66**</td>
+  <td>85.7%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>➡️ 价格持平产品</td>
+  <td>11</td>
+  <td>14.3%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>📉 价格下跌产品</td>
+  <td>**6**</td>
+  <td>7.8%</td>
+</tr></tbody>
+</table></div>
+<blockquote>**核心结论：市场整体处于上涨周期，超过 85% 的产品价格上涨。**</blockquote>
+<h3 id="h3-101">各大类平均涨跌幅</h3>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>大类</th>
+  <th>平均涨跌幅</th>
+  <th>上涨数</th>
+  <th>下跌数</th>
+  <th>持平数</th>
+</tr></thead>
+<tbody><tr>
+  <td>**Mobile**</td>
+  <td>**+32.22%**</td>
+  <td>22</td>
+  <td>0</td>
+  <td>0</td>
+</tr></tbody>
+<tbody><tr>
+  <td>**移动存储**</td>
+  <td>**+25.33%**</td>
+  <td>15</td>
+  <td>0</td>
+  <td>0</td>
+</tr></tbody>
+<tbody><tr>
+  <td>**芯片**</td>
+  <td>**+20.27%**</td>
+  <td>7</td>
+  <td>0</td>
+  <td>5</td>
+</tr></tbody>
+<tbody><tr>
+  <td>**服务器**</td>
+  <td>**+14.39%**</td>
+  <td>3</td>
+  <td>0</td>
+  <td>3</td>
+</tr></tbody>
+<tbody><tr>
+  <td>**PC**</td>
+  <td>**+4.32%**</td>
+  <td>19</td>
+  <td>6</td>
+  <td>3</td>
+</tr></tbody>
+</table></div>
+<hr>
+<h2 id="h2-148">三、涨幅最大 TOP 10 产品</h2>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>排名</th>
+  <th>大类</th>
+  <th>子类</th>
+  <th>产品</th>
+  <th>起始价</th>
+  <th>当前价</th>
+  <th>涨幅</th>
+</tr></thead>
+<tbody><tr>
+  <td>1</td>
+  <td>Mobile</td>
+  <td>LPDDR</td>
+  <td>LPDDR4X 96Gb</td>
+  <td>$85.00</td>
+  <td>$140.00</td>
+  <td>**+64.71%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>2</td>
+  <td>芯片</td>
+  <td>Flash Wafer</td>
+  <td>1Tb QLC</td>
+  <td>$17.00</td>
+  <td>$28.00</td>
+  <td>**+64.71%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>3</td>
+  <td>芯片</td>
+  <td>Flash Wafer</td>
+  <td>1Tb TLC</td>
+  <td>$18.00</td>
+  <td>$29.00</td>
+  <td>**+61.11%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>4</td>
+  <td>移动存储</td>
+  <td>闪存卡</td>
+  <td>渠道市场 MicroSD 16GB</td>
+  <td>￥16.70</td>
+  <td>￥26.50</td>
+  <td>**+58.68%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>5</td>
+  <td>芯片</td>
+  <td>Flash Wafer</td>
+  <td>512Gb TLC</td>
+  <td>$15.00</td>
+  <td>$23.00</td>
+  <td>**+53.33%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>6</td>
+  <td>Mobile</td>
+  <td>LPDDR</td>
+  <td>LPDDR4X 64Gb</td>
+  <td>$68.00</td>
+  <td>$103.00</td>
+  <td>**+51.47%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>7</td>
+  <td>移动存储</td>
+  <td>闪存卡</td>
+  <td>渠道市场 MicroSD 64GB</td>
+  <td>￥45.70</td>
+  <td>￥67.60</td>
+  <td>**+47.92%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>8</td>
+  <td>Mobile</td>
+  <td>LPDDR</td>
+  <td>LPDDR4X 32Gb</td>
+  <td>$42.00</td>
+  <td>$60.00</td>
+  <td>**+42.86%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>9</td>
+  <td>移动存储</td>
+  <td>闪存卡</td>
+  <td>渠道市场 MicroSD 128GB</td>
+  <td>￥91.50</td>
+  <td>￥130.00</td>
+  <td>**+42.08%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>10</td>
+  <td>Mobile</td>
+  <td>LPDDR</td>
+  <td>LPDDR4X 16Gb</td>
+  <td>$22.00</td>
+  <td>$31.00</td>
+  <td>**+40.91%**</td>
+</tr></tbody>
+</table></div>
+<hr>
+<h2 id="h2-252">四、跌幅最大 TOP 6 产品</h2>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>排名</th>
+  <th>大类</th>
+  <th>子类</th>
+  <th>产品</th>
+  <th>起始价</th>
+  <th>当前价</th>
+  <th>跌幅</th>
+</tr></thead>
+<tbody><tr>
+  <td>1</td>
+  <td>PC</td>
+  <td>内存条(渠道市场)</td>
+  <td>DDR4 UDIMM 8GB 3200</td>
+  <td>$50.00</td>
+  <td>$42.00</td>
+  <td>**-16.00%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>2</td>
+  <td>PC</td>
+  <td>SSD(渠道市场)</td>
+  <td>SSD(SATA 3) 120GB</td>
+  <td>$24.00</td>
+  <td>$21.00</td>
+  <td>**-12.50%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>3</td>
+  <td>PC</td>
+  <td>内存条(渠道市场)</td>
+  <td>DDR4 UDIMM 16GB 3200</td>
+  <td>$95.00</td>
+  <td>$85.00</td>
+  <td>**-10.53%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>4</td>
+  <td>PC</td>
+  <td>内存条(渠道市场)</td>
+  <td>DDR5 UDIMM 16GB 6000</td>
+  <td>$180.00</td>
+  <td>$167.00</td>
+  <td>**-7.22%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>5</td>
+  <td>PC</td>
+  <td>内存条(渠道市场)</td>
+  <td>DDR5 UDIMM 16GB 5600</td>
+  <td>$170.00</td>
+  <td>$160.00</td>
+  <td>**-5.88%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>6</td>
+  <td>PC</td>
+  <td>SSD(渠道市场)</td>
+  <td>SSD(SATA 3) 240GB</td>
+  <td>$47.00</td>
+  <td>$46.00</td>
+  <td>**-2.13%**</td>
+</tr></tbody>
+</table></div>
+<blockquote>**注意：所有下跌产品均集中在 PC 大类（渠道市场），反映 PC 端存储需求相对疲软。**</blockquote>
+<hr>
+<h2 id="h2-321">五、价格波动最大 TOP 10 产品</h2>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>排名</th>
+  <th>产品</th>
+  <th>最低价</th>
+  <th>最高价</th>
+  <th>波动率</th>
+</tr></thead>
+<tbody><tr>
+  <td>1</td>
+  <td>移动存储/闪存卡/渠道市场 MicroSD 16GB</td>
+  <td>￥16.70</td>
+  <td>￥28.00</td>
+  <td>**67.66%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>2</td>
+  <td>Mobile/LPDDR/LPDDR4X 96Gb</td>
+  <td>$85.00</td>
+  <td>$140.00</td>
+  <td>**64.71%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>3</td>
+  <td>芯片/Flash Wafer/1Tb QLC</td>
+  <td>$17.00</td>
+  <td>$28.00</td>
+  <td>**64.71%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>4</td>
+  <td>芯片/Flash Wafer/1Tb TLC</td>
+  <td>$18.00</td>
+  <td>$29.00</td>
+  <td>**61.11%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>5</td>
+  <td>移动存储/闪存卡/渠道市场 MicroSD 64GB</td>
+  <td>￥45.70</td>
+  <td>￥73.50</td>
+  <td>**60.83%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>6</td>
+  <td>芯片/Flash Wafer/512Gb TLC</td>
+  <td>$15.00</td>
+  <td>$23.00</td>
+  <td>**53.33%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>7</td>
+  <td>移动存储/闪存卡/渠道市场 MicroSD 128GB</td>
+  <td>￥91.50</td>
+  <td>￥139.70</td>
+  <td>**52.68%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>8</td>
+  <td>Mobile/LPDDR/LPDDR4X 64Gb</td>
+  <td>$68.00</td>
+  <td>$103.00</td>
+  <td>**51.47%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>9</td>
+  <td>移动存储/闪存卡/渠道市场 MicroSD 32GB</td>
+  <td>￥34.20</td>
+  <td>￥49.30</td>
+  <td>**44.15%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>10</td>
+  <td>Mobile/LPDDR/LPDDR4X 32Gb</td>
+  <td>$42.00</td>
+  <td>$60.00</td>
+  <td>**42.86%**</td>
+</tr></tbody>
+</table></div>
+<hr>
+<h2 id="h2-403">六、分大类详细分析</h2>
+<h3 id="h3-404">6.1 Mobile（移动端存储）— 涨幅最猛 🔥</h3>
+<p>平均涨幅 <strong>+32.22%</strong>，全部 22 种产品均上涨。</p>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>子类</th>
+  <th>产品数</th>
+  <th>代表产品</th>
+  <th>当前价</th>
+  <th>涨幅</th>
+</tr></thead>
+<tbody><tr>
+  <td>LPDDR</td>
+  <td>5</td>
+  <td>LPDDR4X 96Gb</td>
+  <td>$140.00</td>
+  <td>+64.71%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>LPDDR</td>
+  <td>5</td>
+  <td>LPDDR4X 16Gb</td>
+  <td>$31.00</td>
+  <td>+40.91%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>UFS</td>
+  <td>4</td>
+  <td>UFS 2.2 512GB</td>
+  <td>$90.00</td>
+  <td>—</td>
+</tr></tbody>
+<tbody><tr>
+  <td>eMMC</td>
+  <td>6</td>
+  <td>eMMC 256GB 5.1</td>
+  <td>$58.00</td>
+  <td>—</td>
+</tr></tbody>
+<tbody><tr>
+  <td>eMCP</td>
+  <td>3</td>
+  <td>eMCP 128GB+48Gb</td>
+  <td>$111.00</td>
+  <td>—</td>
+</tr></tbody>
+<tbody><tr>
+  <td>uMCP</td>
+  <td>4</td>
+  <td>uMCP 8GB+256GB</td>
+  <td>$163.00</td>
+  <td>—</td>
+</tr></tbody>
+</table></div>
+<p><strong>分析：</strong> LPDDR4X 系列全线暴涨，从 16Gb 到 96Gb 涨幅均超 40%，反映移动端（手机/平板）对高容量低功耗内存需求激增。</p>
+<hr>
+<h3 id="h3-460">6.2 移动存储（USB/闪存卡）— 持续走强 💪</h3>
+<p>平均涨幅 <strong>+25.33%</strong>，全部 15 种产品均上涨。</p>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>子类</th>
+  <th>产品数</th>
+  <th>代表产品</th>
+  <th>当前价</th>
+  <th>涨幅</th>
+</tr></thead>
+<tbody><tr>
+  <td>闪存卡</td>
+  <td>9</td>
+  <td>MicroSD 16GB（渠道）</td>
+  <td>￥26.50</td>
+  <td>+58.68%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>闪存卡</td>
+  <td>9</td>
+  <td>MicroSD 128GB（渠道）</td>
+  <td>￥130.00</td>
+  <td>+42.08%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>USB 2.0</td>
+  <td>6</td>
+  <td>USB2.0 32GB（Micro COB）</td>
+  <td>￥20.00</td>
+  <td>—</td>
+</tr></tbody>
+</table></div>
+<p><strong>分析：</strong> MicroSD 卡各容量规格全线大幅上涨，16GB 涨幅近 60%，反映消费级存储卡需求旺盛。USB 2.0 产品保持稳定上涨。</p>
+<hr>
+<h3 id="h3-495">6.3 芯片（Flash Wafer + DDR）— 晶圆涨价明显 ⬆️</h3>
+<p>平均涨幅 <strong>+20.27%</strong>，7 种上涨，5 种持平。</p>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>子类</th>
+  <th>产品</th>
+  <th>起始价</th>
+  <th>当前价</th>
+  <th>涨幅</th>
+</tr></thead>
+<tbody><tr>
+  <td>Flash Wafer</td>
+  <td>1Tb QLC</td>
+  <td>$17.00</td>
+  <td>$28.00</td>
+  <td>+64.71%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>Flash Wafer</td>
+  <td>1Tb TLC</td>
+  <td>$18.00</td>
+  <td>$29.00</td>
+  <td>+61.11%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>Flash Wafer</td>
+  <td>512Gb TLC</td>
+  <td>$15.00</td>
+  <td>$23.00</td>
+  <td>+53.33%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>Flash Wafer</td>
+  <td>256Gb TLC</td>
+  <td>$8.00</td>
+  <td>$11.00</td>
+  <td>+37.50%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR</td>
+  <td>DDR4 16Gb 3200</td>
+  <td>$40.00</td>
+  <td>$50.00</td>
+  <td>+25.00%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR</td>
+  <td>DDR4 16Gb eTT</td>
+  <td>$11.50</td>
+  <td>$15.00</td>
+  <td>+30.43%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR</td>
+  <td>DDR5 16Gb eTT</td>
+  <td>$15.00</td>
+  <td>$22.00</td>
+  <td>+46.67%</td>
+</tr></tbody>
+</table></div>
+<p><strong>分析：</strong> NAND Flash 晶圆（TLC/QLC）涨幅最为显著，大容量产品（1Tb）涨幅超 60%，显示原厂产能紧张、晶圆端定价权增强。DDR5 起步价已明显高于 DDR4。</p>
+<hr>
+<h3 id="h3-558">6.4 PC（内存条 + SSD）— 渠道市场承压 📉</h3>
+<p>平均涨幅 <strong>+4.32%</strong>，是唯一出现下跌的大类（6 种下跌）。</p>
+<h4 id="h4-560">内存条（渠道市场）</h4>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>产品</th>
+  <th>起始价</th>
+  <th>当前价</th>
+  <th>变化</th>
+</tr></thead>
+<tbody><tr>
+  <td>DDR4 UDIMM 8GB 3200</td>
+  <td>$50.00</td>
+  <td>$42.00</td>
+  <td>**-16.00%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR4 UDIMM 16GB 3200</td>
+  <td>$95.00</td>
+  <td>$85.00</td>
+  <td>**-10.53%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR4 UDIMM 32GB 3200</td>
+  <td>$160.00</td>
+  <td>$175.00</td>
+  <td>+9.38%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR5 UDIMM 16GB 5600</td>
+  <td>$170.00</td>
+  <td>$160.00</td>
+  <td>-5.88%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR5 UDIMM 16GB 6000</td>
+  <td>$180.00</td>
+  <td>$167.00</td>
+  <td>-7.22%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR5 UDIMM 32GB 5600</td>
+  <td>$250.00</td>
+  <td>$275.00</td>
+  <td>+10.00%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR5 UDIMM 32GB 6000</td>
+  <td>$280.00</td>
+  <td>$280.00</td>
+  <td>持平</td>
+</tr></tbody>
+</table></div>
+<h4 id="h4-612">SSD（渠道市场）</h4>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>产品</th>
+  <th>起始价</th>
+  <th>当前价</th>
+  <th>变化</th>
+</tr></thead>
+<tbody><tr>
+  <td>SSD(SATA 3) 120GB</td>
+  <td>$24.00</td>
+  <td>$21.00</td>
+  <td>**-12.50%**</td>
+</tr></tbody>
+<tbody><tr>
+  <td>SSD(SATA 3) 240GB</td>
+  <td>$47.00</td>
+  <td>$46.00</td>
+  <td>-2.13%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>SSD(SATA 3) 480GB</td>
+  <td>$75.00</td>
+  <td>$82.00</td>
+  <td>+9.33%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>SSD(PCIe 3.0) 256GB</td>
+  <td>$45.00</td>
+  <td>$49.00</td>
+  <td>+8.89%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>SSD(PCIe 3.0) 512GB</td>
+  <td>$85.00</td>
+  <td>$93.00</td>
+  <td>+9.41%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>SSD(PCIe 3.0) 1TB</td>
+  <td>$135.00</td>
+  <td>$148.00</td>
+  <td>+9.63%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>SSD(PCIe 4.0) 512GB</td>
+  <td>$85.00</td>
+  <td>$93.00</td>
+  <td>+9.41%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>SSD(PCIe 4.0) 1TB</td>
+  <td>$145.00</td>
+  <td>$156.00</td>
+  <td>+7.59%</td>
+</tr></tbody>
+<tbody><tr>
+  <td>SSD(PCIe 4.0) 2TB</td>
+  <td>$260.00</td>
+  <td>$280.00</td>
+  <td>+7.69%</td>
+</tr></tbody>
+</table></div>
+<p><strong>分析：</strong> PC 渠道市场呈现分化——小容量 DDR4 和 SATA SSD 价格下跌，反映低端 PC 需求疲软；而大容量 DDR5 和 PCIe SSD 保持上涨，高端需求相对稳健。</p>
+<hr>
+<h3 id="h3-678">6.5 服务器 — 数据有限 📊</h3>
+<p>仅 18 条记录（6 种产品），数据更新截至 2026-04-07。</p>
+<div class="table-scroll">
+<table>
+<thead><tr>
+  <th>产品</th>
+  <th>当前价</th>
+  <th>变化</th>
+</tr></thead>
+<tbody><tr>
+  <td>DDR4 RDIMM 16GB 3200</td>
+  <td>$300</td>
+  <td>持平</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR4 RDIMM 32GB 3200</td>
+  <td>$450</td>
+  <td>持平</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR4 RDIMM 64GB 3200</td>
+  <td>$800</td>
+  <td>持平</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR5 RDIMM 32GB</td>
+  <td>$650</td>
+  <td>持平</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR5 RDIMM 64GB</td>
+  <td>$1,220</td>
+  <td>持平</td>
+</tr></tbody>
+<tbody><tr>
+  <td>DDR5 RDIMM 96GB</td>
+  <td>$1,980</td>
+  <td>持平</td>
+</tr></tbody>
+</table></div>
+<p><strong>分析：</strong> 服务器内存价格近期保持稳定，DDR5 相比 DDR4 溢价约 50-100%。</p>
+<hr>
+<h2 id="h2-720">七、关键洞察与趋势判断</h2>
+<h3 id="h3-721">🔑 核心发现</h3>
+<ol>
+  <li><strong>全面涨价潮：</strong> 85.7% 的产品价格上涨，仅 PC 渠道市场出现局部下跌</li>
+  <li><strong>Mobile 领涨：</strong> LPDDR4X 全线暴涨 40-65%，移动端存储是最强赛道</li>
+  <li><strong>NAND Flash 晶圆强劲：</strong> TLC/QLC 晶圆涨幅 53-65%，原厂端供应偏紧</li>
+  <li><strong>MicroSD 卡大涨：</strong> 消费级闪存卡各容量涨幅 42-59%</li>
+  <li><strong>PC 渠道承压：</strong> 小容量 DDR4 内存和 SATA SSD 价格下跌，反映消费级 PC 需求不足</li>
+  <li><strong>DDR5 渗透加速：</strong> DDR5 产品定价明显高于 DDR4，且保持上涨趋势</li>
+</ol>
+<h3 id="h3-730">📌 趋势判断</h3>
+<ul>
+  <li><strong>短期（1-2个月）：</strong> 移动端和 NAND Flash 晶圆价格预计继续上行，受 AI 手机/平板需求驱动</li>
+  <li><strong>中期（3-6个月）：</strong> PC 端存储可能企稳，DDR5 逐步替代 DDR4 成为主流</li>
+  <li><strong>风险点：</strong> 若全球经济下行加剧，PC 消费需求进一步萎缩可能拖累整体市场</li>
+</ul>
+<hr>
+<p><em>报告基于 China Flash Market 公开数据自动生成，仅供参考。</em></p>
+    </article>
+  </main>
+</div>
+
+<button class="back-to-top" id="backToTop" title="返回顶部">↑</button>
+
+<script>
+// Table of Contents
+(function() {
+  const headings = document.querySelectorAll('article h2, article h3, article h4');
+  const tocList = document.getElementById('tocList');
+  
+  headings.forEach(function(h) {
+    if (!h.id) {
+      h.id = 'toc-' + h.tagName.toLowerCase() + '-' + Date.now();
+    }
+    const li = document.createElement('li');
+    li.className = 'toc-' + h.tagName.toLowerCase();
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    a.dataset.target = h.id;
+    li.appendChild(a);
+    tocList.appendChild(li);
+  });
+
+  // Highlight active TOC item on scroll
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      const link = document.querySelector('.toc-panel a[data-target="' + entry.target.id + '"]');
+      if (link) {
+        link.classList.toggle('active-toc', entry.isIntersecting);
+      }
+    });
+  }, { rootMargin: '-20% 0px -60% 0px' });
+
+  headings.forEach(function(h) { observer.observe(h); });
+})();
+
+// Progress bar
+(function() {
+  const progressBar = document.getElementById('progressBar');
+  window.addEventListener('scroll', function() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  });
+})();
+
+// Back to top
+(function() {
+  const btn = document.getElementById('backToTop');
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 300);
+  });
+  btn.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+
+</body>
+</html>

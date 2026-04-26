@@ -111,17 +111,29 @@ A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs
 
 <p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic sample outputs"></p>
 
-### 📊 Presentations (sn-ppt-standard / sn-ppt-creative)
+### 🧩 Memory price analysis — end-to-end pipeline
 
-A few `sn-ppt-standard` and `sn-ppt-creative` outputs (more in [`docs/ppt-examples.md`](docs/ppt-examples.md)).
+[`examples/memory-price-end2end-analysis`](examples/memory-price-end2end-analysis/) — end-to-end example: chains data analysis → deep research → PPT generation. Starting from a price CSV, it produces a Markdown / HTML data analysis report, an illustrated deep research report, and a 16-page PPTX.
 
-<!-- TODO: add PPT sample images -->
+- Depends on: [`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md), [`sn-deep-research`](skills/sn-deep-research/SKILL.md), [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md), [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md), [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)
 
-### 🔬 Deep Research (sn-deep-research)
+### 📊 Employee performance analysis — single-skill case (data analysis)
 
-Sample reports orchestrated by `sn-deep-research` (more in [`docs/deep-research-examples.md`](docs/deep-research-examples.md)).
+[`examples/employee-performance-analysis`](examples/employee-performance-analysis/) — distills 10 monthly performance review spreadsheets into a Word-format performance report plus a visualized HTML report with 8 figures.
 
-<!-- TODO: add sn-deep-research sample screenshots or links -->
+- Depends on: [`sn-da-excel-workflow`](skills/sn-da-excel-workflow/SKILL.md)
+
+### 🔬 Embodied AI industry research — single-skill case (deep research)
+
+[`examples/embodied-ai-deep-research`](examples/embodied-ai-deep-research/) — built from a single prompt with no input file: an industry research report with 5 figures (market size, share, financing, cost structure, roadmap).
+
+- Depends on: [`sn-deep-research`](skills/sn-deep-research/SKILL.md)
+
+### 🎯 Property fee pricing PPT — single-skill case (PPT generation)
+
+[`examples/property-fee-pricing-ppt`](examples/property-fee-pricing-ppt/) — a 26-page PPTX in a black-and-white warm style, plus the per-page HTML sources, generated from a single prompt.
+
+- Depends on: [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md), [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
 
 ## Contributing
 
