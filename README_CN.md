@@ -6,7 +6,7 @@
 
 简体中文 | [English](README.md)
 
-SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/nousresearch/hermes-agent) 等智能体，并借助skills实现更强大的能力。
+SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/NousResearch/hermes-agent) 等智能体；本仓库的 skills 则把这些模型扩展为可直接落地的端到端办公能力。
 
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
@@ -21,7 +21,7 @@ SenseNova系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-
 | 智能体 | 目标目录 |
 |--------|---------|
 | [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
-| [hermes-agent](https://github.com/nousresearch/hermes-agent) | `~/.hermes/skills/` |
+| [hermes-agent](https://github.com/NousResearch/hermes-agent) | `~/.hermes/skills/` |
 
 例如，把全部技能复制到 OpenClaw：
 

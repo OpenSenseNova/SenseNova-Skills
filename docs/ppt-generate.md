@@ -19,7 +19,7 @@
 | [`sn-ppt-creative`](../skills/sn-ppt-creative/SKILL.md) | PPT 创意模式 | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `sn-image-generate` 一次性出图后导出 PPTX。 |
 | [`sn-ppt-standard`](../skills/sn-ppt-standard/SKILL.md) | PPT 标准模式 | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出 PPTX。 |
 
-`sn-ppt-creative` 依赖 `sn-image-base` 进行文生图；`sn-ppt-standard` 自带模型调用脚本（`scripts/run_stage.py`）。
+`sn-ppt-creative` 依赖 `sn-image-base` 进行文生图；`sn-ppt-standard` 自带 LLM / VLM 调用脚本（`scripts/run_stage.py`），文生图阶段仍走 `sn-image-base`。
 
 ## Quick Start
 
@@ -74,9 +74,9 @@ SN_API_KEY="your-api-key"
 PPT 产物默认保存在 `$(pwd)/ppt_decks/<topic>_<timestamp>/`，目录内包含：
 
 - `task_pack.json` / `info_pack.json` —— `sn-ppt-entry` 解析后的任务参数
-- `style_spec.md`、`outline.json` —— 风格与大纲（标准模式）
+- `style_spec.json`（标准模式）/ `style_spec.md`（创意模式）、`outline.json` —— 风格与大纲
 - `pages/page_*.png` —— 单页全图（创意模式）或 HTML 渲染图（标准模式）
 - `review.md` —— 分页评审汇总（标准模式）
 - `<deck_id>.pptx` —— 最终 PPTX
 
-更多样例参见 [`docs/ppt-examples.md`](ppt-examples.md)（待补充）。
+_更多端到端样例参见仓库根目录 [`README_CN.md`](../README_CN.md#输出样例) 中的「输出样例」章节。_

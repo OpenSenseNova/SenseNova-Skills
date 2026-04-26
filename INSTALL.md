@@ -303,5 +303,5 @@ If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, and `sn-de
 - **`wsl --install` not found**: needs Windows 10 22H2+ / Windows 11, run PowerShell as Administrator.
 - **Node version too low**: `node -v` must be ≥ 22.14. Switch with nvm: `nvm install 24 && nvm use 24`.
 - **`openclaw doctor` / `hermes doctor` complains**: follow the report's hints — install whatever's missing.
-- **LLM returns 401 / 403**: double-check `OPENAI_API_KEY` or the key in the config file; confirm your key still has free quota in [token-plan](https://platform.sensenova.cn/token-plan).
+- **LLM returns 401 / 403**: double-check the LLM API key stored in your config (`openclaw config get models.providers.custom` for OpenClaw, or `hermes config get model.api_key` for hermes-agent); confirm the key still has free quota in [token-plan](https://platform.sensenova.cn/token-plan).
 - **Slow `curl` inside WSL2**: check the WSL2 networking mode (`wsl --status`); switch to `mirrored` networking or use a proxy if needed.
