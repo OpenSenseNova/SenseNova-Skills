@@ -543,7 +543,7 @@ async def main_async(args: argparse.Namespace) -> int:
 
 
 def main() -> int:
-    """Entry point for the openclaw_runner CLI.
+    """Entry point for the sn_agent_runner CLI.
 
     Returns:
         int: Exit code from the async dispatcher.

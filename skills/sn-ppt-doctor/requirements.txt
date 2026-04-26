@@ -1,0 +1,1 @@
+# sn-ppt-doctor uses only Python stdlib.
