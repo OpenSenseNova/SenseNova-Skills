@@ -998,14 +998,6 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     # --- Step 2: generate HTML from the rewritten query ---
     gen_system = _load_prompt("page_html.md")
 
-    # Persist the exact payload (system + user) sent to the generator BEFORE
-    # the API call, so the artifact is preserved even if the call fails.
-    prompt_path = deck / "pages" / f"page_{page_no:03d}.prompt.txt"
-    _write_text(
-        prompt_path,
-        f"=== SYSTEM ===\n{gen_system.rstrip()}\n\n=== USER ===\n{rewritten_query}\n",
-    )
-
     try:
         html = llm(gen_system, rewritten_query)
     except ModelClientError as e:
@@ -1027,7 +1019,6 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
         page_no=page_no,
         path=str(out_path.relative_to(deck)),
         query_path=str(query_path.relative_to(deck)),
-        prompt_path=str(prompt_path.relative_to(deck)),
         img_srcs_fixed=fixed,
     )
 
