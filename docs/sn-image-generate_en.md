@@ -7,7 +7,7 @@ This document collects the SN (SenseNova) related skills (`sn-image-doctor`, `sn
 ## Prerequisites
 
 - **Python** 3.9 or later (3.10+ recommended).
-- **SN API** credentials for image generation and LLM/VLM endpoints (`SN_API_KEY`, `SN_LM_API_KEY`; see Quick Start).
+- **SN API** credentials for image generation and LLM/VLM endpoints (`SN_IMAGE_GEN_API_KEY`, `SN_CHAT_API_KEY`; see Quick Start).
 
 ## Skills
 
@@ -85,8 +85,8 @@ Go to <https://platform.sensenova.cn/token-plan/> to register a free account and
 Set the following environment variables in `~/.openclaw/.env` (for OpenClaw) or `~/.hermes/.env` (for Hermes):
 
 ```ini
-SN_API_KEY="your-api-key"
-SN_LM_API_KEY="your-api-key"
+SN_IMAGE_GEN_API_KEY="your-api-key"
+SN_CHAT_API_KEY="your-api-key"
 ```
 
 **Note:** Never commit `.env` files or API keys to git.

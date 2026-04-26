@@ -13,9 +13,9 @@ Checks performed:
    - All packages in sn-image-base/requirements.txt are installed
 
 3. Environment variables
-   Driven by sn_image_base.configs.Configs — all fields annotated with EnvVar
-   are checked. Only SN_API_KEY and SN_IMAGE_GEN_BASE_URL are required; other
-   vars are optional and may be omitted (built-in defaults apply).
+   Driven by sn_image_base.configs.Configs. Image generation uses SN_IMAGE_GEN_API_KEY,
+   while text/vision chat calls use SN_CHAT_* with optional SN_TEXT_* and
+   SN_VISION_* provider overrides.
 """
 
 import argparse
@@ -190,7 +190,7 @@ def main():
         check_installation(args.verbose),
         check_dependencies(args.verbose),
     ]
-    check_env_vars(root, args.verbose)
+    results.append(check_env_vars(root, args.verbose))
 
     print("\n=== Summary ===")
     if all(results):

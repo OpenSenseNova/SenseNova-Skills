@@ -11,7 +11,7 @@
 
 ## sn-image-generate
 
-Image generation tool that calls the U1 text-to-image-no-enhance API.
+Image generation tool that calls the configured image generation backend.
 
 ### Command Format
 
@@ -37,7 +37,7 @@ python sn_agent_runner.py sn-image-generate \
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `--prompt` | string | **Yes** | - | Text prompt |
-| `--api-key` | string | No | Reads `SN_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
+| `--api-key` | string | No | Reads `SN_IMAGE_GEN_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
 | `--image-size` | string | No | `"2k"` | Image size: `1k` or `2k` |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
@@ -80,18 +80,18 @@ Image generated successfully
 
 ### API Key Notes
 
-`--api-key` is optional. CLI parameter takes precedence; if not provided, reads from `SN_API_KEY` env var. If both are empty, raises `MissingApiKeyError`:
+`--api-key` is optional. CLI parameter takes precedence; if not provided, reads from `SN_IMAGE_GEN_API_KEY` env var. If both are empty, raises `MissingApiKeyError`:
 
 **text format**:
 
 ```
-Error: API key is required but was not provided. Set the SN_API_KEY environment variable or pass --api-key explicitly.
+Error: API key is required but was not provided. Set the SN_IMAGE_GEN_API_KEY environment variable or pass --api-key explicitly.
 ```
 
 **json format**:
 
 ```json
-{"status": "failed", "error": "API key is required but was not provided. Set the SN_API_KEY environment variable or pass --api-key explicitly.", "elapsed_seconds": 0.05}
+{"status": "failed", "error": "API key is required but was not provided. Set the SN_IMAGE_GEN_API_KEY environment variable or pass --api-key explicitly.", "elapsed_seconds": 0.05}
 ```
 
 ---
@@ -122,12 +122,12 @@ python sn_agent_runner.py sn-image-recognize \
 | `--user-prompt` | string | One of two | - | User instruction (mutually exclusive with `--user-prompt-path`) |
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
 | `--images` | string[] | **Yes** | - | List of image paths (supports multiple) |
-| `--api-key` | string | No | No hardcoded default | CLI > `VLM_API_KEY` > `SN_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
-| `--base-url` | string | No | No hardcoded default | CLI > `VLM_BASE_URL` > `SN_LM_BASE_URL`; raises error if neither is set |
-| `--model` | string | No | No hardcoded default | CLI > `VLM_MODEL` env var; raises error if neither is set |
+| `--api-key` | string | No | No hardcoded default | CLI > `SN_VISION_API_KEY` > `SN_CHAT_API_KEY`; raises `MissingApiKeyError` if all are empty |
+| `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_VISION_BASE_URL` > `SN_CHAT_BASE_URL` |
+| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_VISION_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
-| `--vlm-type` | string | No | `openai-completions` | CLI > `VLM_TYPE` env var > built-in default |
+| `--vlm-type` | string | No | `openai-completions` | CLI > `SN_VISION_TYPE` > `SN_CHAT_TYPE` |
 | `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
 
 `--vlm-type` options:
@@ -149,8 +149,8 @@ This image shows an adorable orange cat napping in the sunlight.
 {
   "status": "ok",
   "result": "This image shows an adorable orange cat napping in the sunlight.",
-  "model": "sensenova-122b",
-  "base_url": "http://127.0.0.1:615",
+  "model": "sensenova-6.7-flash-lite",
+  "base_url": "https://token.sensenova.cn",
   "interface_type": "openai-completions",
   "elapsed_seconds": 2.15
 }
@@ -158,14 +158,14 @@ This image shows an adorable orange cat napping in the sunlight.
 
 ### Parameter Priority
 
-`--api-key`, `--base-url`, `--model`, and `--vlm-type` all follow a two-level priority: **CLI parameter > environment variable** (no built-in defaults except `--vlm-type`; must be provided via one of the two methods).
+`--api-key`, `--base-url`, `--model`, and `--vlm-type` use priority: **CLI parameter > command-specific environment variable > shared `SN_CHAT_*` environment variable > built-in default**.
 
 | Parameter | Built-in Default | Environment Variable |
 |-----------|-----------------|---------------------|
-| `--api-key` | None (required) | `VLM_API_KEY` (primary) -> `SN_LM_API_KEY` (fallback) |
-| `--base-url` | None (required) | `VLM_BASE_URL` (primary) -> `SN_LM_BASE_URL` (fallback) |
-| `--model` | None (required) | `VLM_MODEL` |
-| `--vlm-type` | `openai-completions` | `VLM_TYPE` |
+| `--api-key` | None (required) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` |
+| `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` |
+| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` |
+| `--vlm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` |
 
 ---
 
@@ -193,12 +193,12 @@ python sn_agent_runner.py sn-text-optimize \
 |-----------|------|----------|---------|-------------|
 | `--user-prompt` | string | One of two | - | User instruction (mutually exclusive with `--user-prompt-path`) |
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
-| `--api-key` | string | No | No hardcoded default | CLI > `LLM_API_KEY` > `SN_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
-| `--base-url` | string | No | No hardcoded default | CLI > `LLM_BASE_URL` > `SN_LM_BASE_URL`; raises error if neither is set |
-| `--model` | string | No | No hardcoded default | CLI > `LLM_MODEL` env var; raises error if neither is set |
+| `--api-key` | string | No | No hardcoded default | CLI > `SN_TEXT_API_KEY` > `SN_CHAT_API_KEY`; raises `MissingApiKeyError` if all are empty |
+| `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_TEXT_BASE_URL` > `SN_CHAT_BASE_URL` |
+| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_TEXT_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
-| `--llm-type` | string | No | `openai-completions` | CLI > `LLM_TYPE` env var > built-in default |
+| `--llm-type` | string | No | `openai-completions` | CLI > `SN_TEXT_TYPE` > `SN_CHAT_TYPE` |
 | `--output-format` | string | No | `"text"` | Output format: `text` or `json` |
 
 `--llm-type` options:
@@ -220,8 +220,8 @@ Optimized text content...
 {
   "status": "ok",
   "result": "Optimized text content...",
-  "model": "sensenova-122b",
-  "base_url": "http://127.0.0.1:615",
+  "model": "sensenova-6.7-flash-lite",
+  "base_url": "https://token.sensenova.cn",
   "interface_type": "openai-completions",
   "elapsed_seconds": 0.83
 }
@@ -229,14 +229,14 @@ Optimized text content...
 
 ### Parameter Priority
 
-`--api-key`, `--base-url`, `--model`, and `--llm-type` all follow a two-level priority: **CLI parameter > environment variable** (`--llm-type` has a built-in default of `openai-completions`; other parameters have no built-in defaults and must be provided via one of the two methods).
+`--api-key`, `--base-url`, `--model`, and `--llm-type` use priority: **CLI parameter > command-specific environment variable > shared `SN_CHAT_*` environment variable > built-in default**.
 
 | Parameter | Built-in Default | Environment Variable |
 |-----------|-----------------|---------------------|
-| `--api-key` | None (required) | `LLM_API_KEY` (primary) -> `SN_LM_API_KEY` (fallback) |
-| `--base-url` | None (required) | `LLM_BASE_URL` (primary) -> `SN_LM_BASE_URL` (fallback) |
-| `--model` | None (required) | `LLM_MODEL` |
-| `--llm-type` | `openai-completions` | `LLM_TYPE` |
+| `--api-key` | None (required) | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` |
+| `--base-url` | `https://token.sensenova.cn/v1` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` |
+| `--model` | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
+| `--llm-type` | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
 
 ---
 
@@ -273,8 +273,8 @@ Error messages are written to stderr and do not affect stdout content.
 
 | Tool | Environment Variables (high → low priority) | Notes |
 |------|---------------------------------------------|-------|
-| `sn-image-generate` | `SN_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
-| `sn-image-recognize` | `VLM_API_KEY` → `SN_LM_API_KEY` | CLI > `VLM_API_KEY` > `SN_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
-| `sn-text-optimize` | `LLM_API_KEY` → `SN_LM_API_KEY` | CLI > `LLM_API_KEY` > `SN_LM_API_KEY`; raises `MissingApiKeyError` if all are empty |
+| `sn-image-generate` | `SN_IMAGE_GEN_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
+| `sn-image-recognize` | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | CLI > command-specific key > shared chat key; raises `MissingApiKeyError` if all are empty |
+| `sn-text-optimize` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` | CLI > command-specific key > shared chat key; raises `MissingApiKeyError` if all are empty |
 
-`SN_LM_API_KEY` is the shared fallback for both VLM and LLM, suitable for configuring a unified SenseNova internal key in `.env`. `VLM_API_KEY` / `LLM_API_KEY` can independently override their respective keys when needed.
+`SN_CHAT_API_KEY` is the shared key for both text and vision chat calls. Use `SN_TEXT_API_KEY` or `SN_VISION_API_KEY` when a command needs a different provider.
