@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import shutil
+import os
 import tempfile
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
 import httpx
+from PIL import Image
 from typing_extensions import override
 
 from sn_image_base.configs import global_configs, is_valid_base_url
@@ -375,14 +376,52 @@ async def download_image(
     Returns:
         Path: The path to the downloaded image file.
     """
-    with tempfile.NamedTemporaryFile() as temp_file:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            async with client.stream("GET", url) as response:
-                response.raise_for_status()
-                async for chunk in response.aiter_bytes():
-                    temp_file.write(chunk)
-        shutil.copy(temp_file.name, save_path)
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path: Path | None = None
+    bytes_written = 0
+    expected_length: int | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            dir=save_path.parent,
+            prefix=f".{save_path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temp_file:
+            temp_path = Path(temp_file.name)
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                async with client.stream("GET", url) as response:
+                    response.raise_for_status()
+                    content_length = response.headers.get("content-length")
+                    if content_length is not None:
+                        expected_length = int(content_length)
+                    async for chunk in response.aiter_bytes():
+                        bytes_written += len(chunk)
+                        temp_file.write(chunk)
+            temp_file.flush()
+            os.fsync(temp_file.fileno())
+
+        if expected_length is not None and bytes_written != expected_length:
+            raise OSError(
+                f"Downloaded image is incomplete: got {bytes_written} bytes, "
+                f"expected {expected_length} bytes"
+            )
+
+        assert temp_path is not None
+        _validate_image_file(temp_path)
+        temp_path.replace(save_path)
         return save_path
+    except Exception:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
+        raise
+
+
+def _validate_image_file(image_path: Path) -> None:
+    """Verify that the downloaded image can be decoded completely."""
+    with Image.open(image_path) as image:
+        image.verify()
+    with Image.open(image_path) as image:
+        image.load()
 
 
 def mime_type_to_suffix(mime_type: str) -> str:
