@@ -109,6 +109,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | [`sn-research-synthesis`](skills/sn-research-synthesis/SKILL.md)           | 综合判断      | 把多个 `sub_reports` 综合为 `synthesis.md`，明确主线判断、证据强弱、跨维度共识、关键冲突与不确定性。                       |
 | [`sn-research-report`](skills/sn-research-report/SKILL.md)                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
 | [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | 报告形态发现    | 研究"这类报告应该长什么样"，给出章节结构、必备元素与风格约束；可独立使用，也可为 sn-deep-research 的 `report_shape` 提供依据。          |
+| [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)             | Markdown → HTML 报告 | 把研究产出的 `report.md`（或任何 Markdown 文档）转成结构清晰、可离线打开的单文件 HTML 阅读版；支持图片内嵌、目录侧栏、表格响应式、表格分隔符修复等。 |
 
 
 ### 🔍 搜索
