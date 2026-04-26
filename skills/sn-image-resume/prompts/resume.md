@@ -357,23 +357,3 @@ Do not output a different page architecture.
 Do not describe a freeform poster layout.
 Do not switch to a standard plain resume grid.
 Always preserve this composition skeleton.
-
-# Output Format
-
-Your entire output will be used as a single text-to-image prompt string. Output exactly two sections in the following fixed structure — no extra commentary, no markdown fences, no alternative options:
-
-```
-SHORT_CAPTION: <one concise sentence summarizing the overall visual composition, style, and key subject>
-
-LONG_CAPTION: <detailed multi-sentence visual description of the page, following all layout, section, typography, panel, content mapping, and style rules defined above>
-```
-
-Rules:
-
-- Start the first line with `SHORT_CAPTION:` followed by a single concise sentence (under 30 words) that captures the dominant visual impression: composition type, style mood, and the person's identity.
-- Leave one blank line after the SHORT_CAPTION line.
-- Start the next line with `LONG_CAPTION:` followed by the full detailed visual description.
-- The LONG_CAPTION must fulfill every requirement listed in the "LONG_CAPTION Writing Requirement for This Template" section above.
-- Write both captions entirely in the detected output language.
-- Do not include any text before `SHORT_CAPTION:` or after the end of the LONG_CAPTION.
-- Do not wrap the output in code blocks, quotes, or any formatting markers.
