@@ -22,6 +22,33 @@ Both agents below will use the same three values:
 
 ---
 
+## 0.5. Quick install via Agent Pack (optional)
+
+If you'd rather skip the manual steps below, [Agent Pack](https://github.com/SenseTime-FVG/agent_pack) is a one-click installer that handles everything in this guide for you:
+
+- Installs OpenClaw and/or hermes-agent via each project's official installer
+- Configures the LLM provider (pick **Custom** and paste the values from §0)
+- We've pre-bundled the SenseNova-Skills under each agent's `skills/` directory — no manual copy needed
+- Auto-launches the installed agent(s) in the current window when setup finishes
+
+> Platform-level prerequisites (WSL2 on Windows, Xcode CLT + Homebrew on macOS) are **not** auto-installed — finish §1.1 / §1.2 below for your platform first, then come back here. Linux has no manual prerequisites.
+
+Pre-built installers live on the [GitHub Releases page](https://github.com/SenseTime-FVG/agent_pack/releases/latest):
+
+| Platform | Download | How to use |
+|----------|----------|------------|
+| Windows | [`-windows-x64.exe` from the latest release](https://github.com/SenseTime-FVG/agent_pack/releases/latest) | Double-click and follow the wizard; installation runs inside WSL2, and the PowerShell window is taken over by the installed agent when setup finishes. |
+| macOS | [`-macos-universal.pkg` from the latest release](https://github.com/SenseTime-FVG/agent_pack/releases/latest) | Double-click, then complete the macOS wizard for product selection and LLM configuration; on finish it opens the OpenClaw Gateway Terminal + dashboard, and/or the Hermes Terminal as selected. |
+| Linux | [`-linux.sh` from the latest release](https://github.com/SenseTime-FVG/agent_pack/releases/latest), or the one-liner on the right | `chmod +x AgentPack-*-linux.sh && ./AgentPack-*-linux.sh`, or paste `bash <(curl -fsSL https://raw.githubusercontent.com/SenseTime-FVG/agent_pack/main/linux/install.sh)` — either way the shell that ran the installer is handed over to the agent via `exec`. |
+
+When the installer asks for the LLM provider, choose **Custom (OpenAI-compatible)** and feed in the three values from §0 (Base URL, API key, model name). If you're in a China-region network, set `AGENTPACK_CN=1` to enable the GitHub mirror fallbacks.
+
+> **Skills are already bundled** — Agent Pack ships with the SenseNova-Skills committed inside each product's `skills/` directory and installs them as part of the normal install. **You do not need to follow §3 ("Load this repo's skills")** — they're already loaded.
+
+Once setup finishes, jump straight to [§4 End-to-end smoke test](#4-end-to-end-smoke-test) — the manual steps in §1 – §3 are only for users who'd rather install everything themselves.
+
+---
+
 ## 1. Platform prep
 
 ### 1.1 Windows (WSL2 required)
