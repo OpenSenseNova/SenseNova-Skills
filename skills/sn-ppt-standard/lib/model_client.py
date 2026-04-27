@@ -210,7 +210,7 @@ def llm(system_prompt: str, user_prompt: str, *, model: str | None = None,
     max_attempts = max(1, int(retries) + 1)
     timeout_cfg = _build_llm_timeout(timeout_s)
 
-    url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
+    url = f"{cfg.base_url.rstrip('/')}/chat/completions"
     payload: dict[str, Any] = {
         "model": model or _require(cfg.model, "SN_TEXT_MODEL / SN_CHAT_MODEL"),
         "messages": [
@@ -275,7 +275,7 @@ def vlm(system_prompt: str, user_prompt: str, images: list[str | Path], *,
             "image_url": {"url": f"data:{mime};base64,{b64}"},
         })
 
-    url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
+    url = f"{cfg.base_url.rstrip('/')}/chat/completions"
     payload = {
         "model": model or _require(cfg.model, "SN_VISION_MODEL / SN_CHAT_MODEL"),
         "messages": [
