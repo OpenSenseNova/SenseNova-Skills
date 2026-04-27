@@ -37,14 +37,21 @@ These skills are designed to run inside an [Agent Skills](https://agentskills.io
 - **Recommended LLM**: pair them with the **[SenseNova Platform API](https://platform.sensenova.cn/token-plan)** — a free token plan is available.
 - **Install & configure**: follow the full walkthrough in **[`INSTALL.md`](INSTALL.md)**.
 
-Clone this repository, then copy subdirectories under `skills/` into the skills directory your agent loads from:
+**Recommended: let the agent install the skills for you.** Hand it the repo URL and ask it to clone and drop the skills into the right directory — for example:
+
+> *"Please install SenseNova-Skills from https://github.com/OpenSenseNova/SenseNova-Skills into your skills directory."*
+
+After it finishes, **you may need to manually restart the agent service** before the new skills are picked up.
 
 | Agent | Target directory |
 |-------|------------------|
 | [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
 | [hermes-agent](https://github.com/NousResearch/hermes-agent) | `~/.hermes/skills/` |
 
-For example, copy all skills into OpenClaw:
+<details>
+<summary>Prefer to install manually?</summary>
+
+Clone this repository, then copy the subdirectories under `skills/` into the target directory yourself:
 
 ```bash
 git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
@@ -53,6 +60,8 @@ cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
 
 For Hermes, swap the target to `~/.hermes/skills/`.
+
+</details>
 
 Per-category Python dependencies, API keys, and invocation examples are documented in the 📖 Full guide for each section.
 

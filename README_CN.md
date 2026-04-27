@@ -38,14 +38,21 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 - **推荐 LLM**：配合使用 **[SenseNova 平台 API](https://platform.sensenova.cn/token-plan)**（提供免费 token 套餐）。
 - **安装与配置**：完整流程请参考 **[`INSTALL_CN.md`](INSTALL_CN.md)**。
 
-克隆本仓库后，把 `skills/` 下的子目录复制（或软链接）到所用智能体加载的 skills 目录：
+**推荐做法：直接让 agent 帮你装好这些 skill。** 把仓库地址交给它，让它自己克隆并把内容拷贝到目标目录，例如：
+
+> *"请帮我把 https://github.com/OpenSenseNova/SenseNova-Skills 安装到你的 skills 目录。"*
+
+安装完成后，**可能需要手动重启 agent 服务**，新 skill 才会被加载。
 
 | 智能体 | 目标目录 |
 |--------|---------|
 | [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
 | [hermes-agent](https://github.com/NousResearch/hermes-agent) | `~/.hermes/skills/` |
 
-例如，把全部技能复制到 OpenClaw：
+<details>
+<summary>想手动安装？</summary>
+
+克隆本仓库，然后把 `skills/` 下的子目录自行复制（或软链接）到目标目录：
 
 ```bash
 git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
@@ -54,6 +61,8 @@ cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
 
 Hermes 把目录换成 `~/.hermes/skills/` 即可。
+
+</details>
 
 各分类技能的 Python 依赖、API key 与调用示例同样请参考对应分类的 📖 详细使用指南。
 
