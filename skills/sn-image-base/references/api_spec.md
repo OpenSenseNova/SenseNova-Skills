@@ -150,7 +150,7 @@ This image shows an adorable orange cat napping in the sunlight.
   "status": "ok",
   "result": "This image shows an adorable orange cat napping in the sunlight.",
   "model": "sensenova-6.7-flash-lite",
-  "base_url": "https://token.sensenova.cn",
+  "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 2.15
 }
@@ -166,6 +166,11 @@ This image shows an adorable orange cat napping in the sunlight.
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` |
 | `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` |
 | `--vlm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` |
+
+Compatibility note: host-only chat base URLs such as `https://token.sensenova.cn`
+are also accepted. If the base URL has no path, the runner inserts `/v1` before
+the interface endpoint; if it already has a path such as `/v1`, the runner
+appends only the interface endpoint path.
 
 ---
 
@@ -221,7 +226,7 @@ Optimized text content...
   "status": "ok",
   "result": "Optimized text content...",
   "model": "sensenova-6.7-flash-lite",
-  "base_url": "https://token.sensenova.cn",
+  "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 0.83
 }
@@ -237,6 +242,11 @@ Optimized text content...
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` |
 | `--model` | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
 | `--llm-type` | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
+
+Compatibility note: host-only chat base URLs such as `https://token.sensenova.cn`
+are also accepted. If the base URL has no path, the runner inserts `/v1` before
+the interface endpoint; if it already has a path such as `/v1`, the runner
+appends only the interface endpoint path.
 
 ---
 
