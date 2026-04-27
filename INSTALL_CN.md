@@ -145,15 +145,61 @@ openclaw doctor
 
 #### 2.A.4 配置 SenseNova LLM
 
-执行下面三条命令 —— 它们会把 SenseNova 注册为一个 custom 的 OpenAI 兼容 provider，并设为默认模型。把占位符换成 §0 中申请到的 API Key。
+OpenClaw 安装脚本会自动触发 onboarding 向导。如果你跳过了或想重新运行，执行：
 
 ```bash
-openclaw config unset models.providers.sensenova
-openclaw config set models.providers.custom '{"baseUrl":"https://token.sensenova.cn/v1","api":"openai-completions","apiKey":"这里填入你上面申请的 API Key","models":[{"id":"sensenova-6.7-flash-lite","name":"SenseNova 6.7 Flash Lite"}]}'
-openclaw config set agents.defaults.model.primary "custom/sensenova-6.7-flash-lite"
+openclaw onboard --install-daemon
 ```
 
-> 第一条 `unset` 是兜底动作 —— 清掉可能存在的旧 `sensenova` provider 条目，确保新建的 `custom` provider 是唯一生效的那个。
+按照下面的交互流程依次填写。`API Key` 使用 §0 中申请到的密钥；至少配置一个搜索 API（下文以 Brave Search 为例）。
+
+```text
+◇  I understand this is personal-by-default and shared/multi-user use requires lock-down. Continue?
+│  Yes
+│
+◇  Setup mode
+│  QuickStart
+│
+◇  Model/auth provider
+│  Custom Provider
+│
+◇  API Base URL
+│  https://token.sensenova.cn/v1
+│
+◇  How do you want to provide this API key?
+│  Paste API key now
+│
+◇  API Key (leave blank if not required)
+│  填写上面申请到的 api_key
+│
+◇  Endpoint compatibility
+│  OpenAI-compatible
+│
+◇  Model ID
+│  sensenova-6.7-flash-lite
+│
+◇  Verification successful.
+│
+◇  Endpoint ID
+│  custom-token-sensenova-cn
+│
+◇  Select channel (QuickStart)
+│  Skip for now
+│
+◇  Web search
+│
+◇  Search provider
+│  Brave Search
+│
+◇  Brave Search API key
+│  BSA-xxxxx  填写你的 Brave Search API key
+│
+◇  Configure skills now? (recommended)
+│  No
+│
+◇  Enable hooks?
+│  Skip for now
+```
 
 #### 2.A.5 验证 LLM 通路
 
