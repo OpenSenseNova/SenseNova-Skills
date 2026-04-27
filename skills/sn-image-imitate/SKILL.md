@@ -74,7 +74,7 @@ please refer to the `sn-image-base` skill ([README.md](../sn-image-base/README.m
 - **LLM call**: `sn-text-optimize` (Step 2)
 - **Image generation call**: `sn-image-generate` (Step 3)
 
-**When encountering `MissingApiKeyError` or needing explicit model control**: pass model and auth params explicitly via CLI arguments. See `$SN_IMAGE_BASE/reference/api_spec.md`.
+**When encountering `MissingApiKeyError` or needing explicit model control**: pass model and auth params explicitly via CLI arguments. See `$SN_IMAGE_BASE/references/api_spec.md`.
 
 **`$SN_IMAGE_BASE` path explanation**: `$SN_IMAGE_BASE` is the installation directory of the `sn-image-base` skill (`SKILL.md` exists). The agent can locate this path by skill name `sn-image-base`.
 
