@@ -24,12 +24,19 @@ This example shows how to use SenseNova-Skills' **data analysis** ability on a s
 Unzip `风电事业部月度绩效考核表.zip`, place the 10 xlsx files in the working directory, and prompt the agent:
 
 ```text
-Based on the wind-power business unit's monthly performance review spreadsheets I uploaded, produce an
-employee performance analysis report. Cover the overall picture, trend changes, role comparisons,
-individual performance, and improvement suggestions, and visualize the key findings with charts.
+Please use the sn-da-excel-workflow skill to analyze the following Excel files. You should also browse
+and select sub-skills for reference.
+
+Based on my 10 monthly performance review spreadsheets for the wind-power business unit, generate a
+formal employee performance analysis docx report. The report should have 5–6 chapters and span
+approximately 14 pages. Analyze overall performance, trend changes, performance-grade distribution,
+disqualification rate, role differences, top and bottom performers, and employees showing consistent
+improvement — broken down across three levels: month, role, and individual employee. Charts must be
+included to illustrate key findings. The report should be formal in tone, clearly structured, and
+professionally concise — going beyond listing data to explain the management implications behind it.
 ```
 
-The agent triggers `sn-da-excel-workflow` and produces a Markdown analysis report along with the figures it references. The directly deliverable Word document:
+After triggering `sn-da-excel-workflow`, the agent reads and analyzes all 10 xlsx files and outputs a structured report with charts. The directly deliverable Word document:
 
 - [`result/风电事业部2024-2025年度员工绩效分析报告.docx`](result/风电事业部2024-2025年度员工绩效分析报告.docx): Word version, ready to share or review.
 
@@ -38,10 +45,12 @@ The agent triggers `sn-da-excel-workflow` and produces a Markdown analysis repor
 Follow up with:
 
 ```text
-Use the sn-md-to-html-report skill to convert the markdown output into an html file.
+Use the sn-md-to-html-report skill to convert the output into an HTML file.
 ```
 
-You'll get a browser-friendly visualization, packaged as [`result/员工绩效分析-output.zip`](result/员工绩效分析-output.zip). Inside the zip, the directory `员工绩效分析报告/` contains:
+> **Note**: In this conversation, the model first converted the docx generated in Step 1 into Markdown, then produced a polished, visualized HTML report following the skill's instructions.
+
+The final artifact is packaged as [`result/员工绩效分析-output.zip`](result/员工绩效分析-output.zip). Inside the zip, the directory `员工绩效分析报告/` contains:
 
 - `wind_energy_performance_report.html`: visualized HTML report — open in any browser
 - `wind_power_case_all_figures_redownload/`: the 8 PNG figures referenced by the report plus `manifest.json`
