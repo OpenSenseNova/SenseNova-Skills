@@ -145,15 +145,61 @@ openclaw doctor
 
 #### 2.A.4 Configure the SenseNova LLM
 
-Run the three commands below — they register SenseNova as a custom OpenAI-compatible provider and set it as the default model. Replace the placeholder with the API key you generated in §0.
+The OpenClaw installer triggers the onboarding wizard automatically. If you skipped it or want to re-run it, invoke:
 
 ```bash
-openclaw config unset models.providers.sensenova
-openclaw config set models.providers.custom '{"baseUrl":"https://token.sensenova.cn/v1","api":"openai-completions","apiKey":"<paste your API key here>","models":[{"id":"sensenova-6.7-flash-lite","name":"SenseNova 6.7 Flash Lite"}]}'
-openclaw config set agents.defaults.model.primary "custom/sensenova-6.7-flash-lite"
+openclaw onboard --install-daemon
 ```
 
-> The first `unset` is a safety step — it clears any earlier `sensenova` provider entry so the new `custom` provider is the only one in play.
+Follow the prompts as shown below. Use the API key from §0, and configure at least one search API (Brave Search is shown as an example).
+
+```text
+◇  I understand this is personal-by-default and shared/multi-user use requires lock-down. Continue?
+│  Yes
+│
+◇  Setup mode
+│  QuickStart
+│
+◇  Model/auth provider
+│  Custom Provider
+│
+◇  API Base URL
+│  https://token.sensenova.cn/v1
+│
+◇  How do you want to provide this API key?
+│  Paste API key now
+│
+◇  API Key (leave blank if not required)
+│  <paste the API key from §0>
+│
+◇  Endpoint compatibility
+│  OpenAI-compatible
+│
+◇  Model ID
+│  sensenova-6.7-flash-lite
+│
+◇  Verification successful.
+│
+◇  Endpoint ID
+│  custom-token-sensenova-cn
+│
+◇  Select channel (QuickStart)
+│  Skip for now
+│
+◇  Web search
+│
+◇  Search provider
+│  Brave Search
+│
+◇  Brave Search API key
+│  BSA-xxxxx  (paste your Brave Search API key)
+│
+◇  Configure skills now? (recommended)
+│  No
+│
+◇  Enable hooks?
+│  Skip for now
+```
 
 #### 2.A.5 Verify the LLM connection
 
@@ -162,6 +208,23 @@ openclaw agent --message "Hi, please introduce yourself"
 ```
 
 If you get an English (or Chinese) reply, the LLM is wired up.
+
+#### 2.A.6 Open the web dashboard
+
+```bash
+openclaw dashboard
+```
+
+The command prints a login URL like `http://localhost:18789/#token=xxx`. Copy it into your browser to open the web UI, where you can chat with the agent and tweak configuration.
+
+#### 2.A.7 Raise the model token limits
+
+The defaults in `~/.openclaw/openclaw.json` are conservative. Open the file and update these two fields so SenseNova 6.7 can use its full window:
+
+```json
+"contextWindow": 262144,
+"maxTokens": 32768,
+```
 
 ---
 
