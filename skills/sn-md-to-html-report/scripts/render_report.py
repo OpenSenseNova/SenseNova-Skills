@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import html
 import mimetypes
 import re
 import sys
@@ -22,6 +23,11 @@ LIST_ITEM_RE = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+")
 TOC_HEADING_RE = re.compile(r"^\s{0,3}#{2,6}\s+(?:目录|目錄|contents?|table of contents)\s*$", re.IGNORECASE)
 TOC_ITEM_RE = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+\[[^\]]+\]\(#[^)]+\)\s*$")
 HR_RE = re.compile(r"^\s{0,3}(?:-{3,}|\*{3,}|_{3,})\s*$")
+MERMAID_BLOCK_RE = re.compile(
+    r'<pre><code class="(?:[^"]*\s)?language-mermaid(?:\s[^"]*)?">(.*?)</code></pre>',
+    re.S,
+)
+MERMAID_CDN = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"
 
 
 def is_external(src: str) -> bool:
@@ -135,6 +141,69 @@ def title_from_body(body: str) -> str:
     return re.sub(r"<.*?>", "", match.group(1)).strip() or "Markdown Report"
 
 
+def render_mermaid_blocks(body: str) -> tuple[str, int]:
+    """Convert fenced mermaid code blocks into Mermaid render targets."""
+
+    def replace(match: re.Match[str]) -> str:
+        diagram = html.unescape(match.group(1)).strip()
+        return f'<div class="mermaid">{html.escape(diagram)}</div>'
+
+    return MERMAID_BLOCK_RE.subn(replace, body)
+
+
+def build_mermaid_js(source: str) -> str:
+    if source == "none":
+        return ""
+
+    if source == "local":
+        loader = '<script src="mermaid.min.js"></script>'
+    else:
+        loader = f'<script src="{MERMAID_CDN}"></script>'
+
+    return f"""
+  {loader}
+  <script>
+    (() => {{
+      if (!window.mermaid) return;
+      window.mermaid.initialize({{
+        startOnLoad: true,
+        securityLevel: 'loose',
+        theme: 'base',
+        themeVariables: {{
+          primaryColor: '#eef7f5',
+          primaryTextColor: '#1c2430',
+          primaryBorderColor: '#0f766e',
+          lineColor: '#2563eb',
+          secondaryColor: '#eef4f8',
+          tertiaryColor: '#ffffff',
+          mainBkg: '#ffffff',
+          clusterBkg: '#fbfcfe',
+          clusterBorder: '#dbe2ea',
+          edgeLabelBackground: '#ffffff',
+          textColor: '#1c2430',
+          titleColor: '#0f172a',
+          nodeTextColor: '#1c2430',
+          xyChart: {{
+            backgroundColor: '#fbfcfe',
+            titleColor: '#0f172a',
+            xAxisLabelColor: '#475467',
+            xAxisTitleColor: '#344054',
+            xAxisTickColor: '#dbe2ea',
+            xAxisLineColor: '#dbe2ea',
+            yAxisLabelColor: '#475467',
+            yAxisTitleColor: '#344054',
+            yAxisTickColor: '#dbe2ea',
+            yAxisLineColor: '#dbe2ea',
+            plotColorPalette: '#0f766e, #2563eb, #94a3b8, #c2410c'
+          }},
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif'
+        }}
+      }});
+    }})();
+  </script>
+"""
+
+
 def build_js() -> str:
     return """
   <script>
@@ -166,10 +235,11 @@ def build_js() -> str:
 """
 
 
-def build_html(title: str, toc: str, body: str, with_js: bool) -> str:
+def build_html(title: str, toc: str, body: str, with_js: bool, mermaid_source: str = "none") -> str:
     progress = '<div class="progress"></div>' if with_js else ""
     back_top = '<button class="back-top" type="button" aria-label="返回顶部">↑</button>' if with_js else ""
     js = build_js() if with_js else ""
+    mermaid_js = build_mermaid_js(mermaid_source)
 
     return f"""<!doctype html>
 <html lang="zh-CN">
@@ -337,6 +407,16 @@ def build_html(title: str, toc: str, body: str, with_js: bool) -> str:
     }}
     pre {{ overflow: auto; padding: 16px; background: #0f172a; color: #e5e7eb; border-radius: var(--radius); }}
     pre code {{ padding: 0; color: inherit; background: transparent; }}
+    .mermaid {{
+      margin: 26px 0 30px;
+      padding: 18px;
+      overflow-x: auto;
+      text-align: center;
+      background: #fbfcfe;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }}
+    .mermaid svg {{ max-width: 100%; height: auto; }}
     .back-top {{
       display: none;
       position: fixed;
@@ -386,6 +466,7 @@ def build_html(title: str, toc: str, body: str, with_js: bool) -> str:
     </main>
   </div>
   {back_top}
+  {mermaid_js}
   {js}
 </body>
 </html>
@@ -400,6 +481,12 @@ def main() -> int:
     parser.add_argument("--no-embed-images", dest="embed_images", action="store_false")
     parser.add_argument("--with-js", action="store_true", help="Add progress, active TOC, and back-to-top interactions")
     parser.add_argument("--keep-inline-toc", action="store_true", help="Keep an existing Markdown TOC in the article body")
+    parser.add_argument(
+        "--mermaid-source",
+        choices=["auto", "cdn", "local", "none"],
+        default="auto",
+        help="Render mermaid fences with CDN JS, local mermaid.min.js, or disable rendering",
+    )
     parser.add_argument("--title-style", choices=["comfortable"], default="comfortable")
     args = parser.parse_args()
 
@@ -422,7 +509,11 @@ def main() -> int:
     )
     body = md.convert(text)
     body = re.sub(r"(<table>.*?</table>)", r'<div class="table-scroll">\1</div>', body, flags=re.S)
-    html = build_html(title_from_body(body), md.toc, body, args.with_js)
+    body, mermaid_count = render_mermaid_blocks(body)
+    mermaid_source = "none"
+    if mermaid_count and args.mermaid_source != "none":
+        mermaid_source = "cdn" if args.mermaid_source == "auto" else args.mermaid_source
+    html = build_html(title_from_body(body), md.toc, body, args.with_js, mermaid_source)
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(html, encoding="utf-8")
@@ -430,6 +521,11 @@ def main() -> int:
     print(f"tables={html.count('<table')}")
     print(f"images={html.count('<img')}")
     print(f"embedded_images={html.count('data:image/')}")
+    print(f"mermaid={mermaid_count}")
+    if mermaid_source == "cdn":
+        print("mermaid_source=cdn")
+    elif mermaid_source == "local":
+        print("mermaid_source=local")
     return 0
 
 
