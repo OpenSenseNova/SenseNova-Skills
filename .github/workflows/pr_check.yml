@@ -1,6 +1,8 @@
 name: "PR Format Linter"
 
 on:
+  # Using 'pull_request_target' ensures the workflow has the necessary permissions
+  # to post comments even when the PR comes from a fork.
   pull_request_target:
     types:
       - opened
@@ -8,23 +10,67 @@ on:
       - synchronize
 
 permissions:
-  pull-requests: read
+  # Required to post comments on the PR and update WIP status
+  pull-requests: write
 
 jobs:
-  check-pr-title-and-body:
+  main:
+    name: Validate PR title
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Validate the PR title
       - name: Validate PR title
+        id: lint_pr_title # Required to extract the error message later
         uses: amannn/action-semantic-pull-request@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Enable WIP (Work-In-Progress) support.
+          # If the title starts with 'WIP:', the PR will be marked as pending.
+          wip: true
 
-      - name: Check PR body length
-        run: |
-          BODY_LENGTH="${#PR_BODY}"
-          if [ "$BODY_LENGTH" -lt 20 ]; then
-            echo "❌ PR body is too short! Please describe your changes in at least 20 characters."
-            exit 1
-          fi
-        env:
-          PR_BODY: ${{ github.event.pull_request.body }}
+          # (Optional) Require a scope, e.g., 'feat(ui): add button'
+          # requireScope: true
+
+          # (Optional) Restrict allowed types to a specific list
+          # types: |
+          #   feat
+          #   fix
+          #   docs
+          #   style
+          #   refactor
+          #   perf
+          #   test
+          #   build
+          #   ci
+          #   chore
+          #   revert
+
+      # Step 2: Post a sticky comment if the title is invalid
+      - name: Comment on PR if title is invalid
+        # 'always()' ensures this runs even if the previous step failed
+        if: always() && (steps.lint_pr_title.outputs.error_message != null)
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-title-lint-error # Unique identifier for the comment
+          message: |
+            👋 Hi there! Thanks for your Pull Request!
+
+            To help us keep a clean changelog, we require all PR titles to follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+
+            Unfortunately, your current PR title did not pass the validation. Here is the detailed error:
+
+            ```text
+            ${{ steps.lint_pr_title.outputs.error_message }}
+            ```
+
+            💡 **How to fix it?**
+            Simply edit the title of this PR at the top of the page (no need to change the commit messages themselves). The bot will automatically re-evaluate it!
+
+      # Step 3: Automatically delete the comment when the title is fixed
+      - name: Delete comment on success
+        if: ${{ steps.lint_pr_title.outputs.error_message == null }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-title-lint-error
+          delete: true
