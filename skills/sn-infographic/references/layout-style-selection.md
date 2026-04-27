@@ -11,25 +11,25 @@ Each data_type has a primary (match_score=1.0) and alternatives (match_score=0.7
 |-----------|----------------|---------------------|
 | timeline / history | `linear-progression` | `winding-roadmap`, `step-staircase`, `one-way-flow`, `flashback` |
 | process / tutorial | `linear-progression` | `winding-roadmap`, `step-staircase`, `swimlane`, `modular-repetition`, `funnel`, `one-way-flow` |
-| comparison | `binary-comparison` | `comparison-matrix`, `four-quadrant-grid`, `conflict-contrast` |
-| hierarchy | `hierarchical-layers` | `tree-branching`, `axial-expansion`, `deconstruction` |
-| relationships | `venn-diagram` | `hub-spoke`, `jigsaw`, `multi-focal` |
+| comparison | `binary-comparison` | `four-quadrant-grid`, `conflict-contrast` |
+| hierarchy | `hierarchical-layers` | `axial-expansion`, `deconstruction` |
+| relationships | `hub-spoke` | `jigsaw`, `multi-focal`, `venn-diagram` |
 | data / metrics | `dashboard` | `periodic-table`, `data-landscape`, `hard-alignment`, `swiss-grid` |
 | cycle / loop | `circular-flow` | `s-curve`, `wave-path`, `spiral-vortex` |
-| system / structure | `structural-breakdown` | `isometric-tech-stack`, `multi-scale`, `containerization`, `deconstruction` |
+| system / structure | `structural-breakdown` | `multi-scale`, `containerization`, `deconstruction` |
 | journey / narrative | `winding-roadmap` | `story-mountain`, `comic-strip`, `emotional-gradient`, `storyboard`, `flashback`, `full-illustration`, `one-way-flow`, `left-image-right-text`, `diagonal-composition`, `overlapping` |
-| overview / summary | `bento-grid` | `periodic-table`, `nine-grid`, `chapter-layout`, `containerization`, `top-image-bottom-text`, `panorama`, `golden-ratio-split` |
-| problem / solution | `bridge` | `iceberg`, `conflict-contrast`, `visual-tension`, `funnel` |
-| categories / collection | `periodic-table` | `bento-grid`, `tile-layout`, `nine-grid`, `gallery-style`, `maximalism`, `skewed-grid` |
-| spatial / geographic | `isometric-map` | `isometric-tech-stack`, `multi-scale`, `strong-perspective`, `panorama` |
+| overview / summary | `bento-grid` | `periodic-table`, `containerization`, `top-image-bottom-text`, `panorama`, `golden-ratio-split` |
+| problem / solution | `iceberg` | `conflict-contrast`, `visual-tension`, `funnel`, `bridge` |
+| categories / collection | `periodic-table` | `bento-grid`, `tile-layout`, `gallery-style`, `skewed-grid` |
+| spatial / geographic | `multi-scale` | `strong-perspective`, `panorama`, `isometric-map` |
 | cross-functional / workflow | `swimlane` | `linear-progression`, `modular-repetition` |
 | feature list / catalog | `modular-repetition` | `bento-grid`, `containerization`, `left-text-right-image` |
-| single concept spotlight | `single-focal-point` | `big-typography`, `ultra-minimalist`, `header-body`, `center-focus`, `frame-composition`, `full-bleed-image`, `visual-first`, `single-object-art`, `macro-closeup`, `golden-ratio-split`, `text-wrap`, `deconstruction`, `heading-subheading`, `top-image-bottom-text`, `generous-margins`, `asymmetry`, `edge-tension`, `breaking-the-grid`, `strong-perspective` |
+| single concept spotlight | `single-focal-point` | `big-typography`, `ultra-minimalist`, `header-body`, `center-focus`, `frame-composition`, `full-bleed-image`, `visual-first`, `single-object-art`, `macro-closeup`, `golden-ratio-split`, `deconstruction`, `heading-subheading`, `top-image-bottom-text`, `generous-margins`, `asymmetry`, `edge-tension`, `breaking-the-grid`, `strong-perspective` |
 | dialogue / Q&A | `speech-bubbles` | `character-guide`, `comic-strip` |
-| discovery / exploration | `hidden-details` | `nonlinear-path`, `scene-unfolding`, `random-scatter`, `disrupted-flow`, `collage-glitch` |
+| discovery / exploration | `nonlinear-path` | `scene-unfolding`, `random-scatter`, `disrupted-flow`, `collage-glitch`, `hidden-details` |
 | network / multi-center | `multi-focal` | `hub-spoke`, `multi-directional` |
-| report / long-form | `chapter-layout` | `f-pattern`, `three-tier`, `header-body`, `swiss-grid`, `hard-alignment`, `heading-subheading`, `editorial-vogue` |
-| marketing / CTA | `z-pattern` | `tile-layout`, `three-tier`, `luxury-layout`, `editorial-vogue`, `generous-margins`, `full-bleed-image`, `visual-first`, `center-focus`, `frame-composition`, `overlapping`, `asymmetry`, `edge-tension`, `breaking-the-grid`, `skewed-grid`, `diagonal-composition`, `visual-tension`, `collage-glitch` |
+| report / long-form | `header-body` | `swiss-grid`, `hard-alignment`, `heading-subheading`, `editorial-vogue`, `chapter-layout` |
+| marketing / CTA | `z-pattern` | `tile-layout`, `luxury-layout`, `editorial-vogue`, `generous-margins`, `full-bleed-image`, `visual-first`, `center-focus`, `frame-composition`, `overlapping`, `asymmetry`, `edge-tension`, `breaking-the-grid`, `skewed-grid`, `diagonal-composition`, `visual-tension`, `collage-glitch` |
 
 ## Step 2 — Style Candidates (by tone / domain, independent of layout)
 
