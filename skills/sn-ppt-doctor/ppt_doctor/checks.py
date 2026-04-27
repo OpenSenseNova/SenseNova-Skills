@@ -14,6 +14,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+# Load .env from well-known locations before any checks run
+try:
+    from dotenv import load_dotenv
+    _script = Path(__file__).resolve()
+    _repo_root = _script.parents[3]
+    for _candidate in (_repo_root / ".env", _repo_root / "skills" / ".env", Path.cwd() / ".env"):
+        if _candidate.exists():
+            load_dotenv(_candidate, override=False)
+except ImportError:
+    pass
+
 
 _SUBPROCESS_TIMEOUT = 5
 _MIN_NODE_MAJOR = 18
@@ -46,7 +57,10 @@ def _find_sn_agent_runner() -> Path | None:
     Level 1: SN_IMAGE_BASE env var → <path>/scripts/sn_agent_runner.py
               If the var is set but the runner isn't there, stop (do not fall through).
     Level 2: TODO — openclaw registry (not yet implemented)
-    Level 3: repo-relative skills/sn-image-base/scripts/sn_agent_runner.py
+    Level 3: sibling-skill lookup — assume sn-ppt-doctor and sn-image-base are
+              installed under the same skills/ parent directory. Reasolve from
+              this file's own location, not from cwd (cwd is the agent's
+              workspace under OpenClaw, not the skills/ root).
               Only tried when SN_IMAGE_BASE is NOT set at all.
     """
     # Level 1: env var takes precedence; if set, do not fall through to other levels
@@ -55,10 +69,12 @@ def _find_sn_agent_runner() -> Path | None:
         candidate = Path(base_env) / "scripts" / "sn_agent_runner.py"
         return candidate if candidate.exists() else None
 
-    # Level 3: repo-relative from cwd (only when env var absent)
-    repo_candidate = Path.cwd() / "skills" / "sn-image-base" / "scripts" / "sn_agent_runner.py"
-    if repo_candidate.exists():
-        return repo_candidate
+    # Level 3: sibling lookup via this file's own path
+    # __file__ = skills/sn-ppt-doctor/ppt_doctor/checks.py → parents[2] = skills/
+    skills_dir = Path(__file__).resolve().parents[2]
+    sibling_candidate = skills_dir / "sn-image-base" / "scripts" / "sn_agent_runner.py"
+    if sibling_candidate.exists():
+        return sibling_candidate
 
     return None
 
@@ -111,8 +127,9 @@ def check_sn_image_base_discoverable() -> CheckResult:
         severity="hard",
         passed=False,
         detail=(
-            "sn_agent_runner.py not found. Set SN_IMAGE_BASE to the sn-image-base skill root, "
-            "or run this check from the repo root where skills/sn-image-base/ is a sibling."
+            "sn_agent_runner.py not found. Normally sn-image-base is auto-discovered as a "
+            "sibling skill — make sure it is installed under the same skills/ directory. "
+            "Otherwise set SN_IMAGE_BASE to its install root."
         ),
     )
 
