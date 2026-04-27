@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="assets/logo.webp" alt="SenseNova logo" width="180" />
-</p>
 
 # SenseNova-Skills
 
@@ -8,7 +5,9 @@
   <img src="docs/images/teasers/teaser_v2.webp" width="100%">
 </p>
 
-简体中文 | [English](README.md)
+<p align="center">
+  <b><font size="4">简体中文 | <a href="README.md">English</a></font></b>
+</p>
 
 SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/NousResearch/hermes-agent) 等智能体；本仓库的 skills 则把这些模型扩展为可直接落地的端到端办公能力。
 
@@ -16,7 +15,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
 
-> 🎨 **想看它到底能干啥？** 快来逛逛 [**sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便“**偷师**”一下 Prompt 应该怎么写！
+> 🎨 **想看它到底能干啥？** [**点击逛 sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便 “ 偷师 ”一下  **Prompt**  应该怎么写！
 
 ## 🦝 在小浣熊中开箱即用
 
