@@ -94,7 +94,10 @@ def _find_sn_agent_runner() -> Path | None:
     Level 1: SN_IMAGE_BASE env var -> <path>/scripts/sn_agent_runner.py
               If the var is set but the runner isn't there, stop (do not fall through).
     Level 2: TODO - openclaw registry (not yet implemented)
-    Level 3: repo-relative skills/sn-image-base/scripts/sn_agent_runner.py
+    Level 3: sibling-skill lookup - assume sn-ppt-doctor and sn-image-base are
+              installed under the same skills/ parent directory. Resolve from
+              this file's own location, not from cwd (cwd is the agent's
+              workspace under OpenClaw, not the skills/ root).
               Only tried when SN_IMAGE_BASE is NOT set at all.
     """
     base_env = _env("SN_IMAGE_BASE")
@@ -102,9 +105,11 @@ def _find_sn_agent_runner() -> Path | None:
         candidate = Path(base_env) / "scripts" / "sn_agent_runner.py"
         return candidate if candidate.exists() else None
 
-    repo_candidate = Path.cwd() / "skills" / "sn-image-base" / "scripts" / "sn_agent_runner.py"
-    if repo_candidate.exists():
-        return repo_candidate
+    # __file__ = skills/sn-ppt-doctor/ppt_doctor/check_environment.py -> parents[2] = skills/
+    skills_dir = Path(__file__).resolve().parents[2]
+    sibling_candidate = skills_dir / "sn-image-base" / "scripts" / "sn_agent_runner.py"
+    if sibling_candidate.exists():
+        return sibling_candidate
 
     return None
 
@@ -158,8 +163,9 @@ def check_sn_image_base_discoverable() -> CheckResult:
         severity="hard",
         passed=False,
         detail=(
-            "sn_agent_runner.py not found. Set SN_IMAGE_BASE to the sn-image-base skill root, "
-            "or run this check from the repo root where skills/sn-image-base/ is a sibling."
+            "sn_agent_runner.py not found. Normally sn-image-base is auto-discovered as a "
+            "sibling skill — make sure it is installed under the same skills/ directory. "
+            "Otherwise set SN_IMAGE_BASE to its install root."
         ),
     )
 
