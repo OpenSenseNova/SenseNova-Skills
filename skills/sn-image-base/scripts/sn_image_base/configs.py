@@ -87,37 +87,45 @@ class Configs:
     """
 
     # image-generate
-    SN_API_KEY: Annotated[str, Field("SN_API_KEY", required=True, secret=True)] = ""
+    SN_IMAGE_GEN_API_KEY: Annotated[
+        str, Field("SN_IMAGE_GEN_API_KEY", required=True, secret=True)
+    ] = ""
     SN_IMAGE_GEN_BASE_URL: Annotated[
-        str, Field("SN_IMAGE_GEN_BASE_URL", "SN_BASE_URL", required=True)
+        str, Field("SN_IMAGE_GEN_BASE_URL", required=True)
     ] = "https://token.sensenova.cn/v1"
     SN_IMAGE_GEN_MODEL_TYPE: Annotated[
-        Literal["sensenova", "nano-banana", "u1"], Field("SN_IMAGE_GEN_MODEL_TYPE")
+        Literal["sensenova", "nano-banana", "openai-image"], Field("SN_IMAGE_GEN_MODEL_TYPE")
     ] = "sensenova"
     SN_IMAGE_GEN_MODEL: Annotated[str, Field("SN_IMAGE_GEN_MODEL")] = "sensenova-u1-fast"
 
-    # NOTE: "SN_LM_*" vars are shared between VLM and LLM
-    # image-recognize (VLM) — falls back to shared SN_LM_* vars
-    VLM_API_KEY: Annotated[str, Field("VLM_API_KEY", "SN_LM_API_KEY", secret=True)] = ""
-    VLM_BASE_URL: Annotated[str, Field("VLM_BASE_URL", "SN_LM_BASE_URL")] = (
+    # chat runtime shared by text and vision commands; command-specific
+    # SN_TEXT_* / SN_VISION_* values override these defaults.
+    SN_CHAT_API_KEY: Annotated[str, Field("SN_CHAT_API_KEY", secret=True)] = ""
+    SN_CHAT_BASE_URL: Annotated[str, Field("SN_CHAT_BASE_URL")] = (
         "https://token.sensenova.cn/v1"
     )
-    VLM_MODEL: Annotated[str, Field("VLM_MODEL", "SN_LM_MODEL")] = "sensenova-6.7-flash-lite"
-    VLM_TYPE: Annotated[
-        Literal["anthropic-messages", "openai-completions"],
-        Field("VLM_TYPE", "SN_LM_TYPE"),
+    SN_CHAT_TYPE: Annotated[
+        Literal["anthropic-messages", "openai-completions"], Field("SN_CHAT_TYPE")
     ] = "openai-completions"
-
-    # text-optimize (LLM) — falls back to shared SN_LM_* vars
-    LLM_API_KEY: Annotated[str, Field("LLM_API_KEY", "SN_LM_API_KEY", secret=True)] = ""
-    LLM_BASE_URL: Annotated[str, Field("LLM_BASE_URL", "SN_LM_BASE_URL")] = (
-        "https://token.sensenova.cn/v1"
+    SN_CHAT_MODEL: Annotated[str, Field("SN_CHAT_MODEL")] = "sensenova-6.7-flash-lite"
+    SN_TEXT_API_KEY: Annotated[str, Field("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", secret=True)] = ""
+    SN_TEXT_BASE_URL: Annotated[str, Field("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL")] = ""
+    SN_TEXT_TYPE: Annotated[
+        Literal["anthropic-messages", "openai-completions"],
+        Field("SN_TEXT_TYPE", "SN_CHAT_TYPE"),
+    ] = ""
+    SN_TEXT_MODEL: Annotated[str, Field("SN_TEXT_MODEL", "SN_CHAT_MODEL")] = (
+        "sensenova-6.7-flash-lite"
     )
-    LLM_MODEL: Annotated[str, Field("LLM_MODEL", "SN_LM_MODEL")] = "sensenova-6.7-flash-lite"
-    LLM_TYPE: Annotated[
+    SN_VISION_API_KEY: Annotated[str, Field("SN_VISION_API_KEY", "SN_CHAT_API_KEY", secret=True)] = ""
+    SN_VISION_BASE_URL: Annotated[str, Field("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL")] = ""
+    SN_VISION_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
-        Field("LLM_TYPE", "SN_LM_TYPE"),
-    ] = "openai-completions"
+        Field("SN_VISION_TYPE", "SN_CHAT_TYPE"),
+    ] = ""
+    SN_VISION_MODEL: Annotated[str, Field("SN_VISION_MODEL", "SN_CHAT_MODEL")] = (
+        "sensenova-6.7-flash-lite"
+    )
 
     def __init__(self) -> None:
         for field, hint in get_type_hints(type(self), include_extras=True).items():
@@ -166,31 +174,41 @@ class Configs:
                 continue
 
         # Check fields combination rules:
-        if self.SN_IMAGE_GEN_MODEL_TYPE != "u1" and not self.SN_IMAGE_GEN_MODEL:
+        if not self.SN_IMAGE_GEN_MODEL:
             errors.append((
                 "SN_IMAGE_GEN_MODEL",
                 f"SN_IMAGE_GEN_MODEL is required when SN_IMAGE_GEN_MODEL_TYPE is {self.SN_IMAGE_GEN_MODEL_TYPE!r}",
             ))
 
         warnings: list[tuple[str, str]] = []
-        vlm_keys = ("VLM_API_KEY", "VLM_BASE_URL", "VLM_MODEL", "VLM_TYPE")
-        warnings.extend([
-            (
-                key,
-                f"{key} is not set; VLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
-            )
-            for key in vlm_keys
-            if not getattr(self, key)
-        ])
-        llm_keys = ("LLM_API_KEY", "LLM_BASE_URL", "LLM_MODEL", "LLM_TYPE")
-        warnings.extend([
-            (
-                key,
-                f"{key} is not set; LLM may be not available. Try setting environment variable(s): {field_env_names[key]}",
-            )
-            for key in llm_keys
-            if not getattr(self, key)
-        ])
+        runtime_checks = {
+            "text": {
+                "api_key": ("SN_TEXT_API_KEY", "SN_CHAT_API_KEY"),
+                "base_url": ("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL"),
+                "model": ("SN_TEXT_MODEL", "SN_CHAT_MODEL"),
+                "type": ("SN_TEXT_TYPE", "SN_CHAT_TYPE"),
+            },
+            "vision": {
+                "api_key": ("SN_VISION_API_KEY", "SN_CHAT_API_KEY"),
+                "base_url": ("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL"),
+                "model": ("SN_VISION_MODEL", "SN_CHAT_MODEL"),
+                "type": ("SN_VISION_TYPE", "SN_CHAT_TYPE"),
+            },
+        }
+        for runtime, checks in runtime_checks.items():
+            for field_kind, keys in checks.items():
+                if any(getattr(self, key) for key in keys):
+                    continue
+                env_help = " / ".join(
+                    ", ".join(field_env_names[key])
+                    if isinstance(field_env_names.get(key), tuple)
+                    else str(field_env_names.get(key, key))
+                    for key in keys
+                )
+                warnings.append((
+                    keys[0],
+                    f"{keys[0]} is not set; {runtime} {field_kind} may be unavailable. Try setting: {env_help}",
+                ))
 
         # check urls
         errors.extend(
@@ -198,7 +216,7 @@ class Configs:
                 key,
                 f"{key} is not a valid base URL: {getattr(self, key)}",
             )
-            for key in ("VLM_BASE_URL", "LLM_BASE_URL")
+            for key in ("SN_CHAT_BASE_URL", "SN_TEXT_BASE_URL", "SN_VISION_BASE_URL")
             if getattr(self, key) and not is_valid_base_url(getattr(self, key))
         )
         return errors, warnings
@@ -216,7 +234,7 @@ class Configs:
         to set the specified configuration field.
 
         Args:
-            field_name: The name of the configuration field (e.g., "VLM_API_KEY").
+            field_name: The name of the configuration field (e.g., "SN_CHAT_API_KEY").
 
         Returns:
             A string describing the environment variable(s) that control this field.

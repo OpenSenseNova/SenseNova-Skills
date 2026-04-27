@@ -97,7 +97,7 @@ class OpenAIImageGenerationClient(T2IBaseClient):
             output_path (Path | None, optional):
                 Output path for the generated image. Defaults to None.
             **kwargs:
-                Additional arguments (ignored, for compatibility with U1Text2ImageClient).
+                Additional arguments reserved for backend compatibility.
 
         Returns:
             dict:
@@ -150,7 +150,7 @@ class OpenAIImageGenerationClient(T2IBaseClient):
             if exc.code == 404:
                 field_name = "SN_IMAGE_GEN_BASE_URL"
             elif exc.code == 401:
-                field_name = "SN_API_KEY"
+                field_name = "SN_IMAGE_GEN_API_KEY"
             if field_name is not None:
                 field_hint = global_configs.get_annotated_field(field_name)
                 if field_hint is not None:
@@ -200,10 +200,12 @@ class OpenAIImageGenerationClient(T2IBaseClient):
     @property
     @override
     def api_key(self) -> str:
-        api_key = self._api_key or global_configs.SN_API_KEY
+        api_key = self._api_key or global_configs.SN_IMAGE_GEN_API_KEY
         if not api_key:
             raise ValueError(
-                "API key is missing: {}".format(global_configs.get_env_var_help("SN_API_KEY"))
+                "API key is missing: {}".format(
+                    global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY")
+                )
             )
         return api_key
 

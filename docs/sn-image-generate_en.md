@@ -2,12 +2,12 @@
 
 English | [简体中文](sn-image-generate.md)
 
-This document collects the SN (SenseNova) related skills (`sn-image-doctor`, `sn-image-base`, `sn-infographic`) and the end-to-end Quick Start for using them in OpenClaw / Hermes.
+This document collects the SN (SenseNova) related skills (`sn-image-doctor`, `sn-image-base`, `sn-infographic`, `sn-image-resume`, `sn-image-imitate`) and the end-to-end Quick Start for using them in OpenClaw / Hermes.
 
 ## Prerequisites
 
 - **Python** 3.9 or later (3.10+ recommended).
-- **SN API** credentials for image generation and LLM/VLM endpoints (`SN_API_KEY`, `SN_LM_API_KEY`; see Quick Start).
+- **SN API** credentials for image generation and LLM/VLM endpoints (`SN_IMAGE_GEN_API_KEY`, `SN_CHAT_API_KEY`; see Quick Start).
 
 ## Skills
 
@@ -38,6 +38,24 @@ Scene skill for generating professional infographics, built on `sn-image-base`. 
 - Multi-round image generation with VLM review
 - Quality ranking and best-result output
 
+### sn-image-resume (Tier 1)
+
+Scene skill for generating a designed portfolio-resume image, built on `sn-image-base`. See [`skills/sn-image-resume/SKILL.md`](../skills/sn-image-resume/SKILL.md) for full behavior.
+
+- Accepts resume content directly from conversational text
+- Supports optional user-provided style direction
+- Applies fixed portfolio-resume layout rules
+- Generates a tall designed resume image through `sn-image-generate`
+
+### sn-image-imitate (Tier 1)
+
+Scene skill for imitating the style of a reference image while updating content, built on `sn-image-base`. See [`skills/sn-image-imitate/SKILL.md`](../skills/sn-image-imitate/SKILL.md) for full behavior.
+
+- Extracts high-fidelity long caption and layout blueprint from a reference image
+- Rewrites caption according to user-requested content change while preserving style and layout
+- Multi-round generation with layout consistency review and bounded retries
+- Returns structured process artifacts for debugging and reproducibility
+
 ## Quick Start
 
 Use these skills from [OpenClaw](https://openclaw.ai/).
@@ -53,7 +71,7 @@ Use one of the following approaches:
 | Approach | What to do |
 |----------|------------|
 | **Shared on this machine** | Copy or symlink subdirectories under `skills/` to `~/.openclaw/skills/` (OpenClaw) or `~/.hermes/skills/openclaw-imports/` (Hermes). |
-| **Workspace `skills/`** | Copy or symlink `skills/sn-image-base`, `skills/sn-infographic`, and `skills/sn-image-doctor` into your agent workspace. |
+| **Workspace `skills/`** | Copy or symlink `skills/sn-image-base`, `skills/sn-infographic`, `skills/sn-image-doctor`, `skills/sn-image-resume`, and `skills/sn-image-imitate` into your agent workspace. |
 | **`openclaw.json` (OpenClaw only)** | Add an absolute path to this repo's `skills` folder (the parent of all skill directories) via `skills.load.extraDirs` (example below). |
 
 ```json5
@@ -85,8 +103,8 @@ Go to <https://platform.sensenova.cn/token-plan/> to register a free account and
 Set the following environment variables in `~/.openclaw/.env` (for OpenClaw) or `~/.hermes/.env` (for Hermes):
 
 ```ini
-SN_API_KEY="your-api-key"
-SN_LM_API_KEY="your-api-key"
+SN_IMAGE_GEN_API_KEY="your-api-key"
+SN_CHAT_API_KEY="your-api-key"
 ```
 
 **Note:** Never commit `.env` files or API keys to git.
