@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import shutil
+import os
 import tempfile
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
 import httpx
+from PIL import Image
 from typing_extensions import override
 
 from sn_image_base.configs import global_configs, is_valid_base_url
@@ -62,10 +63,12 @@ class SensenovaText2ImageClient(T2IBaseClient):
             ssl_verify (bool, optional):
                 If True, enable TLS verification. Defaults to True.
         """
-        api_key = api_key or global_configs.SN_API_KEY
+        api_key = api_key or global_configs.SN_IMAGE_GEN_API_KEY
         if not api_key:
             raise MissingApiKeyError(
-                "API key is missing: {}".format(global_configs.get_env_var_help("SN_API_KEY"))
+                "API key is missing: {}".format(
+                    global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY")
+                )
             )
         base_url = base_url or global_configs.SN_IMAGE_GEN_BASE_URL
         if not base_url:
@@ -117,7 +120,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
             output_path (Path | None, optional):
                 Output path for the generated image. Defaults to None.
             **kwargs:
-                Additional arguments (ignored, for compatibility with U1Text2ImageClient).
+                Additional arguments reserved for backend compatibility.
 
         Returns:
             dict:
@@ -158,7 +161,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
             if exc.code == 404:
                 field_name = "SN_IMAGE_GEN_BASE_URL"
             elif exc.code == 401:
-                field_name = "SN_API_KEY"
+                field_name = "SN_IMAGE_GEN_API_KEY"
             # elif exc.code == 400:
             #     warnings.warn(f"Bad request: {exc.message}; body: {payload}", stacklevel=2)
             if field_name is not None:
@@ -210,10 +213,12 @@ class SensenovaText2ImageClient(T2IBaseClient):
     @property
     @override
     def api_key(self) -> str:
-        api_key = self._api_key or global_configs.SN_API_KEY
+        api_key = self._api_key or global_configs.SN_IMAGE_GEN_API_KEY
         if not api_key:
             raise ValueError(
-                "API key is missing: {}".format(global_configs.get_env_var_help("SN_API_KEY"))
+                "API key is missing: {}".format(
+                    global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY")
+                )
             )
         return api_key
 
@@ -290,7 +295,9 @@ class SensenovaText2ImageClient(T2IBaseClient):
     def headers(self) -> dict[str, str]:
         if not self.api_key:
             raise MissingApiKeyError(
-                "API key is missing: {}".format(global_configs.get_env_var_help("SN_API_KEY"))
+                "API key is missing: {}".format(
+                    global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY")
+                )
             )
         return {
             "Authorization": f"Bearer {self.api_key}",
@@ -375,14 +382,52 @@ async def download_image(
     Returns:
         Path: The path to the downloaded image file.
     """
-    with tempfile.NamedTemporaryFile() as temp_file:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            async with client.stream("GET", url) as response:
-                response.raise_for_status()
-                async for chunk in response.aiter_bytes():
-                    temp_file.write(chunk)
-        shutil.copy(temp_file.name, save_path)
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path: Path | None = None
+    bytes_written = 0
+    expected_length: int | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            dir=save_path.parent,
+            prefix=f".{save_path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temp_file:
+            temp_path = Path(temp_file.name)
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                async with client.stream("GET", url) as response:
+                    response.raise_for_status()
+                    content_length = response.headers.get("content-length")
+                    if content_length is not None:
+                        expected_length = int(content_length)
+                    async for chunk in response.aiter_bytes():
+                        bytes_written += len(chunk)
+                        temp_file.write(chunk)
+            temp_file.flush()
+            os.fsync(temp_file.fileno())
+
+        if expected_length is not None and bytes_written != expected_length:
+            raise OSError(
+                f"Downloaded image is incomplete: got {bytes_written} bytes, "
+                f"expected {expected_length} bytes"
+            )
+
+        assert temp_path is not None
+        _validate_image_file(temp_path)
+        temp_path.replace(save_path)
         return save_path
+    except Exception:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
+        raise
+
+
+def _validate_image_file(image_path: Path) -> None:
+    """Verify that the downloaded image can be decoded completely."""
+    with Image.open(image_path) as image:
+        image.verify()
+    with Image.open(image_path) as image:
+        image.load()
 
 
 def mime_type_to_suffix(mime_type: str) -> str:
@@ -449,7 +494,7 @@ if __name__ == "__main__":
 
     async def main_async():
         client = SensenovaText2ImageClient(
-            api_key=global_configs.SN_API_KEY,
+            api_key=global_configs.SN_IMAGE_GEN_API_KEY,
             base_url=global_configs.SN_IMAGE_GEN_BASE_URL,
         )
 
