@@ -43,7 +43,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 例如，把全部技能复制到 OpenClaw：
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 mkdir -p ~/.openclaw/skills
 cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```

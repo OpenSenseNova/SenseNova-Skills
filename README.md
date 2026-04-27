@@ -43,7 +43,7 @@ Clone this repository, then copy subdirectories under `skills/` into the skills 
 For example, copy all skills into OpenClaw:
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 mkdir -p ~/.openclaw/skills
 cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
