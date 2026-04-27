@@ -14,6 +14,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+# Load .env from well-known locations before any checks run
+try:
+    from dotenv import load_dotenv
+    _script = Path(__file__).resolve()
+    _repo_root = _script.parents[3]
+    for _candidate in (_repo_root / ".env", _repo_root / "skills" / ".env", Path.cwd() / ".env"):
+        if _candidate.exists():
+            load_dotenv(_candidate, override=False)
+except ImportError:
+    pass
+
 
 _SUBPROCESS_TIMEOUT = 5
 _MIN_NODE_MAJOR = 18
