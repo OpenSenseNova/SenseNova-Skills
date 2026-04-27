@@ -145,6 +145,60 @@ def _is_transient_llm_error(exc: httpx.HTTPError) -> bool:
     return False
 
 
+def _coerce_message_content(msg: Any) -> str:
+    """Extract plain assistant text from OpenAI-compatible response shapes.
+
+    Supports:
+    - message.content as a plain string
+    - message.content as blocks list, concatenating text blocks
+    - fallback fields occasionally returned by providers
+    """
+    if isinstance(msg, str):
+        return msg
+    if isinstance(msg, list):
+        parts: list[str] = []
+        for blk in msg:
+            if isinstance(blk, str):
+                parts.append(blk)
+                continue
+            if not isinstance(blk, dict):
+                continue
+            if blk.get("type") == "text":
+                text = blk.get("text")
+                if isinstance(text, str):
+                    parts.append(text)
+                    continue
+                if isinstance(text, dict):
+                    value = text.get("value")
+                    if isinstance(value, str):
+                        parts.append(value)
+                        continue
+            for key in ("text", "value", "content"):
+                value = blk.get(key)
+                if isinstance(value, str):
+                    parts.append(value)
+                    break
+                if isinstance(value, dict) and isinstance(value.get("value"), str):
+                    parts.append(value["value"])
+                    break
+        return "".join(parts).strip()
+    if isinstance(msg, dict):
+        content = msg.get("content")
+        if isinstance(content, (str, list)):
+            text = _coerce_message_content(content)
+            if text:
+                return text
+        for key in ("text", "output_text", "value"):
+            value = msg.get(key)
+            if isinstance(value, str) and value.strip():
+                return value
+            if isinstance(value, list):
+                text = _coerce_message_content(value)
+                if text:
+                    return text
+    return ""
+
+
 def llm(system_prompt: str, user_prompt: str, *, model: str | None = None,
         timeout: float | None = None, retries: int = 0,
         request_name: str = "llm") -> str:
@@ -189,11 +243,17 @@ def llm(system_prompt: str, user_prompt: str, *, model: str | None = None,
 
         data = resp.json()
         try:
-            return data["choices"][0]["message"]["content"]
+            message = data["choices"][0]["message"]
         except (KeyError, IndexError, TypeError) as e:
             raise ModelClientError(
                 f"LLM response shape unexpected [{request_name}]: {json.dumps(data)[:500]}"
             ) from e
+        text = _coerce_message_content(message)
+        if text:
+            return text
+        raise ModelClientError(
+            f"LLM response had no usable text [{request_name}]: {json.dumps(data)[:500]}"
+        )
 
 
 def vlm(system_prompt: str, user_prompt: str, images: list[str | Path], *,
