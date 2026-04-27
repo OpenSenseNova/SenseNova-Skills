@@ -32,7 +32,11 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 ## 如何使用
 
-**本仓库的 skill 需要配合支持 [Agent Skills](https://agentskills.io/) 规范的智能体使用，推荐 [OpenClaw](https://openclaw.ai/) 或 [hermes-agent](https://github.com/NousResearch/hermes-agent) 获得最佳效果。完整的安装、LLM 配置与 skill 加载流程请参考 [`INSTALL_CN.md`](INSTALL_CN.md)。**
+本仓库的 skill 需要配合支持 [Agent Skills](https://agentskills.io/) 规范的智能体使用。
+
+- **推荐运行时**：**[OpenClaw](https://openclaw.ai/)** 或 **[hermes-agent](https://github.com/NousResearch/hermes-agent)**。
+- **推荐 LLM**：配合使用 **[SenseNova 平台 API](https://platform.sensenova.cn/token-plan)**（提供免费 token 套餐）。
+- **安装与配置**：完整流程请参考 **[`INSTALL_CN.md`](INSTALL_CN.md)**。
 
 克隆本仓库后，把 `skills/` 下的子目录复制（或软链接）到所用智能体加载的 skills 目录：
 
