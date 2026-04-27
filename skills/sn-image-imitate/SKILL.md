@@ -52,16 +52,18 @@ Features:
 - `max_attempts` (int, default `3`): maximum generation attempts for meeting layout consistency
 - `layout_threshold` (float, default `0.75`): minimum layout similarity score to accept result
 
-## Environment Variables
+## Environment Variable
 
-| Variable | Required | Used by | Description |
-|----------|----------|---------|-------------|
-| `SN_API_KEY` | required | `sn-image-generate` | API key for image generation calls (Step 3) |
-| `SN_LM_API_KEY` | required | `sn-image-recognize`, `sn-text-optimize` | Unified LM API key; used when `VLM_API_KEY` or `LLM_API_KEY` is not set |
-| `VLM_API_KEY` | optional | `sn-image-recognize` | API key for VLM calls (Step 1 & 3), which will override `SN_LM_API_KEY` |
-| `LLM_API_KEY` | optional | `sn-text-optimize` | API key for LLM calls (Step 2), which will override `SN_LM_API_KEY` |
+Dependency installation and API key configuration are for [sn-image-base](../sn-image-base/SKILL.md) skill.
 
-At least one key per call type must be available (either env var or explicit CLI argument). See parameter precedence below.
+The minimum environment variables to configure `sn-image-base` skill running with [SenseNova Token Plan](https://platform.sensenova.cn/token-plan):
+
+```ini
+SN_IMAGE_GEN_API_KEY="your-api-key"
+SN_CHAT_API_KEY="your-api-key"
+```
+
+Please refer to the **Python dependencies and API keys** section in [`sn-image-generate_en.md`](../../docs/sn-image-generate_en.md) for more configurations.
 
 ## API Configuration
 
