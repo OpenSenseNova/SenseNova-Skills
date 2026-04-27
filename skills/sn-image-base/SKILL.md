@@ -200,19 +200,19 @@ Mapping between `provider.api` and interface type:
 
 Different API types have different requirements for base-url format:
 
-| Type | `--llm-type` / `--vlm-type` | base-url Example | Code Appended Path | Final URL Example |
+| Type | `--llm-type` / `--vlm-type` | Recommended base-url | Code Appended Path | Final URL Example |
 |------|------------------------------|---------------|--------------|---------------|
-| LLM | `openai-completions` | `https://token.sensenova.cn` | `/v1/chat/completions` | `https://token.sensenova.cn/v1/chat/completions` |
-| LLM | `anthropic-messages` | `https://api.anthropic.com` | `/v1/messages` | `https://api.anthropic.com/v1/messages` |
-| VLM | `openai-completions` | `https://token.sensenova.cn` | `/v1/chat/completions` | `https://token.sensenova.cn/v1/chat/completions` |
-| VLM | `anthropic-messages` | `https://api.anthropic.com` | `/v1/messages` | `https://api.anthropic.com/v1/messages` |
+| LLM | `openai-completions` | `https://token.sensenova.cn/v1` | `/chat/completions` | `https://token.sensenova.cn/v1/chat/completions` |
+| LLM | `anthropic-messages` | `https://api.anthropic.com/v1` | `/messages` | `https://api.anthropic.com/v1/messages` |
+| VLM | `openai-completions` | `https://token.sensenova.cn/v1` | `/chat/completions` | `https://token.sensenova.cn/v1/chat/completions` |
+| VLM | `anthropic-messages` | `https://api.anthropic.com/v1` | `/messages` | `https://api.anthropic.com/v1/messages` |
 
 **Note**:
 
-- `openai-completions` interface: code automatically appends `/v1/chat/completions`
-- `anthropic-messages` interface: code automatically appends `/v1/messages`
-- Some providers require base-url with `/v1`, while others do not, depending on provider implementation
-- If unsure, prefer not adding `/v1` because the code appends it automatically
+- Recommended chat base URLs include the provider API version path, for example `/v1`.
+- For compatibility, if the configured chat base URL has no path, the runner appends `/v1/chat/completions` or `/v1/messages`.
+- If the configured chat base URL already has a path such as `/v1`, the runner appends only `/chat/completions` or `/messages`.
+- Some providers use versioned paths other than `/v1`, such as Gemini's `/v1beta/openai`.
 
 ## Output Format
 
@@ -228,7 +228,7 @@ JSON output for `sn-image-recognize` and `sn-text-optimize` also includes `model
   "status": "ok",
   "result": "...",
   "model": "sensenova-6.7-flash-lite",
-  "base_url": "https://token.sensenova.cn",
+  "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 1.23
 }
@@ -246,4 +246,4 @@ On failure:
 
 ## Input/Output Specification
 
-See `reference/api_spec.md` for details.
+See `references/api_spec.md` for details.

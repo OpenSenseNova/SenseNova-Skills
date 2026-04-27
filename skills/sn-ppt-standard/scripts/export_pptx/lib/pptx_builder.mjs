@@ -46,6 +46,78 @@ let _currentCanvasH = 720;
  * For background filling purposes, the last gradient layer is the one to
  * use as the slide底色; earlier layers are decorative overlays.
  */
+/**
+ * 按"策略 E"决定 slide 的权威底色（authoritative background fill）。
+ *
+ * 数据来源优先级（基于 15 个 deck × 170 页样本统计，对截图角落像素的命中率）：
+ *   1. wrapperBgColor（不透明时）            85.4% 命中
+ *   2. wrapperBgImage 智能首/末 stop          74.4% 命中
+ *      - radial-gradient → 最远 visible stop（CSS radial 默认 fill 模式，最远是边缘填充色）
+ *      - linear-gradient → 首个 visible stop
+ *   3. bodyBgColor（不透明时）                56.5% 命中
+ *   4. bgBgColor                              87.5% 命中（但 91% 页面 N/A）
+ *   5. bgBgImage 智能首/末 stop                65% 命中
+ *   6. 白色兜底
+ *
+ * 整体策略 E 命中率约 82.4%，比当前 (wrapper>body>white) 的 74.1% 提升 8 个百分点。
+ *
+ * @param {Object} ir - 完整 IR（用于读 wrapper/body/#bg 字段）
+ * @returns {string} 6 位 hex 颜色（无 # 前缀）
+ */
+function resolveAuthoritativeBg(ir) {
+  if (!ir) return 'FFFFFF';
+  function visibleStops(bgImage) {
+    if (!bgImage || bgImage === 'none' || !bgImage.includes('gradient')) return [];
+    const stops = [];
+    const re = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/g;
+    let m;
+    while ((m = re.exec(bgImage)) !== null) {
+      const a = m[4] === undefined ? 1 : parseFloat(m[4]);
+      if (a >= 0.5) {
+        const hex = [+m[1], +m[2], +m[3]]
+          .map(n => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0'))
+          .join('').toUpperCase();
+        stops.push(hex);
+      }
+    }
+    // 也支持 hex 颜色 #RRGGBB / #RGB
+    if (stops.length === 0) {
+      const hxRe = /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/g;
+      let h;
+      while ((h = hxRe.exec(bgImage)) !== null) {
+        const v = h[1].length === 3 ? h[1].split('').map(c => c + c).join('') : h[1];
+        stops.push(v.toUpperCase());
+      }
+    }
+    return stops;
+  }
+  function pickFromImage(bgImage) {
+    if (!bgImage || bgImage === 'none') return null;
+    const stops = visibleStops(bgImage);
+    if (stops.length === 0) return null;
+    // radial-gradient → 取最远 stop（CSS radial fill 模式：最远 stop 是边缘填充色）
+    if (/radial-gradient/.test(bgImage)) return stops[stops.length - 1];
+    // linear-gradient → 取首个 stop
+    return stops[0];
+  }
+  // 1. wrapperBgColor 不透明 → 用
+  const wHex = cssColorToHex(ir.wrapperBgColor);
+  if (wHex && !isTransparent(ir.wrapperBgColor)) return wHex;
+  // 2. wrapperBgImage 智能 stop
+  const wFromImg = pickFromImage(ir.wrapperBgImage);
+  if (wFromImg) return wFromImg;
+  // 3. bodyBgColor 不透明 → 用
+  const bHex = cssColorToHex(ir.bodyBgColor);
+  if (bHex && !isTransparent(ir.bodyBgColor)) return bHex;
+  // 4. #bg.styles.backgroundColor
+  const bgcHex = cssColorToHex(ir.bg?.styles?.backgroundColor);
+  if (bgcHex && !isTransparent(ir.bg?.styles?.backgroundColor)) return bgcHex;
+  // 5. #bg.styles.backgroundImage 智能 stop
+  const bgIFromImg = pickFromImage(ir.bg?.styles?.backgroundImage);
+  if (bgIFromImg) return bgIFromImg;
+  return 'FFFFFF';
+}
+
 function splitBackgroundLayers(bg) {
   const layers = [];
   let depth = 0, start = 0;
@@ -1818,19 +1890,28 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   // 解析 body / wrapper 背景色，用于 fallback
   const bodyBgHex = cssColorToHex(ir.bodyBgColor) || null;
   const wrapperBgHex = cssColorToHex(ir.wrapperBgColor) || null;
-  // 多级 fallback：wrapper > body > white
-  const fallbackBgHex = wrapperBgHex || bodyBgHex || 'FFFFFF';
 
   // 画布尺寸（用于坐标计算）
   const cw = ir.canvasWidth || 1280;
   const ch = ir.canvasHeight || 720;
 
-  // 1. 背景（支持多层：slideBackground + bgElements overlay + #bg 子元素）
-  let bgApplied = false;
+  // 一次性确定 slide 的"权威底色"（按策略 E，统计上 82.4% 命中截图角落）。
+  // 这是底色 baseline，后续所有路径只允许"装饰叠加"或"图片背景"，不再
+  // 改写它（避免之前 colorMatch fallback 误抓装饰透明色覆盖底色的 bug）。
+  // D-ii 的"全屏 linear gradient shape"、buildBackground 的"图片背景"
+  // 这两类是合理覆盖，仍然保留。
+  const authBgHex = resolveAuthoritativeBg(ir);
+  if (!slide.background || !slide.background.fill) {
+    slide.background = { fill: authBgHex };
+  }
+
+  // 1. 背景（支持图片 + bgElements overlay + #bg 子元素）
+  let bgApplied = !!slide.background;
   if (ir.bg) {
     const bgResult = buildBackground(ir.bg, ir.bodyBgColor, deckDir);
     if (bgResult) {
-      if (bgResult.slideBackground) {
+      // 仅当 buildBackground 返回**图片**作为 slideBackground 时才覆盖（背景图比 solid 更明确）
+      if (bgResult.slideBackground && bgResult.slideBackground.path) {
         slide.background = bgResult.slideBackground;
         bgApplied = true;
       }
@@ -1841,29 +1922,6 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
           slide.addImage(el.data);
         }
       }
-      if (bgResult.bgElements.length > 0) bgApplied = true;
-    }
-  }
-
-  // 1b. 如果 #bg 没有产生有效背景，使用 wrapper / body 背景
-  if (!bgApplied) {
-    // 尝试 wrapper 的 gradient
-    const wrapperBgImg = ir.wrapperBgImage;
-    const bodyBgImg = ir.bodyBgImage;
-    const gradientSrc = (wrapperBgImg && wrapperBgImg !== 'none') ? wrapperBgImg
-      : (bodyBgImg && bodyBgImg !== 'none') ? bodyBgImg : null;
-    if (gradientSrc) {
-      const linearGrad = parseLinearGradient(gradientSrc);
-      const radialGrad = !linearGrad ? parseRadialGradient(gradientSrc) : null;
-      const grad = linearGrad || radialGrad;
-      if (grad && grad.stops.length >= 2) {
-        const firstVisible = grad.stops.find(st => !st.isTransparent);
-        slide.background = { fill: firstVisible?.color || fallbackBgHex };
-        bgApplied = true;
-      }
-    }
-    if (!bgApplied) {
-      slide.background = { fill: fallbackBgHex };
     }
   }
 

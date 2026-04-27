@@ -150,6 +150,11 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 
 仅当文本或视觉命令需要使用不同 provider 时，才需要配置 `SN_TEXT_*` 或 `SN_VISION_*`。
 
+对于 chat 调用，runner 也兼容不带路径的 host-only base URL，例如
+`https://token.sensenova.cn`：如果 URL 中没有 path，会先补上 API 版本路径再追加具体接口。
+为保持和内置默认值一致，建议优先使用带版本路径的 base URL，例如
+`https://token.sensenova.cn/v1`。
+
 如需使用非默认 chat 设置，请按以下步骤：
 
 1. 按 chat API 协议设置 `SN_CHAT_TYPE`。可选值如下：

@@ -150,6 +150,12 @@ The default values are recommended for the [SenseNova](https://platform.sensenov
 
 Configure `SN_TEXT_*` or `SN_VISION_*` only when a command needs a different provider than the shared `SN_CHAT_*` provider.
 
+For chat calls, the runner also accepts host-only base URLs such as
+`https://token.sensenova.cn`: if no URL path is present, it appends the API
+version path before the interface endpoint. Prefer the documented versioned
+base URL, for example `https://token.sensenova.cn/v1`, for consistency with the
+built-in defaults.
+
 To use non-default shared chat settings, please:
 
 1. Set `SN_CHAT_TYPE` according to the chat API protocol. Available values are:

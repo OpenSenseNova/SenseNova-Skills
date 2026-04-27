@@ -185,7 +185,7 @@ The entire layout is framed by decorative elements: pixelated red crosses (like 
 All text is rendered in a bold, pixelated font consistent with early computer graphics. No numerical data beyond the segment counts in the HP bar is explicitly presented; all values are categorical or qualitative. The infographic serves as a dynamic, gamified project management tool for tracking promotional campaigns.
 ```
 
-![Sample infographic output — HEALTH_CHECK_PROMO](images/demo8.webp)
+![Sample infographic output — HEALTH_CHECK_PROMO](images/infographics/info_042.webp)
 
 ### Example 2｜Streaming Media: Borderless Distribution
 
@@ -218,4 +218,4 @@ All text is rendered in a bold, pixelated font consistent with early computer gr
 整体设计融合了科幻美学与技术叙事，通过三个递进场景——云端传输、超清解码、全球共享——构建完整流媒体服务链条，所有文本均为中文，语言风格充满未来感与诗意，精准传达"无界分发"的技术愿景。
 ```
 
-![Sample infographic output — Streaming Media: Borderless Distribution](images/demo2.webp)
+![Sample infographic output — Streaming Media: Borderless Distribution](images/infographics/info_088.webp)
