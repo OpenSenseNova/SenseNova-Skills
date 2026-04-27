@@ -47,10 +47,10 @@ Set the following in `~/.openclaw/.env` (OpenClaw) or `~/.hermes/.env` (Hermes):
 ```ini
 # LLM (outline, style_spec, content planning, image caption, page review)
 SN_CHAT_API_KEY="your-api-key"
-SN_CHAT_BASE_URL="https://token.sensenova.cn/v1"
+SN_CHAT_BASE_URL="https://token.sensenova.cn"
 SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 SN_VISION_API_KEY="your-api-key"
-SN_VISION_BASE_URL="https://token.sensenova.cn/v1"
+SN_VISION_BASE_URL="https://token.sensenova.cn"
 SN_VISION_MODEL="sensenova-6.7-flash-lite"
 
 # Text-to-image (required for creative mode, on-demand for standard mode)

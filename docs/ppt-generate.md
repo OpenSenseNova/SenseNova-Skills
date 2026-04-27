@@ -47,10 +47,10 @@ pip install -r skills/sn-image-base/requirements.txt
 ```ini
 # LLM（大纲、style_spec、内容规划、图片内容识别、页面review）
 SN_CHAT_API_KEY="your-api-key"
-SN_CHAT_BASE_URL="https://token.sensenova.cn/v1"
+SN_CHAT_BASE_URL="https://token.sensenova.cn"
 SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 SN_VISION_API_KEY="your-api-key"
-SN_VISION_BASE_URL="https://token.sensenova.cn/v1"
+SN_VISION_BASE_URL="https://token.sensenova.cn"
 SN_VISION_MODEL="sensenova-6.7-flash-lite"
 
 # 文生图（创意模式必填，标准模式按需）
