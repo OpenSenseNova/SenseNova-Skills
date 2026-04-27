@@ -12,6 +12,7 @@ on:
 permissions:
   # Required to post comments on the PR and update WIP status
   pull-requests: write
+  statuses: write
 
 jobs:
   main:
@@ -25,9 +26,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Enable WIP (Work-In-Progress) support.
-          # If the title starts with 'WIP:', the PR will be marked as pending.
-          wip: true
+          wip: false
 
           # (Optional) Require a scope, e.g., 'feat(ui): add button'
           # requireScope: true
