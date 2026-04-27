@@ -5,7 +5,7 @@
 # SenseNova-Skills
 
 <p align="center">
-  <img src="docs/images/teaser_v2.webp" width="100%">
+  <img src="docs/images/teasers/teaser_v2.webp" width="100%">
 </p>
 
 English | [简体中文](README_CN.md)
@@ -15,6 +15,8 @@ The SenseNova model family plugs directly into agent runtimes such as [OpenClaw]
 In this repository each skill lives in its own directory and declares triggers, capabilities, and execution flow through a `SKILL.md` file, following the [Agent Skills](https://agentskills.io/) convention.
 
 The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, and **deep research** — usable standalone or composed into end-to-end workflows.
+
+> 🎨 **Want to see what it can do?** Check out our [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their prompt designs!
 
 ## 🦝 Available out-of-the-box in Raccoon
 
@@ -126,7 +128,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md)).
 
-<img src="docs/images/cases_merge.webp" alt="sn-infographic sample outputs">
+<img src="docs/images/teasers/cases_merge.webp" alt="sn-infographic sample outputs">
 
 ### 🧩 Memory price analysis — insight → analysis → presentation → end-to-end workflow
 

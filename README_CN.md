@@ -5,7 +5,7 @@
 # SenseNova-Skills
 
 <p align="center">
-  <img src="docs/images/teaser_v2.webp" width="100%">
+  <img src="docs/images/teasers/teaser_v2.webp" width="100%">
 </p>
 
 简体中文 | [English](README.md)
@@ -15,6 +15,8 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
 技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
+
+> 🎨 **想看看它到底能干啥？** 快来逛逛 [**sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便“偷师”一下 Prompt 应该怎么写！
 
 ## 🦝 在小浣熊中开箱即用
 
@@ -126,7 +128,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 `sn-infographic` 的部分生成效果（更多样例见 [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md)）。
 
-<img src="docs/images/cases_merge.webp" alt="sn-infographic sample outputs">
+<img src="docs/images/teasers/cases_merge.webp" alt="sn-infographic sample outputs">
 
 ### 🧩 内存价格分析 — 洞察-分析-汇报-全链路
 
