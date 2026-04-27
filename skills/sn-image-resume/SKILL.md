@@ -61,7 +61,7 @@ All API calls in this skill are executed through the `sn_agent_runner.py` of the
 |**LLM**|`sn-text-optimize`|Default reads `SN_TEXT_API_KEY` / `SN_CHAT_API_KEY` environment variables|Converts user resume text into a detailed image generation prompt using `prompts/resume.md` as the system prompt|
 |**Image Generation**|`sn-image-generate`|Default reads `SN_IMAGE_GEN_API_KEY` environment variable|Generates the final resume image|
 
-**When encountering `MissingApiKeyError` or needing to specify a model**: pass parameters explicitly via CLI. See `$SN_IMAGE_BASE/reference/api_spec.md`.
+**When encountering `MissingApiKeyError` or needing to specify a model**: pass parameters explicitly via CLI. See `$SN_IMAGE_BASE/references/api_spec.md`.
 
 **`$SN_IMAGE_BASE` path explanation**: `$SN_IMAGE_BASE` is the installation directory of the `sn-image-base` skill (`SKILL.md` exists). The agent can locate this path by skill name `sn-image-base`.
 
@@ -237,4 +237,4 @@ Image:
 
 - `prompts/resume.md` - Fixed portfolio-resume layout and language/content mapping rules
 - `../sn-image-base/SKILL.md` - Base-layer image/text tool behavior
-- `../sn-image-base/reference/api_spec.md` - CLI parameter details
+- `../sn-image-base/references/api_spec.md` - CLI parameter details

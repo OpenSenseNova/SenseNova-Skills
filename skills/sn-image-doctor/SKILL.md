@@ -207,5 +207,5 @@ python skills/sn-image-base/scripts/sn_agent_runner.py sn-image-generate \
 ## See Also
 
 - `sn-image-base/SKILL.md` - Base-layer skill documentation
-- `sn-image-base/reference/api_spec.md` - API specification
+- `sn-image-base/references/api_spec.md` - API specification
 - `sn-infographic/SKILL.md` - Example of a skill that depends on sn-image-base

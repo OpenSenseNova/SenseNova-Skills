@@ -7,7 +7,7 @@ This document introduces the `sn-image-imitate` skill and provides a Quick Start
 ## Prerequisites
 
 - **Python** 3.9 or later (3.10+ recommended).
-- **SN API** credentials for image generation and LLM/VLM endpoints (`SN_API_KEY`, `SN_LM_API_KEY`; see Quick Start).
+- **SN API** credentials for image generation and LLM/VLM endpoints (`SN_IMAGE_BASE_API_KEY`, `SN_CHAT_API_KEY`; see Quick Start).
 - `sn-image-base` skill installed (as a base dependency).
 
 ## Skill Overview
@@ -53,23 +53,16 @@ Make sure `sn-image-base` is already registered (see the registration steps in [
 
 ### 2. Python dependencies and API keys
 
-Dependency installation and API key configuration are shared with `sn-image-base`. See the **Python dependencies and API keys** section in [`sn-image-generate_en.md`](../../docs/sn-image-generate_en.md).
+Dependency installation and API key configuration are for [sn-image-base](../sn-image-base/SKILL.md) skill.
 
-Minimum environment variables:
-
-```ini
-SN_API_KEY="your-api-key"
-SN_LM_API_KEY="your-api-key"
-```
-
-To use separate API keys for VLM and LLM:
+The minimum environment variables to configure `sn-image-base` skill running with [SenseNova Token Plan](https://platform.sensenova.cn/token-plan):
 
 ```ini
-VLM_API_KEY="your-vlm-api-key"
-LLM_API_KEY="your-llm-api-key"
+SN_IMAGE_GEN_API_KEY="your-api-key"
+SN_CHAT_API_KEY="your-api-key"
 ```
 
-Precedence: explicit CLI argument > dedicated key (`VLM_API_KEY` / `LLM_API_KEY`) > unified key (`SN_LM_API_KEY`) > built-in default.
+Please refer to the **Python dependencies and API keys** section in [`sn-image-generate_en.md`](../../docs/sn-image-generate_en.md) for more configurations.
 
 ### 3. Invoke in agent
 

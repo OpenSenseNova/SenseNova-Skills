@@ -7,7 +7,7 @@
 ## 环境要求
 
 - **Python** 3.9 或更高版本（推荐 3.10+）。
-- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（`SN_API_KEY`、`SN_LM_API_KEY`，详见 Quick Start）。
+- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（`SN_IMAGE_BASE_API_KEY`、`SN_CHAT_API_KEY`，详见 Quick Start）。
 - 已安装 `sn-image-base` 技能（作为底层依赖）。
 
 ## 技能介绍
@@ -53,23 +53,16 @@ sn-image-base (Tier 0)
 
 ### 2. Python 依赖与 API Key
 
-依赖安装与 API Key 配置与 `sn-image-base` 共用，参见 [`sn-image-generate.md`](../../docs/sn-image-generate.md) 的 **Python 依赖与 API Key** 段落。
+依赖安装与 API Key 配置用于 [sn-image-base](../sn-image-base/SKILL.md) 技能。
 
-最小化环境变量：
-
-```ini
-SN_API_KEY="your-api-key"
-SN_LM_API_KEY="your-api-key"
-```
-
-如需分别指定 VLM / LLM 使用的 API Key，可额外设置：
+使用 [SenseNova Token Plan](https://platform.sensenova.cn/token-plan) 运行 `sn-image-base` 技能所需的最小环境变量：
 
 ```ini
-VLM_API_KEY="your-vlm-api-key"
-LLM_API_KEY="your-llm-api-key"
+SN_IMAGE_GEN_API_KEY="your-api-key"
+SN_CHAT_API_KEY="your-api-key"
 ```
 
-优先级：CLI 显式参数 > 对应专用 Key（`VLM_API_KEY` / `LLM_API_KEY`）> 统一 Key（`SN_LM_API_KEY`）> 内置默认值。
+更多配置请参考 [`sn-image-generate.md`](../../docs/sn-image-generate.md) 中的 **Python 依赖与 API Key** 段落。
 
 ### 3. 在智能体中调用
 
