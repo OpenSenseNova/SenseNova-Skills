@@ -31,7 +31,11 @@ Raccoon now ships a full upgrade across product capability and client experience
 
 ## How to Use
 
-**These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent — for the best experience, pair them with [OpenClaw](https://openclaw.ai/) or [hermes-agent](https://github.com/NousResearch/hermes-agent). See [`INSTALL.md`](INSTALL.md) for the full install + LLM configuration walkthrough.**
+These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent.
+
+- **Recommended runtime**: pair them with **[OpenClaw](https://openclaw.ai/)** or **[hermes-agent](https://github.com/NousResearch/hermes-agent)**.
+- **Recommended LLM**: pair them with the **[SenseNova Platform API](https://platform.sensenova.cn/token-plan)** — a free token plan is available.
+- **Install & configure**: follow the full walkthrough in **[`INSTALL.md`](INSTALL.md)**.
 
 Clone this repository, then copy subdirectories under `skills/` into the skills directory your agent loads from:
 
