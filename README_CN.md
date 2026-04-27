@@ -5,7 +5,7 @@
 # SenseNova-Skills
 
 <p align="center">
-  <img src="docs/images/teaser_v2.png" width="100%">
+  <img src="docs/images/teaser_v2.webp" width="100%">
 </p>
 
 简体中文 | [English](README.md)
@@ -126,7 +126,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 `sn-infographic` 的部分生成效果（更多样例见 [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md)）。
 
-<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic 生成效果合集"></p>
+<img src="docs/images/cases_merge.webp" alt="sn-infographic sample outputs">
 
 ### 🧩 内存价格分析 — 洞察-分析-汇报-全链路
 

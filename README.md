@@ -5,7 +5,7 @@
 # SenseNova-Skills
 
 <p align="center">
-  <img src="docs/images/teaser_v2.png" width="100%">
+  <img src="docs/images/teaser_v2.webp" width="100%">
 </p>
 
 English | [简体中文](README_CN.md)
@@ -126,7 +126,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md)).
 
-<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic sample outputs"></p>
+<img src="docs/images/cases_merge.webp" alt="sn-infographic sample outputs">
 
 ### 🧩 Memory price analysis — insight → analysis → presentation → end-to-end workflow
 
