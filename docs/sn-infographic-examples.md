@@ -10,7 +10,7 @@ English | [简体中文](sn-infographic-examples_CN.md)
 
 <table width="100%">
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>1. 相机内部结构爆炸图</b></div><img src="images/infographics/info_000.webp" alt="pr_case_full demo_camera" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>1. 相机内部结构爆炸图</b></div><img src="images/infographics/info_000.webp" alt="pr_case_full demo_camera" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>这张信息图的标题是“相机内部结构爆炸图”，采用精密技术图纸风格。整体布局为横向 16:9 构图，背景为带有细微网格纹理的浅灰色工程纸质感，模拟真实蓝图氛围，营造出严谨的工业技术感。画面中心呈现相机组件的水平分解状态，各部件沿水平轴线依次排开，保持分离但逻辑对齐，展现内部空间层次与装配顺序。
 
 最左侧是“镜头组件”，描绘为多层玻璃镜片嵌入金属镜筒的圆柱体结构，表面有高光反射，镜片内部可见光圈叶片细节，边缘带有刻度环。紧邻其右侧是“反光镜机构”，展示为一块倾斜的矩形反射镜面，带有机械支架和转轴结构，镜面呈现银白色光泽。接着是“快门机构”，表现为复杂的帘幕与齿轮组合，线条精细，可见金属弹簧结构和黑色帘幕材质。画面中央核心位置是“图像传感器”，呈现为小型正方形芯片，表面有金属触点网格，周围环绕着金色焊盘。其下方排列着“主板电路”，为深绿色基板，上面布满金色电路走线和黑色电子元件，细节丰富，可见电阻电容分布。
@@ -21,7 +21,7 @@ English | [简体中文](sn-infographic-examples_CN.md)
 
 色彩方案以工程蓝、金属银、电路绿和哑光黑为主，辅以警示橙作为关键连接点标记。光照均匀扁平，无强烈阴影，强调结构清晰度。线条 crisp 且清晰，具有矢量图形的锐利感，部分剖面使用交叉排线纹理表示材质。底部角落包含比例尺图示和“比例 1:1”字样，以及“机密文件”印章效果。整体视觉效果专业、严谨，适合技术文档展示，确保所有组件名称与视觉形态严格对应，信息密度高且阅读逻辑流畅。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>2. SenseNova-U1</b></div><img src="images/infographics/info_001.webp" alt="pr_case_full demo_pr_en_169" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>2. SenseNova-U1</b></div><img src="images/infographics/info_001.webp" alt="pr_case_full demo_pr_en_169" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The title of this infographic is "SenseNova-U1". and adopts a refined futuristic dark-mode glassmorphism aesthetic with desaturated icy cyan highlights, deep navy space ambience, silver-blue planetary lighting, and a premium sci-fi product presentation style. The overall layout is a 16:9 horizontal widescreen infographic dashboard, divided into three major horizontal bands plus a cinematic footer, with a background of deep obsidian navy, subtle starfield particles, faint nebula haze, light gray technical grid overlays, soft halftone shadows, and controlled cyan glow.
 
 At the upper-left hero area, place the massive title "SenseNova-U1" in a bold condensed sans-serif font with pale ice-blue glow and beveled luminous edges. Directly beneath it, place the subtitle "Native Multimodal AI" in a smaller clean sans-serif font. Below the subtitle, set a concise introductory paragraph in crisp white sans-serif text with generous line spacing: "A native multimodal model family that unifies understanding, reasoning, and generation in one architecture. It moves from modality integration to true modality unification, enabling language and vision to think and act together." To the right of this hero text, render a large blue-gray ringed planet with swirling cloud texture, three translucent orbital rings, one small cratered moon above, and one smaller rocky planet below. Beneath the planet, add two empty rounded pill-shaped buttons with pale blue glass gradients and no text.
@@ -34,7 +34,7 @@ In the lower band, place the heading "SenseNova-U1 Lite Series" on the left. To 
 
 At the bottom footer, render "FUTURE RELEASES" in massive fragmented luminous typography, reflected on a glossy dark energy-field horizon line, with small star flares and a thin horizontal divider. Keep all typography sharp, all panels cleanly separated, and the color palette restrained, cool, cinematic, and non-saturated.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>3. 皮囊解析：被携带的自我</b></div><img src="images/infographics/info_002.webp" alt="u1-fast Example 3" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>3. 皮囊解析：被携带的自我</b></div><img src="images/infographics/info_002.webp" alt="u1-fast Example 3" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为“皮囊解析：被携带的自我”，采用复古拼贴艺术风格，整体布局如同一个充满记忆碎片的墙面或档案板，背景由灰色水泥质感、撕裂纸张、皮革边角料、金属丝线和散落物品构成，营造出一种怀旧、私密且略带凌乱的氛围。图像中心是一个打开的棕色皮质手提包，内部塞满黑白老照片、票据、信件等杂物，象征着被携带的私人世界。围绕该核心，分布着多个主题板块，通过不同颜色和材质的标签纸、手写笔记、设计草图等形式进行视觉区分。
 
 标题“皮囊解析：被携带的自我”位于左上角，置于一张带有咖啡渍和撕边效果的泛黄纸片上，字体为粗黑书法体，极具视觉冲击力。
@@ -73,7 +73,7 @@ At the bottom footer, render "FUTURE RELEASES" in massive fragmented luminous ty
 
 整张图没有使用传统数据图表（如柱状图、饼图），而是通过叙事性拼贴、文字叙述与实物摄影相结合的方式，构建一个关于物质与心理、表象与内在、消费与记忆的哲学化视觉文本。所有文字均为中文，无英文翻译，语言风格兼具文学性与批判性，旨在引发观者对个人物品与自我身份关系的深层思考。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>4. 信息图生成专家</b></div><img src="images/infographics/info_003.webp" alt="u1-fast Example 4" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>4. 信息图生成专家</b></div><img src="images/infographics/info_003.webp" alt="u1-fast Example 4" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>这张信息图的标题是“信息图生成专家”，采用现代极简科技仪表盘风格。整体布局为三栏式网格结构，背景为深海蓝色的做旧纸张质感与浅灰色微光细密网格纹理的结合。目标长宽比为16:9。
 
 在画面顶部左侧，使用无衬线粗体大号白色字体写着“信息图生成专家”。主标题下方有一行亮青色等宽科技字体写着：“帮助用户将复杂信息转化为清晰易懂的视觉呈现”。在副标题旁边，是一个散发着亮蓝色光芒的数据节点网络逐渐转化为清晰的立体柱状图的精细插画。
@@ -86,7 +86,7 @@ At the bottom footer, render "FUTURE RELEASES" in massive fragmented luminous ty
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>5. 猫咪与狗狗的终极对决</b></div><img src="images/infographics/info_004.webp" alt="u1-fast Example 5" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>5. 猫咪与狗狗的终极对决</b></div><img src="images/infographics/info_004.webp" alt="u1-fast Example 5" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>这张信息图的标题是“猫咪与狗狗的终极对决”，采用了日系极致可爱与强烈色彩对比的插画风格。整体布局为左右对称的双栏对比结构，背景是带有细腻水彩纸纹理的米白色。画面通过色彩进行强烈的视觉分区，左半部分背景叠加了浅薄荷绿色的半透明波点图案，右半部分背景叠加了暖珊瑚粉色的对角线斜纹图案。长宽比为16:9。
 
 画面的正上方居中位置，使用超大号的粗体圆润无衬线字体写着主标题“猫咪与狗狗的终极对决”。主标题下方，使用稍小字号的深灰色黑体字写着副标题“毛孩子性格与生活方式指南”。在副标题的两侧，分别画着一个带有粉色肉垫的猫爪印图案和一个带有灰色指甲的狗爪印图案。
@@ -99,7 +99,7 @@ At the bottom footer, render "FUTURE RELEASES" in massive fragmented luminous ty
 
 在画面的正下方，跨越左右两个区域，有一个淡黄色的宽大横幅。横幅内部用醒目的深藏青色粗体字写着“结论：无论性格如何，都是我们的完美伴侣！”横幅两端分别画着一颗跳动的红色爱心图案。整个画面信息密度极高，文字排版层次分明，色彩对比强烈且极具亲和力，所有元素均清晰可见且无重叠。图像的整体宽高比设定为16:9。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>6. 连环脑筋急转弯</b></div><img src="images/infographics/info_005.webp" alt="u1-fast Example 6" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>6. 连环脑筋急转弯</b></div><img src="images/infographics/info_005.webp" alt="u1-fast Example 6" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>这张信息图的标题是“连环脑筋急转弯”，采用明亮高对比度色彩的扁平化卡通趣味风格。整体布局为从左到右的时间顺序时间轴，体现多米诺骨牌效应，背景为米白色带有浅灰色波点纹理的纸张质感。主标题使用粗体黑体，技术数据与正文使用紧凑的无衬线字体。
 
 画面左上角为起始事件。一架白色卡通飞机图标旁标注文字“飞机上有5000块砖”。飞机下方绘制了一块掉落的红色砖块，旁边附带文字“掉下一块→剩余4999块”。
@@ -120,10 +120,10 @@ At the bottom footer, render "FUTURE RELEASES" in massive fragmented luminous ty
 
 [Target aspect ratio: 16:9]</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>7. SenseNova-U1</b></div><img src="images/infographics/info_006.webp" alt="pr_case_full demo_pr_zh_169" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>7. SenseNova-U1</b></div><img src="images/infographics/info_006.webp" alt="pr_case_full demo_pr_zh_169" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The title of this infographic is "SenseNova-U1". and adopts a refined futuristic dark-mode glassmorphism aesthetic with desaturated icy cyan highlights, deep navy space ambience, silver-blue planetary lighting, and a premium sci-fi AI product presentation style. The overall layout is a 16:9 horizontal widescreen infographic dashboard, divided into three major horizontal bands plus a cinematic footer, with a background of deep obsidian navy, subtle starfield particles, faint nebula haze, light gray technical grid overlays, soft halftone shadows, and controlled cyan glow. At the upper-left hero area, place the massive title "SenseNova-U1" in a bold condensed sans-serif font with pale ice-blue glow and beveled luminous edges. Directly beneath it, place the subtitle "原生多模态架构" in a smaller clean Chinese sans-serif font with wide letter spacing. Below the subtitle, set the introductory paragraph in crisp white Chinese sans-serif text with generous line spacing: "SenseNova-U1 是一系列全新的原生多模态模型，在同一架构中统一了多模态理解、推理与生成能力。它标志着多模态 AI 的一次根本性范式转变，从模态集成走向真正的模态统一。SenseNova-U1 不再依赖适配器在不同模态之间进行转换，而是能够原生地跨语言与视觉进行思考和行动。" To the right of this hero text, render a large blue-gray ringed planet with swirling cloud texture, three translucent orbital rings, one small cratered moon above, and one smaller rocky planet below. Beneath the planet, add two empty rounded pill-shaped buttons with pale blue glass gradients and no text. In the upper-right architecture zone, place the heading "NEO-Unify 架构" in an elegant serif typeface. Below it, arrange four dark glass cards in a horizontal row. The first card contains a glowing neural lattice made of connected nodes and a central cyan core, labeled "语言与视觉深度关联". The second card shows a detailed camera lens crossed by a prohibition slash, labeled "移除 VE". The third card shows a wireframe variational surface diagram crossed by a prohibition slash, labeled "移除 VAE". The fourth card shows cubic semantic blocks connected to a central radiant node with bidirectional flows, labeled "统一复合模态". Each card includes a small muted sage-gray circular status dot at the lower-right. Across the middle band, place the heading "SenseNova-U1 在多模态学习与建模方面实现了卓越效率" in large luminous Chinese typography. Under the heading, align three glass information panels on the left. The first panel includes a head silhouette filled with neural nodes and a small waveform graph, with the text "理解与生成开源 SoTA：统一多模型理解与生成树立了新的标杆，取得了开源模型中的领先性能。". The second panel includes a document-and-image symbol with circular exchange strokes, with the text "原生交错图文生成：单模型单流程输出连续图文，轻松打造旅行日记、实用指南等可视化内容。". The third panel includes a report sheet with chart bars and a pie chart, with the text"高密度信息渲染：精准生成海报、PPT、漫画、简历等复杂信息图表，结构清晰、细节丰富。". To the right, place a hyper-detailed quantum processor chip with glowing cyan circuitry and metallic pins, connected visually to a holographic blue planet wrapped in a digital wireframe sphere. In the lower band, place the heading "SenseNova-U1 Lite 系列" on the left, stacked into two lines with strong serif-like emphasis. To its right, create two large model cards. The left card contains a dense illuminated microchip grid and the label "SenseNova-U1-8B：稠密骨干网络". The right card contains a sparse glowing node network and the label "SenseNova-U1-A3B：MoE 骨干网络". On the far right, add a long rounded highlight banner with a circular rocket illustration and the text "轻量架构，超级表现：多任务潜力强劲，成本效率提高，性能对标商业模型。". At the bottom footer, render "FUTURE RELEASES" in massive fragmented luminous typography, reflected on a glossy dark energy-field horizon line, with small star flares and a thin horizontal divider. Keep all typography sharp, all Chinese characters accurate and readable, all panels cleanly separated, and the color palette restrained, cool, cinematic, and non-saturated.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>8. 马斯克太阳轨道算力设想</b></div><img src="images/infographics/info_007.webp" alt="pr_case_full demo_space2" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>8. 马斯克太阳轨道算力设想</b></div><img src="images/infographics/info_007.webp" alt="pr_case_full demo_space2" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>这是一张中文为主的 16:9 横版科技信息图，主题是“马斯克要把 GPU 算力集群发射到太阳轨道？”。整体采用深蓝黑色宇宙背景，配合金色、白色、橙色和蓝色高光，呈现高端科技产品说明图风格。画面不是传统统计图表，而是概念说明型信息图，通过信息卡片、编号流程、图标、轨道虚线、引线标注和参数条来组织内容。
 
 顶部左侧标题区包含：
@@ -191,7 +191,7 @@ SUN·ORBIT GPU COMPUTE CLUSTER | INFINITE ENERGY × INFINITE COMPUTE
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>9. 日本留学与就业经验分享</b></div><img src="images/infographics/info_008.webp" alt="cc 59" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>9. 日本留学与就业经验分享</b></div><img src="images/infographics/info_008.webp" alt="cc 59" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“关于日本留学与就业的经验分享”为主题，采用对称双塔式结构，将整个过程分为“留学阶段”和“就业阶段”，分别由两座具有传统日式风格的多层建筑呈现。整体背景为樱花盛开的春日景象，远处可见东京塔与现代都市天际线，营造出融合传统与现代的日本氛围。画面中央有一条蓝色弧形箭头从左侧建筑指向右侧建筑，象征从留学到就业的过渡；同时，左侧建筑底部有一条橙色箭头回指，暗示文化适应与成长的循环反馈。
 
 **标题与布局：**
@@ -260,7 +260,7 @@ SUN·ORBIT GPU COMPUTE CLUSTER | INFINITE ENERGY × INFINITE COMPUTE
 
 此信息图通过空间分层与流程箭头，系统性地展示了从留学准备到职业发展的完整路径，兼具教育性与视觉美感，适合用于留学咨询、职业规划或文化交流宣传材料。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>10. 全方位福利与年终激励</b></div><img src="images/infographics/info_009.webp" alt="flowus 16" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>10. 全方位福利与年终激励</b></div><img src="images/infographics/info_009.webp" alt="flowus 16" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“全方位福利与年终激励：共建共享”为主题，采用深蓝色科技感背景，结合城市剪影、发光齿轮环、金色奖杯与多层透明平台等视觉元素，呈现一个结构化、层级化的员工激励与福利体系。整体设计富有未来感和高端质感，通过中心放射状光芒、环绕箭头和阶梯式上升路径，象征个人成长与企业发展的协同上升。
 
 标题位于顶部中央，以金色立体字体呈现，两侧配有银色环形装饰，营造出光环效果。内容分为五个核心层级，从底部到顶部依次为：坚实基座（基础保障层）、活力源泉（日常福利层）、巅峰荣耀（年终奖金池）、卓越加冕（长期激励层）和自我实现（愿景与成长）。左侧以垂直文字标注各层级名称，右侧对应编号1至5的详细说明框，形成清晰的左右对称布局。
@@ -291,7 +291,7 @@ SUN·ORBIT GPU COMPUTE CLUSTER | INFINITE ENERGY × INFINITE COMPUTE
 
 整个信息图通过视觉符号与文本结合，生动传达了企业从基础保障到高阶成长的完整激励链条，强调“共建共享”的企业文化理念。左侧的阶梯式上升图形与右侧的数字编号形成呼应，引导观者从下至上理解激励体系的递进关系。所有文字均使用简体中文，语言正式且富有激励性，符合企业宣传或人力资源政策展示场景。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>11. THE CHEMISTRY!</b></div><img src="images/infographics/info_010.webp" alt="flowus 45" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>11. THE CHEMISTRY!</b></div><img src="images/infographics/info_010.webp" alt="flowus 45" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>This infographic, titled "THE CHEMISTRY!" in bold red, black-outlined, uppercase letters at the top, employs a dynamic, comic book-inspired pop art aesthetic reminiscent of Roy Lichtenstein’s work. The entire piece is rendered in a high-contrast, halftone dot pattern with primary colors (red, yellow, blue, black) and thick black outlines, characteristic of mid-20th-century American comics.
 
 The layout is divided into three main horizontal sections or panels, each representing a stage in the progression of human connection: Arousal, Connection, and Intimacy. These are labeled in yellow rectangular boxes with black text, placed strategically within their respective panels.
@@ -339,7 +339,7 @@ This section shows a man and a woman facing each other in profile, smiling warml
 
 All textual content is presented in English, and the design uses visual storytelling techniques common in comics to convey abstract emotional concepts in an engaging, accessible way. There are no charts, graphs, or numerical data; instead, the information is conveyed through narrative elements, symbolism, and direct quotes.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>12. Digital Navigator</b></div><img src="images/infographics/info_011.webp" alt="flowus 56" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>12. Digital Navigator</b></div><img src="images/infographics/info_011.webp" alt="flowus 56" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled **"Digital Navigator: Mapping Professional Excellence"** presents a futuristic, isometric visualization of a structured digital ecosystem designed to enhance professional productivity and creative execution. The overall layout is horizontally oriented, centered around a multi-layered, 3D technological stack that represents the core system. The background is a dark blue gradient with subtle grid lines and glowing neon accents in purple, cyan, and gold, evoking a high-tech, digital interface aesthetic. Visual elements include stylized icons such as lightbulbs, gears, computer screens, cursors, and atomic models, connected by dynamic, glowing lines symbolizing data flow and integration.
 
 At the top left, the title "Digital Navigator: Mapping Professional Excellence" is displayed in large, bold white sans-serif font, accompanied by a circular logo resembling a compass or navigation tool with a blue-to-purple gradient. To the right of the title is a search bar icon labeled "Discovery," suggesting a user-driven exploration theme.
@@ -369,7 +369,7 @@ The overall design employs isometric perspective, glowing outlines, and a modern
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>13. ZHAO LIYING / 极速进化</b></div><img src="images/infographics/info_012.webp" alt="flowus 59" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>13. ZHAO LIYING / 极速进化</b></div><img src="images/infographics/info_012.webp" alt="flowus 59" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“ZHAO LIYING / 极速进化”为标题，采用高对比度的暗黑背景与霓虹光轨，营造出科技感与速度感强烈的视觉氛围。整体布局呈中心放射状，核心主体为一位身着飘逸浅色长裙、向前奔跑的女性形象（赵丽颖），其身后有三个半透明的过往角色影像，象征其演艺生涯的演变轨迹。画面右侧是模糊的摄影师群像，手持闪光灯与摄像机，形成“名利场”的压迫感。
 
 图像中央以动态光带和粒子特效构成“极速进化”的视觉路径，从左下角延伸至右上角，贯穿四个关键阶段：“内核”、“最绩跃升”、“转型”、“破局”，并最终指向“名利场”。每个阶段均配有对应的文字框，通过引线连接至图像相关区域，形成结构化的叙事逻辑。
@@ -433,7 +433,7 @@ The overall design employs isometric perspective, glowing outlines, and a modern
 
 此信息图通过视觉隐喻与结构化文本，完整呈现了赵丽颖从早期成名到转型突破的演艺进化路径，强调其在喧嚣环境中坚守演技内核、打破标签、实现自我超越的核心主题。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>14. OPERATION: THUNDERSTORM</b></div><img src="images/infographics/info_013.webp" alt="flowus 64" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>14. OPERATION: THUNDERSTORM</b></div><img src="images/infographics/info_013.webp" alt="flowus 64" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“OPERATION: THUNDERSTORM”（雷霆行动）为主题，呈现一个高度科技化的警务作战指挥系统界面，整体采用深紫色网格背景，搭配霓虹蓝、黄、绿等高对比度色彩，营造出强烈的赛博朋克视觉风格。顶部中央为醒目的白色粗体标题“OPERATION: THUNDERSTORM”，带有轻微的红蓝色差特效，下方设有红色警示条“WARNING ENERGY”，左侧带有一个三角形警告标志，右侧为能量进度条，当前显示部分填充。
 
 界面顶部左右两侧分布着多个像素化警用图标：左侧包括蓝色和金色的“POLICE”徽章、一辆警车及一名奔跑的人形剪影；右侧则有另一名奔跑人形、一副手铐和一个雷达扫描框，强化了执法与追踪主题。
@@ -469,7 +469,7 @@ The overall design employs isometric perspective, glowing outlines, and a modern
 
 整体布局结构清晰，通过颜色编码区分不同状态（如红色=高危、绿色=成功、蓝色=进行中），并利用文件夹、进度条、图标等元素实现多维度信息可视化，全面展现了现代警务行动中的情报收集、战术执行、风险预警与成果汇报流程。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>15. IMMORTAL</b></div><img src="images/infographics/info_014.webp" alt="flowus 93" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>15. IMMORTAL</b></div><img src="images/infographics/info_014.webp" alt="flowus 93" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>This infographic presents a dramatic, stylized comparison between two opposing archetypes: "IMMORTAL" on the left and "OPERATIVE" on the right, separated by a central "VS" symbol composed of blue and yellow lightning bolts forming a circular motif. The overall layout is horizontally divided into two distinct halves, each with its own aesthetic, color palette, and thematic elements, creating a clear visual dichotomy.
 
 The left side, representing the "IMMORTAL," features a parchment-like beige background adorned with traditional East Asian motifs such as lotus flowers, paper talismans with Chinese characters (e.g., 玄天符), and a dragon illustration in the bottom-left corner. This side evokes a mystical, natural, and ancient atmosphere. The title "IMMORTAL" is rendered in bold, black, brush-stroke-style font. Three key attributes are presented vertically in scroll-like banners with green headers:
@@ -506,7 +506,7 @@ The right side, representing the "OPERATIVE," uses a dark, neon-lit cyberpunk ae
 
 Additional visual elements include two swords at the top corners — a silver sword on the Immortal side and a drone on the Operative side — reinforcing the contrast between ancient weaponry and modern technology. The central "VS" symbol acts as a dynamic divider, emphasizing the conflict or competition between the two worlds. The design employs strong color contrasts, thematic imagery, and direct quotes to convey the essence of each archetype, making it a rich, narrative-driven comparative visualization rather than a statistical chart. All text is presented in English, with no other languages dominating the content.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>16. Arena Echoes: eSports</b></div><img src="images/infographics/info_015.webp" alt="flowus 96" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>16. Arena Echoes: eSports</b></div><img src="images/infographics/info_015.webp" alt="flowus 96" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Arena Echoes: Decoding eSports Community Sentiment" presents a stylized, isometric visualization of an eSports arena as a conceptual model for understanding community sentiment during tournaments. The title is displayed at the top center in a decorative blue banner with brushstroke edges, featuring a headphone icon on the left and a trophy icon on the right. The subtitle, "Decoding eSports Community Sentiment," appears directly below the main title in a smaller, clean font.
 
 The overall layout is structured around a central 3D-rendered arena, depicted as a glowing octagonal stage with a football-like field marked with white lines and a center circle. The arena is elevated on a foundation of stacked gray cubes, symbolizing foundational elements. Surrounding the arena are various labeled sections, each connected by thin white lines to specific visual components within the image. The background features a deep blue gradient with subtle grid patterns and scattered abstract geometric fragments, evoking a digital or virtual space. A radiant golden light emanates from the upper left corner, casting a warm glow over the arena, which visually represents peak engagement.
@@ -546,7 +546,7 @@ All textual content is presented in English, and the infographic relies heavily 
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>17. Recommended Dosage</b></div><img src="images/infographics/info_016.webp" alt="small_print_en 31_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>17. Recommended Dosage</b></div><img src="images/infographics/info_016.webp" alt="small_print_en 31_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic, titled "Recommended Dosage & Administration," is designed in a clean, illustrative style with watercolor blue and white background textures. It is organized into three main horizontal sections: Core Health Benefits of Cordyceps (left column), Usage Precautions & Contraindications (right column), and Recommended Dosage & How to Use (bottom row). The layout uses clear headings, bullet points, icons, and illustrations to convey information visually and textually.
 
 ---
@@ -600,7 +600,7 @@ The infographic employs a soft, hand-drawn aesthetic with watercolor backgrounds
 
 All textual content is in English, and no other languages are present.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>18. Attraction Skill Guide</b></div><img src="images/infographics/info_017.webp" alt="small_print_en 81" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>18. Attraction Skill Guide</b></div><img src="images/infographics/info_017.webp" alt="small_print_en 81" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic, titled "ATTRACTION SKILL BUILDING GUIDE," is presented in a pixel-art style with a dark blue background that resembles a digital screen. The title is displayed at the top in large, blocky, retro-style font; "ATTRACTION" is rendered in orange-to-yellow gradient, while "SKILL BUILDING GUIDE" is in light blue-to-cyan gradient, both with black drop shadows for contrast.
 
 The overall layout is structured as a tree diagram, with a central brown pixelated tree stump at the top, from which three main branches extend horizontally to support three primary sections. These sections are organized into a clear, hierarchical flowchart format, each connected by vertical lines descending from the main branches to sub-points illustrated with pixel icons and descriptive text.
@@ -639,7 +639,7 @@ This section highlights small choices that demonstrate attentiveness, respect, a
 
 The visual design uses a retro video game aesthetic throughout, with all text in bold, sans-serif fonts with black outlines for readability. The color palette consists of deep blues, bright yellows, oranges, reds, and whites, creating high contrast and visual appeal. All textual content is in English, and no numerical data or statistical information is present. The structure is purely categorical and instructional, guiding the viewer through actionable steps to improve attraction skills via habit-building, avoidance of pitfalls, and effective communication techniques.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>19. 四大赛道核心研究突破</b></div><img src="images/infographics/info_018.webp" alt="small_print_zh 24" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>19. 四大赛道核心研究突破</b></div><img src="images/infographics/info_018.webp" alt="small_print_zh 24" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为“2024新材料与能源技术研究进展全景指南”，采用深色科技感背景，以霓虹蓝、紫、粉色调勾勒边框与文字，整体布局清晰划分为四大板块，分别呈现核心研究突破、商业化进度对比、3-5年行业趋势及配套支撑要素。
 
 左上部分标题为“四大赛道核心研究突破”，副标题指出“核心参数均突破过往行业公认瓶颈”。此区域包含三个并列的图标化模块，每个模块配以插图和详细数据：
@@ -689,7 +689,7 @@ The visual design uses a retro video game aesthetic throughout, with all text in
 
 整张信息图设计现代、视觉冲击力强，大量使用发光线条、透明面板和科技元素，数据呈现清晰，逻辑层次分明，全面覆盖了2024年新材料与能源技术的关键进展、商业化路径及未来发展趋势。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>20. 中亚国家发展与合作全景</b></div><img src="images/infographics/info_019.webp" alt="small_print_zh 67" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>20. 中亚国家发展与合作全景</b></div><img src="images/infographics/info_019.webp" alt="small_print_zh 67" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>本信息图题为《中亚国家发展与合作全景：优势·成果·新机遇》，副标题说明其旨在梳理中亚五国的发展基础、多领域合作成效以及未来合作方向，帮助受众快速掌握中亚区域发展与合作的核心脉络。整体采用横向分栏布局，分为四个主要部分，从左至右依次呈现“中亚五国发展基础与近年成效”、“中亚合作现存待突破的阻碍与挑战”、“多领域合作成果亮眼”和“未来合作四大重点赛道”。设计风格简洁现代，以线条插画为主，配以蓝色、灰色和少量彩色图标，视觉上以一座横跨峡谷的大桥为核心隐喻，象征合作的桥梁跨越障碍，连接各方。
 
 第一部分“中亚五国发展基础与近年成效”位于左侧，主题为“各国差异化禀赋奠定互补合作基础”。该部分通过四个简笔地图轮廓分别展示哈萨克斯坦、吉尔吉斯斯坦、土库曼斯坦和乌兹别克斯坦的发展特点，每个国家配有代表其资源或产业的图标（如油井、矿车、水坝、农田、天然气管道、棉花、黄金等）和简要文字说明：
@@ -716,7 +716,7 @@ The visual design uses a retro video game aesthetic throughout, with all text in
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>21. 光合作用：光能转化机制</b></div><img src="images/infographics/info_020.webp" alt="whys 45" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>21. 光合作用：光能转化机制</b></div><img src="images/infographics/info_020.webp" alt="whys 45" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为“光合作用：光能转化机制”，以深邃的蓝绿色调为背景，辅以发光粒子、能量流线条和半透明结构，营造出科技感与生命活力交织的视觉氛围。整体布局呈从左至右、由上而下的流程式结构，清晰呈现光合作用中光能转化为化学能并合成有机物的核心路径。图中通过动态光线轨迹、分子模型、环形循环图和立体几何图形等视觉元素，结合文字说明框，系统阐述了光反应与暗反应两大阶段的关键步骤。
 
 标题位于图像顶部中央，采用白色粗体字，并以两个半圆形光环装饰，突出主题。整个流程从左侧开始，依次经过“水的光解反应”、“光能捕获与转化”、“电子传递链”、“碳同化作用”和“酶的催化作用”五个核心环节，最终在底部汇聚于“能量与物质转换”的总结性描述。
@@ -755,7 +755,7 @@ The visual design uses a retro video game aesthetic throughout, with all text in
 
 此图通过结构化布局、明确的文字说明与直观的视觉符号，完整再现了光合作用中光能转化为化学能并合成有机物的全过程，逻辑严谨，层次分明。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>22. Master Silent Protocol</b></div><img src="images/infographics/info_021.webp" alt="flowus 48" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>22. Master Silent Protocol</b></div><img src="images/infographics/info_021.webp" alt="flowus 48" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Master the ‘Silent Protocol’" with the subtitle "Navigating the social geometry of car seating and breaking gender driving biases" presents a stylized, illustrative guide to automotive social etiquette. The design features a central, minimalist line drawing of a car's interior, viewed from above, with a driver at the wheel and a co-pilot seat beside them. This central image is surrounded by four distinct rule sections, each illustrated with thematic icons and watercolor-style background washes in muted blues, beiges, and pinks. Arrows connect these sections to their corresponding seats or areas within the car diagram, emphasizing spatial relationships.
 
 At the core of the infographic, below the car illustration, is the section titled "Core: Mutual Respect," which states: "The car is a confined social ecosystem. Whether you are behind the wheel or in the back, etiquette turns a simple ride into a journey of mutual dignity." This section includes a handshake icon between two hands (one blue, one orange) and a gender equality symbol (a circle with an equal sign and male/female symbols), reinforcing the theme of inclusivity and respect.
@@ -772,7 +772,7 @@ The four rules are arranged around the central car image:
 
 The overall style is clean and modern, using flat illustrations, soft watercolor textures, and a limited color palette to create a calm, approachable tone. The layout is symmetrical and radial, with the central car acting as the focal point, radiating out to the four rules. All text is presented in a clear, sans-serif font, ensuring readability. The infographic uses visual metaphors—such as the "Power Seat" and "Co-pilot Zone"—to encode social roles and responsibilities within the car environment. There are no numerical data points or statistical charts; instead, the content is purely conceptual and instructional, focused on behavioral norms and social dynamics.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>23. 判决结果：原告胜诉</b></div><img src="images/infographics/info_022.webp" alt="flowus 98" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>23. 判决结果：原告胜诉</b></div><img src="images/infographics/info_022.webp" alt="flowus 98" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以深蓝色为主色调，搭配金色边框与文字，营造出庄重、权威的司法氛围。顶部横幅为深蓝色背景，红色细边框勾勒，左侧配有中国法院徽章（天平与麦穗环绕的图案），右侧以金色立体字体展示标题：“终审判决 | 胜诉通报 | 立即执行”，三部分由竖线分隔，突出法律效力与紧迫性。
 
 主体内容分为三个横向排列的矩形信息模块，每个模块均为深蓝色背景、金色圆角边框，内部文字采用金色或白色，与背景形成高对比度，便于阅读。模块从上至下依次呈现判决核心要素：
@@ -787,7 +787,7 @@ The overall style is clean and modern, using flat illustrations, soft watercolor
 
 布局结构清晰，信息层级分明：顶部标题统领全局，中部三大模块逐层递进呈现判决结果、赔偿细节与生效时间，右侧视觉符号强化主题，左文右图的排版方式符合常规阅读习惯，兼具信息传达与美学设计。所有文字均使用简体中文，无英文或其他语言，语言风格正式、简洁、权威。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>24. Children</b></div><img src="images/infographics/info_023.webp" alt="small_print_en 38_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>24. Children</b></div><img src="images/infographics/info_023.webp" alt="small_print_en 38_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic, titled **"Children's Science Activities Guidance"**, is designed in a playful, three-dimensional clay or modeling dough aesthetic, with rounded brown branches connecting various sections against a light gray background. The overall layout is hierarchical and tree-like, branching out from the main title into three primary categories: **Core Benefits of Children's Science Activities**, **Age-Appropriate Science Activity Types**, and **Best Practices for Implementing Science Activities**. Each section features colorful, textured green and blue rectangular nodes with white text, accompanied by small 3D figurines and icons that visually represent the content.
 
 ---
@@ -872,7 +872,7 @@ This infographic serves as a comprehensive, visually engaging guide for educator
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>25. 浅米色为背景</b></div><img src="images/infographics/info_024.webp" alt="pr_case_full demo_coffee" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>25. 浅米色为背景</b></div><img src="images/infographics/info_024.webp" alt="pr_case_full demo_coffee" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>这张信息图以浅米色为背景，采用图文并茂的方式，详细展示了咖啡手冲制作的完整流程。整体布局被虚线十字划分为四个象限，分别对应手冲咖啡的四个主要步骤。标题位于正上方居中位置。
 主标题：咖啡手冲制作步骤图
 左上象限：【1】准备阶段 (Preparation Stage)
@@ -906,7 +906,7 @@ This infographic serves as a comprehensive, visually engaging guide for educator
 香气分子 (Aroma Molecules) 图标
 热蒸汽 (Steam) 图标，带有咖啡杯和上升的热气符号。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>26. 透明立方体天气预报模型</b></div><img src="images/infographics/info_025.webp" alt="boyue 10_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>26. 透明立方体天气预报模型</b></div><img src="images/infographics/info_025.webp" alt="boyue 10_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以一个透明立方体模型的形式呈现未来三天的天气预报，整体设计融合了中国传统建筑元素与现代科技感的视觉风格。模型放置于木质底座之上，内部被划分为三个连续的场景区域，分别对应“明天”、“后天”和“大后天”的天气状况，通过空间分隔与视觉效果模拟不同天气下的环境氛围。
 
 模型左侧为“明天”天气场景：天空呈明亮蓝色，阳光明媚。场景中有一座金黄色屋顶、红色柱子的传统中式重檐亭阁，周围绿树成荫，石阶通向亭台，地面铺设灰色石板路。多人在亭前广场散步或活动，展现户外休闲景象。底部标注文字为：“明天 晴 8-18℃ 阳光明媚，适合户外活动，注意防晒。”配有太阳图标。
@@ -917,7 +917,7 @@ This infographic serves as a comprehensive, visually engaging guide for educator
 
 模型四周透明面板上带有半透明的科技感UI元素，如数据图表、波形线、圆形仪表盘等，增强未来感。底部基座为深灰色岩石纹理，与木质底座形成对比。整体布局采用从左至右的时间轴顺序，通过三段式空间划分清晰传达天气变化过程。每个天气区域均包含温度范围、天气状态、生活提示及对应图标，实现信息的结构化可视化。所有文本均为简体中文，无英文或其他语言内容。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>27. 津轻琵琶：未来音乐博物馆</b></div><img src="images/infographics/info_026.webp" alt="boyue 1_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>27. 津轻琵琶：未来音乐博物馆</b></div><img src="images/infographics/info_026.webp" alt="boyue 1_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为“津轻琵琶启示：未来音乐博物馆设计”，以中文为主要语言，采用四部分结构化布局，通过图文结合的方式系统呈现建筑设计概念的生成与实现路径。整体风格现代、专业，注重逻辑递进与视觉叙事，使用箭头连接各模块，引导观者按顺序理解设计流程。
 
 ---
@@ -952,7 +952,7 @@ This infographic serves as a comprehensive, visually engaging guide for educator
 **整体布局与视觉风格**
 信息图采用2x2网格布局，四个主要板块分别置于四个象限，通过灰色箭头连接，形成顺时针阅读流。标题居于顶部中央，字体加粗醒目。每个板块均有编号和小标题，内容包括图像、简要文字说明及关键术语标注。配色以黑、白、灰为主，辅以建筑图像中的自然棕、绿、蓝等色调，整体视觉协调且富有层次。图表类型为概念推导流程图与效果图组合，数据编码依赖图像与文本双重表达，无数值性数据，但完整呈现了从灵感→抽象→建模→落地的全过程。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>28. Making Ocean Power</b></div><img src="images/infographics/info_027.webp" alt="boyue 57" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>28. Making Ocean Power</b></div><img src="images/infographics/info_027.webp" alt="boyue 57" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled **“MAKING OCEAN POWER: THE TASTY SEA RECIPE!”** is a vibrant, whimsical illustration designed to educate viewers about renewable ocean energy sources in an accessible, child-friendly manner. The primary language is English, with all text presented clearly in bold, playful fonts.
 
 The overall layout is horizontally structured into three main vertical sections, each dedicated to a different form of ocean energy: **Tidal Energy**, **Wave Energy**, and **Ocean Thermal Energy Conversion (OTEC)**. These sections are visually separated but connected at the bottom by a central yellow lightbulb labeled “CLEAN ENERGY LIGHTBULB!” which symbolizes the end product—electricity for homes. Below this, a small coastal landscape depicts houses and a school illuminated by the bulb, emphasizing practical application.
@@ -996,7 +996,7 @@ In summary, this infographic creatively demystifies complex ocean energy technol
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>29. Character Profile</b></div><img src="images/infographics/info_028.webp" alt="boyue 68" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>29. Character Profile</b></div><img src="images/infographics/info_028.webp" alt="boyue 68" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>This infographic presents a detailed character profile for "Reaping Soul" from a fantasy-themed game, set against a moody, atmospheric graveyard backdrop with glowing purple hues, floating ghostly spirits, and skeletal tombstones. The overall layout is vertically organized into distinct sections on the left side, with a large, stylized illustration of the character on the right. The design employs a dark, gothic aesthetic with metallic borders, ornate fonts, and vibrant color accents (red for HP, blue for MP, green for stat bonuses) to enhance readability and visual appeal.
 
 The top section is titled **CHARACTER INFO**, which contains three key data points:
@@ -1027,7 +1027,7 @@ The final section at the bottom is **ULTIMATE SKILL**, which includes an icon de
 
 On the right side of the infographic, the character "Reaping Soul" is depicted as a towering skeletal figure in a hooded cloak, wielding a massive, glowing purple scythe. The armor is dark gray and silver with sharp, angular designs and embedded purple gems. A smaller, chibi-style version of the character stands in front, mirroring the same outfit and weapon, adding a playful contrast to the imposing main figure. The background features misty ruins, spectral ghosts, and faintly glowing tombstones, reinforcing the theme of death and necromancy. The entire composition blends functional data presentation with rich, thematic artwork to create an immersive character showcase.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>30. Understanding FFT</b></div><img src="images/infographics/info_029.webp" alt="boyue 85" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>30. Understanding FFT</b></div><img src="images/infographics/info_029.webp" alt="boyue 85" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "UNDERSTANDING THE FAST FOURIER TRANSFORM (FFT)" is presented in a colorful, cartoon-style layout with a warm peach-orange background and white borders around each section. The design uses playful illustrations, dashed arrows to indicate flow, and rounded rectangular boxes to organize content into distinct sections.
 
 The infographic is structured into four main sections, arranged in a clockwise flow starting from the top left:
@@ -1061,7 +1061,7 @@ The infographic is structured into four main sections, arranged in a clockwise f
 
 The overall visual style is clean, educational, and engaging, using consistent color palettes (peach, coral, teal, red, green, blue) and whimsical characters to demystify a complex mathematical concept. All text is in English, clearly legible, and positioned for easy reading. The dashed arrows connecting the sections create a narrative path that guides the viewer through the explanation: from raw signals to spectrum, then to the speed advantage, applications, and underlying mechanics.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>31. Understanding FFT</b></div><img src="images/infographics/info_030.webp" alt="boyue 85_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>31. Understanding FFT</b></div><img src="images/infographics/info_030.webp" alt="boyue 85_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "UNDERSTANDING THE FAST FOURIER TRANSFORM (FFT)" is presented in a colorful, cartoon-style layout with a warm peach-orange background and white borders around each section. The design uses playful illustrations, dashed arrows to indicate flow, and rounded rectangular boxes to organize content into distinct sections.
 
 The infographic is structured into four main sections, arranged in a clockwise flow starting from the top left:
@@ -1095,7 +1095,7 @@ The infographic is structured into four main sections, arranged in a clockwise f
 
 The overall visual style is clean, educational, and engaging, using consistent color palettes (peach, coral, teal, red, green, blue) and whimsical characters to demystify a complex mathematical concept. All text is in English, clearly legible, and positioned for easy reading. The dashed arrows connecting the sections create a narrative path that guides the viewer through the explanation: from raw signals to spectrum, then to the speed advantage, applications, and underlying mechanics.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>32. 仙游 未来三天天气预报</b></div><img src="images/infographics/info_031.webp" alt="boyue 9" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>32. 仙游 未来三天天气预报</b></div><img src="images/infographics/info_031.webp" alt="boyue 9" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图标题为“仙游 未来三天天气预报”，以中文为主要语言，整体采用清新明亮的蓝色天空背景，配以白色云朵和柔和光线，营造出轻松宜人的视觉氛围。画面中央是一个立体等轴测视角（isometric view）的城市微缩景观插画，展现仙游地区的典型风貌：包括传统中式塔楼、古建筑群、现代住宅、河流、桥梁、道路、火车轨道及行驶中的高铁列车，周围点缀绿树与山丘，部分区域呈现雨景效果，与天气内容相呼应。
 
 信息图在顶部居中位置展示主标题“仙游 未来三天天气预报”，字体为深蓝色无衬线体，清晰醒目。下方按时间顺序从左至右排列三个独立的天气预报模块，每个模块包含日期、天气图标、天气描述、温度范围及温馨提示，布局整齐对称。
@@ -1124,7 +1124,7 @@ The overall visual style is clean, educational, and engaging, using consistent c
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>33. 清洁地球，可持续未来</b></div><img src="images/infographics/info_032.webp" alt="boyue 92" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>33. 清洁地球，可持续未来</b></div><img src="images/infographics/info_032.webp" alt="boyue 92" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以卡通风格呈现，主题为“清洁地球，可持续未来！”，副标题为“利用科技与自然，变废为宝。”整体布局呈循环流程图结构，背景为浅蓝色天空，点缀着白云、星星和爱心，营造出温馨环保的氛围。视觉元素采用拟人化设计，所有物体（如太阳、水滴、云朵、植物、工厂、机器人、汽车、房屋等）均带有笑脸，色彩明亮柔和，线条圆润可爱，属于典型的日系Q版插画风格。
 
 信息流从左上角开始：一个微笑的黄色太阳发出光芒，箭头指向下方的“光合作用”过程。左侧是标有“二氧化碳 (CO2)”的灰色云朵，从两个烟囱中冒出，代表工业排放。这些CO2云朵通过一条蓝色箭头流向中央的绿色植物群（包括树木、叶子、花朵），同时一滴拟人化的蓝色“水”也参与其中。在“光合作用”作用下，植物释放出多个微笑的透明气泡，标注为“氧气”。植物还产出一个装满水果（苹果、梨、胡萝卜等）和木材的篮子，标注为“生物质能”。
@@ -1154,7 +1154,7 @@ The overall visual style is clean, educational, and engaging, using consistent c
 
 此信息图通过清晰的视觉流程和可爱的风格，生动展示了二氧化碳从污染源到多种有用资源的转化过程，强调了自然与科技结合在实现碳中和与可持续发展中的重要作用。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>34. 划船乐：自然与身心之旅</b></div><img src="images/infographics/info_033.webp" alt="boyue 97" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>34. 划船乐：自然与身心之旅</b></div><img src="images/infographics/info_033.webp" alt="boyue 97" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>这是一张以“划船乐：自然与身心的温馨之旅”为主题的中文信息图，整体采用温暖柔和的色调（米黄底色搭配淡紫色边框），风格为可爱的卡通手绘风，大量使用贴纸式插画元素，如小动物、花朵、云朵、星星等，营造出轻松愉悦的氛围。画面中央是一对正在木船上划船的男女儿童形象，周围环绕着四个主要信息模块，通过曲线箭头或视觉分隔进行逻辑组织，结构清晰，布局均衡。
 
 标题“划船乐：自然与身心的温馨之旅”位于顶部中央，字体为深棕色粗体，具有手写感，上方和四周装饰有藤蔓、小花和爱心图案，增强装饰性与主题关联。
@@ -1200,7 +1200,7 @@ The overall visual style is clean, educational, and engaging, using consistent c
 
 整体设计中，各模块之间通过紫色虚线或曲线连接，形成有机的整体。中心划船场景作为视觉焦点，将四个模块自然串联。所有文本均为简体中文，字体统一为圆润易读的手写风格。图像元素均采用剪贴画（sticker）风格，边缘带有白色描边，增强了层次感和趣味性。该信息图旨在以轻松有趣的方式传达划船活动的安全知识、操作技巧及身心益处，适合家庭、亲子或户外教育场景使用。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>35. Essential Rabbit Care</b></div><img src="images/infographics/info_034.webp" alt="flowus 5" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>35. Essential Rabbit Care</b></div><img src="images/infographics/info_034.webp" alt="flowus 5" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Essential Care for Your Rabbit" is presented in a clean, minimalist style with a white background and black sans-serif text. The layout is organized into four quadrants arranged in a 2x2 grid, each dedicated to a specific aspect of rabbit care. Each quadrant features a bold numbered heading, an illustrative image, and a concise descriptive paragraph below it.
 
 The overall design uses high-contrast visuals and clear typography to ensure readability and easy comprehension. There are no charts or graphs; instead, the information is conveyed through direct textual instructions paired with relevant photographic-style images.
@@ -1237,7 +1237,7 @@ The overall design uses high-contrast visuals and clear typography to ensure rea
 
 The infographic effectively communicates essential rabbit care practices through a combination of simple, direct language and representative imagery. Each section emphasizes practical advice related to nutrition, hydration, hygiene, and mental stimulation, all critical components of responsible rabbit ownership. The consistent formatting across all four sections enhances clarity and makes the information easily scannable.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>36. Serpent</b></div><img src="images/infographics/info_035.webp" alt="flowus 53" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>36. Serpent</b></div><img src="images/infographics/info_035.webp" alt="flowus 53" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic is titled "Serpent's Omen," written vertically along the right-hand side in a bold, brush-stroke style font with ink splatter effects. The overall layout is structured as a three-panel comic strip arranged in a grid format, with two panels stacked vertically on the left and one large panel occupying the entire right column. The visual style is monochromatic, employing high-contrast black-and-white linework reminiscent of manga or graphic novels, with heavy use of hatching, cross-hatching, and stippling for shading and texture.
 
 The infographic is divided into three distinct nodes, each representing a stage in the symbolic journey of encountering a serpent in the subconscious:
@@ -1274,7 +1274,7 @@ All textual content is presented in English, which constitutes the majority of t
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>37. Autonomous Vehicles</b></div><img src="images/infographics/info_036.webp" alt="small_print_en 15_30" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>37. Autonomous Vehicles</b></div><img src="images/infographics/info_036.webp" alt="small_print_en 15_30" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Autonomous Vehicles: Evolution, Milestones and Pressing Industry Challenges" presents a comprehensive visual narrative of the development and current state of self-driving technology. The design is structured as a horizontal flowchart with three main sequential sections, labeled 1, 2, and 3, connected by directional arrows. The entire layout is set against a light gray background resembling LEGO baseplates, with circular studs visible throughout, reinforcing the playful, block-style aesthetic used for all illustrations. The color scheme employs bright, contrasting colors—red, blue, green, yellow, white—to differentiate content blocks and enhance readability.
 
 Each section is enclosed in a white rectangular box with rounded corners and a thin black border. Section 1, marked with a yellow “START” banner at the top left, is titled “A Century of Autonomous Driving Innovation” and subtitled “Key milestones from early prototypes to commercial deployments.” It features four chronological milestones illustrated with LEGO-style characters and vehicles:
@@ -1301,7 +1301,7 @@ Section 3, marked with a red “END” banner at the top right, is titled “Bar
 
 The overall style is cartoonish and educational, using LEGO-like characters and vehicles to make complex technical concepts accessible. Text is presented in clear, sans-serif fonts, with titles in bold black and subtitles in regular weight. All textual content is in English, and the infographic effectively combines timeline progression, classification systems, and thematic challenges to provide a holistic view of autonomous vehicle development.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>38. Guizhou Enforcement</b></div><img src="images/infographics/info_037.webp" alt="small_print_en 32" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>38. Guizhou Enforcement</b></div><img src="images/infographics/info_037.webp" alt="small_print_en 32" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic, titled "Guizhou Enforcement Ruling Research Findings," is presented on a dark chalkboard-style background with colorful hand-drawn elements such as stars, arrows, mathematical symbols, and doodles to enhance visual appeal. The title is prominently displayed at the top center in white bold text, underlined with a yellow chalk-like line. The overall layout is structured as a three-column flowchart, with three main branches descending from the central title, each representing a distinct category of findings.
 
 The left column is labeled "High-Frequency Case Types in Guizhou Enforcement Rulings." It contains a subheading: "Most Common Enforcement Ruling Case Types (2022-2024)" followed by "Share of total issued rulings across Guizhou Province." Below this, four categories are listed with percentages and accompanying icons:
@@ -1330,7 +1330,7 @@ Below this list, additional elements are noted: Statistics, Quotes, Key Terms, S
 
 The entire infographic uses a playful, educational aesthetic with multicolored chalk-like text and drawings. Arrows and connectors guide the viewer through the three main sections, emphasizing the branching structure of the research findings. All textual content is in English, and no other languages are present. The design effectively combines data presentation with engaging visuals to communicate insights into Guizhou’s enforcement ruling landscape between 2022 and 2024.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>39. Economic Assessment</b></div><img src="images/infographics/info_038.webp" alt="small_print_en 67" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>39. Economic Assessment</b></div><img src="images/infographics/info_038.webp" alt="small_print_en 67" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Economic & Social Development Assessment Comparison Matrix" is presented in a sepia-toned, aged-paper aesthetic resembling a hand-drawn notebook or specimen sheet. The overall layout is structured as a 3-row by 7-column grid, forming a comparison matrix that categorizes data across three primary themes: Economic Growth Pillars & Performance, Inclusive Social Development Outcomes, and Aligned Economic-Social Development Framework. Each row corresponds to one of these themes, while the columns are labeled: Statistics, Quotes, Key Terms, Style Preferences, Layout Preferences, and Other Requirements.
 
 The design employs a consistent hand-sketch style throughout, using brown ink on parchment-like background with subtle water stains and smudges for authenticity. Visual elements include detailed isometric illustrations, circular diagrams, and annotated sketches that complement textual information.
@@ -1440,7 +1440,7 @@ The design employs a consistent hand-sketch style throughout, using brown ink on
 
 The infographic uses a cohesive visual language combining statistical precision with narrative illustration. All text is rendered in a serif font, with titles in bold and body text in regular weight. The structure allows side-by-side comparison across categories, reinforcing the theme of integrated economic and social development. The consistent use of “comparison-matrix” layout in the “Other Requirements” column emphasizes the intended analytical function of the document.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>40. Fintech & Global Banking</b></div><img src="images/infographics/info_039.webp" alt="small_print_en 85" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>40. Fintech & Global Banking</b></div><img src="images/infographics/info_039.webp" alt="small_print_en 85" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "FINTECH & GLOBAL BANKING: 2024 AND BEYOND DEVELOPMENT TRENDS" presents a comprehensive overview of the transformative forces shaping the financial industry. The design employs a futuristic, neon-lit aesthetic with glowing cyan and magenta text and graphics set against a dark purple background, evoking a high-tech, digital theme. The layout is structured into three main horizontal sections, each with distinct headings and multiple data blocks arranged side-by-side.
 
 The first section, titled "CORE FINTECH INNOVATIONS DRIVING BANKING CHANGE," focuses on four technologies leading industry-wide transformation:
@@ -1494,7 +1494,7 @@ All textual content is presented in English, using sans-serif fonts with varying
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>41. 刺绣入门：核心技巧指南</b></div><img src="images/infographics/info_040.webp" alt="small_print_zh 25" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>41. 刺绣入门：核心技巧指南</b></div><img src="images/infographics/info_040.webp" alt="small_print_zh 25" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以漫画风格呈现，主题为“刺绣入门必看：核心技巧与创意应用全指南”，旨在帮助零基础爱好者快速掌握刺绣基础并拓展创作思路。整体采用分块式布局，色彩鲜明，包含大量动态线条和对话气泡元素，增强视觉冲击力与可读性。标题位于顶部中央，使用加粗黑体字，下方配有副标题说明内容涵盖核心针法、多场景应用及常见误区。
 
 信息图分为三大主要部分：
@@ -1527,7 +1527,7 @@ All textual content is presented in English, using sans-serif fonts with varying
 
 整个信息图采用漫画分镜结构，每个板块独立又逻辑连贯，图文结合紧密，语言通俗易懂，兼具教育性与趣味性，适合作为刺绣初学者的快速入门指南。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>42. 深海生存：高压进化奇迹</b></div><img src="images/infographics/info_041.webp" alt="whys 7_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>42. 深海生存：高压进化奇迹</b></div><img src="images/infographics/info_041.webp" alt="whys 7_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图表题为《深海生存：高压下的进化奇迹》，以深蓝色调和科技感设计呈现，背景模拟深海环境，底部有岩石剪影和潜水员轮廓，右上角绘有戴着宇航头盔的鱼形生物，象征深海探索与生命适应。整体布局采用水平轴线图表结构，结合折线图、文本框、图标和分子结构图案，通过视觉对比展示人类生理极限与深海生物进化策略在六个关键维度上的差异。
 
 图表左侧设有图例：红色线条代表“人类生理极限”，蓝色线条代表“深海生物进化攻略”。横轴从左至右依次标注六个评估维度：空间压缩耐受、细胞膜流动性、蛋白质稳定性、骨骼密度与硬度、代谢能耗效率、感官补偿系统。纵轴无明确数值刻度，但通过折线高低直观表示适应能力或生理状态的变化程度。
@@ -1566,7 +1566,7 @@ All textual content is presented in English, using sans-serif fonts with varying
 
 图表中还穿插多个分子结构示意图（如TMAO结构）、发光圆环、心电图符号等装饰元素，增强科学氛围。整体设计通过红蓝折线的动态对比，清晰传达深海生物在极端环境下通过多种进化机制成功克服人类生理弱点的科学事实，具有强烈的科普教育意义。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>43. HEALTH_CHECK_PROMO.exe</b></div><img src="images/infographics/info_042.webp" alt="u1-fast Example 8" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>43. HEALTH_CHECK_PROMO.exe</b></div><img src="images/infographics/info_042.webp" alt="u1-fast Example 8" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic is titled "HEALTH_CHECK_PROMO.exe", styled as a retro computer application window with a pink title bar and standard window controls (close, minimize, maximize) in the top-right corner. The overall design mimics a 90s-era software interface with a grid background, pixelated icons, and bold, colorful sections. The primary color scheme includes bright yellow, purple, pink, blue, and green, creating a high-contrast, energetic aesthetic.
 
 At the top, under the title bar, is a section labeled "Campaign Info" with fields for "Event Name:", "Date:", and "Coordinator:". Adjacent to this is an "HP Loading Bar" with a red heart icon, showing a segmented progress bar filled with green, yellow, and pink segments—indicating health or completion status.
@@ -1612,7 +1612,7 @@ The entire layout is framed by decorative elements: pixelated red crosses (like 
 
 All text is rendered in a bold, pixelated font consistent with early computer graphics. No numerical data beyond the segment counts in the HP bar is explicitly presented; all values are categorical or qualitative. The infographic serves as a dynamic, gamified project management tool for tracking promotional campaigns.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>44. 潮起亚运</b></div><img src="images/infographics/info_043.webp" alt="flowus 14_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>44. 潮起亚运</b></div><img src="images/infographics/info_043.webp" alt="flowus 14_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图是一幅以“潮起亚运”为主题的大型宣传海报，整体风格融合了中国传统艺术元素与现代数字科技感，色彩丰富，构图层次分明。主标题“潮起亚运”以粗犷有力的黑色书法字体呈现于顶部中央，上方配有副标题“中国特色·浙江风采·杭州韵味”，点明主题的文化定位。
 
 海报采用三段式横向布局，通过波浪形的动态分隔线将画面划分为三个主题区域，分别对应编号01、02、03，每个区域均配有独立的主题口号、描述文字和视觉插画，形成清晰的信息层级结构。
@@ -1647,7 +1647,7 @@ All text is rendered in a bold, pixelated font consistent with early computer gr
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>45. 医院高质量发展新模式</b></div><img src="images/infographics/info_044.webp" alt="flowus 19" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>45. 医院高质量发展新模式</b></div><img src="images/infographics/info_044.webp" alt="flowus 19" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“温情医疗，智慧赋能”为主题，副标题为“医院高质量发展：构建‘全周期’服务新模式”，整体采用科技感十足的蓝白色调，背景融入心电图波形、发光粒子和医药元素（如胶囊、听诊器），营造现代智慧医疗氛围。中心视觉主体是一座立体透明的多层医院建筑模型，顶部有红十字标志与灯塔，象征指引与希望；底部则呈现电路板结构，寓意数字化基座。整个布局呈三层垂直结构，分别对应“战略 (Vision)”、“服务 (Service)”和“支撑 (Support)”，并辅以右侧“未来 (Future)”展望模块，形成清晰的逻辑框架。
 
 ### 一、顶层模块：LAYER_TOP - 战略 (Vision)
@@ -1688,7 +1688,7 @@ All text is rendered in a bold, pixelated font consistent with early computer gr
 
 此信息图通过分层结构清晰展示了医院高质量发展的战略路径：顶层以党建与文化为引领，中层聚焦服务流程优化，底层依托数字技术支撑，并展望未来构建健康共同体，全面诠释了“温情医疗，智慧赋能”的核心理念。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>46. 汉服约拍造景引擎</b></div><img src="images/infographics/info_045.webp" alt="flowus 30_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>46. 汉服约拍造景引擎</b></div><img src="images/infographics/info_045.webp" alt="flowus 30_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“汉服约拍造景引擎”为主题，整体采用柔和的青绿色与粉红色渐变背景，营造出清新雅致的国风氛围。画面布局清晰，分为左、中、右三个主要区域，配合动态箭头和漂浮花瓣元素，呈现从用户输入到视觉生成的流程逻辑。
 
 标题“汉服约拍造景引擎”位于顶部中央，字体为立体圆润的粉色艺术字，右侧配有一把半透明折扇装饰，扇面飘落樱花瓣，增强视觉美感。
@@ -1712,7 +1712,7 @@ All text is rendered in a bold, pixelated font consistent with early computer gr
 
 此外，左下角放置一盆绿植盆栽，作为装饰元素，增强画面真实感。整个信息图通过拟物化UI设计、3D建模场景与文字注解相结合，直观展现了从抽象参数到具体视觉场景的生成过程，强调了系统在提升客户体验与沟通效率方面的价值。所有文本均为中文，无英文或数字数据。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>47. MY GROWTH DIARY</b></div><img src="images/infographics/info_046.webp" alt="flowus 67" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>47. MY GROWTH DIARY</b></div><img src="images/infographics/info_046.webp" alt="flowus 67" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "MY GROWTH DIARY" is presented in a warm, pastel yellow background with a playful, hand-drawn illustration style reminiscent of a child’s scrapbook or cozy kitchen table. The overall layout is centered around a large, decorative white plate with a blue scalloped rim, labeled "Moment of the Day," which serves as the focal point and primary blank space for daily reflection.
 
 Surrounding the plate are various breakfast-themed illustrations: a glass bottle of milk, a sunny-side-up egg, blueberries, a croissant, melting butter, crayons, paper airplanes, origami cranes, and colorful stars. These elements contribute to a cheerful, nurturing atmosphere, reinforcing the theme of personal growth as a daily, nourishing practice.
@@ -1739,7 +1739,7 @@ The design uses soft colors—creams, blues, yellows, and browns—with textured
 
 This infographic functions as a visual journal template designed for teenagers or young adults to document personal growth through metaphorical "recipes" and daily reflections, blending structure with creativity in a visually engaging format.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>48. Pastel Infographic</b></div><img src="images/infographics/info_047.webp" alt="small_print_en 37" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>48. Pastel Infographic</b></div><img src="images/infographics/info_047.webp" alt="small_print_en 37" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic is designed in a soft pastel color palette, primarily using shades of pink, mint green, and cream, with decorative elements like sparkles, hearts, and stars to create a gentle yet informative aesthetic. The layout is organized into three main content sections connected by visual flow lines, each housed within rounded, speech-bubble-like containers with distinct background colors—mint green for the top-left and bottom-left sections, and pink for the central-right section.
 
 At the top right, three small, rounded rectangular callouts are linked to the main content areas via thin curved lines. These are labeled: “Statistics” (with a heart icon), “Quotes” (with a star icon), and “Key Terms” (with a star icon). Similarly, at the bottom right, three more callouts are connected to the bottom-left section: “Style Preferences,” “Layout Preferences,” and “Other Requirements.”
@@ -1783,7 +1783,7 @@ The overall design uses a kawaii-style cartoon aesthetic with rounded shapes, so
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>49. Pixel Art Mobile Games</b></div><img src="images/infographics/info_048.webp" alt="small_print_en 56" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>49. Pixel Art Mobile Games</b></div><img src="images/infographics/info_048.webp" alt="small_print_en 56" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Pixel Art Mobile Games: Complete Introduction & Unbiased Review" is presented in a dynamic, comic book-inspired pop art style with bold colors (red, blue, yellow, black) and halftone dot patterns. The central theme is "Pixel Art Mobile Game Discovery & Selection Cycle," depicted as a circular flowchart with four main sections arranged around a central circle, connected by thick white arrows indicating a cyclical process.
 
 **Section 1: What Are Pixel Art Mobile Games?**
@@ -1829,7 +1829,7 @@ The background uses a red and orange radial burst pattern.
 
 The overall layout is symmetrical and visually engaging, designed to guide the viewer through the discovery cycle. All textual content is in English, and the infographic effectively combines data visualization (tables, percentages, comparisons) with narrative elements (comic panels, speech bubbles) to deliver a comprehensive and accessible review.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>50. 民事案件撤诉裁定书要点</b></div><img src="images/infographics/info_049.webp" alt="small_print_zh 31" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>50. 民事案件撤诉裁定书要点</b></div><img src="images/infographics/info_049.webp" alt="small_print_zh 31" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为《民事案件撤诉裁定书核心要点归纳》，采用手绘水彩风格，整体布局呈对称式结构，以一座横跨峡谷的拱桥作为视觉中心，象征连接“现状/基础认知”与“目标/结果认知”的桥梁。桥下是蓝色水彩渲染的峡谷，代表“适用场景与法律效力间的规范认知断层”，强调知识体系的衔接与深化。
 
 信息图内容分为三大板块，分别位于左侧、中部和右侧，通过不同颜色的标题框进行区分：
@@ -1876,7 +1876,7 @@ The overall layout is symmetrical and visually engaging, designed to guide the v
 
 整体设计采用柔和的水彩笔触，人物形象简洁卡通，配色以米白、浅棕、浅绿、浅橙为主，营造专业但易读的视觉氛围。所有文字均为简体中文，内容完整覆盖民事撤诉裁定书从适用条件、文书结构到法律后果的全流程要点。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>51. 打破汽车乘坐性别刻板印象</b></div><img src="images/infographics/info_050.webp" alt="small_print_zh 55" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>51. 打破汽车乘坐性别刻板印象</b></div><img src="images/infographics/info_050.webp" alt="small_print_zh 55" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以漫画风格呈现，主题为“汽车乘坐规则中的性别刻板印象：打破认知误区，回归平等礼仪”。整体采用鲜明的波普艺术（Pop Art）设计，包含爆炸形对话框、动态箭头、半色调网点背景和色彩对比强烈的色块（如蓝色、黄色、红色），营造出视觉冲击力强且富有节奏感的阅读体验。布局呈从左到右、从下到上的逻辑流，左侧展示“被性别绑架的乘车‘潜规则’”及其误区，中间分析“误区背后的成因”，右侧提出“真正的乘车礼仪”解决方案，并辅以统计数据、引言和关键词定义。
 
 ---
@@ -1980,7 +1980,7 @@ The overall layout is symmetrical and visually engaging, designed to guide the v
 
 该信息图通过生动的视觉语言，系统地批判了汽车乘坐中的性别刻板印象，并倡导一种以尊重、需求和自愿为基础的平等乘车文化。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>52. 2024社会热点与科技趋势</b></div><img src="images/infographics/info_051.webp" alt="small_print_zh 66" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>52. 2024社会热点与科技趋势</b></div><img src="images/infographics/info_051.webp" alt="small_print_zh 66" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以漫画风格呈现，主题为“2024年社会热点与科技发展新闻报道核心趋势归纳”，副标题强调“两类报道的双向驱动关系：社会需求引导科技发展，科技成果反哺社会治理”。整体采用水下冰山结构设计，水面以上部分展示年度高频报道领域TOP3，水面以下部分揭示科技报道对社会热点的影响路径。背景为蓝色海洋与冰山，配以动态线条、气泡和爆炸效果，营造出充满活力的视觉氛围。
 
 **水面以上部分：年度高频报道领域TOP3**
@@ -2030,7 +2030,7 @@ The overall layout is symmetrical and visually engaging, designed to guide the v
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>53. 行星环的首次发现</b></div><img src="images/infographics/info_052.webp" alt="whys 19" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>53. 行星环的首次发现</b></div><img src="images/infographics/info_052.webp" alt="whys 19" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“行星环的首次发现”为主题，采用复古天文风格设计，整体背景为深邃星空，点缀流星与繁星，营造出古典科学探索氛围。标题“行星环的首次发现”以金色浮雕字体呈现于顶部卷轴形装饰条中，两侧对称放置两台古铜色望远镜插图，增强主题视觉关联。
 
 信息图主体采用垂直时间线结构，由中央一条金色细线连接三个关键历史节点，每个节点以圆形银色徽章标注年份，并配以左右分布的文字说明框和对应插图，形成清晰的叙事流。
@@ -2043,7 +2043,7 @@ The overall layout is symmetrical and visually engaging, designed to guide the v
 
 整体视觉元素包括古铜色金属质感望远镜、星轨、星云、罗盘、地球仪等，配合米白色仿羊皮纸纹理的文字框，营造出18世纪科学启蒙时期的美学风格。所有文本均为简体中文，无英文或其他语言成分。信息图通过时间顺序与视觉隐喻，系统呈现了行星环从首次观测到科学验证再到学科奠基的完整历史脉络。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>54. 消失的黑夜：城市光污染</b></div><img src="images/infographics/info_053.webp" alt="whys 5" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>54. 消失的黑夜：城市光污染</b></div><img src="images/infographics/info_053.webp" alt="whys 5" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为《消失的黑夜：城市光污染全景》，以深蓝色夜空为背景，采用插画风格呈现城市夜间光污染问题。整体布局呈垂直分层结构，从上至下依次展示光污染的负面影响、物理现象、动态与静态成因，并辅以视觉符号和数据说明，图文结合，逻辑清晰。
 
 标题位于顶部中央，白色大字“消失的黑夜：城市光污染全景”，左侧配有一个发光的月亮图标，右侧则是一个红色禁止符号内含黄色星星，象征星空的消失。
@@ -2060,7 +2060,7 @@ The overall layout is symmetrical and visually engaging, designed to guide the v
 
 整体视觉风格采用扁平化插画，色彩对比强烈，以深蓝、紫色为主调，搭配橙黄、白色光效突出污染源。所有文本均为简体中文，字体清晰易读，无英文翻译或注释。信息图通过分块结构、图标辅助和数据引用，全面呈现城市光污染的成因、机制与后果，强调其对生态、健康和天文观测的深远影响。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>55. 沙漠根系：地下生存工程</b></div><img src="images/infographics/info_054.webp" alt="whys 54" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>55. 沙漠根系：地下生存工程</b></div><img src="images/infographics/info_054.webp" alt="whys 54" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为“沙漠根系：地下生存工程”，以横截面剖视图的形式，生动展示了沙漠植物根系如何通过多种生理与生态适应机制在极端干旱和贫瘠的环境中生存。整体设计采用沙土质感的背景与岩石纹理边框，营造出真实荒漠环境氛围。顶部标题以立体浮雕字体呈现，两侧点缀晶簇装饰，增强视觉冲击力。一条蓝色发光箭头横贯标题下方，象征水分或能量流动方向。
 
 图像主体为一个纵向地层剖面，从干燥龟裂的地表向下延伸至深层地下水层。地表呈现典型的沙漠干裂土壤特征，颜色为棕黄色；地下分层清晰，包括浅层干燥土层、中层含水层及底部的蓝色发光深层地下水。左侧边缘设有垂直刻度尺，用于指示深度，但未标注具体数值单位。
@@ -2101,7 +2101,7 @@ The overall layout is symmetrical and visually engaging, designed to guide the v
 
 所有说明框均采用统一的半透明棕色边框设计，内嵌插图与文字，通过细长黄线或白线连接至对应的根系结构部位，实现图文精准对应。整体布局逻辑清晰，由左至右、由上至下引导视线，从宏观到微观、从水源获取到生理适应层层递进，全面揭示了沙漠植物地下生存的复杂工程体系。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>56. The Mathematics Edit</b></div><img src="images/infographics/info_055.webp" alt="cc 32_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>56. The Mathematics Edit</b></div><img src="images/infographics/info_055.webp" alt="cc 32_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic, titled "THE MATHEMATICS EDIT: ARITHMETIC COUTURE & ANALYSIS," presents a stylized, high-fashion visual metaphor for the progression of mathematical skills. The overall layout is structured as a grand, ascending staircase made of white marble with gold trim, set within an opulent interior featuring green velvet drapes, ornate mirrors, and chandeliers. Each step of the staircase represents a distinct level of mathematical mastery, numbered 1 through 5, with corresponding titles, analyses, and visual representations.
 
 The design employs a blend of realism and surrealism, with five diverse female models positioned on each step, dressed in elegant, mathematically inspired couture. Each model interacts with a mathematical concept displayed on a transparent or physical panel beside them, reinforcing the theme of "arithmetic couture."
@@ -2132,7 +2132,7 @@ The infographic uses consistent typography—bold, capitalized sans-serif for ti
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>57. THE PU’ER LEGACY</b></div><img src="images/infographics/info_056.webp" alt="flowus 49" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>57. THE PU’ER LEGACY</b></div><img src="images/infographics/info_056.webp" alt="flowus 49" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>This infographic, titled "THE PU’ER LEGACY" in large, bold, black serif font at the top, presents an elegant and sophisticated visual narrative about the cultural, scientific, and artisanal aspects of Pu’er tea. The overall layout is vertically oriented with a clean, minimalist design, using a neutral beige-gray background that evokes a sense of tradition and timelessness. The composition centers on a photograph of a calm, focused East Asian man in traditional light gray Chinese attire (a mandarin-collared tunic with frog closures), holding a broken Pu’er tea cake in both hands. Wisps of steam or smoke rise from the tea cake and also from a white ceramic teacup placed below his hands on a dark surface, symbolizing warmth, aroma, and the living nature of the tea.
 
 The infographic is structured into three main textual sections, each with a distinct heading and descriptive subtext, arranged around the central image to create a balanced, magazine-cover-like aesthetic. Each section is visually connected to the central image via thin lines or arrows pointing toward relevant elements.
@@ -2156,7 +2156,7 @@ The infographic is structured into three main textual sections, each with a dist
 
 The typography throughout uses a combination of serif for the main title and sans-serif for the body text, contributing to a modern yet classic feel. The color palette is restrained—black, dark gray, beige, white, and a touch of gold—reinforcing the premium, natural quality of Pu’er tea. There are no charts, graphs, or numerical data; instead, the information is conveyed entirely through descriptive text and symbolic imagery. The overall tone is educational, reverent, and artistic, positioning Pu’er tea as a legacy product shaped by time, craftsmanship, and environment.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>58. Sole Style: Footwear</b></div><img src="images/infographics/info_057.webp" alt="flowus 52" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>58. Sole Style: Footwear</b></div><img src="images/infographics/info_057.webp" alt="flowus 52" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Sole Style: The Art of Footwear Matching" presents a visually organized guide to pairing footwear with different outfits and occasions. The design mimics a stylish shoe shelf with four distinct layers, each representing a category of footwear and its appropriate styling context. The overall layout is clean, elegant, and structured like a boutique display, using soft beige, cream, and pastel pink tones with gold accents for a sophisticated aesthetic. Text elements are arranged in a mix of serif and sans-serif fonts, with varying weights and colors (black, gold, navy, maroon) to differentiate sections and emphasize key terms.
 
 Each layer features actual images of shoes, descriptive text, and decorative labels or tags that enhance the visual appeal and reinforce the theme. The infographic uses a combination of photographic representations of shoes, hand-drawn-style tags, and stylized boxes to create a curated, lifestyle-oriented presentation.
@@ -2209,7 +2209,7 @@ Each layer features actual images of shoes, descriptive text, and decorative lab
 
 This infographic serves as both an educational guide and an aspirational lifestyle piece, helping viewers curate their footwear wardrobe by occasion while emphasizing style, comfort, and versatility.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>59. Chinese Animation</b></div><img src="images/infographics/info_058.webp" alt="small_print_en 11_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>59. Chinese Animation</b></div><img src="images/infographics/info_058.webp" alt="small_print_en 11_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Analysis of Chinese Domestic Animation & Web Novel Adaptations: Trends, Drivers & Market Performance" presents a comprehensive overview of the Chinese adaptation market, structured into four quadrants with a hand-drawn, paper-textured aesthetic. The overall layout is divided into two rows and two columns, each section framed by torn-edge beige banners with black bold text headers, giving it a scrapbook-like visual style. The color palette consists of warm earth tones—beige, brown, orange, and muted greens—with simple cartoon-style illustrations accompanying each data point to enhance readability and engagement.
 
 **Top-Left Quadrant: 2020–2023 Market Performance of Chinese Domestic Adaptations**
@@ -2255,7 +2255,7 @@ Three trends are described:
 
 The infographic uses consistent visual encoding: data is presented in clear, bulleted lists within yellow-bordered boxes, with supporting icons and figures to illustrate concepts. All textual content is in English, and no non-English language elements are visible. The design effectively communicates complex market dynamics through accessible visuals and concise data points, making it suitable for industry professionals and stakeholders.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>60. 荒诞的真实：梦境神经逻辑</b></div><img src="images/infographics/info_059.webp" alt="whys 13" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>60. 荒诞的真实：梦境神经逻辑</b></div><img src="images/infographics/info_059.webp" alt="whys 13" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“荒诞的真实：梦境生成的神经逻辑”为标题，采用深蓝色科技风格背景，中央呈现一个半透明的人脑侧面剖面图，其内部通过色彩渐变和发光线条可视化不同脑区的活跃程度。整体布局呈对称式放射结构，围绕大脑图像分布五个主要解释模块，每个模块通过细线连接至对应脑区，并配有带边框的深色文本框进行说明。右下角设有颜色标尺（意识强度梯度），从紫色（低频抑制）过渡到黄色/橙色（高频放电），用于解码大脑能量分布。
 
 **标题与顶部元素：**
@@ -2311,7 +2311,7 @@ The infographic uses consistent visual encoding: data is presented in clear, bul
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>61. 太阳能量：质子链核聚变</b></div><img src="images/infographics/info_060.webp" alt="whys 18" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>61. 太阳能量：质子链核聚变</b></div><img src="images/infographics/info_060.webp" alt="whys 18" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以深邃宇宙星空为背景，采用科技感十足的蓝色与橙色霓虹光效边框设计，整体布局呈垂直分层结构，自上而下依次展示太阳能量产生的核心机制——质子链核聚变过程。标题“太阳能量：质子链核聚变”位于顶部中央，使用双色霓虹字体（“太阳能量”为青蓝色，“质子链核聚变”为橙黄色），突出主题。
 
 信息图主体分为四个主要步骤和一个总结性能量源头说明，每个部分均包含左侧插图和右侧文字说明，图文并茂，逻辑清晰：
@@ -2334,7 +2334,7 @@ The infographic uses consistent visual encoding: data is presented in clear, bul
 
 整体风格具有未来科技感，运用半透明玻璃质感容器、粒子特效、光束轨迹等视觉元素增强科学过程的直观性和动态感。所有文本均为简体中文，排版整齐，层级分明，关键术语如“氘核”、“氦-3”、“氦-4”、“伽马射线”、“正电子”、“中微子”、“E=mc²”均以醒目颜色或加粗处理，便于识别。此信息图系统性地揭示了太阳内部能量产生的完整链条及其物理基础。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>62. 椅子舒适稳定的人体工学</b></div><img src="images/infographics/info_061.webp" alt="whys 29" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>62. 椅子舒适稳定的人体工学</b></div><img src="images/infographics/info_061.webp" alt="whys 29" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图表以“椅子舒适稳定的人体工学原理”为主题，采用中心辐射式布局，围绕一张灰色网布办公椅展开，从七个关键维度系统解析人体工学椅的设计原理。整体风格为现代科技感插画风，配色以灰白为主，辅以浅蓝和橙色高亮重点区域，视觉清晰、结构严谨。
 
 图表顶部是主标题：“椅子舒适稳定的人体工学原理”，字体加粗，置于带有圆角边框的浅灰色横幅内。标题下方有一条淡青色波浪形装饰带，内嵌简化脊柱轮廓图及三个圆形光点（两个蓝色、一个橙色），象征人体工学对脊椎健康的支持。
@@ -2381,7 +2381,7 @@ The infographic uses consistent visual encoding: data is presented in clear, bul
 
 所有模块中的文字均为中文，部分关键词如“自然曲线”、“双脚平放”、“干爽舒适”等使用浅青色突出显示，增强视觉引导。整个图表通过图文结合的方式，全面阐释了人体工学椅如何通过科学设计提升舒适性与稳定性，适用于办公、学习等长时间久坐场景。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>63. 地球氧气演化史</b></div><img src="images/infographics/info_062.webp" alt="whys 39" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>63. 地球氧气演化史</b></div><img src="images/infographics/info_062.webp" alt="whys 39" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为“地球氧气演化史”，采用垂直分层结构布局，自下而上呈现地球大气中氧气含量演化的关键阶段。整体设计风格融合科幻与自然元素，背景以青绿色调为主，辅以岩石纹理边框和发光粒子特效，营造出深邃的地质时间感。每个演化阶段均以独立横向模块呈现，包含文字说明与对应视觉插图，模块之间通过渐变色带衔接，形成清晰的时间线叙事。
 
 标题“地球氧气演化史”位于顶部中央，字体为粗体黑底蓝边立体字，带有网格状科技纹理，突出主题的科学性与宏大尺度。
@@ -2416,7 +2416,7 @@ The infographic uses consistent visual encoding: data is presented in clear, bul
 
 该图通过六阶递进式结构，系统梳理了地球氧气从无到有、再到稳定的演化路径，涵盖生物学、地质学、化学与气候学交叉领域，是一幅兼具教育性与艺术性的科普作品。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>64. 高空坠落：人体旋转动力学</b></div><img src="images/infographics/info_063.webp" alt="whys 55" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>64. 高空坠落：人体旋转动力学</b></div><img src="images/infographics/info_063.webp" alt="whys 55" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为“高空坠落：人体旋转的空气动力学”，以深蓝色科技感背景呈现，整体布局呈垂直分层结构，围绕中心的人体线框模型展开六个核心解释模块。每个模块包含一个带边框的说明文本框和对应的视觉化人体动态示意图，采用蓝紫色调的网格线框人形与流动气流线条，辅以箭头、漩涡光效和粒子轨迹，生动展现空气动力学效应。
 
 标题位于顶部中央，字体较大、白色加粗，具有发光效果，清晰突出主题。
@@ -2459,7 +2459,7 @@ The infographic uses consistent visual encoding: data is presented in clear, bul
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>65. 短发发饰活用编发集</b></div><img src="images/infographics/info_064.webp" alt="pr_case_full demo_hair" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>65. 短发发饰活用编发集</b></div><img src="images/infographics/info_064.webp" alt="pr_case_full demo_hair" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>LONG_CAPTION:
 该信息图标题为「正因为是短发才更能平衡好可爱感♡ 短发人士的♡发饰活用编发集」，右上角标注「BuzzFeed KAWAII」品牌标识，整体采用浅蓝白格纹背景与软萌插画风格。内容分为两大编发教程板块，每部分左侧为大尺寸发型示意图，右侧为分步操作说明与细节注解。
 【顶部标题区域】
@@ -2492,7 +2492,7 @@ The infographic uses consistent visual encoding: data is presented in clear, bul
 文字细节：数字标注精确到「2个」等具体量词
 风格统一：所有人物插画采用Q版头型比例，发丝线条柔和，强调「可爱感」主题</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>66. 中高端汽车市场格局分析</b></div><img src="images/infographics/info_065.webp" alt="flowus 21" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>66. 中高端汽车市场格局分析</b></div><img src="images/infographics/info_065.webp" alt="flowus 21" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为“中高端汽车市场：格局动态分析”，采用深灰色科技感背景，整体设计具有未来感和工业质感，使用蓝色与金色高光元素突出不同板块。图表以二维矩阵形式组织内容，横轴表示“智驾/三电技术储备（从左至右由深厚到浅薄）”，纵轴表示“品牌溢价与市占率（从上至下由高至低）”。四个象限分别代表四种不同的车企类型，每个象限包含一个标题、核心优势描述、补充说明文字以及一个主题标签和图标。
 
 图表左侧纵向轴线从上至下标有三个圆点标记，用于指示品牌溢价与市占率的高低梯度；底部横向轴线从左至右标有三个圆点标记，用于指示智驾/三电技术储备的深浅梯度。所有文本均采用无衬线字体，清晰易读。
@@ -2536,7 +2536,7 @@ The infographic uses consistent visual encoding: data is presented in clear, bul
 
 整体视觉风格统一，四个象限呈对称布局，通过颜色（蓝/金）区分技术创新派与传统品牌派，同时通过图标和文字强化各类型车企的核心特征。信息图旨在揭示当前中高端汽车市场中不同企业基于技术实力与品牌价值所处的战略位置及其竞争优势。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>67. Taoist & TCM Alchemy</b></div><img src="images/infographics/info_066.webp" alt="flowus 43_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>67. Taoist & TCM Alchemy</b></div><img src="images/infographics/info_066.webp" alt="flowus 43_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>This infographic, titled "Taoist & TCM Alchemy" with the subtitle "Taoist Longevity," presents a comprehensive visual guide to traditional Chinese medicine (TCM) and Taoist wellness practices. The overall layout is styled as an ancient scroll or parchment, evoking a classical East Asian aesthetic with muted earth tones, ink wash mountain backdrops, bamboo textures, red wax seals, and calligraphic elements. The composition is arranged in a collage-like format, with four primary content sections distributed across the image, each presented within decorative scroll or banner frames, alongside symbolic imagery such as pine branches, cranes, and yin-yang motifs.
 
 The top-left vertical banner displays the main title: "Taoist & TCM Alchemy" in a stylized script font, followed by "Taoist Longevity" in a smaller font below it. This section includes decorative gold circular patterns, a red wax seal, and a hanging tassel ornament. Adjacent to this, along the left edge, are vertical strips of bamboo-bound scrolls with trigrams (Bagua symbols), reinforcing the Taoist theme.
@@ -2551,7 +2551,7 @@ At the bottom center of the infographic is a circular diagram labeled "Wu Xing" 
 
 Additional visual details include stylized black ink pine branches in the lower-left and upper-right corners, cranes in flight, red seals with Chinese characters (e.g., one near the Meridian Flow section and another near the Five Elements), and a red string with a jade pendant at the bottom center. The background features misty mountain landscapes, suggesting a serene, spiritual environment. The entire design integrates textual information with rich iconography to convey a holistic system of Taoist and TCM principles for achieving longevity and inner balance.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>68. Public Service</b></div><img src="images/infographics/info_067.webp" alt="flowus 55" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>68. Public Service</b></div><img src="images/infographics/info_067.webp" alt="flowus 55" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic, titled "Public Service: Efficiency & Integrity," is structured as a three-panel comic-style visual narrative, using clean, professional illustrations with a corporate aesthetic. Each panel highlights a distinct phase in implementing a performance management system for public service, emphasizing objectivity, measurable outcomes, and accountability.
 
 **Panel 1: Standardization**
@@ -2586,7 +2586,7 @@ The infographic uses a sequential, story-driven format with clear visual metapho
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>69. 超级水果：柠檬万能指南</b></div><img src="images/infographics/info_068.webp" alt="flowus 90_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>69. 超级水果：柠檬万能指南</b></div><img src="images/infographics/info_068.webp" alt="flowus 90_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“酸爽生活：柠檬的无限可能”为副标题，主标题为“超级水果：柠檬的万能指南”，配有一个闪电图标，整体采用清新明亮的青绿色渐变背景，点缀着白色星星、气泡和云朵等元素，营造出活泼、科学又自然的视觉氛围。设计风格为扁平化卡通插画，包含多个生动的图标和场景，如香薰机、喷雾瓶、煎鱼、显微镜、鸭子在柠檬片上度假等，增强了趣味性和可读性。
 
 信息图采用垂直分层结构，从底部的“LEVEL_0: 营养核心”开始，向上依次排列“LEVEL_1: 烹饪艺术”、“LEVEL_2: 家居清洁”和“LEVEL_3: 身心疗愈”，形成一个由基础到高级的应用层级体系。在中间偏右位置，设置了一个独立的“FILTER: 酸度警示”模块，作为对柠檬高酸度潜在风险的提醒，其位置位于LEVEL_1和LEVEL_2之间，通过一条垂直线连接至LEVEL_1下方的pH试纸图标，强调其与食用相关的警示作用。
@@ -2620,7 +2620,7 @@ The infographic uses a sequential, story-driven format with clear visual metapho
 
 此外，信息图顶部中央位置有一个半切开的柠檬，汁液滴落，强化主题。整体布局清晰，逻辑递进，图文结合紧密，既传递了科学知识，又兼具趣味性和实用性，适合大众传播与教育用途。所有文本均为简体中文，无英文翻译或混合语言内容。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>70. Types of Small Loans</b></div><img src="images/infographics/info_069.webp" alt="small_print_en 0" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>70. Types of Small Loans</b></div><img src="images/infographics/info_069.webp" alt="small_print_en 0" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>This infographic, titled "COMMON TYPES OF SMALL LOAN SERVICES," is presented in a retro pixel-art style with a dark blue background, glowing neon-blue borders, and a tree trunk graphic at the top center serving as a visual anchor. The design uses a hierarchical flowchart structure to organize information, with arrows guiding the viewer from the main title down through sections.
 
 The first major section, labeled "SMALL LOAN FEATURE COMPARISON," features a table comparing four types of small loans: PAYDAY LOANS, PERSONAL INSTALLMENT LOANS, LINES OF CREDIT, and MERCHANT CASH ADVANCES. The table is structured with five rows representing different ASPECTS:
@@ -2660,7 +2660,7 @@ Below this table, an arrow leads to a second section titled "USE CASES & RISK PR
 
 The overall visual style is reminiscent of 8-bit video games, with blocky fonts, limited color palettes, and glowing outlines. All text is rendered in uppercase or mixed case with consistent pixelated typography. The color scheme primarily uses shades of blue, yellow, and white, with brown for the tree trunk element. The layout is clean and logical, using directional arrows to guide the viewer’s eye from top to bottom and then branching horizontally in the lower half. The infographic effectively combines comparative data with actionable advice, making it both informative and visually engaging.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>71. 汽车制动系统工程蓝图</b></div><img src="images/infographics/info_070.webp" alt="flowus 26" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>71. 汽车制动系统工程蓝图</b></div><img src="images/infographics/info_070.webp" alt="flowus 26" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以工程蓝图（blueprint）风格呈现，背景为深蓝色网格，白色线条勾勒出汽车制动系统的各个组成部分及其工作原理。整体布局采用中心辐射式结构，围绕核心的制动盘和卡钳展开，同时通过多个子图和标注区域详细解释关键部件与技术参数。标题位于顶部中央，字体粗大醒目：“安全基石：制动系统解构”，右侧配有“SAFETY CERTIFIED STAMP”圆形认证印章，强调内容的专业性与安全性。
 
 ---
@@ -2728,7 +2728,7 @@ The overall visual style is reminiscent of 8-bit video games, with blocky fonts,
 **总结：**
 本信息图系统性地拆解了汽车制动系统的安全架构，涵盖液压传动、能量转换、材料科学、散热设计与维护标准五大维度。通过工程蓝图的形式，结合精准的技术参数与直观的结构示意图，全面揭示了现代制动系统如何在极端工况下保障行车安全。所有文本均为中文，符合任务要求的主语言判定。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>72. Inner Evolution</b></div><img src="images/infographics/info_071.webp" alt="flowus 54" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>72. Inner Evolution</b></div><img src="images/infographics/info_071.webp" alt="flowus 54" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic, titled "INNER / Conscious Evolution" in large, bold, white sans-serif font with a glowing purple outline at the top center, presents a conceptual visualization of inner transformation and spiritual growth. The background is a deep cosmic space filled with radiating blue and purple light beams emanating from the center, creating a sense of depth and focus toward the central figure. The overall layout is symmetrical and radial, emphasizing convergence toward the core.
 
 At the center is a translucent, iridescent human figure seated in lotus meditation pose, glowing with internal energy. The figure’s body is rendered with a glass-like, crystalline texture, reflecting rainbow hues, and features a bright white heart chakra and a third eye symbol (a glowing white eye) on the forehead. Energy streams—colorful, luminous lines in shades of purple, blue, pink, and white—radiate outward from the figure’s core, suggesting the flow of consciousness or enlightenment.
@@ -2751,7 +2751,7 @@ The infographic uses a combination of symbolic imagery, gradient lighting, and c
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>73. Strategic Reporting Art</b></div><img src="images/infographics/info_072.webp" alt="flowus 92" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>73. Strategic Reporting Art</b></div><img src="images/infographics/info_072.webp" alt="flowus 92" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled **"The Art of Strategic Reporting"** with the subtitle **"Tactical Analysis of Conflict: Balancing Military Tech and Social Impact"** presents a structured, futuristic visual model for strategic conflict reporting. The overall layout is vertically organized into three primary layers, labeled as LAYER_TOP, LAYER_MIDDLE, and LAYER_BOTTOM, arranged in a descending stack that visually represents a process flow from observation to action. A fourth element, MINDSET_SHIFT: Ethics, is positioned separately to the right, emphasizing its foundational role across all layers.
 
 The design employs a dark, high-tech aesthetic with a deep blue-gray background, accented by glowing neon blue and green elements, giving it a sci-fi or digital interface appearance. Central to the composition is a 3D-rendered stack of three geometric platforms, each representing one of the three layers. The top platform is a translucent blue sphere with hexagonal patterns and data nodes, symbolizing global surveillance or awareness. Below it sits a metallic gray octagonal plate with a cross-shaped cutout, representing analysis. The bottom platform glows with a soft green light and features a circular icon resembling a lightning bolt, symbolizing resilience or actionable energy. Beneath this stack, a small compass-like dial points toward the lower-right, suggesting direction or navigation.
@@ -2794,7 +2794,7 @@ The infographic uses no numerical data or quantitative scales but relies on qual
 
 The overall message emphasizes a shift from reactive, emotionally charged reporting to a methodical, ethically grounded approach that integrates technological insight with human-centered analysis to build societal resilience.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>74. Beijing Travel Kit</b></div><img src="images/infographics/info_073.webp" alt="small_print_en 1" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>74. Beijing Travel Kit</b></div><img src="images/infographics/info_073.webp" alt="small_print_en 1" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled **"Beijing Travel Reference Kit"** is designed with a striking neon aesthetic, featuring glowing text in pink, cyan, and blue against a dark, gradient purple-to-black background that evokes a futuristic or cyberpunk ambiance. The layout is structured into three main horizontal sections, each demarcated by a brightly outlined rectangular header with a distinct color corresponding to its category, as indicated in the legend at the bottom right.
 
 ---
@@ -2869,7 +2869,7 @@ Located in the bottom-right corner, this small black panel with a tab-like desig
 ### Visual Elements & Design Style  
 The overall design employs a retro-futuristic, neon-light style reminiscent of 1980s sci-fi aesthetics. All text is rendered in bold, sans-serif fonts with glowing outlines, creating a high-contrast, eye-catching effect. The background features subtle reflections and gradients, enhancing the digital, illuminated feel. The use of acronyms (FC, GW, SP, TH, TR, FD, ET, ST, QU, KT, LP, OR) adds a concise, modular structure to the content. The infographic is organized vertically with clear visual separation between the three thematic categories, making it easy to navigate and digest. The consistent use of color-coding across headers, tiles, and the legend ensures coherence and quick comprehension.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>75. Automotive Trends</b></div><img src="images/infographics/info_074.webp" alt="small_print_en 14" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>75. Automotive Trends</b></div><img src="images/infographics/info_074.webp" alt="small_print_en 14" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic, titled "Key Trends in Automotive Industry Software & Intelligent Development (2024-2030)", is presented in a visually engaging chalkboard-style format with a wooden frame. The background mimics a black chalkboard with white, colored chalk-like text and hand-drawn illustrations, including stars, arrows, checkmarks, graphs, and erasers, giving it an educational and creative aesthetic. The title is prominently displayed at the top in bold white text, with decorative elements like a yellow star, a blue curved arrow, and a mathematical formula “fi = x = ±√(c²)/2” in the upper right corner.
 
 The content is organized into a structured table with four main columns: **Trend Focus**, **Key Concept**, **Impact/Metric**, and **Timeline/Target**. The rows are grouped under three primary vertical categories on the left side, written vertically in bold white text: **CORE TECHNOLOGY SHIFTS**, **MARKET & REGULATORY DRIVERS**, and **END-USER EXPERIENCE EVOLUTION**. Each category has its own sub-section with distinct visual icons and color-coded highlights.
@@ -2953,7 +2953,7 @@ This section details innovations enhancing user interaction and personalization.
 
 Overall, the infographic uses a combination of text, color-coding (yellow, pink, blue, green, orange), hand-drawn icons, and symbolic diagrams to convey complex information clearly and memorably. The visual style enhances readability and emphasizes key milestones, impacts, and timelines, making it suitable for presentations or strategic planning documents in the automotive industry. All textual content is in English, which constitutes the majority of visible text.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>76. Islamic Fasting Guide</b></div><img src="images/infographics/info_075.webp" alt="small_print_en 18" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>76. Islamic Fasting Guide</b></div><img src="images/infographics/info_075.webp" alt="small_print_en 18" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>This infographic, titled "A Guide to Islamic Fasting Practices & Major Festivals: Observances and Celebrations," is presented in a visually engaging chalkboard style with a dark background, white and colored chalk-like text, and hand-drawn illustrations. The overall layout is vertically segmented into three main numbered sections, each dedicated to a core aspect of Islamic observance: Sawm (Ramadan fasting), Eid al-Fitr, and Eid al-Adha. The design uses circular flow arrows and decorative elements like stars, moons, and clock icons to guide the viewer through the content in a cyclical and thematic manner.
 
 The title is prominently displayed at the top in large, bold white text with yellow and blue underlines for emphasis. The entire infographic is framed by a wooden border, enhancing its educational and artistic presentation.
@@ -3007,7 +3007,7 @@ In summary, this infographic serves as an accessible, visually rich guide to the
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>77. Beijing Travel Kit</b></div><img src="images/infographics/info_076.webp" alt="small_print_en 1_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>77. Beijing Travel Kit</b></div><img src="images/infographics/info_076.webp" alt="small_print_en 1_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled **"Beijing Travel Reference Kit"** is designed with a striking neon aesthetic, featuring glowing text in pink, cyan, and blue against a dark, gradient purple-to-black background that evokes a futuristic or cyberpunk ambiance. The layout is structured into three main horizontal sections, each demarcated by a brightly outlined rectangular header with a distinct color corresponding to its category, as indicated in the legend at the bottom right.
 
 ---
@@ -3082,7 +3082,7 @@ Located in the bottom-right corner, this small black panel with a tab-like desig
 ### Visual Elements & Design Style  
 The overall design employs a retro-futuristic, neon-light style reminiscent of 1980s sci-fi aesthetics. All text is rendered in bold, sans-serif fonts with glowing outlines, creating a high-contrast, eye-catching effect. The background features subtle reflections and gradients, enhancing the digital, illuminated feel. The use of acronyms (FC, GW, SP, TH, TR, FD, ET, ST, QU, KT, LP, OR) adds a concise, modular structure to the content. The infographic is organized vertically with clear visual separation between the three thematic categories, making it easy to navigate and digest. The consistent use of color-coding across headers, tiles, and the legend ensures coherence and quick comprehension.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>78. Core Audience Feedback</b></div><img src="images/infographics/info_077.webp" alt="small_print_en 23_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>78. Core Audience Feedback</b></div><img src="images/infographics/info_077.webp" alt="small_print_en 23_50" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic is titled "CORE AUDIENCE FEEDBACK FOR *MOON MAN*" and "TOP PERFORMING *MOON MAN* PRE-RELEASE PROMOTION TACTICS" at the top, split into two main vertical sections that resemble puzzle pieces. Below them, a third section labeled "FEEDBACK-DRIVEN POST-RELEASE PROMOTION ADJUSTMENTS" spans the full width. The entire design uses a clay-like, 3D puzzle aesthetic with rounded edges and textured colors, giving it a tactile, playful feel.
 
 ---
@@ -3158,7 +3158,7 @@ Below this grid are two adjustment strategies:
 
 The infographic uses consistent visual metaphors—puzzle pieces symbolizing interconnected components of marketing and feedback—and employs color-coding (green for positive, purple for constructive, blue/green/red for tactics, etc.) to differentiate content areas. All text is in English, with no non-English terms except for platform names like “Douyin,” “Maoyan,” and “Weibo.” The font is bold and sans-serif, enhancing readability. The overall structure emphasizes how audience insights directly informed strategic promotional changes, creating a feedback loop between viewers and marketing efforts.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>79. TCM Culture Experience</b></div><img src="images/infographics/info_078.webp" alt="small_print_en 8" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>79. TCM Culture Experience</b></div><img src="images/infographics/info_078.webp" alt="small_print_en 8" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The infographic titled "Promote & Experience Traditional Chinese Medicine (TCM) Culture: Accessible Activity Guide" is designed for community events, school activities, and family workshops. It employs a clean, black-and-white line-art style with minimal color accents (blue and red) to highlight key information. The layout is structured into distinct sections, each clearly labeled and visually separated by borders and spacing.
 
 At the top, under the heading "For all-age TCM experience activities," four numbered activities are presented in a horizontal row, each accompanied by a simple illustration and bullet-point description:
@@ -3200,7 +3200,7 @@ At the bottom, under "Core TCM Cultural Values You’ll Learn Through Experience
 
 The infographic uses consistent visual elements such as circular icons for steps, checkmarks for tasks, and speech bubbles for dialogue. Color is used sparingly but effectively: blue for positive/important notes, red for warnings or critical points. All text is legible and presented in a sans-serif font, ensuring accessibility and clarity. The overall design is educational, engaging, and practical, aimed at facilitating community involvement in TCM practices.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>80. 中国女排的发展与变化</b></div><img src="images/infographics/info_079.webp" alt="small_print_zh 21" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>80. 中国女排的发展与变化</b></div><img src="images/infographics/info_079.webp" alt="small_print_zh 21" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“铿锵玫瑰崛起路：中国女排的发展与变化”为标题，采用立体多层蛋糕造型设计，象征中国女排发展的四个历史阶段。整体布局自下而上分为四层，每层代表一个发展阶段，配以不同颜色、图标和文字说明，视觉风格生动、富有雕塑感，仿佛由黏土或3D建模制作而成，具有强烈的艺术表现力。
 
 在顶部，有一个白色锥形尖顶，上面用橙红色字体写着“女排精神：内核不变 薪火相传”，作为整幅图的核心主题。两侧分别标注了不同时期的女排精神内涵：
@@ -3240,7 +3240,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>81. 饮食与癌症风险科普指南</b></div><img src="images/infographics/info_080.webp" alt="small_print_zh 22" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>81. 饮食与癌症风险科普指南</b></div><img src="images/infographics/info_080.webp" alt="small_print_zh 22" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>本信息图题为「饮食与癌症风险科普指南」（DIET & CANCER RISK SCENTIFIC GUIDE），采用深蓝色科技感蓝图风格设计，整体布局清晰、结构分明，通过模块化分区呈现内容。背景为网格线与机械齿轮等工程元素，营造出严谨、权威的科学氛围。顶部主标题使用白色粗体字，下方附有副标题说明：“本信息图梳理了饮食因素与癌症发病风险的关联，提供权威可落地的日常饮食调整建议，帮助大众建立健康饮食习惯，有效降低癌症发病风险。”右侧标注“饮食是防癌的核心可控因素”及“调整饮食结构可直接降低患癌风险”，强化核心理念。
 
 信息图主体分为三大板块，分别以不同颜色和图标区分：
@@ -3316,7 +3316,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 
 整张信息图通过清晰的视觉层级、一致的图标风格、精确的数值标注和逻辑分明的模块划分，系统地传达了饮食与癌症风险之间的科学关系，兼具教育性和实用性。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>82. 健康知识普及活动全攻略</b></div><img src="images/infographics/info_081.webp" alt="small_print_zh 43" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>82. 健康知识普及活动全攻略</b></div><img src="images/infographics/info_081.webp" alt="small_print_zh 43" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以粉色系为主色调，采用可爱的卡通风格设计，整体布局为思维导图结构，中心主题位于中央圆形区域，四周辐射出多个分支模块。标题为“健康知识普及活动及讲座落地全攻略”，字体较大、加粗，并配有星星和心形装饰，顶部两侧各有一个卡通头像（左侧为扎着蝴蝶结的女孩，右侧为白色小熊），增强亲和力。
 
 中心节点是一个粉红色圆形，内含文字“健康知识普及活动及讲座落地全攻略”，周围通过线条连接六个云朵状分支模块，分别标注为“统计数据”、“引用语录”、“核心术语”、“风格偏好”、“布局偏好”、“其他要求”，每个模块均配有对应的小图标（如柱状图、引号、Glossary标签、兔子、组织架构图、列表等）。
@@ -3382,7 +3382,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 
 该信息图完整呈现了健康科普活动从筹备、设计到执行复盘的全流程标准化操作指南，兼具专业性与亲民性，适用于社区、企业、学校等场景的健康教育项目策划。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>83. 一元一次方程解题指南</b></div><img src="images/infographics/info_082.webp" alt="small_print_zh 65" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>83. 一元一次方程解题指南</b></div><img src="images/infographics/info_082.webp" alt="small_print_zh 65" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以中文呈现，标题为“一元一次方程解题全流程+答案解析指南”，采用清晰的网格布局，分为多个矩形模块，每个模块用黑色粗边框包围，内部内容结构化展示。整体风格简洁明了，使用箭头、颜色标注（如蓝色说明框、红色警告三角）和符号（如√、×）增强可读性与教学效果。
 
 图表主要分为两个部分：上半部分为解题四步法流程，下半部分为高频易错点避坑指南。
@@ -3460,7 +3460,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 
 整张信息图通过分步教学、对比示范、警示提示和最终验证，系统性地指导用户掌握一元一次方程的完整解题流程，并有效规避常见错误。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>84. 隐形地图：蜜蜂降维采蜜</b></div><img src="images/infographics/info_083.webp" alt="whys 1" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>84. 隐形地图：蜜蜂降维采蜜</b></div><img src="images/infographics/info_083.webp" alt="whys 1" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图题为《隐形地图：蜜蜂如何降维采蜜》，以视觉对比方式揭示蜜蜂与人类在感知花朵时的维度差异。整体采用左右分栏结构，左侧代表“多维超感官系统”，右侧代表“单一可见光视角”，中间以一朵被闪电状光效贯穿的花朵作为核心视觉元素，象征蜜蜂感知的“隐形地图”。背景左侧为深紫色星空风格，右侧为绿色自然景深，形成鲜明对比。
 
 信息图分为三个主要感知维度模块，每个模块包含左右两侧的对比内容：
@@ -3505,7 +3505,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>85. 揭秘信鸽六大导航机制</b></div><img src="images/infographics/info_084.webp" alt="whys 15" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>85. 揭秘信鸽六大导航机制</b></div><img src="images/infographics/info_084.webp" alt="whys 15" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“揭秘信鸽六大导航机制”为主题，采用竖版双栏对称布局，整体风格融合科技感与自然元素，色调以冷蓝、青绿和暖金为主，营造出神秘而精密的氛围。顶部中央为标题文字“揭秘信鸽六大导航机制”，字体为金色立体字，背景有发光鸽子剪影及环绕波纹，象征导航信号或感知范围。
 
 信息图分为左右两栏，每栏包含三个导航机制模块，共六个机制，每个模块由一个图标/插画、标题和说明文字组成，标题用加粗金色字体，正文为黑色标准字体，置于半透明圆角矩形框内，增强可读性。
@@ -3540,7 +3540,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 
 整体设计中，各模块之间通过柔和光效和曲线连接，体现各机制之间的协同作用。背景融合了地图纹理、星轨、能量波等元素，强化科学探索主题。所有文本均为中文，语言准确专业，无英文或符号干扰。信息图旨在系统揭示信鸽导航背后的生物学与行为学原理，兼具教育性与艺术美感。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>86. 从色盲到光谱：视觉进化</b></div><img src="images/infographics/info_085.webp" alt="whys 30" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>86. 从色盲到光谱：视觉进化</b></div><img src="images/infographics/info_085.webp" alt="whys 30" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以“从色盲到光谱：视觉进化”为主题，系统阐述了人类视觉系统从原始色盲状态向高度发达的彩色视觉演化的科学过程。整体采用垂直分层布局，共包含六个核心模块，每个模块均配有主题标题、说明文字、象征性图标及背景图像，视觉风格科技感强烈，融合了DNA双螺旋、神经元网络、视锥细胞结构、彩虹光谱、金字塔棱镜等元素，背景为深邃宇宙蓝与彩虹渐变光效，营造出生命进化与科学探索的氛围。
 
 顶部主标题“从色盲到光谱：视觉进化”以银白色立体字体呈现，下方是一个由光束汇聚形成的透明视锥细胞模型，其内部折射出七彩光谱，两侧延伸出纤细光丝，右侧可见半透明DNA双螺旋结构，象征遗传与视觉进化的关联。
@@ -3579,7 +3579,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 
 所有模块均以圆角矩形框呈现，边框带有发光效果，标题文字采用不同颜色突出重点（如橙色、青色），图文结合紧密，逻辑清晰，层层递进地揭示了人类视觉进化的多维度动因与机制。信息图未使用数据图表或坐标轴，而是通过概念性图像与文本相结合的方式传递复杂科学知识。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>87. 键盘静电：成因与防护</b></div><img src="images/infographics/info_086.webp" alt="whys 60" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>87. 键盘静电：成因与防护</b></div><img src="images/infographics/info_086.webp" alt="whys 60" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以深蓝色科技感背景为主，标题“键盘静电：成因与防护”以发光的蓝白色字体置于顶部，周围环绕着动态的光圈和粒子效果，营造出未来科技氛围。整体布局为垂直堆叠结构，包含六个横向模块，每个模块由左侧文字说明和右侧对应插图组成，模块之间通过微弱的电路板纹理分隔，增强视觉统一性。
 
 每个模块均采用半透明深色圆角矩形背景，文字部分使用醒目的主标题（橙色或青色）与正文（白色）区分层级。插图部分则运用3D渲染、发光线条和动态特效，直观呈现各成因机制。
@@ -3618,7 +3618,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 
 整体设计风格现代、专业，结合了科学解释与视觉隐喻，清晰传达了键盘静电的五种主要成因及一种综合防护方案。所有文本均为简体中文，无英文或其他语言元素。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>88. 理财产品配置机理</b></div><img src="images/infographics/info_087.webp" alt="u1-fast Example 1" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>88. 理财产品配置机理</b></div><img src="images/infographics/info_087.webp" alt="u1-fast Example 1" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以”理财产品配置机理：精准增值”为主题，采用生物医学与金融科技融合的视觉隐喻，系统阐述了理财产品如何通过科学配置实现财富保值增值。整体设计风格为深邃蓝紫色调，充满未来感和科技感，背景中穿插K线图、DNA双螺旋结构、细胞膜、病毒颗粒等元素，将理财过程类比为免疫系统对抗病原体的动态过程。
 
 标题位于顶部中央，以醒目的青蓝色粗体字呈现：”理财产品配置机理：精准增值”，右侧配有一个金色硬币（印有”¥”符号）被蓝色多边形网络环绕的图标，象征金融科技与资产保护。整个信息图从左上至右下形成一条清晰的逻辑流，分为五个核心步骤，每个步骤均配有编号、标题、详细说明文字及对应视觉元素。
@@ -3664,7 +3664,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>89. 流媒体：无界分发</b></div><img src="images/infographics/info_088.webp" alt="u1-fast Example 2" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>89. 流媒体：无界分发</b></div><img src="images/infographics/info_088.webp" alt="u1-fast Example 2" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图以赛博朋克风格的未来都市为视觉背景，整体采用垂直三段式布局，通过动态画面、科技元素与文字叠加，系统呈现“流媒体：无界分发”的核心主题。主色调为深蓝、紫粉与霓虹青色，营造出雨夜中数据流动的沉浸感，配合大量悬浮屏幕、发光管道与电子符号，强化科技氛围。
 
 顶部标题为“流媒体：无界分发”，字体采用粗体无衬线字型，边缘带有青紫渐变光晕，置于黑色背景条上，极具视觉冲击力。
@@ -3688,7 +3688,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 
 整体设计融合了科幻美学与技术叙事，通过三个递进场景——云端传输、超清解码、全球共享——构建完整流媒体服务链条，所有文本均为中文，语言风格充满未来感与诗意，精准传达“无界分发”的技术愿景。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>90. 恋爱心理学：亲密关系</b></div><img src="images/infographics/info_089.webp" alt="u1-fast Example 9" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>90. 恋爱心理学：亲密关系</b></div><img src="images/infographics/info_089.webp" alt="u1-fast Example 9" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>这是一张以“恋爱心理学：亲密关系说明书”为主题的中文信息图表，采用手绘风格的视觉设计，整体布局呈放射状树形结构，中心为“爱的内核”，四个主要分支分别对应亲密关系中的关键要素：冲突修复、非暴力沟通、情绪供给与边界与独立。整张图表放置在木质桌面背景上，周围散落着彩色马克笔、Moleskine素描本和一杯拉花咖啡，营造出轻松、创意且富有生活气息的学习氛围。
 
 标题位于顶部中央，使用大号、多彩渐变字体：“恋爱心理学：亲密关系说明书”，上方点缀着一颗跳动的心形图标和心电图线条，右侧附有“相处道具”小贴士：+ 极强的同理心 + 爱的五种语言 + 共同成长的心态，并用箭头指向“共同成长”字样。
@@ -3721,7 +3721,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 
 整体视觉风格温馨、活泼，大量使用卡通插画、鲜艳色彩和装饰性元素（如心形、闪电、星星），使复杂的心理学概念变得易于理解和记忆。信息层级清晰，通过颜色、图标和排版引导读者关注重点内容，是一份兼具实用性与美感的亲密关系指南。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>91. 再也不理你啦</b></div><img src="images/infographics/info_090.webp" alt="pr_case_full demo_cat" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>91. 再也不理你啦</b></div><img src="images/infographics/info_090.webp" alt="pr_case_full demo_cat" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>以下是保持原排版结构大致不变、将主题替换为“如何才能和哆啦A梦成为好朋友的指南”且风格更加生动有趣的描述：
 该图片是一份由“22世纪时空管理局”发布的交友提示海报。海报整体以白色为底色，顶部和底部带有经典的“哆啦A梦蓝”与“铃铛红”相间的装饰色块，排版清晰且充满童趣规范。
 顶部区域的左上角印有蓝红相间的“22世纪时空管理局”字样。中间偏右区域是目标人物的基本信息，左侧包含一个蓝底白字的指示图标（上方有一个竹蜻蜓符号，下方是一个圆头圆脑的机器猫剪影），右侧是黑色加粗大字“任意门大道百宝胡同大雄家2楼”，其下方是编号“DORA-2112-0903”，最下方标注了“经常出没地点：大雄的房间、学校后山、空地水管旁”。
@@ -3744,7 +3744,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 ◆禁止在自己惹出大麻烦后，把锅甩给神奇道具。
 海报最底部的“哆啦A梦蓝”色块右下角，印有白色的趣味宣传语：“用真心换道具·拿铜锣烧换友谊”。</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>92. 国贸物业电梯安全提示</b></div><img src="images/infographics/info_091.webp" alt="pr_case_full demo_elev" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>92. 国贸物业电梯安全提示</b></div><img src="images/infographics/info_091.webp" alt="pr_case_full demo_elev" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该图片是一份由“国贸物业”发布的电梯安全提示海报。海报整体以白色为底色，顶部和底部带有深红色的装饰色块，排版清晰规范。
 顶部区域的左上角印有红黑色的“国贸物业”Logo及字样。中间偏右区域是电梯的基本信息，左侧包含一个蓝底白字的电梯指示图标（上方有上下箭头，下方有三个人形），右侧是黑色加粗大字“11栋A座高区3号客梯”，其下方是编号“11A-GT-3”，最下方标注了“停靠楼层：-1、1~3、6、30、31、33~43”。
 海报正中央是醒目的黑色大字主标题：“电梯安全提示”。
@@ -3768,7 +3768,7 @@ The infographic uses consistent visual elements such as circular icons for steps
 </div></details></div></td>
 </tr>
 <tr>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>93. SenseNova-U1</b></div><img src="images/infographics/info_092.webp" alt="pr_case_full demo_pr_en_916" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>93. SenseNova-U1</b></div><img src="images/infographics/info_092.webp" alt="pr_case_full demo_pr_en_916" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The title of this infographic is "SenseNova-U1", and it adopts a refined futuristic dark-mode glassmorphism aesthetic with desaturated icy cyan highlights, deep navy space ambience, silver-blue planetary lighting, and a premium sci-fi product presentation style. The overall layout is a 9:16 vertical infographic dashboard, organized into four major stacked content bands plus a cinematic footer, with a background of deep obsidian navy, subtle starfield particles, faint nebula haze, light gray technical grid overlays, soft halftone shadows, and restrained cyan glow.
 
 At the top hero section, place the massive title "SenseNova-U1" in a bold condensed sans-serif font with pale ice-blue glow and luminous beveled edges. Directly beneath it, place the subtitle "Native Multimodal Architecture" in a smaller clean sans-serif font. Below the subtitle, set the introductory paragraph in crisp white sans-serif text with generous line spacing: "SenseNova-U1 is a new family of native multimodal models that unifies multimodal understanding, reasoning, and generation within a single architecture. It marks a fundamental paradigm shift in multimodal AI: from modality integration to true modality unification. SenseNova-U1 no longer relies on adapters to translate between different modalities, but can natively think and act across language and vision." On the upper-right side of this hero zone, render a large blue-gray ringed planet with swirling cloud textures, one small cratered moon above, and one smaller rocky planet below. Beneath the planet, place two empty rounded pill-shaped buttons with pale blue glass gradients and no text.
@@ -3781,7 +3781,7 @@ In the lower section, place the heading "SenseNova-U1 Lite Series". Beneath it, 
 
 At the bottom footer, render "FUTURE RELEASES" in massive fragmented luminous typography, reflected on a glossy dark energy-field horizon line, with small star flares, a subtle horizontal divider, and cinematic light bloom. Keep all typography sharp, all panels cleanly separated, and the color palette restrained, cool, premium, cinematic, and non-saturated.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>94. SenseNova-U1</b></div><img src="images/infographics/info_093.webp" alt="pr_case_full demo_pr_en_916_2" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>94. SenseNova-U1</b></div><img src="images/infographics/info_093.webp" alt="pr_case_full demo_pr_en_916_2" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The title of this infographic is "SenseNova-U1 Native Multimodal Architecture". and adopts a futuristic dark-mode glassmorphism aesthetic with bioluminescent cyan accents, subtle nebula gradients, and cinematic depth-of-field rendering. The overall layout is a vertical long-form scroll with centered spine alignment and asymmetric data clusters, with a background of deep obsidian navy transitioning to vibrant cyan nebula at the top, fading into tranquil deep space with subtle geometric orbit lines and floating particulate matter.
 At the top header band, position the primary title "SenseNova-U1" in an extra-large, ultra-bold condensed sans-serif typeface with a vibrant cyan glow and subtle 3D extrusion for maximum visual impact. Directly beneath it, place the full introductory paragraph: "SenseNova-U1 is a new series of native multimodal models that unifies multimodal understanding, reasoning, and generation in a single architecture, marking a shift from modality integration to true unification. Instead of relying  on   adapters to translate between modalities, SenseNova-U1 natively thinks and acts across language and vision." in a large, crisp white sans-serif font with generous line spacing and high contrast. To the right, render a large, highly detailed planet with swirling cyan cloud formations, encircled by three elegant, semi-transparent orbital rings. A smaller moon orbits above, while a secondary planet floats in the lower right corner. Overlay two blank rounded pill-shaped buttons with soft blue gradients and no text labels.
 The second band introduces the "NEO-Unify Architecture" section. Position this heading in an oversized, sleek modern serif font with cyan accent underline. Below it, arrange the complete core description: "At the core of SenseNova-U1 is **NEO-Unify**, a novel architecture designed from first principles for multimodal AI: language and visual information are inherently and deeply correlated. NEO-Unify eliminates both the VE and VAE, replacing them with a unified representation that preserves semantic richness while maintaining pixel-level visual fidelity. This enables language and visual information to be modeled directly as a unified compound." in an extra-large, highly readable mono-space font with bold weight for key terms. Flank this text with four semantic icon cards in a horizontal row: the first displays a stylized unified neural lattice with pulsing cyan core representing "Language-Vision Deep Connection", the second shows a crossed-out camera lens schematic for  "VE Removed", the third features a crossed-out variational distribution diagram for "VAE Removed", and the fourth presents a fused semantic-pixel node with bidirectional flows for "Unified Compound  Modality".
@@ -3789,10 +3789,10 @@ The third band focuses on key capabilities under the heading "Exceptional Effici
 The fourth band handles the release details. Title the section "SenseNova-U1 Lite Series" in an extra-large clean uppercase sans-serif. Display two oversized model cards side-by-side: the left labeled "SenseNova-U1-8B — dense backbone" with a large dense microchip grid icon, the right labeled "SenseNova-U1-A3B — MoE backbone" with a prominent sparse node network icon. Beneath these, integrate a wide highlight box containing the large, bold text: "Although compact, these models show strong potential across diverse tasks, reaching performance comparable to commercial models while offering excellent cost efficiency."
 The final footer band captures the forward-looking statement. Render the text "FUTURE RELEASES" in massive, fragmented typography with strong cyan glow that reflects perfectly on a simulated energy field line cutting across the screen. Below the reflection, place the strategic note "Larger models will be released in the near future." in an oversized, delicate italic serif font with subtle glow. Anchor the bottom with a minimalist horizontal divider and subtle star markers. Ensure all English text elements use extra-large font sizes, generous padding, and high-contrast rendering for perfect AI generation clarity against the dark, textured backdrop, utilizing light gray grid overlays and subtle halftone shadows to enhance depth.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>95. SenseNova-U1</b></div><img src="images/infographics/info_094.webp" alt="pr_case_full demo_pr_zh_916" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>95. SenseNova-U1</b></div><img src="images/infographics/info_094.webp" alt="pr_case_full demo_pr_zh_916" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>The title of this infographic is "SenseNova-U1". and adopts a refined futuristic dark-mode glassmorphism aesthetic with desaturated icy cyan highlights, deep navy space ambience, silver-blue planetary lighting, and a premium sci-fi product presentation style. The overall layout is a 9:16 vertical infographic dashboard, divided into four major stacked horizontal bands plus a cinematic footer, with a background of deep obsidian navy, subtle starfield particles, faint nebula haze, light gray technical grid overlays, soft halftone shadows, and controlled cyan glow. At the upper-left hero area, place the massive title "SenseNova-U1" in a bold condensed sans-serif font with pale ice-blue glow and beveled luminous edges. Directly beneath it, place the subtitle "原生多模态架构" in a smaller clean Chinese sans-serif font with wide letter spacing. Below the subtitle, set the introductory paragraph in crisp white Chinese sans-serif text with generous line spacing: "SenseNova-U1 是一系列全新的原生多模态模型，在同一架构中统一了多模态理解、推理与生成能力。它标志着多模态 AI 的一次根本性范式转变：从模态集成走向真正的模态统一。SenseNova-U1 不再依赖适配器在不同模态之间进行转换，而是能够原生地跨语言与视觉进行思考和行动。" To the right of this hero text, render a large blue-gray ringed planet with swirling cloud texture, three translucent orbital rings, one small cratered moon above, and one smaller rocky planet below. Beneath the planet, add two empty rounded pill-shaped buttons with pale blue glass gradients and no text. In the second architecture band, place the heading "NEO-Unify 架构" in an elegant serif typeface. Below it, arrange four dark glass cards in a horizontal row. The first card contains a glowing neural lattice made of connected nodes and a central cyan core, labeled "语言与视觉深度关联". The second card shows a detailed camera lens crossed by a prohibition slash, labeled "移除 VE". The third card shows a wireframe variational surface diagram crossed by a prohibition slash, labeled "移除 VAE". The fourth card shows cubic semantic blocks connected to a central radiant node with bidirectional flows, labeled "统一复合模态". Each card includes a small muted sage-gray circular status dot at the lower-right. Across the middle band, place the heading "SenseNova-U1 在多模态学习与建模方面实现了卓越效率". Under the heading, place a hyper-detailed quantum processor chip with glowing cyan circuitry and metallic pins, connected visually to a holographic blue planet wrapped in a digital wireframe sphere. Beneath this central chip-and-planet visual, align three glass information panels in a horizontal row. The first panel includes a head silhouette filled with neural nodes and a small waveform graph, with the text  "理解与生成开源 SoTA：统一多模型理解与生成树立了新的标杆，取得了开源模型中的领先性能。". The second panel includes a document-and-image symbol with circular exchange strokes, with the text "原生交错图文生成：单模型单流程输出连续图文，轻松打造旅行日记、实用指南等可视化内容。". The third panel includes a report sheet with chart bars and a pie chart, with the text "高密度信息渲染：精准生成海报、PPT、漫画、简历等复杂信息图表，结构清晰、细节丰富。". In the lower band, place the heading "SenseNova-U1 Lite 系列" on the left. Below it, create two large model cards side by side. The left card contains a dense illuminated microchip grid and the label "SenseNova-U1-8B：稠密骨干网络". The right card contains a sparse glowing node network and the label "SenseNova-U1-A3B：MoE 骨干网络". Beneath the two model cards, add a long rounded highlight banner with a circular rocket illustration and the text "轻量架构，越级表现：多任务潜力强劲，成本效率提高，性能对标商业模型。". At the bottom footer, render "FUTURE RELEASES" in massive fragmented luminous typography, reflected on a glossy dark energy-field horizon line, with small star flares and a thin horizontal divider. Keep all typography sharp, all Chinese characters accurate and readable, all panels cleanly separated, and the color palette restrained, cool, cinematic, and non-saturated.</code></pre>
 </div></details></div></td>
-<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>96. 《筑梦湾区》</b></div><img src="images/infographics/info_095.webp" alt="demo1" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
+<td valign="top" width="25%"><div align="center" style="margin-bottom: 8px;"><b>96. 《筑梦湾区》</b></div><img src="images/infographics/info_095.webp" alt="demo1" width="100%"><div style="margin-top: 8px;"><details><summary><b>Expanded Prompt</b> <span style="font-size: 0.8em; color: #888; font-weight: normal;">(Copy to clipboard)</span></summary><div style="max-height: 200px; overflow-y: auto; margin-top: 8px;">
 <pre><code>该信息图采用鲜明的波普艺术（Pop Art）漫画风格，以分镜格形式讲述一位学生在填报高考志愿时的心理历程与未来憧憬。整体布局为垂直三格漫画结构，色彩饱和度高，使用红、黄、蓝为主色调，并辅以半色调网点纹理，营造出强烈的视觉冲击力和复古漫画感。
 
 标题位于顶部黄色云朵对话框内：“噢，我的未来！”，下方红色粗体字为副标题：“《筑梦湾区》：广东省高等及职业教育招生指南”。

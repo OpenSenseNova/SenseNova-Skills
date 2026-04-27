@@ -2,10 +2,6 @@
 # SenseNova-Skills
 
 <p align="center">
-  <img src="docs/images/teasers/teaser_v2.webp" width="100%">
-</p>
-
-<p align="center">
   <b><font size="4">简体中文 | <a href="README.md">English</a></font></b>
 </p>
 
@@ -14,6 +10,10 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
 技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
+
+<p align="center">
+  <img src="docs/images/teasers/teaser_v2.webp" width="100%">
+</p>
 
 > 🎨 **想看它到底能干啥？** [**点击逛 sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便 “ 偷师 ”一下  **Prompt**  应该怎么写！
 
