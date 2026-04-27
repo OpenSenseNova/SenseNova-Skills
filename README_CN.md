@@ -4,6 +4,10 @@
 
 # SenseNova-Skills
 
+<p align="center">
+  <img src="docs/images/teaser_v2.webp" width="100%">
+</p>
+
 简体中文 | [English](README.md)
 
 SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/NousResearch/hermes-agent) 等智能体；本仓库的 skills 则把这些模型扩展为可直接落地的端到端办公能力。
@@ -122,7 +126,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 `sn-infographic` 的部分生成效果（更多样例见 [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md)）。
 
-<p align="center"><img src="docs/images/teaser_v1.1.webp" width="800" alt="sn-infographic 生成效果合集"></p>
+<img src="docs/images/cases_merge.webp" alt="sn-infographic sample outputs">
 
 ### 🧩 内存价格分析 — 洞察-分析-汇报-全链路
 
