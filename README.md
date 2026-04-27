@@ -16,7 +16,7 @@ In this repository each skill lives in its own directory and declares triggers, 
 
 The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, and **deep research** — usable standalone or composed into end-to-end workflows.
 
-> 🎨 **Want to see what it can do?** Check out our [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their prompt designs!
+> 🎨 **Want to see what it can do?** Check out our   [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their **prompt designs**  !
 
 ## 🦝 Available out-of-the-box in Raccoon
 

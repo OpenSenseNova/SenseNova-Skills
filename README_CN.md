@@ -16,7 +16,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
 
-> 🎨 **想看看它到底能干啥？** 快来逛逛 [**sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便“偷师”一下 Prompt 应该怎么写！
+> 🎨 **想看它到底能干啥？** 快来逛逛 [**sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便“**偷师**”一下 Prompt 应该怎么写！
 
 ## 🦝 在小浣熊中开箱即用
 
