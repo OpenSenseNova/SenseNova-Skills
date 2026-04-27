@@ -9,7 +9,8 @@ Deep-research skills handle planning, synthesis, and final writing. Search skill
 ## Prerequisites
 
 - **Python** 3.9 or later (3.10+ recommended).
-- **OpenClaw `web_search` must be configured and available** — the sn-deep-research orchestrator gates on it at startup.
+- **The current agent host's `web_search` must be configured and available** — the sn-deep-research orchestrator gates on it at startup; concrete configuration entry points vary by host.
+- To generate AI illustrations in the final `report.md`, install and configure `sn-image-base` / `sn-image-generate`.
 - Optional / required platform API keys depending on the dimensions you research (see [API Keys](#2-api-keys)).
 
 ## Deep-Research Skills
@@ -20,7 +21,7 @@ Deep-research skills handle planning, synthesis, and final writing. Search skill
 | [`sn-research-planning`](../skills/sn-research-planning/SKILL.md) | Research planning | Produces `plan.json` from `request.md` in a single pass, covering scope, report shape, dimension breakdown (3–8), key questions, search strategies, dependencies, and completion criteria. |
 | [`sn-dimension-research`](../skills/sn-dimension-research/SKILL.md) | Per-dimension evidence | Calls [search skills](#search-skills) per the dimension's `search_strategy` for multi-round gathering and cross-validation; emits `sub_reports/{dimension_id}.md`. |
 | [`sn-research-synthesis`](../skills/sn-research-synthesis/SKILL.md) | Synthesis & judgment | Synthesizes multiple `sub_reports` into `synthesis.md`: main conclusions, evidence strength, cross-dimension consensus, key conflicts, and uncertainties. |
-| [`sn-research-report`](../skills/sn-research-report/SKILL.md) | Final writing / rewriting | Turns the judgment layer into final `report.md`; also supports targeted edits on existing reports (rewrite, polish, restructure, add tables). |
+| [`sn-research-report`](../skills/sn-research-report/SKILL.md) | Final writing / rewriting | Turns the judgment layer into final `report.md`; also supports targeted edits on existing reports (rewrite, polish, restructure, add tables, plan illustrations, and call `sn-image-base` for image generation). |
 | [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | Report-format discovery | Researches what such a report typically looks like, returning section structure, mandatory elements, and style constraints; usable standalone or as input for `sn-deep-research`'s `report_shape`. |
 
 ## Search Skills
@@ -36,18 +37,19 @@ Each search skill ships its own copy of `search_utils.py` under its `scripts/` d
 
 ## Quick Start
 
-Use these skills from [OpenClaw](https://openclaw.ai/). For skill registration steps, see [`sn-image-generate_en.md`](sn-image-generate_en.md#1-register-skills).
+Use these skills from [OpenClaw](https://openclaw.ai/), Hermes, or another Agent Skills compatible host. For skill registration steps, see [`sn-image-generate_en.md`](sn-image-generate_en.md#1-register-skills).
 
 ### 1. Hard precheck: `web_search`
 
-Before creating `report_dir`, writing `request.md`, or entering any research stage, `sn-deep-research` **must confirm that OpenClaw `web_search` is currently available**. Do not start research — and do not substitute memory/prior knowledge for online evidence — until this is confirmed.
+Before creating `report_dir`, writing `request.md`, or entering any research stage, `sn-deep-research` **must run one tiny generic `web_search` probe to confirm that search works in the current session**. Do not start research — and do not substitute memory/prior knowledge for online evidence — until this is confirmed.
 
-- Static check: `tools.web.search.provider` and `plugins.entries.<plugin>.config.webSearch.*` are configured
-- If unsure, issue a minimal `web_search` probe; proceed on success; stop on missing key, provider not ready, service unreachable, or `search disabled`
+- Do not infer whether the agent is running in OpenClaw, Hermes, or another host; do not read or infer host-specific config paths.
+- Issue one low-cost, low-ambiguity `web_search` probe; the only goal is to confirm the tool returns normal search results.
+- Proceed only if the probe succeeds and returns non-empty results; stop on probe failure, missing tool, missing key, provider not ready, service unreachable, `search disabled`, permission errors, or empty results.
 
 ### 2. API Keys
 
-Set as needed in `~/.openclaw/.env` (or `~/.hermes/.env`):
+Set as needed in `~/.openclaw/.env` (OpenClaw), `~/.hermes/.env` (Hermes), or the equivalent environment configuration supported by your host:
 
 | Platform | Required / Optional | Env var | Notes |
 |----------|--------|---------|-------|
@@ -61,8 +63,21 @@ Set as needed in `~/.openclaw/.env` (or `~/.hermes/.env`):
 | Douyin | **Required** | `DOUYIN_COOKIE` | Search will not work without it |
 | Twitter/X | **Required** | `TIKHUB_TOKEN` | Routed via TikHub |
 | YouTube | **Required** | `YOUTUBE_API_KEY` | YouTube Data API v3 |
+| AI illustrations (`sn-image-base` / `sn-image-generate`) | **Required** when generating images | `SN_IMAGE_GEN_API_KEY` | Used for AI illustrations in `report.md` |
+| AI image model | Optional | `SN_IMAGE_GEN_MODEL` | Defaults are defined by `sn-image-base`; set this for a specific Token Plan or other supported image model |
+| AI image base URL | Optional | `SN_IMAGE_GEN_BASE_URL` | Defaults are defined by `sn-image-base`; set this for non-default providers |
+| AI image model type | Optional | `SN_IMAGE_GEN_MODEL_TYPE` | Examples: `sensenova`, `nano-banana`, `openai-image` |
 
 ArXiv, Stack Overflow, Hacker News, and Reddit public search require no key.
+
+Minimal `sn-image-generate` configuration example:
+
+```ini
+SN_IMAGE_GEN_API_KEY="sk-xxx"
+SN_IMAGE_GEN_BASE_URL="https://token.sensenova.cn/v1"
+SN_IMAGE_GEN_MODEL_TYPE="sensenova"
+SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
+```
 
 ### 3. Python dependencies
 
@@ -72,7 +87,13 @@ Search skills do not ship a per-skill `requirements.txt`; deps are typically pre
 pip install requests httpx lxml beautifulsoup4
 ```
 
-Deep-research skills do not call HTTP directly — they rely on OpenClaw `web_search` and the search scripts above.
+If final reports need AI illustrations, also install the `sn-image-base` runtime dependencies and make sure the host can locate `sn-image-base`:
+
+```bash
+pip install -r skills/sn-image-base/requirements.txt
+```
+
+The deep-research orchestrator itself does not call HTTP directly — it relies on the host-provided `web_search` and the search scripts above. The final-report stage only calls `sn-image-base` when AI illustrations are needed.
 
 ### 4. Invoke in Agent
 
