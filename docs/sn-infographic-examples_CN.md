@@ -1,7 +1,7 @@
 # sn-infographic 案例库
 
 <p align="center">
-  <img src="images/teasers/cases_merge.webp" width=100%">
+  <img src="images/teasers/cases_merge.webp" width=95%">
 </p>
 
 
