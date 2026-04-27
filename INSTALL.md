@@ -246,7 +246,7 @@ In the interactive prompt, type something like "hello" — a coherent reply mean
 ### 3.1 Clone the repo
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 cd SenseNova-Skills
 ```
 
