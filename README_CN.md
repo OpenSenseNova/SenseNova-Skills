@@ -1,20 +1,21 @@
-<p align="center">
-  <img src="assets/logo.webp" alt="SenseNova logo" width="180" />
-</p>
 
 # SenseNova-Skills
 
 <p align="center">
-  <img src="docs/images/teaser_v2.webp" width="100%">
+  <img src="docs/images/teasers/teaser_v2.webp" width="100%">
 </p>
 
-简体中文 | [English](README.md)
+<p align="center">
+  <b><font size="4">简体中文 | <a href="README.md">English</a></font></b>
+</p>
 
 SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/NousResearch/hermes-agent) 等智能体；本仓库的 skills 则把这些模型扩展为可直接落地的端到端办公能力。
 
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
 技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
+
+> 🎨 **想看它到底能干啥？** [**点击逛 sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便 “ 偷师 ”一下  **Prompt**  应该怎么写！
 
 ## 🦝 在小浣熊中开箱即用
 
@@ -43,7 +44,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 例如，把全部技能复制到 OpenClaw：
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 mkdir -p ~/.openclaw/skills
 cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
@@ -63,7 +64,9 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | -------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
 | [`sn-image-doctor`](skills/sn-image-doctor/SKILL.md)           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `sn-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
 | [`sn-image-base`](skills/sn-image-base/SKILL.md)   | 图像基础层（Tier 0） | 提供文生图（`sn-image-generate`）、图像识别（`sn-image-recognize`）与文本优化（`sn-text-optimize`）三个底层工具，统一通过 `sn_agent_runner.py` 调用，供上层技能复用。 |
-| [`sn-infographic`](skills/sn-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。                                     |
+| [`sn-infographic`](skills/sn-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。 |
+| [`sn-image-imitate`](skills/sn-image-imitate/SKILL.md) | 图像风格模仿（Tier 1） | 给定一张参考图像和目标内容描述，模仿其风格生成新图像。 |
+| [`sn-image-resume`](skills/sn-image-resume/SKILL.md) | 简历图片生成（Tier 1） | 给定一份简历信息，生成简历图片。 |
 
 
 ### 📊 演示文稿（PPT）
@@ -126,7 +129,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 `sn-infographic` 的部分生成效果（更多样例见 [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md)）。
 
-<img src="docs/images/cases_merge.webp" alt="sn-infographic sample outputs">
+<img src="docs/images/teasers/cases_merge.webp" alt="sn-infographic sample outputs">
 
 ### 🧩 内存价格分析 — 洞察-分析-汇报-全链路
 

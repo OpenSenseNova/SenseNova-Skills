@@ -1,20 +1,20 @@
-<p align="center">
-  <img src="assets/logo.webp" alt="SenseNova logo" width="180" />
-</p>
-
 # SenseNova-Skills
 
 <p align="center">
-  <img src="docs/images/teaser_v2.webp" width="100%">
+  <img src="docs/images/teasers/teaser_v2.webp" width="100%">
 </p>
 
-English | [简体中文](README_CN.md)
+<p align="center">
+  <b><font size="4">English | <a href="README_CN.md">简体中文</a></font></b>
+</p>
 
 The SenseNova model family plugs directly into agent runtimes such as [OpenClaw](https://openclaw.ai/) and [hermes-agent](https://github.com/NousResearch/hermes-agent), with the skills in this repository extending the models with concrete, end-to-end office capabilities.
 
 In this repository each skill lives in its own directory and declares triggers, capabilities, and execution flow through a `SKILL.md` file, following the [Agent Skills](https://agentskills.io/) convention.
 
 The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, and **deep research** — usable standalone or composed into end-to-end workflows.
+
+> 🎨 **Want to see what it can do?** Check out our   [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their **prompt designs**  !
 
 ## 🦝 Available out-of-the-box in Raccoon
 
@@ -43,7 +43,7 @@ Clone this repository, then copy subdirectories under `skills/` into the skills 
 For example, copy all skills into OpenClaw:
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 mkdir -p ~/.openclaw/skills
 cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
@@ -64,6 +64,8 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | [`sn-image-doctor`](skills/sn-image-doctor/SKILL.md)           | Environment Doctor             | Validates the SenseNova-Skills environment — checks `sn-image-base` install, Python deps, and required env vars; interactively fills missing values into `.env`. |
 | [`sn-image-base`](skills/sn-image-base/SKILL.md)   | Image Base Layer (Tier 0)      | Low-level tools — text-to-image (`sn-image-generate`), image recognition (`sn-image-recognize`), and text optimization (`sn-text-optimize`) — exposed through a unified `sn_agent_runner.py`, designed to be called by upper-layer skills. |
 | [`sn-infographic`](skills/sn-infographic/SKILL.md) | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. |
+| [`sn-image-imitate`](skills/sn-image-imitate/SKILL.md) | Image Imitation (Tier 1) | Given one reference image and a target content prompt, generates a new image that imitates the reference. |
+| [`sn-image-resume`](skills/sn-image-resume/SKILL.md) | Resume Image Generation (Tier 1) | Given resume information, generates a resume image. |
 
 
 ### 📊 Presentations (PPT)
@@ -126,7 +128,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md)).
 
-<img src="docs/images/cases_merge.webp" alt="sn-infographic sample outputs">
+<img src="docs/images/teasers/cases_merge.webp" alt="sn-infographic sample outputs">
 
 ### 🧩 Memory price analysis — insight → analysis → presentation → end-to-end workflow
 

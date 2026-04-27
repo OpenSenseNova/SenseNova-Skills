@@ -1,0 +1,8 @@
+*.webp binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.pptx filter=lfs diff=lfs merge=lfs -text
+*.docx filter=lfs diff=lfs merge=lfs -text

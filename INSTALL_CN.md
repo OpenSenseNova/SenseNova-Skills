@@ -204,27 +204,12 @@ openclaw onboard --install-daemon
 #### 2.A.5 验证 LLM 通路
 
 ```bash
-openclaw agent --message "你好，自我介绍一下"
+openclaw agent --message "你好，自我介绍一下" --agent main
 ```
 
 能返回中文回答即配置成功。
 
-#### 2.A.6 打开网页 Dashboard
-
-```bash
-openclaw dashboard
-```
-
-执行后终端会输出形如 `http://localhost:18789/#token=xxx` 的登录链接，复制到浏览器打开即可进入网页端，与 agent 进行对话和配置。
-
-#### 2.A.7 调大模型 token 上限
-
-`~/.openclaw/openclaw.json` 的默认值偏保守。打开该文件，把下面这两项改成 SenseNova 6.7 的全量上限：
-
-```json
-"contextWindow": 262144,
-"maxTokens": 32768,
-```
+> `--agent main` 用于在一次性对话里指定默认 agent。当前版本的 OpenClaw 如果不带它会报 `Pass --to <E.164>, --session-id, or --agent to choose a session`。
 
 ---
 
@@ -271,7 +256,10 @@ hermes config set model.provider custom
 hermes config set model.base_url https://token.sensenova.cn/v1
 hermes config set model.api_key "<你的 API Key>"
 hermes config set model.name sensenova-6.7-flash-lite
+hermes config set model.default custom/sensenova-6.7-flash-lite
 ```
+
+> 最后一行是必填项 —— 不设置 `model.default` 时，hermes 仍会沿用安装时的默认模型（如 `anthropic/claude-opus-4.6`），运行 `hermes -z "..."` 会报 `HTTP 404: model is not found`。如果不想一条条敲，也可以改用下面的 `hermes setup` / `hermes model` 向导，两者都会顺带帮你设好 `model.default`。
 
 `hermes config set` 会自动把 `api_key` 这类秘钥写到 `~/.hermes/.env`，把其它配置写到 `~/.hermes/config.yaml`，无需手动区分。
 
@@ -304,7 +292,7 @@ hermes
 ### 3.1 先克隆仓库
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 cd SenseNova-Skills
 ```
 

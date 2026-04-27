@@ -9,7 +9,8 @@
 ## 环境要求
 
 - **Python** 3.9 或更高版本（推荐 3.10+）。
-- **OpenClaw 必须已配置可用的 `web_search`**（深度研究编排器在启动时硬检查）。
+- **当前智能体宿主必须已配置可用的 `web_search`**（深度研究编排器在启动时硬检查；OpenClaw / Hermes 等宿主的具体配置入口可能不同）。
+- 如需在最终 `report.md` 中生成 AI 配图，必须安装并配置 `sn-image-base` 的 `sn-image-generate`。
 - 视维度需要，可选 / 必填若干平台的 API key（详见 [API Key](#2-api-key)）。
 
 ## 深度研究技能
@@ -20,7 +21,7 @@
 | [`sn-research-planning`](../skills/sn-research-planning/SKILL.md) | 研究规划 | 基于 `request.md` 一次性产出 `plan.json`，覆盖定界、报告形态、维度拆解（3–8 维度）、关键问题、搜索策略、依赖与完成标准。 |
 | [`sn-dimension-research`](../skills/sn-dimension-research/SKILL.md) | 单维度取证 | 按 `plan.json` 中维度的 `search_strategy` 调用[搜索技能](#搜索技能)完成多轮取证、交叉验证，产出 `sub_reports/{dimension_id}.md`。 |
 | [`sn-research-synthesis`](../skills/sn-research-synthesis/SKILL.md) | 综合判断 | 把多个 `sub_reports` 综合为 `synthesis.md`，明确主线判断、证据强弱、跨维度共识、关键冲突与不确定性。 |
-| [`sn-research-report`](../skills/sn-research-report/SKILL.md) | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。 |
+| [`sn-research-report`](../skills/sn-research-report/SKILL.md) | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格、规划插图并调用 `sn-image-base` 生成配图等定向编辑。 |
 | [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | 报告形态发现 | 研究"这类报告应该长什么样"，给出章节结构、必备元素与风格约束；可独立使用，也可为 `sn-deep-research` 的 `report_shape` 提供依据。 |
 
 ## 搜索技能
@@ -36,18 +37,19 @@
 
 ## Quick Start
 
-通过 [OpenClaw](https://openclaw.ai/) 使用这些技能。技能注册步骤参考 [`sn-image-generate.md`](sn-image-generate.md#1-注册技能)。
+可通过 [OpenClaw](https://openclaw.ai/)、Hermes 或其他支持 Agent Skills 的智能体宿主使用这些技能。技能注册步骤参考 [`sn-image-generate.md`](sn-image-generate.md#1-注册技能)。
 
 ### 1. 启动前硬检查：`web_search`
 
-`sn-deep-research` 在创建 `report_dir`、写 `request.md` 或进入任何研究阶段之前，**必须确认当前 OpenClaw `web_search` 可用**。未确认时不要开始研究，也不要用记忆或既有知识替代联网取证。
+`sn-deep-research` 在创建 `report_dir`、写 `request.md` 或进入任何研究阶段之前，**必须通过一次极小的通用 `web_search` 探测确认当前会话搜索能力可用**。未确认时不要开始研究，也不要用记忆或既有知识替代联网取证。
 
-- 静态检查：确认 `tools.web.search.provider` 与 `plugins.entries.<plugin>.config.webSearch.*` 已配置
-- 不确定时发起一次极小的 `web_search` 探测；返回结果即可继续；返回缺 key、provider 未就绪、服务不可达或 search disabled 则停止
+- 不判断自己运行在 OpenClaw、Hermes 还是其他宿主；不要读取或推断宿主专属配置路径
+- 发起一次低成本、低歧义的 `web_search` 探测，只需要确认工具能返回正常搜索结果
+- 探测成功且返回非空结果即可继续；探测失败、工具不存在、缺 key、provider 未就绪、服务不可达、search disabled、权限不足或结果为空时停止
 
 ### 2. API Key
 
-按需在 `~/.openclaw/.env`（或 `~/.hermes/.env`）中配置：
+按需在 `~/.openclaw/.env`（OpenClaw）、`~/.hermes/.env`（Hermes）或当前宿主支持的等效环境配置中配置：
 
 | 平台 | 必填 / 可选 | 环境变量 | 说明 |
 |------|------|----------|------|
@@ -61,8 +63,21 @@
 | 抖音 | **必填** | `DOUYIN_COOKIE` | 不配置无法搜索 |
 | Twitter/X | **必填** | `TIKHUB_TOKEN` | 通过 TikHub 反代 |
 | YouTube | **必填** | `YOUTUBE_API_KEY` | YouTube Data API v3 |
+| AI 配图（`sn-image-base` / `sn-image-generate`） | 生成配图时**必填** | `SN_IMAGE_GEN_API_KEY` | 用于 `report.md` 中的 AI 配图 |
+| AI 配图模型 | 可选 | `SN_IMAGE_GEN_MODEL` | 默认见 `sn-image-base` 配置；可指定 Token Plan 或其他支持的图像模型 |
+| AI 配图服务地址 | 可选 | `SN_IMAGE_GEN_BASE_URL` | 默认见 `sn-image-base` 配置；使用非默认服务时设置 |
+| AI 配图模型类型 | 可选 | `SN_IMAGE_GEN_MODEL_TYPE` | 如 `sensenova`、`nano-banana`、`openai-image` |
 
 ArXiv、Stack Overflow、Hacker News、Reddit 公开搜索无需 key。
+
+`sn-image-generate` 相关最小配置示例：
+
+```ini
+SN_IMAGE_GEN_API_KEY="sk-xxx"
+SN_IMAGE_GEN_BASE_URL="https://token.sensenova.cn/v1"
+SN_IMAGE_GEN_MODEL_TYPE="sensenova"
+SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
+```
 
 ### 3. Python 依赖
 
@@ -72,7 +87,13 @@ ArXiv、Stack Overflow、Hacker News、Reddit 公开搜索无需 key。
 pip install requests httpx lxml beautifulsoup4
 ```
 
-深度研究技能本身不直接调用 HTTP，主要靠 OpenClaw `web_search` 与上面的搜索脚本。
+如果最终报告需要 AI 配图，还需要安装 `sn-image-base` 的运行依赖，并确保宿主能定位到 `sn-image-base`：
+
+```bash
+pip install -r skills/sn-image-base/requirements.txt
+```
+
+深度研究编排器本身不直接调用 HTTP，主要依赖宿主 `web_search` 与上面的搜索脚本；终稿阶段只有在需要 AI 配图时才额外调用 `sn-image-base`。
 
 ### 4. 在智能体中调用
 

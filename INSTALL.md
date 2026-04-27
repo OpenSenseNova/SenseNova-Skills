@@ -204,27 +204,12 @@ Follow the prompts as shown below. Use the API key from §0, and configure at le
 #### 2.A.5 Verify the LLM connection
 
 ```bash
-openclaw agent --message "Hi, please introduce yourself"
+openclaw agent --message "Hi, please introduce yourself" --agent main
 ```
 
 If you get an English (or Chinese) reply, the LLM is wired up.
 
-#### 2.A.6 Open the web dashboard
-
-```bash
-openclaw dashboard
-```
-
-The command prints a login URL like `http://localhost:18789/#token=xxx`. Copy it into your browser to open the web UI, where you can chat with the agent and tweak configuration.
-
-#### 2.A.7 Raise the model token limits
-
-The defaults in `~/.openclaw/openclaw.json` are conservative. Open the file and update these two fields so SenseNova 6.7 can use its full window:
-
-```json
-"contextWindow": 262144,
-"maxTokens": 32768,
-```
+> `--agent main` selects the default agent for this one-shot turn. Without it, recent OpenClaw releases error out with `Pass --to <E.164>, --session-id, or --agent to choose a session`.
 
 ---
 
@@ -271,7 +256,10 @@ hermes config set model.provider custom
 hermes config set model.base_url https://token.sensenova.cn/v1
 hermes config set model.api_key "<your API key>"
 hermes config set model.name sensenova-6.7-flash-lite
+hermes config set model.default custom/sensenova-6.7-flash-lite
 ```
+
+> The last line is required — without `model.default`, hermes still routes through whatever was configured at install time (e.g. `anthropic/claude-opus-4.6`) and `hermes -z "..."` fails with `HTTP 404: model is not found`. If you'd rather not run individual commands, use `hermes setup` or `hermes model` (below) instead — both update `model.default` for you.
 
 `hermes config set` automatically writes secrets such as `api_key` into `~/.hermes/.env` and everything else into `~/.hermes/config.yaml`, so you don't have to split them by hand.
 
@@ -304,7 +292,7 @@ In the interactive prompt, type something like "hello" — a coherent reply mean
 ### 3.1 Clone the repo
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 cd SenseNova-Skills
 ```
 

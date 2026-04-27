@@ -246,4 +246,4 @@ On failure:
 
 ## Input/Output Specification
 
-See `reference/api_spec.md` for details.
+See `references/api_spec.md` for details.
