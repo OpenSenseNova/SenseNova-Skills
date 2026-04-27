@@ -158,10 +158,12 @@ openclaw config set agents.defaults.model.primary "custom/sensenova-6.7-flash-li
 #### 2.A.5 Verify the LLM connection
 
 ```bash
-openclaw agent --message "Hi, please introduce yourself"
+openclaw agent --message "Hi, please introduce yourself" --agent main
 ```
 
 If you get an English (or Chinese) reply, the LLM is wired up.
+
+> `--agent main` selects the default agent for this one-shot turn. Without it, recent OpenClaw releases error out with `Pass --to <E.164>, --session-id, or --agent to choose a session`.
 
 ---
 
@@ -208,7 +210,10 @@ hermes config set model.provider custom
 hermes config set model.base_url https://token.sensenova.cn/v1
 hermes config set model.api_key "<your API key>"
 hermes config set model.name sensenova-6.7-flash-lite
+hermes config set model.default custom/sensenova-6.7-flash-lite
 ```
+
+> The last line is required — without `model.default`, hermes still routes through whatever was configured at install time (e.g. `anthropic/claude-opus-4.6`) and `hermes -z "..."` fails with `HTTP 404: model is not found`. If you'd rather not run individual commands, use `hermes setup` or `hermes model` (below) instead — both update `model.default` for you.
 
 `hermes config set` automatically writes secrets such as `api_key` into `~/.hermes/.env` and everything else into `~/.hermes/config.yaml`, so you don't have to split them by hand.
 

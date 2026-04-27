@@ -158,10 +158,12 @@ openclaw config set agents.defaults.model.primary "custom/sensenova-6.7-flash-li
 #### 2.A.5 验证 LLM 通路
 
 ```bash
-openclaw agent --message "你好，自我介绍一下"
+openclaw agent --message "你好，自我介绍一下" --agent main
 ```
 
 能返回中文回答即配置成功。
+
+> `--agent main` 用于在一次性对话里指定默认 agent。当前版本的 OpenClaw 如果不带它会报 `Pass --to <E.164>, --session-id, or --agent to choose a session`。
 
 ---
 
@@ -208,7 +210,10 @@ hermes config set model.provider custom
 hermes config set model.base_url https://token.sensenova.cn/v1
 hermes config set model.api_key "<你的 API Key>"
 hermes config set model.name sensenova-6.7-flash-lite
+hermes config set model.default custom/sensenova-6.7-flash-lite
 ```
+
+> 最后一行是必填项 —— 不设置 `model.default` 时，hermes 仍会沿用安装时的默认模型（如 `anthropic/claude-opus-4.6`），运行 `hermes -z "..."` 会报 `HTTP 404: model is not found`。如果不想一条条敲，也可以改用下面的 `hermes setup` / `hermes model` 向导，两者都会顺带帮你设好 `model.default`。
 
 `hermes config set` 会自动把 `api_key` 这类秘钥写到 `~/.hermes/.env`，把其它配置写到 `~/.hermes/config.yaml`，无需手动区分。
 
