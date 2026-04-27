@@ -1,0 +1,38 @@
+name: "PR Format Linter"
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  check-pr-title-and-body:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            chore
+          requireScope: false
+
+      - name: Check PR body length
+        run: |
+          BODY_LENGTH="${#PR_BODY}"
+          if [ "$BODY_LENGTH" -lt 20 ]; then
+            echo "❌ PR body is too short! Please describe your changes in at least 20 characters."
+            exit 1
+          fi
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
