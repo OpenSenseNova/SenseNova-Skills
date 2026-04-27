@@ -92,20 +92,23 @@ function extractCategoryLabels(option) {
 
 /**
  * Convert ECharts axis formatter to pptxgenjs format code.
- *   '{value}%'      → '0%'
- *   '{value}元'     → '0"元"'
- *   '{value} 万'    → '0" 万"'
- *   function | rich → null (can't convert)
+ *
+ * IMPORTANT: pptxgenjs uses Excel-style format codes. `'0%'` means
+ * "multiply by 100 and append %" — i.e. it expects a fraction (0.68 → 68%).
+ * But ECharts data is usually already in percentage form (68 not 0.68).
+ * If we return `'0%'`, pptxgenjs writes 6800% for a 68 value.
+ *
+ * Therefore: for `{value}%`, return `'0"%"'` (a literal % suffix that does
+ * NOT scale the number). All other suffixes are also literal text.
  */
 function formatterToCode(fmt) {
   if (typeof fmt !== 'string') return null;
   if (!fmt.includes('{value}')) return null;
-  // %   → 0%
-  if (/^\s*\{value\}\s*%\s*$/.test(fmt)) return '0%';
-  // {value}<suffix>
   const m = fmt.match(/^\s*\{value\}(.*)$/);
-  if (m) return `0"${m[1].replace(/"/g, '\\"')}"`;
-  return null;
+  if (!m) return null;
+  const suffix = m[1];
+  if (!suffix) return '0';
+  return `0"${suffix.replace(/"/g, '\\"')}"`;
 }
 
 function extractValueAxisFormatCode(option, axisName) {
@@ -119,6 +122,83 @@ function extractAxisLabelRotate(option, axisName) {
   if (!ax || !ax.axisLabel) return null;
   const r = ax.axisLabel.rotate;
   return typeof r === 'number' ? r : null;
+}
+
+/**
+ * Convert any CSS-like color string (hex / rgb / rgba) to 6-digit hex without '#'.
+ * Returns null if unparseable.
+ */
+function colorToHex(c) {
+  if (!c || typeof c !== 'string') return null;
+  let s = c.trim();
+  if (s.startsWith('#')) s = s.slice(1);
+  if (/^[0-9a-fA-F]{6}$/.test(s)) return s.toUpperCase();
+  if (/^[0-9a-fA-F]{3}$/.test(s)) return s.split('').map(ch => ch + ch).join('').toUpperCase();
+  if (/^[0-9a-fA-F]{8}$/.test(s)) return s.slice(0, 6).toUpperCase();
+  const m = c.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (m) {
+    return [+m[1], +m[2], +m[3]]
+      .map(n => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0'))
+      .join('').toUpperCase();
+  }
+  return null;
+}
+
+/**
+ * Extract axis-related styling colors (label / line / split-line) for a given axis.
+ */
+function extractAxisStyle(option, axisName) {
+  const ax = Array.isArray(option[axisName]) ? option[axisName][0] : option[axisName];
+  if (!ax) return {};
+  const out = {};
+  const labelColor = colorToHex(ax.axisLabel?.color);
+  if (labelColor) out.labelColor = labelColor;
+  const lineColor = colorToHex(ax.axisLine?.lineStyle?.color);
+  if (lineColor) out.lineColor = lineColor;
+  const splitColor = colorToHex(ax.splitLine?.lineStyle?.color);
+  if (splitColor) out.splitColor = splitColor;
+  return out;
+}
+
+/**
+ * Extract legend text color.
+ */
+function extractLegendColor(option) {
+  const leg = Array.isArray(option.legend) ? option.legend[0] : option.legend;
+  if (!leg) return null;
+  return colorToHex(leg.textStyle?.color);
+}
+
+/**
+ * Extract series-level data label color (from series[0].label.color).
+ */
+function extractDataLabelColor(series) {
+  for (const s of series) {
+    const c = colorToHex(s.label?.color);
+    if (c) return c;
+  }
+  return null;
+}
+
+/**
+ * Apply chart text/line theme colors to pptxgenjs options. HTML 深色 deck 的
+ * ECharts 通常把 axisLabel.color/legend.textStyle.color 显式设成浅色（白/灰）；
+ * pptxgenjs 默认 Office 主题（黑字白底），需要把这些显式颜色透传。
+ */
+function applyChartTheme(options, option, series) {
+  const xAx = extractAxisStyle(option, 'xAxis');
+  const yAx = extractAxisStyle(option, 'yAxis');
+  if (xAx.labelColor) options.catAxisLabelColor = xAx.labelColor;
+  if (yAx.labelColor) options.valAxisLabelColor = yAx.labelColor;
+  if (xAx.lineColor) options.catAxisLineColor = xAx.lineColor;
+  if (yAx.lineColor) options.valAxisLineColor = yAx.lineColor;
+  if (xAx.splitColor) options.catGridLine = { color: xAx.splitColor, style: 'solid', size: 1 };
+  if (yAx.splitColor) options.valGridLine = { color: yAx.splitColor, style: 'solid', size: 1 };
+  const legColor = extractLegendColor(option);
+  if (legColor) options.legendColor = legColor;
+  const dlColor = extractDataLabelColor(series);
+  if (dlColor) options.dataLabelColor = dlColor;
+  return options;
 }
 
 /**
@@ -177,11 +257,12 @@ function extractDataLabelOptions(series) {
   if (withFmt) {
     const fmt = withFmt.label.formatter;
     if (typeof fmt === 'string') {
-      // {c} → value, {c}% → 0%
-      if (/^\s*\{c\}\s*%\s*$/.test(fmt)) out.dataLabelFormatCode = '0%';
-      else {
-        const m = fmt.match(/^\s*\{c\}(.*)$/);
-        if (m) out.dataLabelFormatCode = `0"${m[1].replace(/"/g, '\\"')}"`;
+      // ECharts data is already in percentage form (e.g. 68 not 0.68);
+      // use literal "%" suffix (not '0%' which would multiply by 100).
+      const m = fmt.match(/^\s*\{c\}(.*)$/);
+      if (m) {
+        const suffix = m[1];
+        out.dataLabelFormatCode = suffix ? `0"${suffix.replace(/"/g, '\\"')}"` : '0';
       }
     }
   }
@@ -299,6 +380,7 @@ function mapBar(option, ChartType) {
   };
   if (valFmt) options.valAxisLabelFormatCode = valFmt;
   if (catRotate != null) options.catAxisLabelRotate = catRotate;
+  applyChartTheme(options, option, series);
 
   return { chartType: ChartType.bar, data, options };
 }
@@ -328,6 +410,7 @@ function mapLine(option, ChartType) {
   };
   if (valFmt) options.valAxisLabelFormatCode = valFmt;
   if (catRotate != null) options.catAxisLabelRotate = catRotate;
+  applyChartTheme(options, option, series);
 
   return { chartType: ChartType.line, data, options };
 }
@@ -353,6 +436,7 @@ function mapArea(option, ChartType) {
   };
   const valFmt = extractValueAxisFormatCode(option, 'yAxis');
   if (valFmt) options.valAxisLabelFormatCode = valFmt;
+  applyChartTheme(options, option, series);
 
   return { chartType: ChartType.area, data, options };
 }
@@ -398,6 +482,7 @@ function mapPie(option, ChartType, hollow) {
   }
   // Default data label format for pie: percentages
   if (!options.dataLabelFormatCode) options.dataLabelFormatCode = '0"%"';
+  applyChartTheme(options, option, [s0]);
 
   const result = {
     chartType: hollow ? ChartType.doughnut : ChartType.pie,
@@ -438,14 +523,17 @@ function mapRadar(option, ChartType) {
   const seriesCols = series.map(getSeriesColor).filter(Boolean);
   const chartColors = seriesCols.length === series.length ? seriesCols : undefined;
 
+  const radarOpts = {
+    radarStyle: 'standard',
+    chartColors,
+    ...extractLegendOptions(option, data.length),
+  };
+  applyChartTheme(radarOpts, option, series);
+
   return {
     chartType: ChartType.radar,
     data,
-    options: {
-      radarStyle: 'standard',
-      chartColors,
-      ...extractLegendOptions(option, data.length),
-    },
+    options: radarOpts,
   };
 }
 
@@ -469,17 +557,26 @@ function mapScatter(option, ChartType) {
   const seriesCols = series.map(getSeriesColor).filter(Boolean);
   const chartColors = seriesCols.length === series.length ? seriesCols : undefined;
 
+  const scatterOpts = {
+    chartColors,
+    ...extractLegendOptions(option, yLists.length),
+  };
+  applyChartTheme(scatterOpts, option, series);
+
   return {
     chartType: ChartType.scatter,
     data,
-    options: {
-      chartColors,
-      ...extractLegendOptions(option, yLists.length),
-    },
+    options: scatterOpts,
   };
 }
 
 function mapFunnel(option, ChartType) {
+  // pptxgenjs 的 ChartType 枚举没有 'funnel'（funnel 仅是 ShapeType）。
+  // 之前传 `ChartType.funnel` (undefined) 会让 pptxgenjs 写出空 plotArea
+  // （没 <c:xxxChart>）→ schema 违规 → PowerPoint 报"需修复"并删页
+  // （用户运营 p3 的 chart_2 即此问题）。
+  // 退化方案：funnel → 横向条形图（barH），各项作单独类目，长度反映 value。
+  // 视觉近似漏斗（自上而下递减条），数据语义保留。
   const series = allSeries(option).filter(s => s.type === 'funnel');
   if (series.length === 0) return null;
   const s0 = series[0];
@@ -489,6 +586,7 @@ function mapFunnel(option, ChartType) {
   const values = items.map(d => Number(d.value) || 0);
   const data = [{ name: s0.name || 'Series', labels, values }];
 
+  // 用 per-item 颜色（每个漏斗段一种颜色），更接近原始 ECharts 视觉
   let sliceColors = items.map(d => {
     if (d.itemStyle && typeof d.itemStyle.color === 'string') return d.itemStyle.color.replace('#', '').toUpperCase();
     return null;
@@ -498,14 +596,17 @@ function mapFunnel(option, ChartType) {
   }
   const chartColors = sliceColors.every(Boolean) ? sliceColors : undefined;
 
+  const funnelOpts = {
+    barDir: 'bar',  // 横向条形（漏斗近似）
+    chartColors,
+    ...extractDataLabelOptions([s0]),
+    ...extractLegendOptions(option, 1),
+  };
+  applyChartTheme(funnelOpts, option, [s0]);
   return {
-    chartType: ChartType.funnel,
+    chartType: ChartType.bar,
     data,
-    options: {
-      chartColors,
-      ...extractDataLabelOptions([s0]),
-      ...extractLegendOptions(option, items.length),
-    },
+    options: funnelOpts,
   };
 }
 
@@ -575,7 +676,13 @@ function mapCombo(option, ChartType) {
       chartColors: [getSeriesColor(s) || 'ED7D31'],
       lineSmooth: !!s.smooth,
     };
-    if (s.yAxisIndex === 1) opts.secondaryValAxis = true;
+    // 走次轴时，pptxgenjs 要求 chart 元素引用的 axId 自洽：
+    // line 必须同时引用次 catAx + 次 valAx。否则 lineChart 引用混合
+    // (主 catAx + 次 valAx)，PowerPoint 严格校验拒绝 → 报需修复 → 删页。
+    if (s.yAxisIndex === 1) {
+      opts.secondaryValAxis = true;
+      opts.secondaryCatAxis = true;
+    }
     types.push({
       type: ChartType.line,
       data: [{ name: s.name || 'Line', labels, values: toNumbers(s.data || []) }],
@@ -590,13 +697,45 @@ function mapCombo(option, ChartType) {
     : null;
   const catRotate = extractAxisLabelRotate(option, 'xAxis');
 
+  // 检测是否有 series 用次值轴（ECharts: yAxisIndex === 1）
+  const hasSecondaryAxis = lineSeries.some(s => s.yAxisIndex === 1);
+
   const sharedOptions = {
     ...extractLegendOptions(option, seriesAll.length),
     ...extractDataLabelOptions(seriesAll),
   };
   if (valFmt) sharedOptions.valAxisLabelFormatCode = valFmt;
-  if (valFmt2) sharedOptions.valAxesLabelFormatCode = [valFmt, valFmt2];
   if (catRotate != null) sharedOptions.catAxisLabelRotate = catRotate;
+
+  // 修 PowerPoint "需修复"错误（iPhone p3 / 用户运营 p3）：
+  //
+  // pptxgenjs 在 makeChartType 写 BAR/LINE chart 元素时，会根据每个 entry 的
+  // options.secondaryValAxis 决定 axId 引用的是 PRIMARY (2094734552) 还是
+  // SECONDARY (2094734553)；但只有当 sharedOptions.valAxes 数组里**确实
+  // 存在 valAxes[1]** 时，pptxgenjs 才会写出对应的 secondary <c:valAx>。
+  // 之前我们只在 entry.options 里设了 secondaryValAxis: true 但没传
+  // sharedOptions.valAxes，导致 lineChart 引用 axId=2094734553 但 chart 元素
+  // 层缺 valAx → schema 违规 → PowerPoint 拒绝打开整页。
+  //
+  // 解：当任一 line series 用次轴时，显式传 valAxes [primary, secondary]
+  // 让 pptxgenjs 同时生成两个 valAx 元素。同时通过 catAxes 保持单 catAxis。
+  if (hasSecondaryAxis) {
+    sharedOptions.valAxes = [
+      {
+        showValAxisTitle: false,
+        valAxisLabelFormatCode: valFmt || 'General',
+      },
+      {
+        showValAxisTitle: false,
+        valAxisLabelFormatCode: valFmt2 || valFmt || 'General',
+      },
+    ];
+    sharedOptions.catAxes = [
+      { showCatAxisTitle: false, catAxisLabelRotate: catRotate || 0 },
+      { showCatAxisTitle: false, catAxisHidden: true },  // pptxgenjs 要求 catAxes.length == valAxes.length
+    ];
+  }
+  applyChartTheme(sharedOptions, option, seriesAll);
 
   return {
     chartType: 'combo',  // sentinel — pptx_builder routes this to slide.addChart with type array

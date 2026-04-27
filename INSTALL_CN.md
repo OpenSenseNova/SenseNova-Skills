@@ -308,5 +308,5 @@ cp -r skills/* ~/.hermes/skills/
 - **`wsl --install` 提示找不到命令**：需要 Windows 10 22H2+ / Windows 11，并以管理员身份打开 PowerShell。
 - **Node 版本太低**：`node -v` 必须 ≥ 22.14。用 nvm 切换：`nvm install 24 && nvm use 24`。
 - **`openclaw doctor` / `hermes doctor` 报错**：按报告中的提示逐项修复，缺什么装什么。
-- **LLM 调用 401 / 403**：检查 `OPENAI_API_KEY` 或配置文件中的 key 是否填错；确认 [token-plan](https://platform.sensenova.cn/token-plan) 中 key 仍在有效额度内。
+- **LLM 调用 401 / 403**：检查配置中的 LLM API Key（OpenClaw 用 `openclaw config get models.providers.custom`，hermes-agent 用 `hermes config get model.api_key`）；确认 [token-plan](https://platform.sensenova.cn/token-plan) 中 key 仍在有效额度内。
 - **WSL2 中 `curl` 慢/卡**：确认 WSL2 网络模式（`wsl --status`），必要时切到 `mirrored` 网络模式或使用代理。

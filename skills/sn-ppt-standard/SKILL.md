@@ -111,10 +111,10 @@ The script is stateless — re-run a subcommand and it'll overwrite its output a
 
 Configured via `.env` at the repo root (or `<repo>/skills/.env`). `model_client.py` auto-loads both. Required:
 
-- `SN_LM_API_KEY`, `SN_LM_BASE_URL`, `SN_LM_MODEL` (or per-kind overrides `LLM_*` / `VLM_*`)
-- `SN_API_KEY`, `SN_IMAGE_GEN_BASE_URL` (or `SN_BASE_URL`), `SN_IMAGE_GEN_MODEL`
+- `SN_CHAT_API_KEY` for shared text/vision chat auth, or per-kind overrides `SN_TEXT_API_KEY` / `SN_VISION_API_KEY`
+- `SN_IMAGE_GEN_API_KEY`, `SN_IMAGE_GEN_BASE_URL`, `SN_IMAGE_GEN_MODEL`
 
-Optional `LLM_TIMEOUT` / `VLM_TIMEOUT` / `SN_IMAGE_GEN_TIMEOUT` override default timeouts.
+Optional `SN_CHAT_BASE_URL` / `SN_TEXT_BASE_URL` / `SN_VISION_BASE_URL`, `SN_CHAT_MODEL` / `SN_TEXT_MODEL` / `SN_VISION_MODEL`, and `SN_CHAT_TIMEOUT` / `SN_TEXT_TIMEOUT` / `SN_VISION_TIMEOUT` override defaults.
 
 Run `python $SKILL_DIR/lib/model_client.py health` to verify env before running the pipeline.
 

@@ -53,11 +53,11 @@ All API calls in this skill are executed through the `sn_agent_runner.py` of the
 
 | Call Type | Tool | Authentication Parameters | Description |
 |-----------|------|---------------------------|-------------|
-| **LLM** | sn-text-optimize (evaluation/expansion) | Default reads `LLM_API_KEY` / `SN_LM_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
-| **VLM** | sn-image-recognize (image review) | Default reads `VLM_API_KEY` / `SN_LM_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
-| **Image Generation** | sn-image-generate | Default reads `SN_API_KEY` environment variable | Default uses U1 API configuration of `sn-image-base` |
+| **LLM** | sn-text-optimize (evaluation/expansion) | Default reads `SN_TEXT_API_KEY` / `SN_CHAT_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
+| **VLM** | sn-image-recognize (image review) | Default reads `SN_VISION_API_KEY` / `SN_CHAT_API_KEY` environment variables | Built-in default points to Sensenova internal network service |
+| **Image Generation** | sn-image-generate | Default reads `SN_IMAGE_GEN_API_KEY` environment variable | Default uses image generation configuration of `sn-image-base` |
 
-**When encountering `MissingApiKeyError` or needing to specify a model**: pass explicitly via CLI parameters, parameter reference `$SN_IMAGE_BASE/reference/api_spec.md`.
+**When encountering `MissingApiKeyError` or needing to specify a model**: pass explicitly via CLI parameters, parameter reference `$SN_IMAGE_BASE/references/api_spec.md`.
 
 **`$SN_IMAGE_BASE` path explanation**: `$SN_IMAGE_BASE` is the installation directory of the `sn-image-base` skill (`SKILL.md` exists).
 The agent can locate this path by skill name `sn-image-base` in the list of installed skills.
@@ -100,7 +100,7 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 1. Generate `task_id` (using timestamp, format `YYYYMMDD_HHMMSS`)
 2. Create a uniform temporary directory: `/tmp/openclaw/sn-infographic/<task_id>/` as `TEMP_DIR`
 3. Initialize an empty `rounds` list
-4. Infer `aspect_ratio` (default `16:9`) and `image_size` (default `2k`) from `user_prompt` based on the rules in `$SKILL_DIR/reference/runtime-parameters.md`
+4. Infer `aspect_ratio` (default `16:9`) and `image_size` (default `2k`) from `user_prompt` based on the rules in `$SKILL_DIR/references/runtime-parameters.md`
 
 #### Step 1 — `prompts_expand_mode` Processing
 
@@ -142,7 +142,7 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 
 ```bash
 python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
-  --system-prompt-path "$SKILL_DIR/reference/evaluation-standard.md" \
+  --system-prompt-path "$SKILL_DIR/references/evaluation-standard.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json
 ```
@@ -153,7 +153,7 @@ python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
 
 ```bash
 ANALYSIS=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
-  --system-prompt-path "$SKILL_DIR/reference/analysis-framework.md" \
+  --system-prompt-path "$SKILL_DIR/references/analysis-framework.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json)
 ```
@@ -172,12 +172,12 @@ echo "$ANALYSIS" > "$TEMP_DIR/analysis.json"
   ANALYSIS=$(cat "$TEMP_DIR/analysis.json")
   ```
 
-2. Based on `data_type`, `tone`, `audience`, select `layout` and `style` based on the rules in `$SKILL_DIR/reference/layout-style-selection.md`;
+2. Based on `data_type`, `tone`, `audience`, select `layout` and `style` based on the rules in `$SKILL_DIR/references/layout-style-selection.md`;
 3. Read layout/style definition files:
 
   ```bash
-  LAYOUT_DEF=$(cat "$SKILL_DIR/reference/layouts/<layout>.md")
-  STYLE_DEF=$(cat "$SKILL_DIR/reference/styles/<style>.md")
+  LAYOUT_DEF=$(cat "$SKILL_DIR/references/layouts/<layout>.md")
+  STYLE_DEF=$(cat "$SKILL_DIR/references/styles/<style>.md")
   ```
 
   If file does not exist, fallback to `hub-spoke` + `corporate-memphis`.
@@ -200,7 +200,7 @@ Read analysis result and structured content template, convert `user_prompt` into
 ```bash
 ANALYSIS=$(cat "$TEMP_DIR/analysis.json")
 LAYOUT_STYLE=$(cat "$TEMP_DIR/layout-style.json")
-STRUCTURED_CONTENT_TEMPLATE=$(cat "$SKILL_DIR/reference/structured-content-template.md")
+STRUCTURED_CONTENT_TEMPLATE=$(cat "$SKILL_DIR/references/structured-content-template.md")
 ```
 
 Follow the three phases defined in the template (High-Level Outline → Section Development → Data Integrity Check),
@@ -223,11 +223,11 @@ STRUCTURED_CONTENT=$(cat "$TEMP_DIR/structured-content.md")
 LAYOUT_STYLE=$(cat "$TEMP_DIR/layout-style.json")
 LAYOUT=$(echo "$LAYOUT_STYLE" | jq -r '.layout')
 STYLE=$(echo "$LAYOUT_STYLE" | jq -r '.style')
-LAYOUT_DEF=$(cat "$SKILL_DIR/reference/layouts/${LAYOUT}.md")
-STYLE_DEF=$(cat "$SKILL_DIR/reference/styles/${STYLE}.md")
+LAYOUT_DEF=$(cat "$SKILL_DIR/references/layouts/${LAYOUT}.md")
+STYLE_DEF=$(cat "$SKILL_DIR/references/styles/${STYLE}.md")
 
 cat > "$TEMP_DIR/expand-system-prompt.md" << EOF
-$(cat "$SKILL_DIR/reference/prompts-expand-system.md")
+$(cat "$SKILL_DIR/references/prompts-expand-system.md")
 
 ---
 
@@ -245,7 +245,7 @@ $STYLE_DEF
 
 ## Output Template Reference
 
-$(cat "$SKILL_DIR/reference/base-prompt.md")
+$(cat "$SKILL_DIR/references/base-prompt.md")
 EOF
 ```
 
@@ -294,13 +294,13 @@ VLM configuration requirements:
 
 ```bash
 python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-image-recognize \
-  --system-prompt-path "$SN_IMAGE_INFOG/reference/prompts-critic-system.md" \
+  --system-prompt-path "$SN_IMAGE_INFOG/references/prompts-critic-system.md" \
   --user-prompt "Evaluate the diagram in the image against the rules. Output your assessment." \
   --images "$TEMP_DIR/round_<N>.png" \
   --output-format json
 ```
 
-System prompt comes from `reference/prompts-critic-system.md`, user prompt is provided directly.
+System prompt comes from `references/prompts-critic-system.md`, user prompt is provided directly.
 
 **Save Round Result**：
 
@@ -314,7 +314,7 @@ System prompt comes from `reference/prompts-critic-system.md`, user prompt is pr
   "reasoning": "<Reasoning process, empty string when max_rounds=1>",
   "timing": {
     "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
-    "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-122b" }
+    "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
   }
 }
 ```
@@ -346,9 +346,9 @@ After Worker Agent completes, its last message must be and only be the following
   "early_terminated": true,
   "timing": {
     "total_elapsed_seconds": 35.12,
-    "prompt_detection": { "elapsed_seconds": 2.11, "model": "sensenova-122b" },
-    "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-122b" },
-    "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-122b" }
+    "prompt_detection": { "elapsed_seconds": 2.11, "model": "sensenova-6.7-flash-lite" },
+    "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-6.7-flash-lite" },
+    "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-6.7-flash-lite" }
   },
   "rounds": [
     {
@@ -360,7 +360,7 @@ After Worker Agent completes, its last message must be and only be the following
       "reasoning": "<Reasoning process, empty string when max_rounds=1>",
       "timing": {
         "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
-        "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-122b" }
+        "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
       }
     }
   ]

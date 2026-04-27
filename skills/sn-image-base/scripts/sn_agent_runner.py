@@ -33,10 +33,8 @@ from sn_image_base.generation import (
     NanoBananaText2ImageClient,
     OpenAIImageGenerationClient,
     SensenovaText2ImageClient,
-    U1Text2ImageClient,
 )
-from sn_image_base.llm import AnthropicMessagesAdapter, ChatCompletionsLlmAdapter
-from sn_image_base.vlm import AnthropicVlmAdapter, ChatCompletionsVlmAdapter
+from sn_image_base.llm import AnthropicMessagesAdapter, OpenAIChatAdapter
 
 
 def _resolve_prompt(
@@ -78,9 +76,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # sn-image-generate
-    gen_parser = subparsers.add_parser(
-        "sn-image-generate", help="Generate image from text prompt (U1 API)"
-    )
+    gen_parser = subparsers.add_parser("sn-image-generate", help="Generate image from text prompt")
     gen_parser.add_argument("--prompt", required=True, help="Text prompt for image generation")
     gen_parser.add_argument("--negative-prompt", default="", help="Negative prompt")
     gen_parser.add_argument(
@@ -107,12 +103,12 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument("--seed", type=int, default=None, help="Random seed")
     gen_parser.add_argument("--unet-name", dest="unet_name", default=None, help="UNet model name")
     gen_parser.add_argument(
-        "--api-key", default="", help="API key (falls back to SN_API_KEY env var)"
+        "--api-key", default="", help="API key (falls back to SN_IMAGE_GEN_API_KEY env var)"
     )
     gen_parser.add_argument(
         "--base-url",
         default="",
-        help="API base URL (falls back to SN_BASE_URL env var)",
+        help="API base URL (falls back to SN_IMAGE_GEN_BASE_URL env var)",
     )
     gen_parser.add_argument("--poll-interval", type=float, default=5.0)
     gen_parser.add_argument("--timeout", type=float, default=300.0)
@@ -138,23 +134,23 @@ def build_parser() -> argparse.ArgumentParser:
     )
     recog_parser.add_argument("--images", required=True, nargs="+", help="Image file paths or URLs")
     recog_parser.add_argument(
-        "--api-key", default=None, help="API key (CLI > VLM_API_KEY env > dummy-key)"
+        "--api-key", default=None, help="API key (CLI > SN_VISION_API_KEY > SN_CHAT_API_KEY)"
     )
     recog_parser.add_argument(
         "--base-url",
         default=None,
-        help="API base URL (CLI > VLM_BASE_URL > SN_LM_BASE_URL > built-in default)",
+        help="API base URL (CLI > SN_VISION_BASE_URL > SN_CHAT_BASE_URL)",
     )
     recog_parser.add_argument(
         "--model",
         default=None,
-        help="Model name (CLI > VLM_MODEL env > built-in default)",
+        help="Vision model name (CLI > SN_VISION_MODEL > SN_CHAT_MODEL)",
     )
     recog_parser.add_argument(
         "--vlm-type",
         default=None,
         choices=["openai-completions", "anthropic-messages"],
-        help="VLM interface type (CLI > VLM_TYPE env > openai-completions)",
+        help="Chat protocol type override (CLI > SN_VISION_TYPE > SN_CHAT_TYPE)",
     )
     recog_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
 
@@ -173,23 +169,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to a local file containing the system prompt (mutually exclusive with --system-prompt)",
     )
     opt_parser.add_argument(
-        "--api-key", default=None, help="API key (CLI > LLM_API_KEY env > dummy-key)"
+        "--api-key", default=None, help="API key (CLI > SN_TEXT_API_KEY > SN_CHAT_API_KEY)"
     )
     opt_parser.add_argument(
         "--base-url",
         default=None,
-        help="API base URL (CLI > LLM_BASE_URL > SN_LM_BASE_URL > built-in default)",
+        help="API base URL (CLI > SN_TEXT_BASE_URL > SN_CHAT_BASE_URL)",
     )
     opt_parser.add_argument(
         "--model",
         default=None,
-        help="Model name (CLI > LLM_MODEL env > built-in default)",
+        help="Text model name (CLI > SN_TEXT_MODEL > SN_CHAT_MODEL)",
     )
     opt_parser.add_argument(
         "--llm-type",
         default=None,
         choices=["openai-completions", "anthropic-messages"],
-        help="LLM interface type (CLI > LLM_TYPE env > openai-completions)",
+        help="Chat protocol type override (CLI > SN_TEXT_TYPE > SN_CHAT_TYPE)",
     )
     opt_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
 
@@ -197,7 +193,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
-    """Run image-generate command using the U1 text-to-image API.
+    """Run image-generate command using the configured image backend.
 
     Args:
         args: Parsed command-line arguments from ``image-generate`` subcommand.
@@ -208,14 +204,14 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             output (image path), task_id, and message. exit_code is 0 on
             success and 1 on failure.
     """
-    api_key = args.api_key or global_configs.SN_API_KEY
+    api_key = args.api_key or global_configs.SN_IMAGE_GEN_API_KEY
     if not api_key:
         raise MissingApiKeyError()
 
     base_url = args.base_url or global_configs.SN_IMAGE_GEN_BASE_URL
     if not base_url:
         raise InvalidBaseUrlError(
-            "No base URL provided. Set SN_BASE_URL env var or pass --base-url."
+            "No base URL provided. Set SN_IMAGE_GEN_BASE_URL env var or pass --base-url."
         )
 
     if global_configs.SN_IMAGE_GEN_MODEL_TYPE == "sensenova":
@@ -255,14 +251,11 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             f"Using OpenAI-compatible model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation"
         )
     else:
-        client = U1Text2ImageClient(
-            api_key=api_key,
-            base_url=base_url,
-            poll_interval=args.poll_interval,
-            timeout=args.timeout,
-            ssl_verify=not args.insecure,
+        supported_types = "sensenova, nano-banana, openai-image"
+        raise BadConfigurationError(
+            f"Unsupported SN_IMAGE_GEN_MODEL_TYPE {global_configs.SN_IMAGE_GEN_MODEL_TYPE!r}. "
+            f"Supported values: {supported_types}."
         )
-        print(f"Using U1 model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation")
     try:
         result = await client.generate(
             prompt=args.prompt,
@@ -302,7 +295,7 @@ async def run_image_recognize(args: argparse.Namespace) -> tuple[dict, int]:
 
     vlm_type, base_url, model, api_key = _resolve_model_runtime("vlm", args)
     adapter = cast(
-        "AnthropicVlmAdapter | ChatCompletionsVlmAdapter",
+        "AnthropicMessagesAdapter | OpenAIChatAdapter",
         _build_endpoint_and_adapter("vlm", vlm_type, base_url, model, api_key),
     )
     try:
@@ -349,7 +342,7 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
 
     llm_type, base_url, model, api_key = _resolve_model_runtime("llm", args)
     adapter = cast(
-        "AnthropicMessagesAdapter | ChatCompletionsLlmAdapter",
+        "AnthropicMessagesAdapter | OpenAIChatAdapter",
         _build_endpoint_and_adapter("llm", llm_type, base_url, model, api_key),
     )
     try:
@@ -371,47 +364,84 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
         await adapter.aclose()
 
 
+RUNTIME_PROFILES = {
+    "vlm": {
+        "type_arg": "vlm_type",
+        "type_config": "SN_VISION_TYPE",
+        "base_url_config": "SN_VISION_BASE_URL",
+        "model_config": "SN_VISION_MODEL",
+        "api_key_config": "SN_VISION_API_KEY",
+        "label": "vision",
+        "key_env": "SN_VISION_API_KEY or SN_CHAT_API_KEY",
+        "url_env": "SN_VISION_BASE_URL or SN_CHAT_BASE_URL",
+        "model_env": "SN_VISION_MODEL or SN_CHAT_MODEL",
+        "type_env": "SN_VISION_TYPE or SN_CHAT_TYPE",
+    },
+    "llm": {
+        "type_arg": "llm_type",
+        "type_config": "SN_TEXT_TYPE",
+        "base_url_config": "SN_TEXT_BASE_URL",
+        "model_config": "SN_TEXT_MODEL",
+        "api_key_config": "SN_TEXT_API_KEY",
+        "label": "text",
+        "key_env": "SN_TEXT_API_KEY or SN_CHAT_API_KEY",
+        "url_env": "SN_TEXT_BASE_URL or SN_CHAT_BASE_URL",
+        "model_env": "SN_TEXT_MODEL or SN_CHAT_MODEL",
+        "type_env": "SN_TEXT_TYPE or SN_CHAT_TYPE",
+    },
+}
+
+
+def _first_non_empty(*values: str | None) -> str:
+    return next((value for value in values if value), "")
+
+
 def _resolve_model_runtime(kind: str, args: argparse.Namespace) -> tuple[str, str, str, str]:
-    """Resolve and validate model runtime settings for VLM/LLM.
+    """Resolve and validate model runtime settings for a text or vision command.
 
     Returns:
         tuple[str, str, str, str]:
             (interface_type, base_url, model, api_key).
     """
-    if kind == "vlm":
-        iface_type = args.vlm_type or global_configs.VLM_TYPE
-        base_url = args.base_url or global_configs.VLM_BASE_URL
-        model = args.model or global_configs.VLM_MODEL
-        api_key = args.api_key or global_configs.VLM_API_KEY
-        label = "VLM"
-        key_env = "VLM_API_KEY, SN_LM_API_KEY"
-        url_env = "VLM_BASE_URL, SN_LM_BASE_URL"
-        model_env = "VLM_MODEL"
-    elif kind == "llm":
-        iface_type = args.llm_type or global_configs.LLM_TYPE
-        base_url = args.base_url or global_configs.LLM_BASE_URL
-        model = args.model or global_configs.LLM_MODEL
-        api_key = args.api_key or global_configs.LLM_API_KEY
-        label = "LLM"
-        key_env = "LLM_API_KEY, SN_LM_API_KEY"
-        url_env = "LLM_BASE_URL, SN_LM_BASE_URL"
-        model_env = "LLM_MODEL"
-    else:
+    profile = RUNTIME_PROFILES.get(kind)
+    if profile is None:
         raise ValueError(f"Unsupported runtime kind: {kind}")
+
+    iface_type = _first_non_empty(
+        getattr(args, profile["type_arg"]),
+        getattr(global_configs, profile["type_config"]),
+        global_configs.SN_CHAT_TYPE,
+        "openai-completions",
+    )
+    base_url = _first_non_empty(
+        args.base_url,
+        getattr(global_configs, profile["base_url_config"]),
+        global_configs.SN_CHAT_BASE_URL,
+    )
+    model = _first_non_empty(
+        args.model,
+        getattr(global_configs, profile["model_config"]),
+    )
+    api_key = _first_non_empty(
+        args.api_key,
+        getattr(global_configs, profile["api_key_config"]),
+        global_configs.SN_CHAT_API_KEY,
+    )
+    label = profile["label"]
 
     if not api_key:
         raise MissingApiKeyError(
-            f"No API key provided for {label}. Set {key_env}, or pass --api-key."
+            f"No API key provided for {label} chat runtime. Set {profile['key_env']}, or pass --api-key."
         )
     if not base_url:
         raise InvalidBaseUrlError(
-            f"No base URL provided for {label}. Set {url_env}, or pass --base-url."
+            f"No base URL provided for {label} chat runtime. Set {profile['url_env']}, or pass --base-url."
         )
     if not is_valid_base_url(base_url):
         raise InvalidBaseUrlError(f"Invalid base URL: {base_url}")
     if not model:
         raise BadConfigurationError(
-            f"No model provided for {label}. Set {model_env} or pass --model."
+            f"No model provided for {label} chat runtime. Set {profile['model_env']} or pass --model."
         )
     return iface_type, base_url, model, api_key
 
@@ -425,41 +455,25 @@ def _build_endpoint_and_adapter(
     if iface_type == "anthropic-messages":
         endpoint = "/v1/messages" if not base_url_obj.path else "/messages"
         endpoint_url = f"{base_url_obj.geturl()}{endpoint}"
-        if kind == "vlm":
-            adapter = AnthropicVlmAdapter(
-                endpoint_url=endpoint_url,
-                api_key=api_key,
-                model=model,
-            )
-            print(f"Using Anthropic VLM adapter for {model!r} on {endpoint_url!r}")
-        elif kind == "llm":
-            adapter = AnthropicMessagesAdapter(
-                endpoint_url=endpoint_url,
-                api_key=api_key,
-                model=model,
-            )
-            print(f"Using Anthropic LLM adapter for {model!r} on {endpoint_url!r}")
-        else:
+        if kind not in {"vlm", "llm"}:
             raise ValueError(f"Unsupported runtime kind: {kind}")
+        adapter = AnthropicMessagesAdapter(
+            endpoint_url=endpoint_url,
+            api_key=api_key,
+            model=model,
+        )
+        print(f"Using Anthropic Messages adapter for {kind.upper()} {model!r} on {endpoint_url!r}")
     else:
         endpoint = "/v1/chat/completions" if not base_url_obj.path else "/chat/completions"
         endpoint_url = f"{base_url_obj.geturl()}{endpoint}"
-        if kind == "vlm":
-            adapter = ChatCompletionsVlmAdapter(
-                endpoint_url=endpoint_url,
-                api_key=api_key,
-                model=model,
-            )
-            print(f"Using OpenAI VLM adapter for {model!r} on {endpoint_url!r}")
-        elif kind == "llm":
-            adapter = ChatCompletionsLlmAdapter(
-                endpoint_url=endpoint_url,
-                api_key=api_key,
-                model=model,
-            )
-            print(f"Using OpenAI LLM adapter for {model!r} on {endpoint_url!r}")
-        else:
+        if kind not in {"vlm", "llm"}:
             raise ValueError(f"Unsupported runtime kind: {kind}")
+        adapter = OpenAIChatAdapter(
+            endpoint_url=endpoint_url,
+            api_key=api_key,
+            model=model,
+        )
+        print(f"Using OpenAI Chat adapter for {kind.upper()} {model!r} on {endpoint_url!r}")
 
     return adapter
 

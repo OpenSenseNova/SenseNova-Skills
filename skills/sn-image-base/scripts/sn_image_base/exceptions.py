@@ -25,7 +25,7 @@ class MissingApiKeyError(BadConfigurationError):
 
     DEFAULT_MESSAGE = (
         "API key is required but was not provided. "
-        "Set the SN_API_KEY environment variable or pass --api-key explicitly."
+        "Set the SN_IMAGE_GEN_API_KEY environment variable or pass --api-key explicitly."
     )
 
 

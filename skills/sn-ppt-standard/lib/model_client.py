@@ -1,9 +1,9 @@
 """Lightweight, self-contained LLM/VLM client for ppt-* skills.
 
-Reads env from .env (via python-dotenv) and hits two endpoints:
+Reads env from .env (via python-dotenv) and hits two chat endpoints:
 
-    llm(system, user) -> str                              # LLM_BASE_URL/v1/chat/completions
-    vlm(system, user, images) -> str                      # VLM_BASE_URL/v1/chat/completions
+    llm(system, user) -> str                              # SN_TEXT_* / SN_CHAT_* /v1/chat/completions
+    vlm(system, user, images) -> str                      # SN_VISION_* / SN_CHAT_* /v1/chat/completions
 
 **T2I is intentionally NOT here.** Image generation routes through
 sn-image-base/scripts/sn_agent_runner.py sn-image-generate. This module is LLM/VLM only.
@@ -17,6 +17,7 @@ import json
 import mimetypes
 import os
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,10 @@ except ImportError:
     def load_dotenv(*a, **kw): return False  # noqa
 
 import httpx
+
+
+_DEFAULT_CHAT_BASE_URL = "https://token.sensenova.cn/v1"
+_DEFAULT_CHAT_MODEL = "sensenova-6.7-flash-lite"
 
 
 # ---------------------------------------------------------------------------
@@ -71,10 +76,10 @@ class LLMConfig:
     @classmethod
     def from_env(cls) -> "LLMConfig":
         return cls(
-            api_key=_env("LLM_API_KEY", "SN_LM_API_KEY"),
-            base_url=_env("LLM_BASE_URL", "SN_LM_BASE_URL"),
-            model=_env("LLM_MODEL", "SN_LM_MODEL", default=""),
-            timeout=float(_env("LLM_TIMEOUT", default="120")),
+            api_key=_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY"),
+            base_url=_env("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
+            model=_env("SN_TEXT_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
+            timeout=float(_env("SN_TEXT_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
         )
 
 
@@ -88,10 +93,10 @@ class VLMConfig:
     @classmethod
     def from_env(cls) -> "VLMConfig":
         return cls(
-            api_key=_env("VLM_API_KEY", "SN_LM_API_KEY"),
-            base_url=_env("VLM_BASE_URL", "SN_LM_BASE_URL"),
-            model=_env("VLM_MODEL", "SN_LM_MODEL", default=""),
-            timeout=float(_env("VLM_TIMEOUT", default="120")),
+            api_key=_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY"),
+            base_url=_env("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
+            model=_env("SN_VISION_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
+            timeout=float(_env("SN_VISION_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
         )
 
 
@@ -123,15 +128,37 @@ def _require(value: str, name: str) -> str:
     return value
 
 
-def llm(system_prompt: str, user_prompt: str, *, model: str | None = None) -> str:
+_LLM_CONNECT_TIMEOUT_S = 10.0
+_LLM_WRITE_TIMEOUT_S = 30.0
+_RETRIABLE_STATUS_CODES = {502, 503, 504}
+
+
+def _build_llm_timeout(timeout_s: float) -> httpx.Timeout:
+    return httpx.Timeout(timeout_s, connect=_LLM_CONNECT_TIMEOUT_S, write=_LLM_WRITE_TIMEOUT_S)
+
+
+def _is_transient_llm_error(exc: httpx.HTTPError) -> bool:
+    if isinstance(exc, (httpx.ReadTimeout, httpx.ConnectTimeout, httpx.ConnectError)):
+        return True
+    if isinstance(exc, httpx.HTTPStatusError):
+        return exc.response.status_code in _RETRIABLE_STATUS_CODES
+    return False
+
+
+def llm(system_prompt: str, user_prompt: str, *, model: str | None = None,
+        timeout: float | None = None, retries: int = 0,
+        request_name: str = "llm") -> str:
     """Call the LLM chat endpoint. Returns the assistant message text."""
     cfg = LLMConfig.from_env()
-    _require(cfg.api_key, "LLM_API_KEY / SN_LM_API_KEY")
-    _require(cfg.base_url, "LLM_BASE_URL / SN_LM_BASE_URL")
+    _require(cfg.api_key, "SN_TEXT_API_KEY / SN_CHAT_API_KEY")
+    _require(cfg.base_url, "SN_TEXT_BASE_URL / SN_CHAT_BASE_URL")
+    timeout_s = float(cfg.timeout if timeout is None else timeout)
+    max_attempts = max(1, int(retries) + 1)
+    timeout_cfg = _build_llm_timeout(timeout_s)
 
     url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
     payload: dict[str, Any] = {
-        "model": model or _require(cfg.model, "LLM_MODEL / SN_LM_MODEL"),
+        "model": model or _require(cfg.model, "SN_TEXT_MODEL / SN_CHAT_MODEL"),
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -141,28 +168,40 @@ def llm(system_prompt: str, user_prompt: str, *, model: str | None = None) -> st
         "Authorization": f"Bearer {cfg.api_key}",
         "Content-Type": "application/json",
     }
-    try:
-        resp = httpx.post(url, json=payload, headers=headers, timeout=cfg.timeout)
-        resp.raise_for_status()
-    except httpx.HTTPError as e:
-        body = ""
-        if isinstance(e, httpx.HTTPStatusError):
-            body = e.response.text[:500]
-        raise ModelClientError(f"LLM call failed: {e} | body: {body}") from e
+    for attempt in range(1, max_attempts + 1):
+        started_at = time.monotonic()
+        try:
+            resp = httpx.post(url, json=payload, headers=headers, timeout=timeout_cfg)
+            resp.raise_for_status()
+        except httpx.HTTPError as e:
+            body = ""
+            if isinstance(e, httpx.HTTPStatusError):
+                body = e.response.text[:500]
+            elapsed = time.monotonic() - started_at
+            if _is_transient_llm_error(e) and attempt < max_attempts:
+                sys.stderr.write(
+                    f"[llm:{request_name}] transient {type(e).__name__} on attempt {attempt}/{max_attempts} after {elapsed:.1f}s, retrying\n"
+                )
+                continue
+            raise ModelClientError(
+                f"LLM call failed [{request_name}] attempt {attempt}/{max_attempts}: {type(e).__name__}: {e} after {elapsed:.1f}s | body: {body}"
+            ) from e
 
-    data = resp.json()
-    try:
-        return data["choices"][0]["message"]["content"]
-    except (KeyError, IndexError, TypeError) as e:
-        raise ModelClientError(f"LLM response shape unexpected: {json.dumps(data)[:500]}") from e
+        data = resp.json()
+        try:
+            return data["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError) as e:
+            raise ModelClientError(
+                f"LLM response shape unexpected [{request_name}]: {json.dumps(data)[:500]}"
+            ) from e
 
 
 def vlm(system_prompt: str, user_prompt: str, images: list[str | Path], *,
         model: str | None = None) -> str:
     """Call the VLM chat endpoint with one or more image paths. Returns assistant text."""
     cfg = VLMConfig.from_env()
-    _require(cfg.api_key, "VLM_API_KEY / SN_LM_API_KEY")
-    _require(cfg.base_url, "VLM_BASE_URL / SN_LM_BASE_URL")
+    _require(cfg.api_key, "SN_VISION_API_KEY / SN_CHAT_API_KEY")
+    _require(cfg.base_url, "SN_VISION_BASE_URL / SN_CHAT_BASE_URL")
 
     content: list[dict[str, Any]] = [{"type": "text", "text": user_prompt}]
     for img in images:
@@ -178,7 +217,7 @@ def vlm(system_prompt: str, user_prompt: str, images: list[str | Path], *,
 
     url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
     payload = {
-        "model": model or _require(cfg.model, "VLM_MODEL / SN_LM_MODEL"),
+        "model": model or _require(cfg.model, "SN_VISION_MODEL / SN_CHAT_MODEL"),
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": content},
@@ -217,10 +256,10 @@ def env_summary() -> dict[str, str]:
     vlm_cfg = VLMConfig.from_env()
     return {
         "loaded_env_files": " ".join(str(p) for p in _LOADED_ENV) or "(none)",
-        "LLM.base_url": llm_cfg.base_url or "(unset)",
-        "LLM.model": llm_cfg.model or "(unset)",
-        "VLM.base_url": vlm_cfg.base_url or "(unset)",
-        "VLM.model": vlm_cfg.model or "(unset)",
+        "text.base_url": llm_cfg.base_url or "(unset)",
+        "text.model": llm_cfg.model or "(unset)",
+        "vision.base_url": vlm_cfg.base_url or "(unset)",
+        "vision.model": vlm_cfg.model or "(unset)",
     }
 
 

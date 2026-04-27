@@ -9,9 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REQUIRED = [
-    ("SN_LM_API_KEY", "LLM/VLM API key"),
-    ("SN_LM_BASE_URL", "LLM/VLM endpoint URL"),
-    ("SN_API_KEY", "Image generation API key"),
+    ("SN_CHAT_API_KEY", "shared text/vision chat API key"),
+    ("SN_IMAGE_GEN_API_KEY", "Image generation API key"),
 ]
 
 

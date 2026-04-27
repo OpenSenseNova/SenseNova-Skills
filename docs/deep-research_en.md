@@ -28,7 +28,7 @@ Deep-research skills handle planning, synthesis, and final writing. Search skill
 | Name | Role | Description |
 |------|------|-------------|
 | [`sn-search-academic`](../skills/sn-search-academic/SKILL.md) | Academic search | ArXiv (with section-by-section HTML full-text reading) / Semantic Scholar (citation counts and forward/backward citation chains) / PubMed (with PMC open-access full text) / Wikipedia (multi-language). |
-| [`sn-search-code`](../skills/sn-search-code/SKILL.md) | Developer search | GitHub (repos / code / issues) / Stack Overflow (by tag / votes) / HuggingFace (models / datasets / Spaces) / Hacker News. |
+| [`sn-search-code`](../skills/sn-search-code/SKILL.md) | Developer search | GitHub (repos / code / issues) / Stack Overflow (by tag / votes) / Hacker News / HuggingFace (models / datasets / Spaces). |
 | [`sn-search-social-cn`](../skills/sn-search-social-cn/SKILL.md) | Chinese social search | Bilibili / Zhihu / Douyin; Zhihu and Douyin require cookies, Bilibili cookie is optional. |
 | [`sn-search-social-en`](../skills/sn-search-social-en/SKILL.md) | English social search | Reddit (subreddit / sort / time range) / Twitter (X) (via TikHub) / YouTube (API key). |
 
@@ -122,7 +122,7 @@ Report artifacts are written to `{workspace}/reports/{YYYY-MM-DD}-{slug}-{hex4}/
 - `synthesis.md` — synthesis (main lines, consensus, conflicts, uncertainty)
 - `report.md` — final report
 
-More samples: [`docs/sn-deep-research-examples.md`](sn-deep-research-examples.md) (TBD).
+_See the "Sample Outputs" section in the top-level [`README.md`](../README.md#sample-outputs) for end-to-end examples._
 
 ### Search
 

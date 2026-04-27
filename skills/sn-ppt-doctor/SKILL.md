@@ -24,9 +24,9 @@ triggers:
 
 ## Hard checks (must pass before sn-ppt-entry can run)
 
-1. `SN_LM_API_KEY` is set
-2. `SN_LM_BASE_URL` is set
-3. `SN_API_KEY` is set
+1. Text chat API key is available via `SN_TEXT_API_KEY` or shared `SN_CHAT_API_KEY`
+2. Vision chat API key is available via `SN_VISION_API_KEY` or shared `SN_CHAT_API_KEY`
+3. `SN_IMAGE_GEN_API_KEY` is set
 4. `sn-image-base` is discoverable and `sn_agent_runner.py --help` works
 5. `node --version` >= 18
 
@@ -34,7 +34,7 @@ triggers:
 
 - `$(pwd)/ppt_decks/` creatable and writable (deck_dir parent; fixed — not configurable via env)
 - `sn-ppt-standard/scripts/export_pptx/node_modules` exists (run `npm install` on first use otherwise)
-- Optional env vars (`SN_IMAGE_GEN_*`, `VLM_*`, `LLM_*`) — displays current value or "unset"
+- Optional env vars (`SN_IMAGE_GEN_*`, `SN_CHAT_*`, `SN_TEXT_*`, `SN_VISION_*`) — displays current value or "unset"
 - `pypdf` / `python-docx` Python deps for doc parsing in sn-ppt-entry
 
 ## Invocation

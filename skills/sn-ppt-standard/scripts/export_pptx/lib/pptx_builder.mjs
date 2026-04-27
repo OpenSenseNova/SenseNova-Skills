@@ -25,6 +25,86 @@ let _currentChartTypeEnum = null;
 // <a:solidFill> for the real <a:gradFill>.
 let _currentGradientHandler = null;
 
+// Wrapper canvas dimensions (px) for the current slide. Used by
+// buildShapeElement to detect off-canvas decorative circles that HTML hides
+// via wrapper overflow:hidden but PPT shows in full.
+let _currentCanvasW = 1280;
+let _currentCanvasH = 720;
+
+/**
+ * Split a CSS multi-layer background-image string into top-level layers,
+ * preserving balanced parentheses (so nested rgba() / radial() inside a
+ * gradient layer doesn't break the split).
+ *
+ * Example input:
+ *   `linear-gradient(white, transparent), radial-gradient(at 80% 20%, ...), none`
+ * Returns:
+ *   ['linear-gradient(white, transparent)', 'radial-gradient(at 80% 20%, ...)', 'none']
+ *
+ * In CSS multi-layer backgrounds, the **first** layer is on top and the
+ * **last** layer is on the bottom (closest to the element's background-color).
+ * For background filling purposes, the last gradient layer is the one to
+ * use as the slide底色; earlier layers are decorative overlays.
+ */
+function splitBackgroundLayers(bg) {
+  const layers = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < bg.length; i++) {
+    const c = bg[i];
+    if (c === '(') depth++;
+    else if (c === ')') depth--;
+    else if (c === ',' && depth === 0) {
+      layers.push(bg.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  const tail = bg.slice(start).trim();
+  if (tail) layers.push(tail);
+  return layers;
+}
+
+/**
+ * Unified element dispatch — write any IR element type to the slide.
+ *
+ * Used by every overlay/header/ct/footer/rest path so that no element type
+ * gets silently dropped. Earlier versions had per-path switch statements
+ * that only handled shape/text/image/line, causing table/chart/svg/list
+ * elements in overlays/header/footer to vanish (e.g. semiconductor deck
+ * p4/p9 tables sitting under .wrapper > overlays were lost entirely).
+ */
+function addElement(pptx, slide, el) {
+  switch (el.type) {
+    case 'shape': {
+      const shapeType = el.data._isEllipse
+        ? pptx.ShapeType.ellipse
+        : (el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect);
+      slide.addShape(shapeType, el.data);
+      break;
+    }
+    case 'text':
+      slide.addText(el.data.text, el.data.options);
+      break;
+    case 'image':
+      slide.addImage(el.data);
+      break;
+    case 'line':
+      slide.addShape(pptx.ShapeType.line, el.data);
+      break;
+    case 'svg':
+      slide.addImage(el.data);
+      break;
+    case 'chart':
+      addChartElement(slide, el.data);
+      break;
+    case 'table':
+      slide.addTable(el.data.rows, el.data.options);
+      break;
+    case 'list':
+      slide.addText(el.data.text, el.data.options);
+      break;
+  }
+}
+
 /**
  * Dispatch a chart element to slide.addChart. Handles the 'combo' sentinel
  * by passing the array of {type,data,options} entries directly.
@@ -414,6 +494,20 @@ export function buildBackground(bgIR, bodyBgColor, deckDir) {
 
   if (!bgIR || !bgIR.styles) return result.slideBackground ? result : null;
 
+  // 方案 4：检测 #bg 是否实际覆盖整张 slide。若它只是局部装饰（如党委 p5 的
+  // 380×900 左侧红色 sidebar，仅占 24% 宽度），不要把它的 background-color/image
+  // 提升为 slide 全屏背景；保留 wrapper/body solid 作底色，让 #bg 走常规递归。
+  if (bgIR.bounds) {
+    const bgArea = (bgIR.bounds.w || 0) * (bgIR.bounds.h || 0);
+    const cw = _currentCanvasW || 1280;
+    const ch = _currentCanvasH || 720;
+    const slideArea = cw * ch;
+    if (slideArea > 0 && bgArea / slideArea < 0.85) {
+      // #bg 覆盖率不足 85% → 不当全屏背景。返回仅含 wrapper/body solid 的结果。
+      return result.slideBackground ? result : null;
+    }
+  }
+
   const { backgroundColor, backgroundImage, opacity } = bgIR.styles;
   let bgOpacity = opacity !== undefined ? parseFloat(opacity) : 1;
 
@@ -522,47 +616,86 @@ export function buildBackground(bgIR, bodyBgColor, deckDir) {
   }
 
   // --- 情况 3：仅 gradient（无图片 url）---
-  // pptxgenjs 不支持 gradient fill，SVG addImage 会产生 svgBlip 导致 PowerPoint 损坏。
-  // 用多层 solid fill shape 近似渐变（取首尾两个可见 stop）。
+  // CSS 多层背景：前面的层是装饰，最后一层是底色。
+  // 之前直接 parseLinearGradient(整个字符串) 会把所有层 stops 混在一起，
+  // 取出装饰层的颜色当底色（叉车 p4 黑底变金黄、宝可梦 p2 深蓝变橄榄黄）。
+  // 改为 splitLayers 后取**最后一层 gradient** 解析底色；装饰层不在这里画
+  // （由 D-ii 的 ellipse 路径处理）。
   if (backgroundImage && backgroundImage !== 'none') {
-    const linearGrad = parseLinearGradient(backgroundImage);
-    const radialGrad = !linearGrad ? parseRadialGradient(backgroundImage) : null;
-    const grad = linearGrad || radialGrad;
-    if (grad && grad.stops.length >= 2) {
-      const visibleStops = grad.stops.filter(st => !st.isTransparent);
-      if (visibleStops.length > 0) {
-        // 底色：第一个可见 stop
-        result.slideBackground = { fill: visibleStops[0].color };
-        // 如果有第二个不同颜色的 stop，叠加一个半透明层模拟渐变过渡
-        if (visibleStops.length >= 2 && visibleStops[visibleStops.length - 1].color !== visibleStops[0].color) {
-          const lastStop = visibleStops[visibleStops.length - 1];
-          const lastAlpha = lastStop.rawColor ? extractCssAlpha(lastStop.rawColor) : 1;
+    const layers = splitBackgroundLayers(backgroundImage);
+    // 找最底层 gradient（CSS：最后一个 layer 在底）
+    let bottomGrad = null;
+    for (let i = layers.length - 1; i >= 0; i--) {
+      const layer = layers[i];
+      if (!layer || layer === 'none') continue;
+      if (/^linear-gradient\s*\(/i.test(layer)) {
+        bottomGrad = parseLinearGradient(layer);
+        break;
+      }
+      if (/^radial-gradient\s*\(/i.test(layer)) {
+        bottomGrad = parseRadialGradient(layer);
+        break;
+      }
+    }
+    if (bottomGrad && bottomGrad.stops && bottomGrad.stops.length > 0) {
+      const visibleStops = bottomGrad.stops.filter(st => !st.isTransparent);
+      // 如果可见 stops 只有 1 个且 alpha 很低（< 0.5），这是装饰层不是底色 →
+      // 跳到下面的"情况 4 纯色背景"用 backgroundColor 作底色（叉车 p4 的黑底）
+      const onlyDecorStop = visibleStops.length === 1
+        && (() => {
+          const a = visibleStops[0].rawColor ? extractCssAlpha(visibleStops[0].rawColor) : 1;
+          return a < 0.5;
+        })();
+      if (visibleStops.length >= 2) {
+        // 底色取**最不透明**的 stop（radial 底色 fill 模式：最后 stop alpha=1）
+        let bestStop = visibleStops[0];
+        let bestAlpha = bestStop.rawColor ? extractCssAlpha(bestStop.rawColor) : 1;
+        for (const st of visibleStops) {
+          const a = st.rawColor ? extractCssAlpha(st.rawColor) : 1;
+          if (a > bestAlpha) { bestStop = st; bestAlpha = a; }
+        }
+        result.slideBackground = { fill: bestStop.color };
+        // 叠加首个不同色 stop 作为方向感（仅 linear，radial 由 D-ii ellipse 处理）
+        if (bottomGrad.type === 'linear' && visibleStops[0] !== bestStop
+            && visibleStops[0].color !== bestStop.color) {
+          const firstAlpha = visibleStops[0].rawColor ? extractCssAlpha(visibleStops[0].rawColor) : 1;
           result.bgElements.push({
             type: 'shape',
             data: {
               x: 0, y: 0, w: 10, h: 5.625,
-              fill: { color: lastStop.color, transparency: Math.round((1 - lastAlpha * 0.5) * 100) },
+              fill: { color: visibleStops[0].color, transparency: Math.round((1 - firstAlpha * 0.5) * 100) },
             }
           });
         }
-      }
-      return result;
-    }
-    // single-stop gradient or other type → degrade to first color
-    if (linearGrad && linearGrad.stops.length > 0) {
-      result.slideBackground = { fill: linearGrad.stops[0].color };
-      return result;
-    }
-    if (radialGrad && radialGrad.stops.length > 0) {
-      result.slideBackground = { fill: radialGrad.stops[0].color };
-      return result;
-    }
-    const colorMatch = backgroundImage.match(/(?:rgb|rgba)\s*\([^)]*\)|#[0-9a-fA-F]{3,8}/);
-    if (colorMatch) {
-      const hex = cssColorToHex(colorMatch[0]);
-      if (hex) {
-        result.slideBackground = { fill: hex };
         return result;
+      }
+      if (visibleStops.length === 1 && !onlyDecorStop) {
+        result.slideBackground = { fill: visibleStops[0].color };
+        return result;
+      }
+      // onlyDecorStop=true → 装饰光晕，不当底色，跳到情况 4 用 backgroundColor
+      if (onlyDecorStop) {
+        // skip colorMatch fallback below; continue to case 4
+      } else {
+        // 没找到任何 visible stop，再尝试 colorMatch（最坏 fallback）
+        const colorMatch = backgroundImage.match(/(?:rgb|rgba)\s*\([^)]*\)|#[0-9a-fA-F]{3,8}/);
+        if (colorMatch) {
+          const hex = cssColorToHex(colorMatch[0]);
+          if (hex) {
+            result.slideBackground = { fill: hex };
+            return result;
+          }
+        }
+      }
+    } else {
+      // 整个字符串 parse 不出 gradient，最坏 fallback
+      const colorMatch = backgroundImage.match(/(?:rgb|rgba)\s*\([^)]*\)|#[0-9a-fA-F]{3,8}/);
+      if (colorMatch) {
+        const hex = cssColorToHex(colorMatch[0]);
+        if (hex) {
+          result.slideBackground = { fill: hex };
+          return result;
+        }
       }
     }
   }
@@ -669,10 +802,13 @@ export function buildTextElement(node) {
 
   // 文本框宽度余量：PowerPoint 字体渲染比 Chrome 稍宽（尤其字体替换时），
   // 精确匹配 HTML 像素宽度会导致本来一行的文字在 PPT 中换行。
-  // 策略：取 5% 比例余量和半个字符宽度中的较大值。
+  //
+  // R4 修复（Turn-2）：之前 buffer = max(5%, 半字符)，禁用 autoFit 后字体差异
+  // 导致 "智能物业系统" 拆成 "智能物业系\n统"、单字落单等问题。改为更宽的
+  // buffer：12% 比例 + 1 个字符宽度。
   const fontSizePx = parseFloat(s.fontSize) || 16;
-  const halfCharPx = fontSizePx * 0.6;  // 半个中文字符 ≈ 0.6em
-  const bufferPx = Math.max(b.w * 0.05, halfCharPx);
+  const oneCharPx = fontSizePx * 1.0;
+  const bufferPx = Math.max(b.w * 0.12, oneCharPx);
   const textW = pxToInch(b.w + bufferPx);
 
   // E-vi: word-break: keep-all / white-space: nowrap → 不允许 wrap
@@ -850,6 +986,24 @@ export function buildShapeElement(node) {
   const b = node.bounds;
   if (!hasVisualDecoration(node)) return null;
 
+  // 跳过"装饰圆/椭圆 + 越界"组合：HTML 这种通常靠 wrapper overflow:hidden
+  // 实现"角落弧形光晕"，PPT 没遮罩 → 整圆完整暴露成大同心圆扩散。
+  // 启发式：宽高近似相等 + border-radius>=50% + 半径 ≥ 200px + bounds
+  // 部分超出 wrapper（按 1280×720 估算，越界即半径以上、原点为负或超过画布）。
+  const r = parseFloat(s.borderRadius);
+  const isCircular = r > 0 && Math.abs(b.w - b.h) < Math.max(b.w, b.h) * 0.1
+    && (s.borderRadius?.includes('%') ? parseFloat(s.borderRadius) >= 50
+        : (r / Math.min(b.w, b.h)) * 100 >= 50);
+  const hasGradFill = s.backgroundImage && s.backgroundImage !== 'none'
+    && s.backgroundImage.includes('gradient');
+  const isLargeRadius = b.w >= 200 && b.h >= 200;
+  const isOffCanvas = b.x < -10 || b.y < -10
+    || (b.x + b.w) > (_currentCanvasW + 10)
+    || (b.y + b.h) > (_currentCanvasH + 10);
+  if (isCircular && hasGradFill && isLargeRadius && isOffCanvas) {
+    return null;  // 装饰圆 + 越界 → 跳过，避免 OOXML 大同心圆扩散
+  }
+
   const shape = {
     x: pxToInch(b.x),
     y: pxToInch(b.y),
@@ -877,14 +1031,42 @@ export function buildShapeElement(node) {
       shape.fill = { color: tok };
       gradientApplied = true;
     } else if (radial && radial.stops && radial.stops.length >= 2) {
-      const stops = radial.stops.map((st, i) => ({
-        pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(radial.stops.length - 1, 1)),
-        color: st.color,
-        alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
-      }));
-      const tok = _currentGradientHandler.registerRadial({ stops });
-      shape.fill = { color: tok };
-      gradientApplied = true;
+      // 元素自身用 radial-gradient 作 background-image：
+      //  - 如果 shape 形状是圆/椭圆（border-radius 50% 且宽高近似相等）→
+      //    OOXML radial fill 限定在 ellipse 内，几何匹配，可走 token 路径
+      //  - 否则 shape 是 rect → OOXML radial fill 在 rect 上是中心扩散
+      //    同心圆，与 CSS radial 视觉相去甚远（用户反馈"难看的同心圆"）。
+      //    退化为 solid color：取首个非透明 stop。
+      const isEllipseShape = (() => {
+        const r = parseFloat(s.borderRadius);
+        if (!r || r <= 0) return false;
+        const radiusPct = s.borderRadius?.includes('%') ? parseFloat(s.borderRadius)
+          : (r / Math.min(b.w, b.h)) * 100;
+        return radiusPct >= 50 && Math.abs(b.w - b.h) < Math.max(b.w, b.h) * 0.1;
+      })();
+      if (isEllipseShape) {
+        const stops = radial.stops.map((st, i) => ({
+          pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(radial.stops.length - 1, 1)),
+          color: st.color,
+          alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
+        }));
+        const tok = _currentGradientHandler.registerRadial({ stops });
+        shape.fill = { color: tok };
+        gradientApplied = true;
+      } else {
+        // rect 形状：退化 solid。取首个非透明 stop 作中心色，alpha 保留。
+        const firstVisible = radial.stops.find(st => !st.isTransparent);
+        if (firstVisible) {
+          const alpha = firstVisible.rawColor ? extractCssAlpha(firstVisible.rawColor) : 1;
+          const elOpacity = s.opacity !== undefined ? parseFloat(s.opacity) : 1;
+          const combinedAlpha = alpha * (isNaN(elOpacity) ? 1 : elOpacity);
+          shape.fill = {
+            color: firstVisible.color,
+            transparency: Math.round((1 - combinedAlpha) * 100),
+          };
+          gradientApplied = true;  // 标记 fill 已设
+        }
+      }
     }
   }
   if (gradientApplied) {
@@ -1354,14 +1536,19 @@ export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, paren
       // 显示尺寸（object-fit workaround 会改 imgEl.w/h 为原始尺寸）
       const displayW = imgEl.sizing ? imgEl.sizing.w : imgEl.w;
       const displayH = imgEl.sizing ? imgEl.sizing.h : imgEl.h;
-      // 图片 opacity < 1 → 叠加黑色半透明遮罩模拟暗化
+      // 图片 opacity < 1 → 叠加底色半透明遮罩模拟"图片淡入底色"效果。
+      // 之前用 '000000' 黑色硬编码遮罩，浅色 deck 会被盖死整页；
+      // 改用 parentBgColor / wrapper 底色，使图片淡到只剩底色而非黑。
+      // 对 opacity < 0.1 的纯装饰图（如 bg-grid 0.04）直接跳过遮罩 —— 那种
+      // HTML 里几乎不可见，PPT 里强行模拟反而引入伪影。
       const imgOpacity = s.opacity !== undefined ? parseFloat(s.opacity) : 1;
-      if (imgOpacity < 1 && imgOpacity > 0) {
+      if (imgOpacity < 1 && imgOpacity >= 0.1) {
+        const maskColor = parentBgColor || 'FFFFFF';
         elements.push({
           type: 'shape',
           data: {
             x: imgEl.x, y: imgEl.y, w: displayW, h: displayH,
-            fill: { color: '000000', transparency: Math.round(imgOpacity * 100) },
+            fill: { color: maskColor, transparency: Math.round(imgOpacity * 100) },
             ...(parentBorderRadius > 0 ? { rectRadius: pxToInch(parentBorderRadius) } : {}),
           }
         });
@@ -1495,37 +1682,136 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   // Capture ECharts options for this page so flattenIRToElements can route
   // <div id="chart_N"> nodes to addChart instead of addImage.
   _currentChartOptions = ir._chartOptions || {};
+  _currentCanvasW = ir.canvasWidth || 1280;
+  _currentCanvasH = ir.canvasHeight || 720;
   _currentChartTypeEnum = pptx.ChartType;
 
   const slide = pptx.addSlide();
 
-  // === D-ii: 全屏背景渐变 ===
-  // pptxgenjs 的 slide.background 只接受 solid color，无法表达渐变。
-  // 改成在 slide 顶部画一张全屏 shape，fill 用 gradient token，让后处理换成
-  // 真正的 <a:gradFill>。这必须在所有其他 shape 之前 add，确保它在最底层。
+  // === D-ii: 全屏背景渐变（方案 3 — radial 用半透明 ellipse 装饰层模拟）===
+  //
+  // CSS 多层背景里 radial-gradient 几乎全部用作"角落微微泛色光晕装饰"
+  // 配 linear-gradient 底色：
+  //   `radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.08), transparent),
+  //    linear-gradient(135deg, white, rgb(245, 240, 235))`
+  //
+  // OOXML radial fill 只能"中心扩散"，无法表达 CSS 的偏心圆心 + alpha → 透明
+  // → 强行映射会变成又大又突兀的高饱和同心圆。
+  //
+  // 方案：
+  //   1. 底色：取多层背景里的 linear 层（在最后 / 最底层）画全屏 shape；
+  //      若没有 linear → 用 wrapper/body solidcolor 或白色作 slide.background。
+  //   2. 装饰层：每个 radial 层 → 在对应圆心位置画一个 ellipse shape，
+  //      尺寸由半径（最远 stop 位置）决定，fill 用 stops 第一个非透明色 + 低 alpha。
+  //      这模拟 HTML 那种"四角光晕"效果，避免 OOXML radial 的中心同心圆问题。
   if (_currentGradientHandler) {
     const candidates = [ir.wrapperBgImage, ir.bodyBgImage, ir.bg?.styles?.backgroundImage]
       .filter(s => s && s !== 'none' && s.includes('gradient') && !s.includes('url('));
+
+    let bgRendered = false;
     for (const src of candidates) {
-      const linear = parseLinearGradient(src);
-      const radial = !linear ? parseRadialGradient(src) : null;
-      const grad = linear || radial;
-      if (grad && grad.stops.length >= 2) {
-        const stops = grad.stops.map((st, i) => ({
-          pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(grad.stops.length - 1, 1)),
-          color: st.color,
-          alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
-        }));
-        const tok = linear
-          ? _currentGradientHandler.registerLinear({ angle: linear.angle, stops })
-          : _currentGradientHandler.registerRadial({ stops });
-        slide.addShape(pptx.ShapeType.rect, {
-          x: 0, y: 0, w: 10, h: 5.625,
+      if (bgRendered) break;
+      const layers = splitBackgroundLayers(src);
+      const linearLayer = layers.find(l => /^linear-gradient\s*\(/i.test(l));
+      const radialLayers = layers.filter(l => /^radial-gradient\s*\(/i.test(l));
+
+      // --- 步骤 1：底色 ---
+      let bottomLaid = false;
+      if (linearLayer) {
+        const linear = parseLinearGradient(linearLayer);
+        if (linear && linear.stops.length >= 2) {
+          const stops = linear.stops.map((st, i) => ({
+            pos: st.position !== undefined ? st.position : Math.round(i * 100 / Math.max(linear.stops.length - 1, 1)),
+            color: st.color,
+            alpha: st.rawColor ? extractCssAlpha(st.rawColor) : 1,
+          }));
+          if (Math.max(...stops.map(s => s.alpha)) >= 0.3) {
+            const tok = _currentGradientHandler.registerLinear({ angle: linear.angle, stops });
+            slide.addShape(pptx.ShapeType.rect, {
+              x: 0, y: 0, w: 10, h: 5.625,
+              fill: { color: tok },
+              line: { type: 'none' },
+            });
+            bottomLaid = true;
+          }
+        }
+      }
+      // 若没有 linear 兜底，用 wrapper/body 的 solid background-color 作底色
+      // （典型 HTML 模式：body 是浅色 solid，wrapper 上叠 radial 装饰光晕）。
+      if (!bottomLaid && radialLayers.length > 0) {
+        const bottomColor = cssColorToHex(ir.wrapperBgColor)
+          || cssColorToHex(ir.bodyBgColor) || 'FFFFFF';
+        slide.background = { fill: bottomColor };
+        bottomLaid = true;
+      }
+
+      // --- 步骤 2：radial 装饰层（每个 → 半透明 ellipse） ---
+      // CSS radial-gradient 有两种使用模式：
+      //   A. 全屏底色 radial：最后 stop alpha=1 实色（如 `radial(yellow 0%, blue 100%)`
+      //      或 `radial(transparent 0%, rgb(13,33,55) 60%)`，最后 stop 是底色填充）
+      //   B. 装饰光晕 radial：最后 stop alpha=0 透明（如 `radial(yellow 0%, transparent 50%)`
+      //      → 角落光晕，叠在底色上）
+      // 类型 A 应该把最后 stop 作为 slide.background（不画 ellipse 装饰，避免重影）；
+      // 类型 B 走原 ellipse glow 路径。
+      const SLIDE_W = 10, SLIDE_H = 5.625;  // inch
+      for (const rl of radialLayers) {
+        const r = parseRadialGradient(rl);
+        if (!r || !r.stops || r.stops.length < 1) continue;
+
+        // 检测类型 A：最后一个 stop alpha=1 → 这是底色，不是装饰
+        const lastStop = r.stops[r.stops.length - 1];
+        const lastAlpha = lastStop.rawColor ? extractCssAlpha(lastStop.rawColor) : 1;
+        if (!lastStop.isTransparent && lastAlpha >= 0.95) {
+          // 类型 A：把最后 stop 作 slide.background solid 底色（覆盖之前可能的 wrapper/body）
+          slide.background = { fill: lastStop.color };
+          bottomLaid = true;
+          // 不画 ellipse glow（避免和全屏底色重叠扰动）
+          continue;
+        }
+
+        // 类型 B：装饰光晕，走 ellipse glow 路径
+        const visible = r.stops.find(st => !st.isTransparent
+          && (!st.rawColor || extractCssAlpha(st.rawColor) > 0.02));
+        if (!visible) continue;
+        const stopAlpha = visible.rawColor ? extractCssAlpha(visible.rawColor) : 1;
+
+        // 半径估算：最远透明 stop 的位置百分比（默认 50%，按短边算半径）
+        const farStop = r.stops[r.stops.length - 1];
+        let radiusPct = 50;
+        if (farStop.position !== undefined) radiusPct = farStop.position;
+        // 限定在 [20, 80]：太小看不见，太大就盖住整张
+        radiusPct = Math.max(20, Math.min(80, radiusPct));
+
+        // 椭圆 bounds：圆心 cx%/cy%，半径用 SLIDE_W/H × radiusPct/100
+        const radiusW = SLIDE_W * radiusPct / 100;
+        const radiusH = SLIDE_H * radiusPct / 100;
+        const x = SLIDE_W * r.cx / 100 - radiusW;
+        const y = SLIDE_H * r.cy / 100 - radiusH;
+        const w = radiusW * 2;
+        const h = radiusH * 2;
+
+        // 用 ellipse + 内部 radial gradient（中心实色 → 边缘透明）模拟 CSS 光晕
+        // 软过渡，避免 solid ellipse 的硬边。OOXML radial gradFill 在 ellipse 内
+        // 的渲染是限定在 ellipse 范围里的（不会像全屏 shape 那样扩散到整张），
+        // 几何上和 CSS radial-gradient 等价。
+        //
+        // peakAlpha 设计：CSS 的 stopAlpha 已含意图（设计师定的强度），但纯实色
+        // alpha=1 在 PPT 里仍会显眼，cap 到 0.4 以保持"装饰"质感而非"主元素"。
+        const peakAlpha = Math.min(0.4, stopAlpha * 0.8);
+        const tok = _currentGradientHandler.registerRadial({
+          stops: [
+            { pos: 0, color: visible.color, alpha: peakAlpha },
+            { pos: 100, color: visible.color, alpha: 0 },
+          ],
+        });
+        slide.addShape(pptx.ShapeType.ellipse, {
+          x, y, w, h,
           fill: { color: tok },
           line: { type: 'none' },
         });
-        break;  // 只画一层全屏渐变
       }
+
+      if (bottomLaid || radialLayers.length > 0) bgRendered = true;
     }
   }
 
@@ -1582,52 +1868,29 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   }
 
   // 1c. 渲染 #bg 的子元素（装饰层：mesh-gradient、grid-overlay、SVG motif 等）
-  if (ir.bg && ir.bg.children && ir.bg.children.length > 0) {
+  // 方案 4：若 #bg 是局部装饰（不全屏，党委 p5 类），把 #bg 节点本身也走 flatten
+  // 路径输出（含其自身的 shape + 所有 children）。全屏 bg 时只渲染 children
+  // （shape 已被 buildBackground 提升为 slide.background，避免重复）。
+  if (ir.bg) {
+    const bgArea = (ir.bg.bounds?.w || 0) * (ir.bg.bounds?.h || 0);
+    const slideArea = (ir.canvasWidth || 1280) * (ir.canvasHeight || 720);
+    const bgIsPartial = slideArea > 0 && bgArea / slideArea < 0.85;
+    if (bgIsPartial) {
+      const bgEls = flattenIRToElements(ir.bg, deckDir, 0, bodyBgHex);
+      for (const el of bgEls) addElement(pptx, slide, el);
+    } else if (ir.bg.children && ir.bg.children.length > 0) {
       for (const child of ir.bg.children) {
         const bgChildElements = flattenIRToElements(child, deckDir, 0, bodyBgHex);
-        for (const el of bgChildElements) {
-          switch (el.type) {
-            case 'shape': {
-              const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-              slide.addShape(shapeType, el.data);
-              break;
-            }
-            case 'text':
-              slide.addText(el.data.text, el.data.options);
-              break;
-            case 'image':
-              slide.addImage(el.data);
-              break;
-            case 'svg':
-              slide.addImage(el.data);
-              break;
-            case 'chart':
-              addChartElement(slide, el.data);
-              break;
-          }
-        }
+        for (const el of bgChildElements) addElement(pptx, slide, el);
       }
     }
+  }
 
   // 2. 遮罩层（.wrapper 中的 overlay 元素，如半透明渐变遮罩）
   if (ir.overlays && ir.overlays.length > 0) {
     for (const overlay of ir.overlays) {
       const overlayElements = flattenIRToElements(overlay, deckDir, 0, bodyBgHex);
-      for (const el of overlayElements) {
-        switch (el.type) {
-          case 'shape': {
-            const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-            slide.addShape(shapeType, el.data);
-            break;
-          }
-          case 'text':
-            slide.addText(el.data.text, el.data.options);
-            break;
-          case 'image':
-            slide.addImage(el.data);
-            break;
-        }
-      }
+      for (const el of overlayElements) addElement(pptx, slide, el);
     }
   }
 
@@ -1635,125 +1898,27 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
   if (ir.rest && ir.rest.length > 0) {
     for (const restNode of ir.rest) {
       const restElements = flattenIRToElements(restNode, deckDir, 0, bodyBgHex);
-      for (const el of restElements) {
-        switch (el.type) {
-          case 'shape': {
-            const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-            slide.addShape(shapeType, el.data);
-            break;
-          }
-          case 'text':
-            slide.addText(el.data.text, el.data.options);
-            break;
-          case 'image':
-            slide.addImage(el.data);
-            break;
-          case 'line':
-            slide.addShape(pptx.ShapeType.line, el.data);
-            break;
-          case 'svg':
-            slide.addImage(el.data);
-            break;
-          case 'chart':
-            addChartElement(slide, el.data);
-            break;
-          case 'table':
-            slide.addTable(el.data.rows, el.data.options);
-            break;
-          case 'list':
-            slide.addText(el.data.text, el.data.options);
-            break;
-        }
-      }
+      for (const el of restElements) addElement(pptx, slide, el);
     }
   }
 
   // 3. 页头（#header，通常包含页面标题）
   if (ir.header) {
     const headerElements = flattenIRToElements(ir.header, deckDir, 0, bodyBgHex);
-    for (const el of headerElements) {
-      switch (el.type) {
-        case 'text':
-          slide.addText(el.data.text, el.data.options);
-          break;
-        case 'shape': {
-          const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-          slide.addShape(shapeType, el.data);
-          break;
-        }
-        case 'line':
-          slide.addShape(pptx.ShapeType.line, el.data);
-          break;
-        case 'image':
-          slide.addImage(el.data);
-          break;
-      }
-    }
+    for (const el of headerElements) addElement(pptx, slide, el);
   }
 
   // 4. 内容区
   if (ir.ct) {
     const elements = flattenIRToElements(ir.ct, deckDir, 0, bodyBgHex);
-    for (const el of elements) {
-      switch (el.type) {
-        case 'text':
-          slide.addText(el.data.text, el.data.options);
-          break;
-        case 'image':
-          slide.addImage(el.data);
-          break;
-        case 'shape': {
-          const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-          slide.addShape(shapeType, el.data);
-          break;
-        }
-        case 'line':
-          slide.addShape(pptx.ShapeType.line, el.data);
-          break;
-        case 'svg':
-          slide.addImage(el.data);
-          break;
-        case 'chart':
-          addChartElement(slide, el.data);
-          break;
-        case 'table':
-          slide.addTable(el.data.rows, el.data.options);
-          break;
-        case 'list':
-          slide.addText(el.data.text, el.data.options);
-          break;
-      }
-    }
+    for (const el of elements) addElement(pptx, slide, el);
   }
 
   // 5. 页脚（与页头/内容区一样完整处理子元素）
   if (ir.footer) {
     const footerElements = flattenIRToElements(ir.footer, deckDir, 0, bodyBgHex);
     if (footerElements.length > 0) {
-      for (const el of footerElements) {
-        switch (el.type) {
-          case 'text':
-            slide.addText(el.data.text, el.data.options);
-            break;
-          case 'shape': {
-            const shapeType = el.data._isEllipse ? pptx.ShapeType.ellipse : el.data.rectRadius ? pptx.ShapeType.roundRect : pptx.ShapeType.rect;
-            slide.addShape(shapeType, el.data);
-            break;
-          }
-          case 'image':
-            slide.addImage(el.data);
-            break;
-          case 'line':
-            slide.addShape(pptx.ShapeType.line, el.data);
-            break;
-          case 'svg':
-            slide.addImage(el.data);
-            break;
-          case 'chart':
-            addChartElement(slide, el.data);
-            break;
-        }
-      }
+      for (const el of footerElements) addElement(pptx, slide, el);
     } else {
       // 回退：如果 flattenIRToElements 为空（纯文本 footer），直接构建文本
       const footerText = buildTextElement(ir.footer);

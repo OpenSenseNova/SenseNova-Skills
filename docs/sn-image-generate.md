@@ -2,12 +2,12 @@
 
 简体中文 | [English](sn-image-generate_en.md)
 
-本文档汇总 SN (SenseNova) 相关技能（`sn-image-doctor`、`sn-image-base`、`sn-infographic`），并提供在 OpenClaw / Hermes 中端到端使用这些技能的 Quick Start。
+本文档汇总 SN (SenseNova) 图像生成相关技能（`sn-image-doctor`、`sn-image-base`、`sn-infographic`、`sn-image-resume`、`sn-image-imitate`），并提供在 OpenClaw / Hermes 中端到端使用这些技能的 Quick Start。
 
 ## 环境要求
 
 - **Python** 3.9 或更高版本（推荐 3.10+）。
-- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（`SN_API_KEY`、`SN_LM_API_KEY`，详见 Quick Start）。
+- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（`SN_IMAGE_GEN_API_KEY`、`SN_CHAT_API_KEY`，详见 Quick Start）。
 
 ## 技能介绍
 
@@ -38,6 +38,24 @@
 - 多轮生成 + VLM 评审
 - 质量排序并输出最优结果
 
+### sn-image-resume（Tier 1）
+
+构建于 `sn-image-base` 之上的场景技能，用于生成设计感的作品集简历图片。完整行为见 [`skills/sn-image-resume/SKILL.md`](../skills/sn-image-resume/SKILL.md)。
+
+- 接收对话中的简历内容文本
+- 支持用户可选的风格指令
+- 应用固定的作品集简历版式规则
+- 通过 `sn-image-generate` 生成长竖版简历图
+
+### sn-image-imitate（Tier 1）
+
+构建于 `sn-image-base` 之上的场景技能，用于模仿参考图像风格并替换内容。完整行为见 [`skills/sn-image-imitate/SKILL.md`](../skills/sn-image-imitate/SKILL.md)。
+
+- 从参考图中提取高保真长描述（long caption）与布局蓝图
+- 根据用户目标内容重写描述，同时保持风格与布局一致
+- 带布局一致性评审的多轮生成与有界重试
+- 返回结构化过程产物，便于调试与复现
+
 ## Quick Start
 
 通过 [OpenClaw](https://openclaw.ai/) 使用这些技能。
@@ -53,7 +71,7 @@
 | 方式 | 操作 |
 |------|------|
 | **本机共享** | 把 `skills/` 下的子目录拷贝或软链接到 `~/.openclaw/skills/`（OpenClaw）或 `~/.hermes/skills/openclaw-imports/`（Hermes）。 |
-| **工作区 `skills/`** | 把 `skills/sn-image-base`、`skills/sn-infographic`、`skills/sn-image-doctor` 拷贝或软链接到智能体工作区。 |
+| **工作区 `skills/`** | 把 `skills/sn-image-base`、`skills/sn-infographic`、`skills/sn-image-doctor`、`skills/sn-image-resume`、`skills/sn-image-imitate` 拷贝或软链接到智能体工作区。 |
 | **`openclaw.json`（仅 OpenClaw）** | 通过 `skills.load.extraDirs` 添加本仓库 `skills` 目录的绝对路径（即所有技能子目录的父目录，示例如下）。 |
 
 ```json5
@@ -85,8 +103,8 @@ pip install -r skills/sn-image-base/requirements.txt
 将以下环境变量写入 `~/.openclaw/.env`（OpenClaw）或 `~/.hermes/.env`（Hermes）：
 
 ```ini
-SN_API_KEY="your-api-key"
-SN_LM_API_KEY="your-api-key"
+SN_IMAGE_GEN_API_KEY="your-api-key"
+SN_CHAT_API_KEY="your-api-key"
 ```
 
 **注意：** 切勿将 `.env` 或 API Key 提交到 git。
