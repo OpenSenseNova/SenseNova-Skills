@@ -246,7 +246,7 @@ hermes
 ### 3.1 先克隆仓库
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills.git
+git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 cd SenseNova-Skills
 ```
 
