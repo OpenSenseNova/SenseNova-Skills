@@ -1,6 +1,6 @@
 # Single-skill example: generative AI revolution PPT generation
 
-This example packages a generated 8-page PPT about the generative AI revolution in the same deliverable shape used by the other examples: docs at the top level, plus a `result/` directory containing the final PPTX and a portable source archive.
+This example shows how to use SenseNova-Skills' **PPT generation** ability with nothing but a single prompt — no input file at all — to have the agent build a ready-to-open PPTX given a topic, page count, color palette, style requirement, and audience.
 
 [中文版 / Chinese](README_CN.md)
 
@@ -8,16 +8,9 @@ This example packages a generated 8-page PPT about the generative AI revolution 
 
 No bundled input files.
 
-Based on the saved task metadata, the deck was configured as:
-
-- Title: `生成式AI革命：从聊天机器人到内容生产引擎`
-- Language: Chinese (`zh-CN`)
-- Pages: `8`
-- Style direction: `科技展览 × 高端杂志`
-
 ## Walkthrough
 
-Representative prompt reconstructed from `task-pack.json`:
+Prompt the agent directly:
 
 ```text
 Build an 8-page Chinese PPT titled "生成式AI革命：从聊天机器人到内容生产引擎".
@@ -26,10 +19,10 @@ Cover text generation, image generation, video generation, code generation, offi
 business applications, and end with a closing call to action.
 ```
 
-The packaged source bundle contains:
+The agent sequentially produces:
 
 1. Deck metadata and planning files (`info-pack.json`, `style-spec.json`, `task-pack.json`, `storyboard.json`)
-2. Eight per-page HTML files under `pages/`
+2. 8 per-page HTML files under `pages/`
 3. Referenced images under `images/`
 4. Review notes in `review.md`
 
@@ -48,6 +41,6 @@ Inside the zip, the directory `生成式AI革命_PPTX_20260416_2125/` contains:
 
 ```text
 result/
-├── 生成式AI革命_PPTX_20260416_2125.pptx
-└── 生成式AI革命_PPTX_20260416_2125.zip
+├── 生成式AI革命_PPTX_20260416_2125.pptx   # Final PPT (open directly)
+└── 生成式AI革命_PPTX_20260416_2125.zip    # HTML source and intermediate artifacts archive
 ```
