@@ -1031,6 +1031,8 @@ def cmd_export(deck: Path) -> int:
     converter = SKILL_DIR / "scripts" / "export_pptx" / "html_to_pptx.mjs"
     if not converter.exists():
         return _fail("export_pptx/html_to_pptx.mjs missing — run npm install in scripts/export_pptx")
+    if not (deck / "review.md").exists() and not (deck / "review.json").exists():
+        _write_text(deck / "review.md", "# Review\n\nAuto-generated placeholder for PPTX export.\n")
     cmd = ["node", str(converter), "--deck-dir", str(deck), "--force"]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:

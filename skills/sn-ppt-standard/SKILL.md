@@ -32,6 +32,12 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 4. **Do NOT add `timing` / logging / retry layers.** The skill is intentionally thin.
 5. **Do NOT go silent between execs.** Echo a one-line Chinese progress message after each exec before issuing the next.
 
+## External research and image assets
+
+- If the request depends on current facts or external real-world images, use the web/image search skills and follow their own `SKILL.md` exactly, draw SVG only as a fallback option, use placeholder images only as the last resort, and don't use the image generation tool unless the user requested.
+- Before final HTML is accepted, any chosen remote image and user-uploaded image must be saved under `<deck_dir>/images/` and referenced via deck-local relative paths. Do not leave remote image URLs in the final HTML.
+- If a chosen source fails repeatedly or does not yield a usable asset, pick another result or redesign the page without that image.
+
 ## Pipeline
 
 ```bash
