@@ -77,9 +77,15 @@ class LLMConfig:
     @classmethod
     def from_env(cls) -> "LLMConfig":
         return cls(
-            api_key=_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY"),
-            base_url=_env("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
-            model=_env("SN_TEXT_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
+            api_key=_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", "LLM_API_KEY", "OPENAI_API_KEY"),
+            base_url=_env(
+                "SN_TEXT_BASE_URL",
+                "SN_CHAT_BASE_URL",
+                "LLM_BASE_URL",
+                "OPENAI_BASE_URL",
+                default=_DEFAULT_CHAT_BASE_URL,
+            ),
+            model=_env("SN_TEXT_MODEL", "SN_CHAT_MODEL", "LLM_MODEL_ID", default=_DEFAULT_CHAT_MODEL),
             timeout=float(_env("SN_TEXT_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
         )
 
@@ -94,9 +100,15 @@ class VLMConfig:
     @classmethod
     def from_env(cls) -> "VLMConfig":
         return cls(
-            api_key=_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY"),
-            base_url=_env("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
-            model=_env("SN_VISION_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
+            api_key=_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY", "LLM_API_KEY", "OPENAI_API_KEY"),
+            base_url=_env(
+                "SN_VISION_BASE_URL",
+                "SN_CHAT_BASE_URL",
+                "LLM_BASE_URL",
+                "OPENAI_BASE_URL",
+                default=_DEFAULT_CHAT_BASE_URL,
+            ),
+            model=_env("SN_VISION_MODEL", "SN_CHAT_MODEL", "LLM_MODEL_ID", default=_DEFAULT_CHAT_MODEL),
             timeout=float(_env("SN_VISION_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
         )
 

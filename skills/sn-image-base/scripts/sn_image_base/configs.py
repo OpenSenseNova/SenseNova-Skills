@@ -100,21 +100,23 @@ class Configs:
 
     # chat runtime shared by text and vision commands; command-specific
     # SN_TEXT_* / SN_VISION_* values override these defaults.
-    SN_CHAT_API_KEY: Annotated[str, Field("SN_CHAT_API_KEY", secret=True)] = ""
-    SN_CHAT_BASE_URL: Annotated[str, Field("SN_CHAT_BASE_URL")] = (
-        "https://token.sensenova.cn/v1"
-    )
+    SN_CHAT_API_KEY: Annotated[
+        str, Field("SN_CHAT_API_KEY", "LLM_API_KEY", "OPENAI_API_KEY", secret=True)
+    ] = ""
+    SN_CHAT_BASE_URL: Annotated[
+        str, Field("SN_CHAT_BASE_URL", "LLM_BASE_URL", "OPENAI_BASE_URL")
+    ] = "https://token.sensenova.cn/v1"
     SN_CHAT_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"], Field("SN_CHAT_TYPE")
     ] = "openai-completions"
-    SN_CHAT_MODEL: Annotated[str, Field("SN_CHAT_MODEL")] = "sensenova-6.7-flash-lite"
+    SN_CHAT_MODEL: Annotated[str, Field("SN_CHAT_MODEL", "LLM_MODEL_ID")] = "sensenova-6.7-flash-lite"
     SN_TEXT_API_KEY: Annotated[str, Field("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", secret=True)] = ""
     SN_TEXT_BASE_URL: Annotated[str, Field("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL")] = ""
     SN_TEXT_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("SN_TEXT_TYPE", "SN_CHAT_TYPE"),
     ] = ""
-    SN_TEXT_MODEL: Annotated[str, Field("SN_TEXT_MODEL", "SN_CHAT_MODEL")] = (
+    SN_TEXT_MODEL: Annotated[str, Field("SN_TEXT_MODEL", "SN_CHAT_MODEL", "LLM_MODEL_ID")] = (
         "sensenova-6.7-flash-lite"
     )
     SN_VISION_API_KEY: Annotated[str, Field("SN_VISION_API_KEY", "SN_CHAT_API_KEY", secret=True)] = ""
@@ -123,7 +125,7 @@ class Configs:
         Literal["anthropic-messages", "openai-completions"],
         Field("SN_VISION_TYPE", "SN_CHAT_TYPE"),
     ] = ""
-    SN_VISION_MODEL: Annotated[str, Field("SN_VISION_MODEL", "SN_CHAT_MODEL")] = (
+    SN_VISION_MODEL: Annotated[str, Field("SN_VISION_MODEL", "SN_CHAT_MODEL", "LLM_MODEL_ID")] = (
         "sensenova-6.7-flash-lite"
     )
 
