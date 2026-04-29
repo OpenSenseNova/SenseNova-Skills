@@ -7,3 +7,6 @@ __pycache__/
 # Worktrees (managed by `git worktree`)
 .worktrees/
 tmp/
+
+# Node
+node_modules/
