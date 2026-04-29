@@ -13,6 +13,7 @@ Output (JSON only):
           "slot_id": "hero",
           "slot_kind": "decoration" | "concept_visual",
           "image_prompt": "<detailed T2I prompt, 40-120 words, inheriting style_spec mood/palette>",
+          "search_query": "<concise provider-neutral image search query, 6-14 words>",
           "aspect_ratio": "16:9",
           "image_size": "1k" | "2k",
           "local_path": "images/page_XXX_<slot_id>.png",
@@ -60,6 +61,8 @@ If a page NEEDS a chart, table, flowchart, or labeled diagram → **do NOT creat
 ### Image prompt rules
 
 - image_prompt must be descriptive, concrete, suited for full-frame T2I; no text-in-image requests unless the slot intent is purely typographic.
+- Treat `image_prompt` as the first-priority generated-image instruction. Treat `search_query` as the second-priority fallback query if generation fails. Do not name any search provider.
+- `search_query` must be short, literal, and visual: subject + style + context. Avoid internal slide terms, file paths, brand names not present in source material, and words like "placeholder" or "sample".
 - **NEVER include specific numbers, proper nouns, KPIs, process step labels, or any text that must be legible in the final PPT** — T2I models can't reliably render those. If you feel tempted to write "流程图：步骤1 数据采集, 步骤2 清洗, 步骤3 建模" → stop, delete the slot, use `<svg>`/`<table>` instead.
 - Palette / mood must inherit from `style_spec.palette` hex values and the chosen `design_style` / `color_tone`.
 
@@ -67,4 +70,5 @@ If a page NEEDS a chart, table, flowchart, or labeled diagram → **do NOT creat
 
 - `local_path` MUST be RELATIVE to deck_dir, literally `images/page_XXX_<slot_id>.png`. No absolute, no `file://`, no `<deck_dir>/`.
 - `status` always `"pending"`; `quality_review` always `null`.
+- Do not create placeholder slots. If the page does not need a real generated/searched image, emit `slots: []`; the HTML stage may draw authored SVG/CSS only as a last resort.
 - JSON only, no markdown fences.

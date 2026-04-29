@@ -27,10 +27,11 @@
 - `inherited_image_size` —— 若非空，给出该图片的原生像素尺寸 `{w, h, aspect}`。aspect = 宽/高。query 里要把这个尺寸 / 长宽比讲给生成器，让它给图片容器选合适的 width / height（保持长宽比，不压扁不拉长）。
 - `inherited_image_alt` —— 若非空，是该图片的简短 alt 文本（来自原文档的 alt 属性或文件名派生，例 `"fig3 dram market share"`）—— 兜底用，质量参差。
 - `inherited_image_caption_hint` —— **优先使用这条**作为图的内容描述基准。来源解析顺序（最优 → 兜底）：(1) ppt-entry 的 `caption_images.py` 用 VLM 真看图后写的中文 caption（最准）；(2) digest LLM 基于文档文字猜的 caption_hint（次之）；(3) 都没有就靠 `inherited_image_alt` 兜底。**必须在 query 里明文把这条写出来**，并据此引导生成器写贴合图片内容的 caption / 副标题 / 配文，而不是只放一张图不解释。
-- `available_slot_images` —— 本页可用的 T2I 生成图的列表，每项是 `{path, slot_id, intent, image_prompt, w?, h?, aspect?}`：
+- `available_slot_images` —— 本页可用的生成图或搜索兜底图的列表，每项是 `{path, slot_id, intent, image_prompt, search_query?, asset_source?, source_title?, source_page?, w?, h?, aspect?}`：
   - `intent` 是大纲里给这个 slot 写的"用途说明"（例 `"hero photo of a server room"`）
   - `image_prompt` 是真正送给 T2I 模型生成这张图的完整 prompt
-  - 这两个字段是模型了解每张 slot 图内容的唯一线索；query 里**必须**用 intent（首选）或 image_prompt（次选）的语义来描述每张图画的是什么，让生成器据此写贴合的 caption / 标签 / 配文。**禁止只说"这页有一张配图 path=..."而不交代图的内容**。
+  - 若存在 `asset_source` / `source_title` / `search_query`，说明这张图可能来自生成失败后的图片搜索兜底；这些字段只能帮助理解图像语义，**不得在 query 或页面可见文字中写出搜索服务商名称**。
+  - 这些字段是模型了解每张 slot 图内容的线索；query 里**必须**用 intent（首选）、source_title/search_query（搜索兜底时优先）或 image_prompt（次选）的语义来描述每张图画的是什么，让生成器据此写贴合的 caption / 标签 / 配文。**禁止只说"这页有一张配图 path=..."而不交代图的内容**。
 - `language` —— zh / en。
 
 ## 重写要求
@@ -54,16 +55,17 @@
    - 如果页面还有要点和数据，应该与这张图形成"图 + 文"的并列布局；宁可删减部分文字也要保住这张图的可见性。
 8. **处理 available_slot_images（硬性）**：如果 `available_slot_images` 非空，query 里要**逐张点名**，每张都讲清楚：
    - **path**（必写）。
-   - **图的内容描述**（必写）：取 `intent`（首选）或 `image_prompt`（次选）的语义，用一句中文写明这张图画的是什么。例："`images/page_005_hero.png` 是一张服务器机房氛围照，远景蓝光 + 机柜剪影"。
+   - **图的内容描述**（必写）：取 `intent`（首选），若是搜索兜底图则结合 `source_title` / `search_query`，否则用 `image_prompt`（次选）的语义，用一句中文写明这张图画的是什么。例："`images/page_005_hero.png` 是一张服务器机房氛围照，远景蓝光 + 机柜剪影"。
    - **尺寸**（如有 `w`/`h`/`aspect`）：把宽高 + aspect 明文写出，并给出建议显示尺寸（保持原生 aspect ratio，绝不强制拉伸）。例："原生 1280×768、aspect 约 1.67，建议放在右侧约占 600×360 的区域里"。
    - **位置和用途**：建议这张图在版面中的位置（左 / 右 / 上 / 下 / 满版），并基于其内容描述给出贴合的 caption / 标签 / 配文方向。
    - 如果某项没有 w/h（读取失败），就跳过尺寸只写 path + 内容描述 + 位置。
-   - 如果 `available_slot_images` 为空，query 要明说"这页没有可用的配图，请用纯文字 + CSS 装饰把版面填满，不要留大片空白"。
+   - 如果 `available_slot_images` 为空，query 要明说"这页没有可用的生成图或搜索图，不要留占位框；优先用文字、表格、图表和版式完成页面，只有在确实需要视觉表达且无法用真实图片时，才绘制简洁的 SVG/CSS 示意图作为最后手段"。
 9. **空间预算（硬性）**：query 必须指出本页的主视觉层级和取舍，避免生成器把所有元素同时塞进去。
    - 若本页是 4 卡片/象限布局，不要再要求中心大型装饰、长引用、长叙事和 KPI 条同时出现；最多保留一个轻量中心标识或一行短总结。
    - 若本页有大图，要求"图 + 文"两栏，图片保持比例，文案卡片数量控制在 2-3 个。
    - 若本页有很多 bullets / data_points，明确要求每条文案用短句呈现，不要把所有 detail 原文堆成大段。
    - 结尾加一句自然语言约束：页面必须看起来完整但不能拥挤，所有可见内容都要在边距内，不允许底部或右侧越界。
+10. **禁止占位（硬性）**：query 中不得要求或暗示 placeholder、待补图、灰色图片框、空白图片区、broken-image 图标、"图片生成中"等内容。没有真实图片时就重新设计页面。
 
 ## 输出
 

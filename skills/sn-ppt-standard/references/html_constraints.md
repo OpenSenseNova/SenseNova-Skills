@@ -64,3 +64,5 @@ Without these tags the converter's gate may reject the HTML.
 Any asset slot whose `asset_plan` intent implies a real photograph MUST reference
 the absolute path to a real local PNG produced by `sn-image-generate`.
 Do NOT use `<svg>` placeholders, empty `<div>` blocks, grey squares, or text like "配图待补".
+If the generated image is unavailable and no searched image fallback exists, redesign the page.
+Inline SVG/CSS is allowed only as an authored last-resort illustration, never as a missing-image placeholder.

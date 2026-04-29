@@ -38,10 +38,14 @@ import io
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from urllib import error as urlerror
+from urllib import request as urlrequest
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 LIB_DIR = SKILL_DIR / "lib"
@@ -449,6 +453,12 @@ def cmd_asset_plan(deck: Path) -> int:
             page["slots"] = []
             continue
 
+        intent_by_slot = {
+            s.get("slot_id"): s.get("intent") or ""
+            for s in (op.get("asset_slots") or [])
+            if s.get("slot_id")
+        }
+
         # Filter slots by whitelist
         filtered = []
         for slot in page.get("slots", []):
@@ -458,6 +468,10 @@ def cmd_asset_plan(deck: Path) -> int:
                 continue
             sid = slot.get("slot_id", "slot")
             slot["local_path"] = f"images/page_{pno:03d}_{sid}.png"
+            slot["search_query"] = _slot_search_query({
+                **slot,
+                "intent": intent_by_slot.get(sid, ""),
+            })
             slot["status"] = "pending"
             slot["quality_review"] = None
             filtered.append(slot)
@@ -493,14 +507,197 @@ def _update_asset_plan_slot(
         _write_text(plan_path, json.dumps(plan, ensure_ascii=False, indent=2))
 
 
+def _image_search_script() -> Path | None:
+    """Locate the configured image-search skill script without exposing the
+    provider name in PPT progress/errors."""
+    configured = os.environ.get("PPT_IMAGE_SEARCH_SCRIPT", "").strip()
+    candidates: list[Path] = []
+    if configured:
+        candidates.append(Path(configured).expanduser())
+    for skill_dir in sorted(p for p in SKILL_DIR.parent.iterdir() if p.is_dir()):
+        scripts_dir = skill_dir / "scripts"
+        if scripts_dir.is_dir():
+            candidates.extend(sorted(scripts_dir.glob("*image_search.py")))
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_file():
+            return candidate
+    return None
+
+
+def _slot_search_query(slot: dict) -> str:
+    query = (
+        slot.get("search_query")
+        or slot.get("intent")
+        or slot.get("image_prompt")
+        or slot.get("slot_id")
+        or ""
+    )
+    return re.sub(r"\s+", " ", str(query)).strip()
+
+
+def _image_search_candidates(query: str) -> tuple[list[dict], str | None]:
+    if not _env_bool("PPT_IMAGE_SEARCH_FALLBACK", True):
+        return [], "image search fallback disabled"
+    if not query:
+        return [], "empty image search query"
+    script = _image_search_script()
+    if script is None:
+        return [], "image search skill not found"
+
+    num = max(1, _env_int("PPT_IMAGE_SEARCH_RESULTS", 10))
+    timeout = max(5, _env_int("PPT_IMAGE_SEARCH_TIMEOUT", 45))
+    cmd = [sys.executable, str(script), query, "--num", str(num), "--json"]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return [], "image search timed out"
+    except OSError:
+        return [], "image search could not start"
+    if proc.returncode != 0:
+        return [], "image search unavailable"
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return [], "image search returned invalid data"
+
+    raw_items = data.get("images")
+    if not isinstance(raw_items, list):
+        raw_items = data.get("results")
+    if not isinstance(raw_items, list):
+        return [], "image search returned no results"
+
+    candidates: list[dict] = []
+    for item in raw_items:
+        if not isinstance(item, dict):
+            continue
+        image_url = str(item.get("imageUrl") or item.get("image_url") or "").strip()
+        if not image_url:
+            nested = item.get("image")
+            if isinstance(nested, dict):
+                image_url = str(nested.get("src") or nested.get("url") or "").strip()
+        if not image_url:
+            continue
+        candidates.append({
+            "image_url": image_url,
+            "page_url": str(item.get("link") or item.get("url") or "").strip(),
+            "title": str(item.get("title") or "").strip(),
+            "source": str(item.get("source") or item.get("domain") or "").strip(),
+        })
+    if not candidates:
+        return [], "image search returned no downloadable images"
+    return candidates, None
+
+
+def _save_downloaded_image(raw_path: Path, save_path: Path) -> bool:
+    """Normalize downloaded images to the requested slot path when possible."""
+    if _read_image_size(raw_path) is None:
+        return False
+    try:
+        from PIL import Image  # noqa: WPS433 — optional dep
+        with Image.open(raw_path) as im:
+            im.load()
+            has_alpha = "A" in im.getbands()
+            target_mode = "RGBA" if has_alpha else "RGB"
+            if im.mode != target_mode:
+                im = im.convert(target_mode)
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            im.save(save_path, format="PNG")
+        return save_path.exists() and save_path.stat().st_size > 0
+    except Exception:
+        try:
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(raw_path), str(save_path))
+            return save_path.exists() and save_path.stat().st_size > 0
+        except OSError:
+            return False
+
+
+def _download_image_candidate(url: str, save_path: Path) -> tuple[bool, str | None]:
+    max_bytes = max(1024 * 1024, _env_int("PPT_IMAGE_SEARCH_MAX_BYTES", 15 * 1024 * 1024))
+    timeout = max(5, _env_int("PPT_IMAGE_DOWNLOAD_TIMEOUT", 30))
+    req = urlrequest.Request(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "image/*,*/*;q=0.8",
+        },
+    )
+    tmp = save_path.with_name(save_path.name + ".download")
+    try:
+        with urlrequest.urlopen(req, timeout=timeout) as resp:
+            content_type = (resp.headers.get("Content-Type") or "").split(";", 1)[0].lower()
+            if content_type and not content_type.startswith("image/"):
+                return False, "candidate was not an image"
+            payload = resp.read(max_bytes + 1)
+    except (urlerror.URLError, OSError, ValueError):
+        return False, "candidate download failed"
+    if len(payload) > max_bytes:
+        return False, "candidate image too large"
+    try:
+        tmp.write_bytes(payload)
+        if not _save_downloaded_image(tmp, save_path):
+            return False, "candidate image could not be decoded"
+    finally:
+        try:
+            if tmp.exists():
+                tmp.unlink()
+        except OSError:
+            pass
+
+    qc_reject = _vlm_image_qc(save_path)
+    if qc_reject is not None:
+        try:
+            save_path.unlink()
+        except OSError:
+            pass
+        return False, f"candidate rejected by VLM QC: {qc_reject[:120]}"
+    return True, None
+
+
+def _try_image_search_fallback(
+    plan_path: Path,
+    page_no: int,
+    slot_id: str,
+    slot: dict,
+    save_path: Path,
+    generation_error: str,
+) -> tuple[bool, dict | str]:
+    query = _slot_search_query(slot)
+    candidates, search_error = _image_search_candidates(query)
+    if search_error:
+        return False, search_error
+
+    last_error = "no usable image search result"
+    for candidate in candidates:
+        ok, err = _download_image_candidate(candidate["image_url"], save_path)
+        if not ok:
+            last_error = err or last_error
+            continue
+        updates = {
+            "status": "ok",
+            "asset_source": "image_search",
+            "search_query": query,
+            "source_url": candidate["image_url"],
+            "source_page": candidate.get("page_url") or "",
+            "source_title": candidate.get("title") or "",
+            "source_domain": candidate.get("source") or "",
+            "quality_review": {
+                "generated_image_error": generation_error[:300],
+                "fallback": "image_search",
+                "rejected_by": None,
+            },
+        }
+        _update_asset_plan_slot(plan_path, page_no, slot_id, updates)
+        return True, updates
+    return False, last_error
+
+
 def cmd_gen_image(deck: Path, page_no: int, slot_id: str) -> int:
     """Generate a single slot's image via sn-image-base's sn_agent_runner (T2I).
 
     Policy: T2I must route through sn-image-base, NOT through model_client.
     model_client handles only LLM / VLM.
     """
-    import subprocess
-
     plan_path = deck / "asset_plan.json"
     plan = _load_json(plan_path)
     page = next((p for p in plan.get("pages", []) if int(p.get("page_no", -1)) == page_no), None)
@@ -510,6 +707,34 @@ def cmd_gen_image(deck: Path, page_no: int, slot_id: str) -> int:
     if slot is None:
         return _fail(f"slot {slot_id!r} missing from page {page_no}")
 
+    save_path = deck / slot["local_path"]
+    save_path.parent.mkdir(parents=True, exist_ok=True)
+
+    def _record_failure(err: str) -> int:
+        fallback_ok, fallback = _try_image_search_fallback(
+            plan_path, page_no, slot_id, slot, save_path, err,
+        )
+        if fallback_ok and isinstance(fallback, dict):
+            return _ok(
+                page_no=page_no,
+                slot_id=slot_id,
+                path=slot["local_path"],
+                source="image_search",
+                note="generated image failed; image search fallback used",
+            )
+        _update_asset_plan_slot(
+            plan_path, page_no, slot_id,
+            {
+                "status": "failed",
+                "quality_review": {
+                    "error": err[:300],
+                    "fallback_error": str(fallback)[:300],
+                },
+            },
+        )
+        return _fail(f"gen-image p{page_no} {slot_id}: {err}",
+                     page_no=page_no, slot_id=slot_id)
+
     # Locate sn-image-base/scripts/sn_agent_runner.py
     sn_base = os.environ.get("SN_IMAGE_BASE", "").strip()
     if sn_base:
@@ -518,27 +743,16 @@ def cmd_gen_image(deck: Path, page_no: int, slot_id: str) -> int:
         # fallback: assume sibling dir under skills/
         runner = SKILL_DIR.parent / "sn-image-base" / "scripts" / "sn_agent_runner.py"
     if not runner.exists():
-        return _fail(f"sn-image-base sn_agent_runner.py not found at {runner}; set $SN_IMAGE_BASE")
-
-    save_path = deck / slot["local_path"]
-    save_path.parent.mkdir(parents=True, exist_ok=True)
+        return _record_failure(f"sn-image-base sn_agent_runner.py not found at {runner}; set $SN_IMAGE_BASE")
 
     cmd = [
         sys.executable, str(runner), "sn-image-generate",
-        "--prompt", slot["image_prompt"],
+        "--prompt", slot.get("image_prompt") or _slot_search_query(slot),
         "--aspect-ratio", slot.get("aspect_ratio", "16:9"),
         "--image-size", slot.get("image_size", "2k"),
         "--save-path", str(save_path),
         "--output-format", "json",
     ]
-
-    def _record_failure(err: str) -> int:
-        _update_asset_plan_slot(
-            plan_path, page_no, slot_id,
-            {"status": "failed", "quality_review": {"error": err[:300]}},
-        )
-        return _fail(f"gen-image p{page_no} {slot_id}: {err}",
-                     page_no=page_no, slot_id=slot_id)
 
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
@@ -1189,6 +1403,10 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
             "slot_id": slot.get("slot_id"),
             "intent": intent_by_slot.get(slot.get("slot_id")) or "",
             "image_prompt": slot.get("image_prompt") or "",
+            "search_query": slot.get("search_query") or "",
+            "asset_source": slot.get("asset_source") or "image_generation",
+            "source_title": slot.get("source_title") or "",
+            "source_page": slot.get("source_page") or "",
         }
         if size:
             entry.update(size)  # adds w / h / aspect
@@ -1730,12 +1948,11 @@ def cmd_review(deck: Path, concurrency: int) -> int:
 
 
 def cmd_export(deck: Path) -> int:
-    import subprocess
     converter = SKILL_DIR / "scripts" / "export_pptx" / "html_to_pptx.mjs"
     if not converter.exists():
         return _fail("export_pptx/html_to_pptx.mjs missing — run npm install in scripts/export_pptx")
     if not (deck / "review.md").exists() and not (deck / "review.json").exists():
-        _write_text(deck / "review.md", "# Review\n\nAuto-generated placeholder for PPTX export.\n")
+        _write_text(deck / "review.md", "# Review\n\nAuto-generated review stub for PPTX export.\n")
     cmd = ["node", str(converter), "--deck-dir", str(deck), "--force"]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
