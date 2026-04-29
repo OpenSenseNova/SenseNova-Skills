@@ -40,8 +40,8 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 
 ```bash
 python3 $SKILL_DIR/scripts/resume_scan.py --deck-dir <deck_dir>
-# => {"style_spec_done": bool, "outline_done": bool, "pptx_done": bool,
-#     "pages": [{"page_no": 1, "action": "skip|render_only|full"}, ...]}
+# => {"style_spec_done": bool, "outline_done": bool, "review_done": bool,
+#     "pptx_done": bool, "pages": [{"page_no": 1, "action": "skip|render_only|full"}, ...]}
 ```
 
 Dispatch:
@@ -53,7 +53,8 @@ Dispatch:
 | per-page `action == "full"` | Run Stage 4.1 + 4.2 |
 | per-page `action == "render_only"` | Run Stage 4.2 only (prompt.txt already on disk) |
 | per-page `action == "skip"` | Skip |
-| `pptx_done == false` (all pages done or failed) | Run Stage 5 |
+| `review_done == false` (all pages done or failed) | Run Stage 5 |
+| `pptx_done == false` (after review) | Run Stage 6 |
 
 ## Stage 2 — style_spec.md  (LLM or VLM via model_client)
 
@@ -194,7 +195,24 @@ python $SN_IMAGE_BASE/scripts/sn_agent_runner.py sn-image-generate \
 - **No retries.** **No placeholder PNG.** Don't write 1x1 transparent PNGs to fake success.
 - `.prompt.txt` may remain on disk for a later manual re-run of 4.2 only.
 
-## Stage 5 — pptx 打包（一次独立 exec）
+## Stage 5 — review（一次独立 exec）
+
+所有页图生成后（含部分失败的情况），先生成确定性的审查报告，再打包 PPTX。该步骤不调用模型，只检查期望页图是否存在、是否为空，并在可读取尺寸时记录宽高和 16:9 比例偏差。
+
+```bash
+python3 $SKILL_DIR/scripts/review_deck.py --deck-dir <deck_dir>
+# => {"status": "ok", "review_status": "clean|needs_attention",
+#     "total_pages": N, "needs_attention_pages": M,
+#     "review_md": "review.md", "review_json": "review.json"}
+```
+
+行为约定：
+
+- 必须写出 `<deck_dir>/review.md` 和 `<deck_dir>/review.json`。
+- 缺失、空文件或非 16:9 的 PNG 会被标记为 `needs_attention`，但不阻塞 Stage 6。
+- 该 review 是 PPTX 打包前的质量门记录，用于让后端和用户明确知道哪些页会成为空白页或比例异常页。
+
+## Stage 6 — pptx 打包（一次独立 exec）
 
 所有页图生成后（含部分失败的情况），把 `pages/page_*.png` 平铺打包成 16:9 整册 PPTX，每张图满版一页。由 `scripts/build_pptx.py` 完成，模型只负责执行脚本。
 
@@ -209,11 +227,11 @@ python3 $SKILL_DIR/scripts/build_pptx.py --deck-dir <deck_dir>
 - 输出路径默认 `<deck_dir>/<deck_id>.pptx`；可用 `--output` 覆盖。
 - 页序按 `outline.json` 的 `page_no` 排；缺失 `outline.json` 时按 `page_001..page_NNN` 走。
 - 缺失的 PNG 会插入空白页并在 stderr 记录一行，**不中止**；这样跟 Stage 4 的"失败跳过"语义一致。
-- 脚本失败（依赖缺失 / 写盘失败）：echo 失败原因，**不中止整个 skill**，仍进入 Stage 6 收尾；PNG 已在磁盘上。
+- 脚本失败（依赖缺失 / 写盘失败）：echo 失败原因，**不中止整个 skill**，仍进入 Stage 7 收尾；PNG 已在磁盘上。
 
 依赖：`python-pptx`（与 `sn-ppt-standard` 共用的打包思路；若运行环境未装，由 `sn-ppt-doctor` 的 env check 提示安装）。
 
-## Stage 6 — closing
+## Stage 7 — closing
 
 Emit:
 
@@ -224,6 +242,8 @@ Emit:
 📄 结果文件：
   - style_spec.md
   - outline.json
+  - review.md
+  - review.json
   - pages/page_001.png ~ page_NNN.png（失败 M 页：page_..., page_...）
   - <deck_id>.pptx（整册，缺失页插入空白）
 
@@ -244,7 +264,8 @@ Emit:
 | After Stage 3 | `[2] outline.json ✓（N 页）` |
 | Per page-prompt (4.1) | `[prompt 3/10] ✓` |
 | Per page-image (4.2) | `[图 3/10] page_003.png ✓` or `[图 3/10] ✗ 超时` |
-| After Stage 5 | `[pptx] <deck_id>.pptx ✓（N 页，缺失 M 页）` or `[pptx] ✗ <reason>` |
+| After Stage 5 | `[review] review.md ✓（需关注 M 页）` |
+| After Stage 6 | `[pptx] <deck_id>.pptx ✓（N 页，缺失 M 页）` or `[pptx] ✗ <reason>` |
 | Closing | full summary above |
 
 - Each echo is a chat reply, not a log write.

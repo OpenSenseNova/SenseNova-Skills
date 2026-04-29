@@ -10,6 +10,8 @@ Usage:
     python run_stage.py page-html       --deck-dir <deck> --page N
     python run_stage.py batch-gen-image    --deck-dir <deck> [--concurrency 4]
     python run_stage.py batch-page-html    --deck-dir <deck> [--concurrency 4]
+    python run_stage.py review             --deck-dir <deck> [--concurrency 4]
+    python run_stage.py review-page        --deck-dir <deck> --page N
     python run_stage.py refine-page        --deck-dir <deck> --page N
     python run_stage.py batch-refine-page  --deck-dir <deck> [--concurrency 4]
     python run_stage.py export             --deck-dir <deck>
@@ -126,6 +128,13 @@ def _env_float(name: str, default: float) -> float:
 
 def _env_int(name: str, default: int) -> int:
     return int(_env_float(name, default))
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None or raw.strip() == "":
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 _STYLE_DIMENSIONS_PATH = SKILL_DIR.parent.parent / "reference" / "style_dimensions.json"
@@ -685,6 +694,223 @@ def _normalize_img_srcs(html: str, page_plan: dict, extra_paths: list[str] | Non
     return new_html, count_holder["n"]
 
 
+def _extract_css_blocks(html: str) -> str:
+    return "\n".join(
+        m.group(1)
+        for m in re.finditer(r"<style\b[^>]*>(.*?)</style>", html, re.IGNORECASE | re.DOTALL)
+    )
+
+
+def _selector_block(css: str, selector: str) -> str:
+    pattern = rf"(?<![\w-]){re.escape(selector)}\s*\{{([^{{}}]*)\}}"
+    m = re.search(pattern, css, re.IGNORECASE | re.DOTALL)
+    return m.group(1) if m else ""
+
+
+def _has_decl(block: str, prop: str, value_pattern: str | None = None) -> bool:
+    m = re.search(rf"(?<![\w-]){re.escape(prop)}\s*:\s*([^;]+)", block, re.IGNORECASE)
+    if not m:
+        return False
+    if value_pattern is None:
+        return True
+    return re.search(value_pattern, m.group(1).strip(), re.IGNORECASE) is not None
+
+
+def _html_contract_issues(html: str) -> list[str]:
+    """Fast static checks for the non-negotiable HTML shell.
+
+    These catch the common regressions seen in recent runs before export:
+    missing #bg/#ct, auto-height wrappers, padding on .wrapper, malformed
+    @import rules, and stray prose inside <style>.
+    """
+    issues: list[str] = []
+    if not re.search(r"<!doctype\s+html", html, re.IGNORECASE):
+        issues.append("missing <!DOCTYPE html>")
+    if not re.search(r"<div\b[^>]*class=[\"'][^\"']*\bwrapper\b", html, re.IGNORECASE):
+        issues.append("missing outer <div class=\"wrapper\">")
+    if not re.search(r"<div\b[^>]*id=[\"']bg[\"']", html, re.IGNORECASE):
+        issues.append("missing <div id=\"bg\"> background layer")
+    if not re.search(r"<div\b[^>]*id=[\"']ct[\"']", html, re.IGNORECASE):
+        issues.append("missing <div id=\"ct\"> content layer")
+
+    css = _extract_css_blocks(html)
+    if not css.strip():
+        issues.append("missing <style> CSS")
+        return issues
+
+    if re.search(r"@import\s+url\(", css, re.IGNORECASE):
+        issues.append("uses external CSS @import; use local/system fonts only")
+    css_no_comments = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    if re.search(r"}\s*[\u4e00-\u9fff][^{}]*[.#][A-Za-z0-9_-]+\s*\{", css_no_comments):
+        issues.append("style block contains stray natural-language prose outside CSS comments")
+
+    wrapper = _selector_block(css, ".wrapper")
+    if not wrapper:
+        issues.append("missing .wrapper CSS rule")
+    else:
+        if not _has_decl(wrapper, "width", r"^1600px$"):
+            issues.append(".wrapper width must be exactly 1600px")
+        if not _has_decl(wrapper, "height", r"^900px$"):
+            issues.append(".wrapper height must be exactly 900px")
+        if not _has_decl(wrapper, "position", r"^relative$"):
+            issues.append(".wrapper position must be relative")
+        if not _has_decl(wrapper, "overflow", r"^hidden$"):
+            issues.append(".wrapper overflow must be hidden")
+        if _has_decl(wrapper, "padding") and not _has_decl(wrapper, "padding", r"^0(px)?$"):
+            issues.append(".wrapper must not carry content padding; put padding on #ct")
+        if re.search(r"\b(max-width|min-height|max-height)\s*:", wrapper, re.IGNORECASE):
+            issues.append(".wrapper must not use max-width/min-height/max-height")
+        if re.search(r"\b(width\s*:\s*100%|height\s*:\s*auto)\b", wrapper, re.IGNORECASE):
+            issues.append(".wrapper must not use responsive width:100% or height:auto")
+
+    ct = _selector_block(css, "#ct")
+    if not ct:
+        issues.append("missing #ct CSS rule")
+    else:
+        if not _has_decl(ct, "position", r"^absolute$"):
+            issues.append("#ct position must be absolute")
+        if not _has_decl(ct, "inset", r"^0(px)?$"):
+            issues.append("#ct must use inset: 0")
+        if not _has_decl(ct, "padding", r"^60px$"):
+            issues.append("#ct padding must be exactly 60px safe margin")
+        if not _has_decl(ct, "box-sizing", r"^border-box$"):
+            issues.append("#ct must use box-sizing: border-box")
+        if _has_decl(ct, "height", r"^100%$") or _has_decl(ct, "position", r"^relative$"):
+            issues.append("#ct must not be a relative 100%-height wrapper")
+
+    if re.search(r"\b(transform\s*:\s*scale|zoom\s*:)", css, re.IGNORECASE):
+        issues.append("must not use transform: scale(...) or zoom to fake fitting")
+
+    return issues[:12]
+
+
+def _browser_layout_issues(html_path: Path) -> list[str]:
+    """Use Playwright when available to catch actual overflow.
+
+    Browser QC is best-effort. If node/playwright/browser binaries are missing,
+    skip it rather than failing page generation on environment setup.
+    """
+    if os.environ.get("PPT_LAYOUT_BROWSER_QC", "1").strip() in {"0", "false", "False"}:
+        return []
+
+    import subprocess
+
+    playwright = SKILL_DIR / "scripts" / "export_pptx" / "node_modules" / "playwright"
+    if not playwright.exists():
+        return []
+
+    script = r"""
+const { pathToFileURL } = require('url');
+const playwrightPath = process.argv[1];
+const file = process.argv[2];
+let chromium;
+try {
+  chromium = require(playwrightPath).chromium;
+} catch (e) {
+  console.log(JSON.stringify({skipped: 'playwright require failed'}));
+  process.exit(0);
+}
+
+(async () => {
+  const browser = await chromium.launch({headless: true});
+  const page = await browser.newPage({viewport: {width: 1600, height: 900}, deviceScaleFactor: 1});
+  await page.goto(pathToFileURL(file).href, {waitUntil: 'load'});
+  await page.waitForTimeout(200);
+  const issues = await page.evaluate(() => {
+    const out = [];
+    const wrapper = document.querySelector('.wrapper');
+    const bg = document.querySelector('#bg');
+    const ct = document.querySelector('#ct');
+    if (!wrapper) return ['browser: missing .wrapper'];
+    const wr = wrapper.getBoundingClientRect();
+    if (Math.abs(wr.width - 1600) > 1 || Math.abs(wr.height - 900) > 1) {
+      out.push(`browser: .wrapper rendered ${Math.round(wr.width)}x${Math.round(wr.height)}, expected 1600x900`);
+    }
+    if (document.body.scrollWidth > 1601 || document.body.scrollHeight > 901) {
+      out.push(`browser: body scroll area ${document.body.scrollWidth}x${document.body.scrollHeight}, expected <=1600x900`);
+    }
+    if (ct && (ct.scrollWidth > ct.clientWidth + 1 || ct.scrollHeight > ct.clientHeight + 1)) {
+      out.push(`browser: #ct scroll area ${ct.scrollWidth}x${ct.scrollHeight}, client ${ct.clientWidth}x${ct.clientHeight}`);
+    }
+
+    const safe = {left: wr.left + 60, top: wr.top + 60, right: wr.right - 60, bottom: wr.bottom - 60};
+    const roots = new Set([document.documentElement, document.body, wrapper, bg, ct].filter(Boolean));
+    const decoRe = /(bg|backdrop|decor|deco|glow|orb|ring|particle|nebula|grid|line|wave|noise|halo)/i;
+    for (const el of Array.from(document.body.querySelectorAll('*'))) {
+      if (roots.has(el)) continue;
+      if (bg && bg.contains(el)) continue;
+      const cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity || '1') === 0) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) continue;
+      const tag = el.tagName.toLowerCase();
+      const cls = typeof el.className === 'string' ? el.className : '';
+      const text = (el.innerText || el.alt || '').trim().replace(/\s+/g, ' ');
+      const isNonContentDecoration = !text && !['img', 'svg', 'canvas', 'table'].includes(tag) && decoRe.test(cls);
+      if (isNonContentDecoration) continue;
+      const outsideSlide = r.left < wr.left - 1 || r.top < wr.top - 1 || r.right > wr.right + 1 || r.bottom > wr.bottom + 1;
+      const outsideSafe = r.left < safe.left - 1 || r.top < safe.top - 1 || r.right > safe.right + 1 || r.bottom > safe.bottom + 1;
+      if (!outsideSlide && !outsideSafe) continue;
+      const id = el.id ? '#' + el.id : '';
+      const classPart = cls ? '.' + cls.trim().split(/\s+/).slice(0, 3).join('.') : '';
+      const label = `${tag}${id}${classPart}`.slice(0, 80);
+      const box = `${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)} bottom=${Math.round(r.bottom)} right=${Math.round(r.right)}`;
+      out.push(`browser: content outside safe area: ${label} [${box}] ${text.slice(0, 80)}`);
+      if (out.length >= 10) break;
+    }
+    return out;
+  });
+  await browser.close();
+  console.log(JSON.stringify({issues}));
+})().catch(err => {
+  console.log(JSON.stringify({skipped: String(err && err.message || err).split('\n')[0]}));
+});
+"""
+
+    env = os.environ.copy()
+    if not env.get("PLAYWRIGHT_BROWSERS_PATH"):
+        # Common locations in OpenClaw workspaces / Docker images. The check
+        # is intentionally best-effort; browser QC is skipped if none exist.
+        candidates: list[Path | None] = []
+        for parent in html_path.parents:
+            candidates.extend([parent / ".playwright", parent / "_playwright"])
+        candidates.extend([Path("/ms-playwright"), Path.home() / ".cache" / "ms-playwright"])
+        for candidate in candidates:
+            if candidate and candidate.exists():
+                env["PLAYWRIGHT_BROWSERS_PATH"] = str(candidate)
+                break
+    try:
+        proc = subprocess.run(
+            ["node", "-e", script, str(playwright), str(html_path)],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=env,
+        )
+    except Exception:
+        return []
+    try:
+        payload = json.loads((proc.stdout or "").strip().splitlines()[-1])
+    except Exception:
+        return []
+    issues = payload.get("issues")
+    return [str(i) for i in issues[:12]] if isinstance(issues, list) else []
+
+
+def _page_html_retry_query(original_query: str, issues: list[str]) -> str:
+    issue_lines = "\n".join(f"- {i}" for i in issues[:10])
+    return (
+        f"{original_query}\n\n"
+        "【必须修复的上一版 HTML 问题】\n"
+        "上一版 HTML 没有通过布局校验。请重新输出一份完整 HTML，不要解释，不要 markdown。\n"
+        f"{issue_lines}\n\n"
+        "修复要求：保持原有页面主题、语言、数据和图片路径，但必须使用固定 1600×900 外壳、"
+        "#bg/#ct 分层、#ct 60px 安全边距；所有可见标题、正文、卡片、图片、图表和表格都必须"
+        "落在 x=60..1540、y=60..840 内。空间不够时，缩短文案、减小字号、减少装饰、压缩 gap，"
+        "不要增加画布高度，不要让内容越过底部或右侧。"
+    )
+
+
 def _read_image_size(path: Path) -> dict | None:
     """Return `{w, h, aspect}` for a local image file, or None if unreadable.
 
@@ -1001,28 +1227,505 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     # --- Step 2: generate HTML from the rewritten query ---
     gen_system = _load_prompt("page_html.md")
 
-    try:
-        html = llm(gen_system, rewritten_query)
-    except ModelClientError as e:
-        return _fail(f"page-html p{page_no}: {e}", page_no=page_no)
-
-    html = _strip_code_fences(html) if html.lstrip().startswith("```") else html
-
-    # Defensive: rewrite any malformed <img src> paths back to the canonical
-    # relative form. The rewriter + generator usually get this right, but
-    # models still occasionally emit absolute paths / leading slashes.
+    out_path = deck / "pages" / f"page_{page_no:03d}.html"
     extra_paths: list[str] = []
     if inherited_image and inherited_image.get("local_path"):
         extra_paths.append(inherited_image["local_path"])
-    html, fixed = _normalize_img_srcs(html, page_plan, extra_paths=extra_paths)
 
-    out_path = deck / "pages" / f"page_{page_no:03d}.html"
-    _write_text(out_path, html)
-    return _ok(
+    max_attempts = max(1, _env_int("PPT_PAGE_HTML_MAX_ATTEMPTS", 3))
+    generation_query = rewritten_query
+    last_html = ""
+    last_fixed = 0
+    last_issues: list[str] = []
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            html = llm(gen_system, generation_query)
+        except ModelClientError as e:
+            return _fail(f"page-html p{page_no}: {e}", page_no=page_no, attempt=attempt)
+
+        html = _strip_code_fences(html) if html.lstrip().startswith("```") else html
+
+        # Defensive: rewrite any malformed <img src> paths back to the canonical
+        # relative form. The rewriter + generator usually get this right, but
+        # models still occasionally emit absolute paths / leading slashes.
+        html, fixed = _normalize_img_srcs(html, page_plan, extra_paths=extra_paths)
+        last_html = html
+        last_fixed = fixed
+
+        issues = _html_contract_issues(html)
+        if not issues:
+            _write_text(out_path, html)
+            issues = _browser_layout_issues(out_path)
+
+        if not issues:
+            return _ok(
+                page_no=page_no,
+                path=str(out_path.relative_to(deck)),
+                query_path=str(query_path.relative_to(deck)),
+                img_srcs_fixed=fixed,
+                attempts=attempt,
+                layout_qc="passed",
+            )
+
+        last_issues = issues
+        if attempt < max_attempts:
+            generation_query = _page_html_retry_query(rewritten_query, issues)
+
+    _write_text(out_path, last_html)
+    issues_path = deck / "pages" / f"page_{page_no:03d}.layout_issues.json"
+    _write_text(
+        issues_path,
+        json.dumps({"page_no": page_no, "issues": last_issues}, ensure_ascii=False, indent=2),
+    )
+    return _fail(
+        f"page-html p{page_no}: layout validation failed after {max_attempts} attempts: "
+        + "; ".join(last_issues[:3]),
         page_no=page_no,
         path=str(out_path.relative_to(deck)),
         query_path=str(query_path.relative_to(deck)),
-        img_srcs_fixed=fixed,
+        issues_path=str(issues_path.relative_to(deck)),
+        img_srcs_fixed=last_fixed,
+    )
+
+
+def _dedupe_issues(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for item in items:
+        text = str(item).strip()
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        out.append(text)
+    return out
+
+
+def _review_page_numbers(deck: Path) -> list[int]:
+    outline_path = deck / "outline.json"
+    if outline_path.exists():
+        try:
+            outline = _load_json(outline_path)
+            nums = sorted(
+                int(p.get("page_no", 0))
+                for p in outline.get("pages", [])
+                if int(p.get("page_no", 0)) > 0
+            )
+            if nums:
+                return nums
+        except Exception:
+            pass
+
+    tp_path = deck / "task_pack.json"
+    if tp_path.exists():
+        try:
+            tp = _load_json(tp_path)
+            n = int(tp.get("params", {}).get("page_count", 0))
+            if n > 0:
+                return list(range(1, n + 1))
+        except Exception:
+            pass
+
+    pages_dir = deck / "pages"
+    nums: list[int] = []
+    for hp in sorted(pages_dir.glob("page_*.html")) if pages_dir.exists() else []:
+        if hp.name.endswith(".refined.html") or hp.name.endswith(".review_candidate.html"):
+            continue
+        try:
+            nums.append(int(hp.stem.split("_")[1]))
+        except (IndexError, ValueError):
+            continue
+    return sorted(set(nums))
+
+
+def _load_page_outline(deck: Path, page_no: int) -> dict:
+    try:
+        outline = _load_json(deck / "outline.json")
+    except Exception:
+        return {}
+    for page in outline.get("pages", []):
+        try:
+            if int(page.get("page_no", -1)) == page_no:
+                return page
+        except (TypeError, ValueError):
+            continue
+    return {}
+
+
+def _load_page_plan(deck: Path, page_no: int) -> dict:
+    try:
+        plan = _load_json(deck / "asset_plan.json")
+    except Exception:
+        return {"page_no": page_no, "slots": []}
+    for page in plan.get("pages", []):
+        try:
+            if int(page.get("page_no", -1)) == page_no:
+                return page
+        except (TypeError, ValueError):
+            continue
+    return {"page_no": page_no, "slots": []}
+
+
+def _review_html_issues(html_path: Path) -> list[str]:
+    try:
+        html = html_path.read_text(encoding="utf-8")
+    except OSError as e:
+        return [f"could not read HTML: {e}"]
+    issues = _html_contract_issues(html)
+    if not issues:
+        issues.extend(_browser_layout_issues(html_path))
+    return _dedupe_issues(issues)
+
+
+def _parse_review_verdict(review: str) -> str:
+    first = (review or "").strip().splitlines()[0].strip() if (review or "").strip() else ""
+    if first == "VERDICT: CLEAN":
+        return "clean"
+    if first == "VERDICT: NEEDS_REWRITE":
+        return "needs_rewrite"
+    if first == "VERDICT: FIXED":
+        return "fixed"
+    if first == "VERDICT: MISSING":
+        return "missing"
+    return "unknown"
+
+
+def _format_review_markdown(
+    page_no: int,
+    *,
+    title: str,
+    mechanical_issues: list[str],
+    model_review: str | None = None,
+    fixed: bool = False,
+    warnings: list[str] | None = None,
+) -> str:
+    if fixed:
+        first = "VERDICT: FIXED"
+    elif mechanical_issues:
+        first = "VERDICT: NEEDS_REWRITE"
+    elif model_review and _parse_review_verdict(model_review) == "needs_rewrite":
+        first = "VERDICT: NEEDS_REWRITE"
+    else:
+        first = "VERDICT: CLEAN"
+
+    lines = [first, ""]
+    lines.append(f"Page: page_{page_no:03d}" + (f" — {title}" if title else ""))
+    if mechanical_issues:
+        lines.append("")
+        lines.append("Mechanical issues:")
+        lines.extend(f"- {issue}" for issue in mechanical_issues)
+    if model_review:
+        lines.append("")
+        lines.append("Model review:")
+        lines.append(model_review.strip())
+    if fixed:
+        lines.append("")
+        lines.append("Automated review rewrite was applied and passed mechanical validation.")
+    if warnings:
+        lines.append("")
+        lines.append("Warnings:")
+        lines.extend(f"- {w}" for w in warnings)
+    if len(lines) == 3:
+        lines.extend(["", "No mechanical layout issues detected."])
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _run_model_page_review(
+    deck: Path,
+    page_no: int,
+    html_source: str,
+    mechanical_issues: list[str],
+) -> tuple[str | None, str | None]:
+    """Return (review_markdown, warning). Model review is best-effort."""
+    try:
+        style = _load_json(deck / "style_spec.json")
+    except Exception:
+        style = {}
+    payload = {
+        "style_spec": style,
+        "page_outline": _load_page_outline(deck, page_no),
+        "mechanical_issues": mechanical_issues,
+        "html_source": html_source,
+    }
+    try:
+        review = llm(
+            _load_prompt("page_review.md"),
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            request_name=f"page_review_{page_no:03d}",
+        )
+    except ModelClientError as e:
+        return None, f"model page review failed: {e}"
+    review = (review or "").strip()
+    verdict = _parse_review_verdict(review)
+    if verdict not in {"clean", "needs_rewrite"}:
+        return review or None, "model page review returned an invalid verdict"
+    return review, None
+
+
+def _rewrite_reviewed_page(
+    deck: Path,
+    page_no: int,
+    review_markdown: str,
+    html_source: str,
+) -> tuple[bool, list[str], str | None]:
+    """Try to rewrite page_NNN.html from review findings.
+
+    Returns (applied, remaining_issues, warning). The candidate is only adopted
+    if it passes static + browser mechanical validation.
+    """
+    html_path = deck / "pages" / f"page_{page_no:03d}.html"
+    page_plan = _load_page_plan(deck, page_no)
+    extra_paths = [
+        str(p.relative_to(deck))
+        for p in sorted((deck / "images").glob(f"page_{page_no:03d}_inherited.*"))
+        if p.is_file()
+    ]
+    user_payload = {
+        "page_no": page_no,
+        "review_markdown": review_markdown,
+        "html_source": html_source,
+    }
+    try:
+        rewritten = llm(
+            _load_prompt("page_rewrite.md"),
+            json.dumps(user_payload, ensure_ascii=False, indent=2),
+            request_name=f"page_rewrite_{page_no:03d}",
+        )
+    except ModelClientError as e:
+        return False, [], f"model page rewrite failed: {e}"
+
+    rewritten = _strip_code_fences(rewritten) if rewritten.lstrip().startswith("```") else rewritten
+    rewritten = rewritten.strip()
+    if not rewritten or "<html" not in rewritten.lower() or "</html>" not in rewritten.lower():
+        return False, [], "model page rewrite returned non-HTML"
+
+    rewritten, _ = _normalize_img_srcs(rewritten, page_plan, extra_paths=extra_paths)
+    candidate_path = deck / "pages" / f"page_{page_no:03d}.review_candidate.html"
+    _write_text(candidate_path, rewritten)
+    remaining = _review_html_issues(candidate_path)
+    if remaining:
+        _write_text(
+            deck / "pages" / f"page_{page_no:03d}.review_candidate_issues.json",
+            json.dumps({"page_no": page_no, "issues": remaining}, ensure_ascii=False, indent=2),
+        )
+        return False, remaining, "model page rewrite candidate did not pass mechanical validation"
+
+    backup_path = deck / "pages" / f"page_{page_no:03d}.before_review.html"
+    if not backup_path.exists():
+        try:
+            backup_path.write_text(html_source, encoding="utf-8")
+        except OSError:
+            pass
+    _write_text(html_path, rewritten)
+    return True, [], None
+
+
+def _review_page_payload(deck: Path, page_no: int) -> dict:
+    """Review one generated HTML page and optionally rewrite it.
+
+    Default is deterministic mechanical review only. Enable model review and
+    rewrite with `PPT_REVIEW_USE_LLM=1`; `PPT_REVIEW_FIX=1` adopts a validated
+    rewrite candidate when the review finds issues.
+    """
+    html_path = deck / "pages" / f"page_{page_no:03d}.html"
+    review_path = deck / "pages" / f"page_{page_no:03d}.review.md"
+    if not html_path.exists():
+        review = f"VERDICT: MISSING\n\nPage: page_{page_no:03d}\n\n- page HTML file is missing.\n"
+        _write_text(review_path, review)
+        return {
+            "status": "ok",
+            "page_no": page_no,
+            "verdict": "missing",
+            "needs_attention": True,
+            "review_path": str(review_path.relative_to(deck)),
+        }
+
+    html_source = html_path.read_text(encoding="utf-8")
+    page_outline = _load_page_outline(deck, page_no)
+    title = str(page_outline.get("title") or "")
+    mechanical_issues = _review_html_issues(html_path)
+    warnings: list[str] = []
+    model_review: str | None = None
+
+    use_llm = _env_bool("PPT_REVIEW_USE_LLM", False)
+    fix_enabled = _env_bool("PPT_REVIEW_FIX", use_llm)
+    if use_llm:
+        model_review, warning = _run_model_page_review(deck, page_no, html_source, mechanical_issues)
+        if warning:
+            warnings.append(warning)
+
+    review = _format_review_markdown(
+        page_no,
+        title=title,
+        mechanical_issues=mechanical_issues,
+        model_review=model_review,
+        warnings=warnings,
+    )
+    verdict = _parse_review_verdict(review)
+    fixed = False
+    remaining_after_fix: list[str] = []
+
+    if fix_enabled and verdict == "needs_rewrite":
+        applied, remaining_after_fix, warning = _rewrite_reviewed_page(
+            deck, page_no, review, html_source
+        )
+        if warning:
+            warnings.append(warning)
+        if applied:
+            fixed = True
+            mechanical_issues = []
+            verdict = "fixed"
+            review = _format_review_markdown(
+                page_no,
+                title=title,
+                mechanical_issues=[],
+                model_review=model_review,
+                fixed=True,
+                warnings=warnings,
+            )
+
+    if remaining_after_fix:
+        mechanical_issues = remaining_after_fix
+        verdict = "needs_rewrite"
+        review = _format_review_markdown(
+            page_no,
+            title=title,
+            mechanical_issues=mechanical_issues,
+            model_review=model_review,
+            warnings=warnings,
+        )
+
+    _write_text(review_path, review)
+    return {
+        "status": "ok",
+        "page_no": page_no,
+        "verdict": verdict,
+        "needs_attention": verdict in {"missing", "needs_rewrite", "unknown"},
+        "fixed": fixed,
+        "mechanical_issues": len(mechanical_issues),
+        "warnings": warnings or None,
+        "review_path": str(review_path.relative_to(deck)),
+    }
+
+
+def cmd_review_page(deck: Path, page_no: int) -> int:
+    payload = _review_page_payload(deck, page_no)
+    print(json.dumps(payload, ensure_ascii=False))
+    return 0
+
+
+def _write_deck_review(deck: Path, page_payloads: list[dict], *, strict: bool) -> tuple[Path, Path]:
+    total = len(page_payloads)
+    clean = sum(1 for p in page_payloads if p.get("verdict") == "clean")
+    fixed = sum(1 for p in page_payloads if p.get("fixed"))
+    needs = [p for p in page_payloads if p.get("needs_attention")]
+
+    report = {
+        "status": "needs_attention" if needs else "clean",
+        "strict": strict,
+        "total_pages": total,
+        "clean_pages": clean,
+        "fixed_pages": fixed,
+        "needs_attention_pages": len(needs),
+        "pages": page_payloads,
+    }
+    json_path = deck / "review.json"
+    md_path = deck / "review.md"
+    _write_text(json_path, json.dumps(report, ensure_ascii=False, indent=2))
+
+    lines = [
+        "# Review",
+        "",
+        "## Summary",
+        "",
+        f"- Total pages reviewed: {total}",
+        f"- Clean pages: {clean}",
+        f"- Fixed during review: {fixed}",
+        f"- Pages needing attention: {len(needs)}",
+        "",
+        "## Pages",
+        "",
+    ]
+    for p in page_payloads:
+        try:
+            pno = int(p.get("page_no", 0) or 0)
+        except (TypeError, ValueError):
+            pno = 0
+        verdict = p.get("verdict", "unknown")
+        suffix = " (fixed)" if p.get("fixed") else ""
+        warnings = p.get("warnings") or []
+        warn_text = f"; warnings: {len(warnings)}" if warnings else ""
+        lines.append(f"- page_{pno:03d}: {verdict}{suffix}{warn_text}")
+
+    if needs:
+        lines.extend(["", "## Attention Required", ""])
+        for p in needs:
+            try:
+                pno = int(p.get("page_no", 0) or 0)
+            except (TypeError, ValueError):
+                pno = 0
+            lines.append(f"- page_{pno:03d}: see `{p.get('review_path', '')}`")
+
+    lines.extend(["", "## Per-Page Review Files", ""])
+    for p in page_payloads:
+        if p.get("review_path"):
+            lines.append(f"- `{p['review_path']}`")
+
+    _write_text(md_path, "\n".join(lines).rstrip() + "\n")
+    return md_path, json_path
+
+
+def cmd_review(deck: Path, concurrency: int) -> int:
+    page_nos = _review_page_numbers(deck)
+    if not page_nos:
+        return _fail("review: no pages found to review")
+    page_payloads: list[dict] = []
+    concurrency = max(1, min(int(concurrency), 16))
+    with ThreadPoolExecutor(max_workers=concurrency) as ex:
+        future_to_page = {
+            ex.submit(_review_page_payload, deck, pno): pno
+            for pno in page_nos
+        }
+        for fut in as_completed(future_to_page):
+            pno = future_to_page[fut]
+            try:
+                payload = fut.result()
+            except Exception as e:  # noqa: BLE001
+                payload = {
+                    "status": "failed",
+                    "page_no": pno,
+                    "verdict": "failed",
+                    "needs_attention": True,
+                    "error": f"{type(e).__name__}: {e}"[:300],
+                }
+            page_payloads.append(payload)
+            _progress(f"[p{pno:03d}/review] {payload.get('verdict', payload.get('status', 'unknown'))}")
+
+    def _payload_page_no(payload: dict) -> int:
+        try:
+            return int(payload.get("page_no", 0) or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    page_payloads.sort(key=_payload_page_no)
+    strict = _env_bool("PPT_REVIEW_STRICT", True)
+    md_path, json_path = _write_deck_review(deck, page_payloads, strict=strict)
+    needs = [p for p in page_payloads if p.get("needs_attention")]
+    if strict and needs:
+        return _fail(
+            f"review: {len(needs)} page(s) need attention",
+            stage="review",
+            pages=len(page_payloads),
+            needs_attention=len(needs),
+            review_md=str(md_path.relative_to(deck)),
+            review_json=str(json_path.relative_to(deck)),
+        )
+    return _ok(
+        stage="review",
+        pages=len(page_payloads),
+        needs_attention=len(needs),
+        review_md=str(md_path.relative_to(deck)),
+        review_json=str(json_path.relative_to(deck)),
     )
 
 
@@ -1372,6 +2075,15 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--deck-dir", type=Path, required=True)
     sp.add_argument("--page", type=int, required=True)
 
+    sp = sub.add_parser("review-page")
+    sp.add_argument("--deck-dir", type=Path, required=True)
+    sp.add_argument("--page", type=int, required=True)
+
+    sp = sub.add_parser("review")
+    sp.add_argument("--deck-dir", type=Path, required=True)
+    sp.add_argument("--concurrency", type=int, default=4,
+                    help="max parallel workers (default 4, clamped to 1-16)")
+
     # `refine-page` is a STANDALONE per-page tool: screenshot → VLM critique →
     # LLM apply. NOT wired into the main pipeline; the agent only runs it on
     # demand. Outputs page_NNN.review.md + page_NNN.refined.html (alongside
@@ -1406,6 +2118,10 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_gen_image(deck, args.page, args.slot)
     if args.cmd == "page-html":
         return cmd_page_html(deck, args.page)
+    if args.cmd == "review-page":
+        return cmd_review_page(deck, args.page)
+    if args.cmd == "review":
+        return cmd_review(deck, args.concurrency)
     if args.cmd == "refine-page":
         return cmd_refine_page(deck, args.page)
     if args.cmd == "export":

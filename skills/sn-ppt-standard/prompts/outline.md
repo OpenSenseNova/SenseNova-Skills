@@ -50,6 +50,7 @@ All reader-visible text fields (`title`, `subtitle`, every `bullets[].head`/`det
 - `narrative`: always fill. Treat as "what the slide tries to say in a paragraph". Lets the HTML generator produce a prose block when bullets would feel too sparse.
 - `data_points`: include when `info_pack.document_digest.data_highlights` is non-empty or when `page_kind` is `data`. Distribute numbers / facts across relevant pages — do NOT bunch them all on one page.
 - `visual_hints`: one sentence guiding composition (e.g. "split-screen with large hero left, 3-column KPI grid right").
+- `visual_hints` must be layout-realistic for a 16:9 slide. Name one primary visual structure and one secondary support at most. Avoid asking downstream HTML to combine too many systems (e.g. long intro + quote + central diagram + KPI strip + 2×2 dense card grid), because that regularly causes overflow and broken layout.
 - `asset_slots`: 0-2 per page. If `use_table` or `use_image` is non-null, **set asset_slots to `[]`** (this page already has its visual content from inherited material — no need for T2I decoration). Only pages without inherited material should have asset_slots.
 - `use_table` / `use_image` **inherit from the input's source material**. Two separate pools can feed `use_image`:
   * **Pool A — document-embedded images**: walk `document_digest.inherited_images` (or, if digest is null, `raw_documents_excerpt` entries with non-empty `inherited_images`). Each item is `{doc_index, image_index}`.
@@ -70,4 +71,4 @@ A typical 10-page deck should produce approximately:
 - ~15-25 data_points across data-heavy pages
 - ~14-18 asset_slots total
 
-If your output is substantially below this (e.g. only 20 bullets for 10 pages), pages will render sparse. Add more detail per page.
+If your output is substantially below this (e.g. only 20 bullets for 10 pages), pages will render sparse. Add more detail per page, but keep each individual page physically buildable: a content page should usually have 3-4 bullets, not 6 plus a long narrative plus many data points; a data page should pick one dominant chart/KPI structure; a 4-quadrant page should keep every quadrant short. Dense does not mean overpacked.
