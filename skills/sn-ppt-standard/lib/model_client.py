@@ -2,8 +2,8 @@
 
 Reads env from .env (via python-dotenv) and hits two chat endpoints:
 
-    llm(system, user) -> str                              # SN_TEXT_* / SN_CHAT_* /v1/chat/completions
-    vlm(system, user, images) -> str                      # SN_VISION_* / SN_CHAT_* /v1/chat/completions
+    llm(system, user) -> str                              # SN_TEXT_* / SN_CHAT_* chat/completions
+    vlm(system, user, images) -> str                      # SN_VISION_* / SN_CHAT_* chat/completions
 
 **T2I is intentionally NOT here.** Image generation routes through
 sn-image-base/scripts/sn_agent_runner.py sn-image-generate. This module is LLM/VLM only.
@@ -21,6 +21,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 try:
     from dotenv import load_dotenv
@@ -137,6 +138,24 @@ def _build_llm_timeout(timeout_s: float) -> httpx.Timeout:
     return httpx.Timeout(timeout_s, connect=_LLM_CONNECT_TIMEOUT_S, write=_LLM_WRITE_TIMEOUT_S)
 
 
+def _chat_completions_url(base_url: str) -> str:
+    """Build an OpenAI-compatible chat endpoint without duplicating `/v1`.
+
+    `SN_CHAT_BASE_URL` is commonly configured as either:
+    - `https://host`                    -> `https://host/v1/chat/completions`
+    - `https://host/v1`                 -> `https://host/v1/chat/completions`
+    - `https://host/custom/openai/v1`   -> `https://host/custom/openai/v1/chat/completions`
+
+    The previous implementation unconditionally appended `/v1/chat/completions`,
+    which produced `/v1/v1/chat/completions` when the base already included
+    the version path.
+    """
+    base = base_url.rstrip("/")
+    parsed = urlparse(base)
+    endpoint = "/v1/chat/completions" if not parsed.path else "/chat/completions"
+    return f"{base}{endpoint}"
+
+
 def _is_transient_llm_error(exc: httpx.HTTPError) -> bool:
     if isinstance(exc, (httpx.ReadTimeout, httpx.ConnectTimeout, httpx.ConnectError)):
         return True
@@ -210,7 +229,7 @@ def llm(system_prompt: str, user_prompt: str, *, model: str | None = None,
     max_attempts = max(1, int(retries) + 1)
     timeout_cfg = _build_llm_timeout(timeout_s)
 
-    url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
+    url = _chat_completions_url(cfg.base_url)
     payload: dict[str, Any] = {
         "model": model or _require(cfg.model, "SN_TEXT_MODEL / SN_CHAT_MODEL"),
         "messages": [
@@ -275,7 +294,7 @@ def vlm(system_prompt: str, user_prompt: str, images: list[str | Path], *,
             "image_url": {"url": f"data:{mime};base64,{b64}"},
         })
 
-    url = f"{cfg.base_url.rstrip('/')}/v1/chat/completions"
+    url = _chat_completions_url(cfg.base_url)
     payload = {
         "model": model or _require(cfg.model, "SN_VISION_MODEL / SN_CHAT_MODEL"),
         "messages": [
