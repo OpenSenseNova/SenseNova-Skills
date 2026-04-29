@@ -34,7 +34,8 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 
 ## External research and image assets
 
-- If the request depends on current facts or external real-world images, use the web/image search skills and follow their own `SKILL.md` exactly, draw SVG only as a fallback option, use placeholder images only as the last resort, and don't use the image generation tool unless the user requested.
+- Always use the web search skills for facts, research and knowledge grounding.
+- Always add images to the slides to make them look pretty. Use the image search skills and follow their own `SKILL.md` exactly, draw SVG only as a fallback option, use placeholder images only as the last resort, and don't use the image generation tool unless the user requested.
 - Before final HTML is accepted, any chosen remote image and user-uploaded image must be saved under `<deck_dir>/images/` and referenced via deck-local relative paths. Do not leave remote image URLs in the final HTML.
 - If a chosen source fails repeatedly or does not yield a usable asset, pick another result or redesign the page without that image.
 
