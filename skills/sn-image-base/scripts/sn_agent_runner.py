@@ -80,7 +80,7 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument("--prompt", required=True, help="Text prompt for image generation")
     gen_parser.add_argument("--negative-prompt", default="", help="Negative prompt")
     gen_parser.add_argument(
-        "--image-size", default="2k", choices=["1k", "2k"], help="Image size preset"
+        "--image-size", default="2k", choices=["2k"], help="Image size preset"
     )
     gen_parser.add_argument(
         "--aspect-ratio",
