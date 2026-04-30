@@ -21,7 +21,7 @@ python sn_agent_runner.py sn-image-generate \
     [--api-key <string>] \
     [--base-url <string>] \
     [--negative-prompt <string>] \
-    [--image-size 1k|2k] \
+    [--image-size 2k] \
     [--aspect-ratio <string>] \
     [--seed <int>] \
     [--unet-name <string>] \
@@ -39,7 +39,7 @@ python sn_agent_runner.py sn-image-generate \
 | `--prompt` | string | **Yes** | - | Text prompt |
 | `--api-key` | string | No | Reads `SN_IMAGE_GEN_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
-| `--image-size` | string | No | `"2k"` | Image size: `1k` or `2k` |
+| `--image-size` | string | No | `"2k"` | Image size: `2k` only |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
 | `--seed` | int | No | `None` | Random seed (for reproducibility) |
 | `--unet-name` | string | No | `None` | UNet model name |
