@@ -107,7 +107,7 @@ SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_API_KEY="your-api-key"
 ```
 
-Fallback priority is dedicated variable > domain shared variable > global variable. If a capability needs a different provider, set `SN_TEXT_*`, `SN_VISION_*`, `SN_CHAT_*`, or `SN_IMAGE_GEN_*`.
+Fallback priority is dedicated variable > domain shared variable > global variable. If a capability needs a different provider, set `SN_TEXT_*`, `SN_VISION_*`, `SN_CHAT_*`, or `SN_IMAGE_GEN_*`. Direct `sn-image-base` internals may additionally use `SN_IMAGE_BASE_*` before `SN_IMAGE_GEN_*`.
 
 **Note:** Never commit `.env` files or API keys to git.
 

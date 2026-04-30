@@ -161,6 +161,8 @@ Authentication parameters for `sn-image-generate` have the following default beh
 | `--base-url` | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` | `--base-url "..."` | CLI argument has priority |
 | `--api-key` | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | `--api-key "..."` | CLI argument has priority; throws `MissingApiKeyError` if all values are empty |
 
+Direct/internal `sn-image-base` client usage has one extra override layer: `SN_IMAGE_BASE_API_KEY` -> `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY`, and `SN_IMAGE_BASE_BASE_URL` -> `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL`.
+
 `sn-image-recognize` and `sn-text-optimize` use priority: **CLI argument > command-specific env var > shared `SN_CHAT_*` env var > global `SN_*` env var > built-in default**.
 
 | Parameter | Built-in Default | Vision Env Var | Text Env Var |

@@ -68,7 +68,9 @@ class Field:
             return None
         for n in self.env_names:
             if n in os.environ:
-                raw = os.environ[n]
+                raw = os.environ[n].strip()
+                if not raw:
+                    continue
                 if target_type is int:
                     return int(raw)
                 if target_type is float:
@@ -101,6 +103,23 @@ class Configs:
         Literal["sensenova", "nano-banana", "openai-image"], Field("SN_IMAGE_GEN_MODEL_TYPE")
     ] = "sensenova"
     SN_IMAGE_GEN_MODEL: Annotated[str, Field("SN_IMAGE_GEN_MODEL")] = "sensenova-u1-fast"
+    SN_IMAGE_BASE_API_KEY: Annotated[
+        str,
+        Field(
+            "SN_IMAGE_BASE_API_KEY",
+            "SN_IMAGE_GEN_API_KEY",
+            "SN_API_KEY",
+            secret=True,
+        ),
+    ] = ""
+    SN_IMAGE_BASE_BASE_URL: Annotated[
+        str,
+        Field(
+            "SN_IMAGE_BASE_BASE_URL",
+            "SN_IMAGE_GEN_BASE_URL",
+            "SN_BASE_URL",
+        ),
+    ] = "https://token.sensenova.cn/v1"
 
     # chat runtime shared by text and vision commands; command-specific
     # SN_TEXT_* / SN_VISION_* values override these defaults.
@@ -245,6 +264,7 @@ class Configs:
             for key in (
                 "SN_BASE_URL",
                 "SN_IMAGE_GEN_BASE_URL",
+                "SN_IMAGE_BASE_BASE_URL",
             )
             if getattr(self, key) and not is_valid_base_url(getattr(self, key))
         )

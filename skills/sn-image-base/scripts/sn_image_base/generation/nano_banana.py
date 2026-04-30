@@ -32,7 +32,7 @@ class NanoBananaText2ImageClient(T2IBaseClient):
 
     def __init__(
         self,
-        api_key: str,
+        api_key: str | None = None,
         base_url: str | None = None,
         *,
         model: str | None = None,
@@ -44,10 +44,10 @@ class NanoBananaText2ImageClient(T2IBaseClient):
         """Initialize the NanoBananaText2ImageClient.
 
         Args:
-            api_key (str):
-                API key for authentication.
+            api_key (str | None):
+                API key for authentication. If None, reads from SN_IMAGE_BASE_API_KEY -> SN_IMAGE_GEN_API_KEY -> SN_API_KEY.
             base_url (str | None, optional):
-                API base URL. If None, reads from SN_IMAGE_GEN_BASE_URL env var.
+                API base URL. If None, reads from SN_IMAGE_BASE_BASE_URL -> SN_IMAGE_GEN_BASE_URL -> SN_BASE_URL.
             model (str | None, optional):
                 Model name. If None, reads from SN_IMAGE_GEN_MODEL env var.
             max_connections (int, optional):
@@ -133,9 +133,9 @@ class NanoBananaText2ImageClient(T2IBaseClient):
             details = exc.detail or ""
             field_name = None
             if exc.code == 404:
-                field_name = "SN_IMAGE_GEN_BASE_URL"
+                field_name = "SN_IMAGE_BASE_BASE_URL"
             elif exc.code == 401:
-                field_name = "SN_IMAGE_GEN_API_KEY"
+                field_name = "SN_IMAGE_BASE_API_KEY"
             if field_name is not None:
                 field_hint = global_configs.get_annotated_field(field_name)
                 if field_hint is not None:
@@ -186,11 +186,11 @@ class NanoBananaText2ImageClient(T2IBaseClient):
     @property
     @override
     def api_key(self) -> str:
-        api_key = self._api_key or global_configs.SN_IMAGE_GEN_API_KEY
+        api_key = self._api_key or global_configs.SN_IMAGE_BASE_API_KEY
         if not api_key:
             raise ValueError(
                 "API key is missing: {}".format(
-                    global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY")
+                    global_configs.get_env_var_help("SN_IMAGE_BASE_API_KEY")
                 )
             )
         return api_key
@@ -198,17 +198,17 @@ class NanoBananaText2ImageClient(T2IBaseClient):
     @property
     @override
     def base_url(self) -> str:
-        base_url = self._base_url or global_configs.SN_IMAGE_GEN_BASE_URL
+        base_url = self._base_url or global_configs.SN_IMAGE_BASE_BASE_URL
         if not base_url:
             raise ValueError(
                 "Base URL is missing: {}".format(
-                    global_configs.get_env_var_help("SN_IMAGE_GEN_BASE_URL")
+                    global_configs.get_env_var_help("SN_IMAGE_BASE_BASE_URL")
                 )
             )
         if not is_valid_base_url(base_url):
             raise ValueError(
                 f"Base URL is not a valid base URL: {base_url}. "
-                f"Try setting environment variable(s): {global_configs.get_env_var_help('SN_IMAGE_GEN_BASE_URL')}"
+                f"Try setting environment variable(s): {global_configs.get_env_var_help('SN_IMAGE_BASE_BASE_URL')}"
             )
         return base_url
 

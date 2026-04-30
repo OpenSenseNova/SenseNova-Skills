@@ -160,7 +160,7 @@ EOF
 source .env  # Or use a tool like python-dotenv
 ```
 
-Fallback priority is capability-specific variable > domain shared variable > global variable. For example, text calls use `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY`; vision calls use `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY`; image generation uses `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY`.
+Fallback priority is capability-specific variable > domain shared variable > global variable. Text calls use `SN_TEXT_*` -> `SN_CHAT_*` -> `SN_*`; vision calls use `SN_VISION_*` -> `SN_CHAT_*` -> `SN_*`; image generation uses `SN_IMAGE_GEN_*` -> `SN_*`; direct `sn-image-base` internals use `SN_IMAGE_BASE_*` -> `SN_IMAGE_GEN_*` -> `SN_*`.
 
 ### API Connectivity Issues
 

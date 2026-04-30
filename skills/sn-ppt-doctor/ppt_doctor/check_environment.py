@@ -307,6 +307,8 @@ _OPTIONAL_VARS = [
     "SN_IMAGE_GEN_MODEL",
     # NOTE: PPT_DECK_ROOT removed — deck_dir is now always $(cwd)/ppt_decks/
     "SN_IMAGE_GEN_MODEL_TYPE",
+    "SN_IMAGE_BASE_API_KEY",
+    "SN_IMAGE_BASE_BASE_URL",
     "SN_CHAT_BASE_URL",
     "SN_CHAT_MODEL",
     "SN_CHAT_TYPE",

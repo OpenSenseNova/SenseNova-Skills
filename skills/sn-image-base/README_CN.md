@@ -79,6 +79,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 | 文本模型 | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | 视觉模型 | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | 图像生成 | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` |
+| sn-image-base 内部 | `SN_IMAGE_BASE_API_KEY` -> `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | `SN_IMAGE_BASE_BASE_URL` -> `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` |
 
 图像生成完整配置如下：
 
@@ -90,11 +91,14 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 | `SN_IMAGE_GEN_MODEL_TYPE` | 图像生成模型类型 | `"sensenova"` |
 | `SN_IMAGE_GEN_MODEL` | 图像生成模型名 | `"sensenova-u1-fast"` |
 | `SN_IMAGE_GEN_BASE_URL` | 图像生成 API 的基础 URL | `SN_BASE_URL`，然后 `"https://token.sensenova.cn/v1"` |
+| `SN_IMAGE_BASE_API_KEY` | 直接/内部调用 `sn-image-base` 时使用的高级覆盖 | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` |
+| `SN_IMAGE_BASE_BASE_URL` | 直接/内部调用 `sn-image-base` 时使用的 base URL 高级覆盖 | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL`，然后 `"https://token.sensenova.cn/v1"` |
 
 默认值适用于 [SenseNova](https://platform.sensenova.cn/)。
 
 如果所有能力走同一个网关，只需要设置 `SN_BASE_URL` 和 `SN_API_KEY`。
 仅当图像生成需要不同 provider 时，再设置 `SN_IMAGE_GEN_*`。
+仅当直接调用 `sn-image-base` 内部客户端且需要区别于普通图像生成时，再设置 `SN_IMAGE_BASE_*`。
 
 如需使用非默认图像生成模型，请按以下步骤：
 
@@ -215,7 +219,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ### 缺少 API key
 
 - 现象：报错包含 "required but not set"、"missing api key" 或请求未授权。
-- 处理：如果所有能力使用同一个 key，设置全局 `SN_API_KEY` 即可。不要重复设置 `SN_IMAGE_GEN_API_KEY`，除非图像生成需要不同 provider 或 key；仅当 chat/text/vision 需要不同 provider 时，再设置 `SN_CHAT_API_KEY`、`SN_TEXT_API_KEY` 或 `SN_VISION_API_KEY`。
+- 处理：如果所有能力使用同一个 key，设置全局 `SN_API_KEY` 即可。不要重复设置 `SN_IMAGE_GEN_API_KEY`，除非图像生成需要不同 provider 或 key；仅当直接调用 `sn-image-base` 内部客户端且需要区别于普通图像生成时，才设置 `SN_IMAGE_BASE_API_KEY`；仅当 chat/text/vision 需要不同 provider 时，再设置 `SN_CHAT_API_KEY`、`SN_TEXT_API_KEY` 或 `SN_VISION_API_KEY`。
 
 ### base URL 配置错误
 

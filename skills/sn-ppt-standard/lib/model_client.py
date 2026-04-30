@@ -2,8 +2,8 @@
 
 Reads env from .env (via python-dotenv) and hits two chat endpoints:
 
-    llm(system, user) -> str                              # SN_TEXT_* / SN_CHAT_* /v1/chat/completions
-    vlm(system, user, images) -> str                      # SN_VISION_* / SN_CHAT_* /v1/chat/completions
+    llm(system, user) -> str                              # SN_TEXT_* / SN_CHAT_* / SN_* /v1/chat/completions
+    vlm(system, user, images) -> str                      # SN_VISION_* / SN_CHAT_* / SN_* /v1/chat/completions
 
 **T2I is intentionally NOT here.** Image generation routes through
 sn-image-base/scripts/sn_agent_runner.py sn-image-generate. This module is LLM/VLM only.
@@ -76,8 +76,13 @@ class LLMConfig:
     @classmethod
     def from_env(cls) -> "LLMConfig":
         return cls(
-            api_key=_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY"),
-            base_url=_env("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
+            api_key=_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY"),
+            base_url=_env(
+                "SN_TEXT_BASE_URL",
+                "SN_CHAT_BASE_URL",
+                "SN_BASE_URL",
+                default=_DEFAULT_CHAT_BASE_URL,
+            ),
             model=_env("SN_TEXT_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
             timeout=float(_env("SN_TEXT_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
         )
@@ -93,8 +98,13 @@ class VLMConfig:
     @classmethod
     def from_env(cls) -> "VLMConfig":
         return cls(
-            api_key=_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY"),
-            base_url=_env("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
+            api_key=_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY"),
+            base_url=_env(
+                "SN_VISION_BASE_URL",
+                "SN_CHAT_BASE_URL",
+                "SN_BASE_URL",
+                default=_DEFAULT_CHAT_BASE_URL,
+            ),
             model=_env("SN_VISION_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
             timeout=float(_env("SN_VISION_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
         )
@@ -204,8 +214,8 @@ def llm(system_prompt: str, user_prompt: str, *, model: str | None = None,
         request_name: str = "llm") -> str:
     """Call the LLM chat endpoint. Returns the assistant message text."""
     cfg = LLMConfig.from_env()
-    _require(cfg.api_key, "SN_TEXT_API_KEY / SN_CHAT_API_KEY")
-    _require(cfg.base_url, "SN_TEXT_BASE_URL / SN_CHAT_BASE_URL")
+    _require(cfg.api_key, "SN_TEXT_API_KEY / SN_CHAT_API_KEY / SN_API_KEY")
+    _require(cfg.base_url, "SN_TEXT_BASE_URL / SN_CHAT_BASE_URL / SN_BASE_URL")
     timeout_s = float(cfg.timeout if timeout is None else timeout)
     max_attempts = max(1, int(retries) + 1)
     timeout_cfg = _build_llm_timeout(timeout_s)
@@ -260,8 +270,8 @@ def vlm(system_prompt: str, user_prompt: str, images: list[str | Path], *,
         model: str | None = None) -> str:
     """Call the VLM chat endpoint with one or more image paths. Returns assistant text."""
     cfg = VLMConfig.from_env()
-    _require(cfg.api_key, "SN_VISION_API_KEY / SN_CHAT_API_KEY")
-    _require(cfg.base_url, "SN_VISION_BASE_URL / SN_CHAT_BASE_URL")
+    _require(cfg.api_key, "SN_VISION_API_KEY / SN_CHAT_API_KEY / SN_API_KEY")
+    _require(cfg.base_url, "SN_VISION_BASE_URL / SN_CHAT_BASE_URL / SN_BASE_URL")
 
     content: list[dict[str, Any]] = [{"type": "text", "text": user_prompt}]
     for img in images:

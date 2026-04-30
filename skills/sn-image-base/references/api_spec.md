@@ -287,5 +287,6 @@ Error messages are written to stderr and do not affect stdout content.
 | `sn-image-generate` | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | CLI > optional image generation key > global key; raises `MissingApiKeyError` if all are empty |
 | `sn-image-recognize` | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | CLI > command-specific key > shared chat key > global key; raises `MissingApiKeyError` if all are empty |
 | `sn-text-optimize` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | CLI > command-specific key > shared chat key > global key; raises `MissingApiKeyError` if all are empty |
+| direct `sn-image-base` internals | `SN_IMAGE_BASE_API_KEY` -> `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | Advanced override chain for direct client use, not needed for normal CLI usage |
 
-`SN_API_KEY` is the global key for all capabilities. `SN_CHAT_API_KEY` is the shared key for both text and vision chat calls. Use command-specific keys only when a command needs a different provider.
+`SN_API_KEY` is the global key for all capabilities. `SN_CHAT_API_KEY` is the shared key for both text and vision chat calls. Use command-specific keys only when a command needs a different provider. Base URL fallback follows the same pattern: text `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL`, vision `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL`, image generation `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL`, and direct internals `SN_IMAGE_BASE_BASE_URL` -> `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL`.

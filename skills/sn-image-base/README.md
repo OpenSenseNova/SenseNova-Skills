@@ -77,6 +77,7 @@ Environment variables are resolved as: dedicated variable > domain shared variab
 | Text model | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | Vision model | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | Image generation | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` |
+| sn-image-base internals | `SN_IMAGE_BASE_API_KEY` -> `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | `SN_IMAGE_BASE_BASE_URL` -> `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` |
 
 Full configuration for image generation:
 
@@ -88,11 +89,14 @@ Full configuration for image generation:
 | `SN_IMAGE_GEN_MODEL_TYPE` | The type of image generation model to use | `"sensenova"` |
 | `SN_IMAGE_GEN_MODEL` | The name of the image generation model to use | `"sensenova-u1-fast"` |
 | `SN_IMAGE_GEN_BASE_URL` | The base URL for the image generation API | `SN_BASE_URL`, then `"https://token.sensenova.cn/v1"` |
+| `SN_IMAGE_BASE_API_KEY` | Advanced override for direct/internal `sn-image-base` clients | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` |
+| `SN_IMAGE_BASE_BASE_URL` | Advanced base URL override for direct/internal `sn-image-base` clients | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL`, then `"https://token.sensenova.cn/v1"` |
 
 The default values are recommended for the [SenseNova](https://platform.sensenova.cn/).
 
 When all capabilities use one gateway, set only `SN_BASE_URL` and `SN_API_KEY`.
 Set `SN_IMAGE_GEN_*` only when image generation needs a different provider.
+Set `SN_IMAGE_BASE_*` only for direct `sn-image-base` internals that must differ from normal image generation.
 
 To use non-default image generation models, please:
 
@@ -216,7 +220,7 @@ To use non-default shared chat settings, please:
 ### Missing API key
 
 - Symptom: errors like "required but not set", "missing api key", or request unauthorized.
-- Fix: set global `SN_API_KEY` when all capabilities use one key. Do not also set `SN_IMAGE_GEN_API_KEY` unless image generation needs a different provider or key. Use `SN_CHAT_API_KEY`, `SN_TEXT_API_KEY`, or `SN_VISION_API_KEY` only when chat/text/vision needs a different provider.
+- Fix: set global `SN_API_KEY` when all capabilities use one key. Do not also set `SN_IMAGE_GEN_API_KEY` unless image generation needs a different provider or key. Use `SN_IMAGE_BASE_API_KEY` only for direct `sn-image-base` internals that must differ from image generation. Use `SN_CHAT_API_KEY`, `SN_TEXT_API_KEY`, or `SN_VISION_API_KEY` only when chat/text/vision needs a different provider.
 
 ### Wrong base URL
 

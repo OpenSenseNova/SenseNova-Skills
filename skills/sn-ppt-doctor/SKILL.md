@@ -34,7 +34,7 @@ triggers:
 
 - `$(pwd)/ppt_decks/` creatable and writable (deck_dir parent; fixed — not configurable via env)
 - `sn-ppt-standard/scripts/export_pptx/node_modules` exists (run `npm install` on first use otherwise)
-- Optional env vars (`SN_IMAGE_GEN_*`, `SN_CHAT_*`, `SN_TEXT_*`, `SN_VISION_*`) — displays current value or "unset"
+- Optional env vars (`SN_IMAGE_GEN_*`, `SN_IMAGE_BASE_*`, `SN_CHAT_*`, `SN_TEXT_*`, `SN_VISION_*`) — displays current value or "unset"
 - `pypdf` / `python-docx` Python deps for doc parsing in sn-ppt-entry
 
 ## Invocation

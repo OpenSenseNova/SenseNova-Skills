@@ -107,7 +107,7 @@ SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_API_KEY="your-api-key"
 ```
 
-环境变量 fallback 优先级为：专用变量 > 领域共享变量 > 全局变量。若某个能力需要不同 provider，可再设置 `SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 或 `SN_IMAGE_GEN_*`。
+环境变量 fallback 优先级为：专用变量 > 领域共享变量 > 全局变量。若某个能力需要不同 provider，可再设置 `SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 或 `SN_IMAGE_GEN_*`。直接调用 `sn-image-base` 内部客户端时，还可使用优先于 `SN_IMAGE_GEN_*` 的 `SN_IMAGE_BASE_*`。
 
 **注意：** 切勿将 `.env` 或 API Key 提交到 git。
 
