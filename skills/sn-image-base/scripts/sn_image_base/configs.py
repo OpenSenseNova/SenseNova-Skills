@@ -86,12 +86,16 @@ class Configs:
     default is kept.
     """
 
+    # global defaults shared by all SN capabilities.
+    SN_API_KEY: Annotated[str, Field("SN_API_KEY", secret=True)] = ""
+    SN_BASE_URL: Annotated[str, Field("SN_BASE_URL")] = ""
+
     # image-generate
     SN_IMAGE_GEN_API_KEY: Annotated[
-        str, Field("SN_IMAGE_GEN_API_KEY", required=True, secret=True)
+        str, Field("SN_IMAGE_GEN_API_KEY", "SN_API_KEY", required=True, secret=True)
     ] = ""
     SN_IMAGE_GEN_BASE_URL: Annotated[
-        str, Field("SN_IMAGE_GEN_BASE_URL", required=True)
+        str, Field("SN_IMAGE_GEN_BASE_URL", "SN_BASE_URL", required=True)
     ] = "https://token.sensenova.cn/v1"
     SN_IMAGE_GEN_MODEL_TYPE: Annotated[
         Literal["sensenova", "nano-banana", "openai-image"], Field("SN_IMAGE_GEN_MODEL_TYPE")
@@ -100,16 +104,20 @@ class Configs:
 
     # chat runtime shared by text and vision commands; command-specific
     # SN_TEXT_* / SN_VISION_* values override these defaults.
-    SN_CHAT_API_KEY: Annotated[str, Field("SN_CHAT_API_KEY", secret=True)] = ""
-    SN_CHAT_BASE_URL: Annotated[str, Field("SN_CHAT_BASE_URL")] = (
+    SN_CHAT_API_KEY: Annotated[str, Field("SN_CHAT_API_KEY", "SN_API_KEY", secret=True)] = ""
+    SN_CHAT_BASE_URL: Annotated[str, Field("SN_CHAT_BASE_URL", "SN_BASE_URL")] = (
         "https://token.sensenova.cn/v1"
     )
     SN_CHAT_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"], Field("SN_CHAT_TYPE")
     ] = "openai-completions"
     SN_CHAT_MODEL: Annotated[str, Field("SN_CHAT_MODEL")] = "sensenova-6.7-flash-lite"
-    SN_TEXT_API_KEY: Annotated[str, Field("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", secret=True)] = ""
-    SN_TEXT_BASE_URL: Annotated[str, Field("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL")] = ""
+    SN_TEXT_API_KEY: Annotated[
+        str, Field("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY", secret=True)
+    ] = ""
+    SN_TEXT_BASE_URL: Annotated[
+        str, Field("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL", "SN_BASE_URL")
+    ] = ""
     SN_TEXT_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("SN_TEXT_TYPE", "SN_CHAT_TYPE"),
@@ -117,8 +125,12 @@ class Configs:
     SN_TEXT_MODEL: Annotated[str, Field("SN_TEXT_MODEL", "SN_CHAT_MODEL")] = (
         "sensenova-6.7-flash-lite"
     )
-    SN_VISION_API_KEY: Annotated[str, Field("SN_VISION_API_KEY", "SN_CHAT_API_KEY", secret=True)] = ""
-    SN_VISION_BASE_URL: Annotated[str, Field("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL")] = ""
+    SN_VISION_API_KEY: Annotated[
+        str, Field("SN_VISION_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY", secret=True)
+    ] = ""
+    SN_VISION_BASE_URL: Annotated[
+        str, Field("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL", "SN_BASE_URL")
+    ] = ""
     SN_VISION_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"],
         Field("SN_VISION_TYPE", "SN_CHAT_TYPE"),
@@ -169,7 +181,13 @@ class Configs:
             value = getattr(self, field_name, None)
             if not value:
                 if field.required:
-                    msg = f"Field '{field_name}' is required but not set; try setting the environment variable(s) {field.env_names}"
+                    if field_name == "SN_IMAGE_GEN_API_KEY":
+                        msg = (
+                            "Image generation API key is not set; configure SN_API_KEY, "
+                            "or configure SN_IMAGE_GEN_API_KEY only for an image-generation-specific override"
+                        )
+                    else:
+                        msg = f"Field '{field_name}' is required but not set; try setting the environment variable(s) {field.env_names}"
                     errors.append((field_name, msg))
                 continue
 
@@ -183,15 +201,15 @@ class Configs:
         warnings: list[tuple[str, str]] = []
         runtime_checks = {
             "text": {
-                "api_key": ("SN_TEXT_API_KEY", "SN_CHAT_API_KEY"),
+                "api_key": ("SN_TEXT_API_KEY",),
                 "base_url": ("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL"),
-                "model": ("SN_TEXT_MODEL", "SN_CHAT_MODEL"),
+                "model": ("SN_TEXT_MODEL",),
                 "type": ("SN_TEXT_TYPE", "SN_CHAT_TYPE"),
             },
             "vision": {
-                "api_key": ("SN_VISION_API_KEY", "SN_CHAT_API_KEY"),
+                "api_key": ("SN_VISION_API_KEY",),
                 "base_url": ("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL"),
-                "model": ("SN_VISION_MODEL", "SN_CHAT_MODEL"),
+                "model": ("SN_VISION_MODEL",),
                 "type": ("SN_VISION_TYPE", "SN_CHAT_TYPE"),
             },
         }
@@ -217,6 +235,17 @@ class Configs:
                 f"{key} is not a valid base URL: {getattr(self, key)}",
             )
             for key in ("SN_CHAT_BASE_URL", "SN_TEXT_BASE_URL", "SN_VISION_BASE_URL")
+            if getattr(self, key) and not is_valid_base_url(getattr(self, key))
+        )
+        errors.extend(
+            (
+                key,
+                f"{key} is not a valid base URL: {getattr(self, key)}",
+            )
+            for key in (
+                "SN_BASE_URL",
+                "SN_IMAGE_GEN_BASE_URL",
+            )
             if getattr(self, key) and not is_valid_base_url(getattr(self, key))
         )
         return errors, warnings

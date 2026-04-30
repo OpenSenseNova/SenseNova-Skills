@@ -52,8 +52,8 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--aspect-ratio` | string | `16:9` | Aspect ratio, e.g. `1:1`, `16:9`, `9:16` |
 | `--seed` | int | `None` | Random seed for reproducible generation |
 | `--unet-name` | string | `None` | Specify a UNet model name |
-| `--api-key` | string | Read from `SN_IMAGE_GEN_API_KEY` env var | API key (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
-| `--base-url` | string | Read from `SN_IMAGE_GEN_BASE_URL` env var | API base URL (CLI argument has priority; `MissingApiKeyError` is raised when both are empty) |
+| `--api-key` | string | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | API key (CLI argument has priority; `MissingApiKeyError` is raised when all are empty) |
+| `--base-url` | string | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` | API base URL (CLI argument has priority) |
 | `--poll-interval` | float | `5.0` | Polling interval (seconds) |
 | `--timeout` | float | `300.0` | Timeout (seconds) |
 | `--insecure` | flag | `False` | Disable TLS verification |
@@ -67,8 +67,8 @@ Image recognition tool that uses VLM (Vision Language Model) to analyze image co
 
 | Parameter | Type | Built-in Default | Env Var | Description |
 |------|------|-----------|---------|------|
-| `--api-key` | string | No hardcoded default | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
-| `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` | Vision provider base URL; falls back to shared chat provider |
+| `--api-key` | string | No hardcoded default | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
+| `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` | Vision provider base URL; falls back to shared chat/global provider |
 | `--model` | string | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | Vision-capable model name |
 | `--vlm-type` | string | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` | Chat protocol type override |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
@@ -87,8 +87,8 @@ Text optimization tool that uses LLM (Language Model) to optimize text content. 
 
 | Parameter | Type | Built-in Default | Env Var | Description |
 |------|------|-----------|---------|------|
-| `--api-key` | string | No hardcoded default | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
-| `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` | Text provider base URL; falls back to shared chat provider |
+| `--api-key` | string | No hardcoded default | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
+| `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` | Text provider base URL; falls back to shared chat/global provider |
 | `--model` | string | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` | Text model name |
 | `--llm-type` | string | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` | Chat protocol type override |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
@@ -158,19 +158,19 @@ Authentication parameters for `sn-image-generate` have the following default beh
 
 | Parameter | Default | Override | Description |
 |------|--------|----------|------|
-| `--base-url` | Read from `SN_IMAGE_GEN_BASE_URL` env var | `--base-url "..."` | CLI argument has priority; throws error if env var and CLI value are both missing |
-| `--api-key` | Read from `SN_IMAGE_GEN_API_KEY` env var | `--api-key "..."` | CLI argument has priority; throws `MissingApiKeyError` if env var and CLI value are both missing |
+| `--base-url` | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` | `--base-url "..."` | CLI argument has priority |
+| `--api-key` | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | `--api-key "..."` | CLI argument has priority; throws `MissingApiKeyError` if all values are empty |
 
-`sn-image-recognize` and `sn-text-optimize` use priority: **CLI argument > command-specific env var > shared `SN_CHAT_*` env var > built-in default**.
+`sn-image-recognize` and `sn-text-optimize` use priority: **CLI argument > command-specific env var > shared `SN_CHAT_*` env var > global `SN_*` env var > built-in default**.
 
 | Parameter | Built-in Default | Vision Env Var | Text Env Var |
 |------|-----------|-------------|-------------|
-| `--api-key` | None (must be provided) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` |
-| `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` |
+| `--api-key` | None (must be provided) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` |
+| `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
 | `--vlm-type` / `--llm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
 
-`api_key` resolution order (high to low): CLI `--api-key` > command-specific key (`SN_VISION_API_KEY`/`SN_TEXT_API_KEY`) > `SN_CHAT_API_KEY`. If all are unset, `MissingApiKeyError` is raised.
+`api_key` resolution order (high to low): CLI `--api-key` > command-specific key (`SN_VISION_API_KEY`/`SN_TEXT_API_KEY`) > `SN_CHAT_API_KEY` > `SN_API_KEY`. If all are unset, `MissingApiKeyError` is raised.
 
 Only `--api-key` must be provided via CLI or environment; base URL, model, and interface type have shared chat defaults.
 

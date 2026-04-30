@@ -45,22 +45,20 @@ pip install -r skills/sn-image-base/requirements.txt
 将以下变量写入 `~/.openclaw/.env`（OpenClaw）或 `~/.hermes/.env`（Hermes）：
 
 ```ini
+# 如果所有能力走同一个网关，只需要配置这两个变量
+SN_API_KEY="your-api-key"
+SN_BASE_URL="https://token.sensenova.cn/v1"
+
 # LLM（大纲、style_spec、内容规划、图片内容识别、页面review）
-SN_CHAT_API_KEY="your-api-key"
-SN_CHAT_BASE_URL="https://token.sensenova.cn/v1"
 SN_CHAT_MODEL="sensenova-6.7-flash-lite"
-SN_VISION_API_KEY="your-api-key"
-SN_VISION_BASE_URL="https://token.sensenova.cn/v1"
 SN_VISION_MODEL="sensenova-6.7-flash-lite"
 
 # 文生图（创意模式必填，标准模式按需）
-SN_IMAGE_GEN_API_KEY="your-api-key"
 SN_IMAGE_GEN_MODEL_TYPE="sensenova"
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
-SN_IMAGE_GEN_BASE_URL="https://token.sensenova.cn/v1"
 ```
 
-可选环境变量：`SN_IMAGE_GEN_*`、`SN_TEXT_*`、`SN_VISION_*` 用于覆盖默认模型与超时。详细列表见 [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md)。
+可选环境变量：`SN_IMAGE_GEN_*`、`SN_CHAT_*`、`SN_TEXT_*`、`SN_VISION_*` 用于覆盖默认模型、网关或 key。已有 `SN_API_KEY` 时，不需要再设置 `SN_IMAGE_GEN_API_KEY`，除非图像生成使用不同 key。详细列表见 [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md)。
 
 调用前先运行环境诊断：
 
