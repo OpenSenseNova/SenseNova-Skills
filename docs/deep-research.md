@@ -63,7 +63,7 @@
 | 抖音 | **必填** | `DOUYIN_COOKIE` | 不配置无法搜索 |
 | Twitter/X | **必填** | `TIKHUB_TOKEN` | 通过 TikHub 反代 |
 | YouTube | **必填** | `YOUTUBE_API_KEY` | YouTube Data API v3 |
-| AI 配图（`sn-image-base` / `sn-image-generate`） | 生成配图时**必填** | `SN_IMAGE_GEN_API_KEY` | 用于 `report.md` 中的 AI 配图 |
+| AI 配图（`sn-image-base` / `sn-image-generate`） | 生成配图时**必填** | `SN_API_KEY` | 用于 `report.md` 中的 AI 配图；`SN_IMAGE_GEN_API_KEY` 仅在图像生成使用不同 key 时覆盖 |
 | AI 配图模型 | 可选 | `SN_IMAGE_GEN_MODEL` | 默认见 `sn-image-base` 配置；可指定 Token Plan 或其他支持的图像模型 |
 | AI 配图服务地址 | 可选 | `SN_IMAGE_GEN_BASE_URL` | 默认见 `sn-image-base` 配置；使用非默认服务时设置 |
 | AI 配图模型类型 | 可选 | `SN_IMAGE_GEN_MODEL_TYPE` | 如 `sensenova`、`nano-banana`、`openai-image` |
@@ -73,8 +73,8 @@ ArXiv、Stack Overflow、Hacker News、Reddit 公开搜索无需 key。
 `sn-image-generate` 相关最小配置示例：
 
 ```ini
-SN_IMAGE_GEN_API_KEY="sk-xxx"
-SN_IMAGE_GEN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="sk-xxx"
+SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_IMAGE_GEN_MODEL_TYPE="sensenova"
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
 ```

@@ -7,7 +7,7 @@
 ## 环境要求
 
 - **Python** 3.9 或更高版本（推荐 3.10+）。
-- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（`SN_IMAGE_BASE_API_KEY`、`SN_CHAT_API_KEY`，详见 Quick Start）。
+- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（所有能力共用同一网关时，`SN_API_KEY` 和 `SN_BASE_URL` 即可；详见 Quick Start）。
 - 已安装 `sn-image-base` 技能（作为底层依赖）。
 
 ## 技能介绍
@@ -58,9 +58,11 @@ sn-image-base (Tier 0)
 使用 [SenseNova Token Plan](https://platform.sensenova.cn/token-plan) 运行 `sn-image-base` 技能所需的最小环境变量：
 
 ```ini
-SN_IMAGE_GEN_API_KEY="your-api-key"
-SN_CHAT_API_KEY="your-api-key"
+SN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="your-api-key"
 ```
+
+仅当某个能力需要不同 provider 时，再设置能力专用变量：`SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 或 `SN_IMAGE_GEN_*`。
 
 更多配置请参考 [`sn-image-generate.md`](../../docs/sn-image-generate.md) 中的 **Python 依赖与 API Key** 段落。
 

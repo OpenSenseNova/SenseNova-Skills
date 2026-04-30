@@ -59,9 +59,11 @@ Dependency installation and API key configuration are for [sn-image-base](../sn-
 The minimum environment variables to configure `sn-image-base` skill running with [SenseNova Token Plan](https://platform.sensenova.cn/token-plan):
 
 ```ini
-SN_IMAGE_GEN_API_KEY="your-api-key"
-SN_CHAT_API_KEY="your-api-key"
+SN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="your-api-key"
 ```
+
+Fallback priority is dedicated variable > domain shared variable > global variable. Text calls use `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY`; vision calls use `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY`; image generation uses `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY`.
 
 Please refer to the **Python dependencies and API keys** section in [`sn-image-generate_en.md`](../../docs/sn-image-generate_en.md) for more configurations.
 

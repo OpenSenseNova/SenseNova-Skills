@@ -63,7 +63,7 @@ Set as needed in `~/.openclaw/.env` (OpenClaw), `~/.hermes/.env` (Hermes), or th
 | Douyin | **Required** | `DOUYIN_COOKIE` | Search will not work without it |
 | Twitter/X | **Required** | `TIKHUB_TOKEN` | Routed via TikHub |
 | YouTube | **Required** | `YOUTUBE_API_KEY` | YouTube Data API v3 |
-| AI illustrations (`sn-image-base` / `sn-image-generate`) | **Required** when generating images | `SN_IMAGE_GEN_API_KEY` | Used for AI illustrations in `report.md` |
+| AI illustrations (`sn-image-base` / `sn-image-generate`) | **Required** when generating images | `SN_API_KEY` | Used for AI illustrations in `report.md`; `SN_IMAGE_GEN_API_KEY` is only needed when image generation uses a different key |
 | AI image model | Optional | `SN_IMAGE_GEN_MODEL` | Defaults are defined by `sn-image-base`; set this for a specific Token Plan or other supported image model |
 | AI image base URL | Optional | `SN_IMAGE_GEN_BASE_URL` | Defaults are defined by `sn-image-base`; set this for non-default providers |
 | AI image model type | Optional | `SN_IMAGE_GEN_MODEL_TYPE` | Examples: `sensenova`, `nano-banana`, `openai-image` |
@@ -73,8 +73,8 @@ ArXiv, Stack Overflow, Hacker News, and Reddit public search require no key.
 Minimal `sn-image-generate` configuration example:
 
 ```ini
-SN_IMAGE_GEN_API_KEY="sk-xxx"
-SN_IMAGE_GEN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="sk-xxx"
+SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_IMAGE_GEN_MODEL_TYPE="sensenova"
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
 ```

@@ -7,7 +7,7 @@ This document introduces the `sn-image-imitate` skill and provides a Quick Start
 ## Prerequisites
 
 - **Python** 3.9 or later (3.10+ recommended).
-- **SN API** credentials for image generation and LLM/VLM endpoints (`SN_IMAGE_BASE_API_KEY`, `SN_CHAT_API_KEY`; see Quick Start).
+- **SN API** credentials for image generation and LLM/VLM endpoints (`SN_API_KEY` and `SN_BASE_URL` are enough when all capabilities use one gateway; see Quick Start).
 - `sn-image-base` skill installed (as a base dependency).
 
 ## Skill Overview
@@ -58,9 +58,11 @@ Dependency installation and API key configuration are for [sn-image-base](../sn-
 The minimum environment variables to configure `sn-image-base` skill running with [SenseNova Token Plan](https://platform.sensenova.cn/token-plan):
 
 ```ini
-SN_IMAGE_GEN_API_KEY="your-api-key"
-SN_CHAT_API_KEY="your-api-key"
+SN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="your-api-key"
 ```
+
+Use capability-specific variables only when a provider differs from the shared gateway: `SN_TEXT_*`, `SN_VISION_*`, `SN_CHAT_*`, or `SN_IMAGE_GEN_*`.
 
 Please refer to the **Python dependencies and API keys** section in [`sn-image-generate_en.md`](../../docs/sn-image-generate_en.md) for more configurations.
 
