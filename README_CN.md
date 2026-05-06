@@ -25,7 +25,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 ## 🦝 在小浣熊中开箱即用
 
-本仓库的最新模型与全系 Cowork-Skill，已整体集成进 [**小浣熊 Pro**](https://office.xiaohuanxiong.com/home) 套餐，提供企业级安全防护与开箱即用的丝滑体验——如果你不想自己搭环境、配 API key，可以直接通过小浣熊使用这些能力。
+本仓库的最新模型与全系 Cowork-Skill，已整体集成进 [**小浣熊**](https://office.xiaohuanxiong.com/home)，提供企业级安全防护与开箱即用的丝滑体验——如果你不想自己搭环境、配 API key，可以直接通过小浣熊使用这些能力。支持免费试用，无需付费即可上手体验。
 
 小浣熊本次迎来产品能力与客户端体验的全面升级：
 
