@@ -18,7 +18,7 @@ The skills cover **image generation & visualization**, **slide-deck (PPT) genera
 
 ## 🦝 Available out-of-the-box in Raccoon
 
-The latest SenseNova models and the full Cowork-Skill suite in this repo are bundled into the [**Raccoon (小浣熊) Pro**](https://xiaohuanxiong.com/) plan, with enterprise-grade security and a zero-setup experience — if you'd rather not provision env, API keys, and runtimes yourself, you can use these capabilities directly through Raccoon.
+The latest SenseNova models and the full Cowork-Skill suite in this repo are bundled into [**Raccoon**](https://xiaohuanxiong.com/), with enterprise-grade security and a zero-setup experience — if you'd rather not provision env, API keys, and runtimes yourself, you can use these capabilities directly through Raccoon. Free trial available — no payment required to get started.
 
 Raccoon now ships a full upgrade across product capability and client experience:
 
