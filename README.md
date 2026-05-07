@@ -1,19 +1,17 @@
 # SenseNova-Skills
 
-<p align="center">
-  <b><font size="4">English | <a href="README_CN.md">简体中文</a></font></b>
-</p>
+**English | [简体中文](README_CN.md)**
 
 <p align="center">
   <img src="docs/images/teasers/teaser_v2.webp" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://platform.sensenova.cn"><img src="https://img.shields.io/badge/Website-platform.sensenova.cn-1f6feb?style=flat-square" alt="Website"></a>
-  <a href="https://xiaohuanxiong.com/"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_Raccoon-xiaohuanxiong.com-f29415?style=flat-square" alt="Raccoon"></a>
-  <a href="https://platform.sensenova.cn/token-plan"><img src="https://img.shields.io/badge/Token_Plan-Free-2ea44f?style=flat-square" alt="Token Plan"></a>
-  <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square" alt="SenseNova U1"></a>
-  <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square" alt="SenseNova 6.7"></a>
+  <a href="https://platform.sensenova.cn"><img src="https://img.shields.io/badge/Website-Platform-1f6feb?style=flat-square&logo=googlechrome&logoColor=white" alt="Website"></a>
+  <a href="https://office.xiaohuanxiong.com/home"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_Raccoon-Try%20it%20free-f29415?style=flat-square" alt="Raccoon"></a>
+  <a href="https://platform.sensenova.cn/token-plan"><img src="https://img.shields.io/badge/Token_Plan-Free-2ea44f?style=flat-square&logo=opensea&logoColor=white" alt="Token Plan"></a>
+  <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square&logo=github&logoColor=white" alt="SenseNova U1"></a>
+  <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square&logo=github&logoColor=white" alt="SenseNova 6.7"></a>
 </p>
 
 The SenseNova model family plugs directly into agent runtimes such as [OpenClaw](https://openclaw.ai/) and [hermes-agent](https://github.com/NousResearch/hermes-agent), with the skills in this repository extending the models with concrete, end-to-end office capabilities.
@@ -26,7 +24,7 @@ The skills cover **image generation & visualization**, **slide-deck (PPT) genera
 
 ## 🦝 Available out-of-the-box in Raccoon
 
-The latest SenseNova models and the full Cowork-Skill suite in this repo are bundled into the [**Raccoon (小浣熊) Pro**](https://xiaohuanxiong.com/) plan, with enterprise-grade security and a zero-setup experience — if you'd rather not provision env, API keys, and runtimes yourself, you can use these capabilities directly through Raccoon.
+The latest SenseNova models and the full Cowork-Skill suite in this repo are bundled into the [**Raccoon (小浣熊) Pro**](https://office.xiaohuanxiong.com/home) plan, with enterprise-grade security and a zero-setup experience — if you'd rather not provision env, API keys, and runtimes yourself, you can use these capabilities directly through Raccoon.
 
 Raccoon now ships a full upgrade across product capability and client experience:
 
@@ -35,7 +33,7 @@ Raccoon now ships a full upgrade across product capability and client experience
 - **New client + local Agent OS**: the cloud model handles heavy reasoning and multimodal understanding; the local Agent OS sits next to your files, work context, and personal habits — delivering a more personalized, local, and secure AI-native office experience.
 - **Proven at scale**: chosen by 15M+ individual users and thousands of enterprise customers.
 
-> 👉 Try it: [xiaohuanxiong.com](https://xiaohuanxiong.com/)
+> 👉 Try it: [xiaohuanxiong.com](https://office.xiaohuanxiong.com/home)
 
 ## How to Use
 

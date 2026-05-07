@@ -1,20 +1,18 @@
 
 # SenseNova-Skills
 
-<p align="center">
-  <b><font size="4">简体中文 | <a href="README.md">English</a></font></b>
-</p>
+**简体中文 | [English](README.md)**
 
 <p align="center">
   <img src="docs/images/teasers/teaser_v2.webp" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://platform.sensenova.cn"><img src="https://img.shields.io/badge/%E5%AE%98%E7%BD%91-platform.sensenova.cn-1f6feb?style=flat-square" alt="官网"></a>
-  <a href="https://xiaohuanxiong.com/"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_%E5%B0%8F%E6%B5%A3%E7%86%8A-xiaohuanxiong.com-f29415?style=flat-square" alt="小浣熊"></a>
-  <a href="https://platform.sensenova.cn/token-plan"><img src="https://img.shields.io/badge/Token_%E5%A5%97%E9%A4%90-%E5%85%8D%E8%B4%B9-2ea44f?style=flat-square" alt="Token 套餐"></a>
-  <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square" alt="SenseNova U1"></a>
-  <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square" alt="SenseNova 6.7"></a>
+  <a href="https://platform.sensenova.cn"><img src="https://img.shields.io/badge/%E5%AE%98%E7%BD%91-Platform-1f6feb?style=flat-square&logo=googlechrome&logoColor=white" alt="官网"></a>
+  <a href="https://office.xiaohuanxiong.com/home"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_%E5%B0%8F%E6%B5%A3%E7%86%8A-%E5%85%8D%E8%B4%B9%E4%BD%93%E9%AA%8C-f29415?style=flat-square" alt="小浣熊"></a>
+  <a href="https://platform.sensenova.cn/token-plan"><img src="https://img.shields.io/badge/Token_%E5%A5%97%E9%A4%90-%E5%85%8D%E8%B4%B9-2ea44f?style=flat-square&logo=opensea&logoColor=white" alt="Token 套餐"></a>
+  <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square&logo=github&logoColor=white" alt="SenseNova U1"></a>
+  <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square&logo=github&logoColor=white" alt="SenseNova 6.7"></a>
 </p>
 
 SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/NousResearch/hermes-agent) 等智能体；本仓库的 skills 则把这些模型扩展为可直接落地的端到端办公能力。
@@ -27,7 +25,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 ## 🦝 在小浣熊中开箱即用
 
-本仓库的最新模型与全系 Cowork-Skill，已整体集成进 [**小浣熊 Pro**](https://xiaohuanxiong.com/) 套餐，提供企业级安全防护与开箱即用的丝滑体验——如果你不想自己搭环境、配 API key，可以直接通过小浣熊使用这些能力。
+本仓库的最新模型与全系 Cowork-Skill，已整体集成进 [**小浣熊 Pro**](https://office.xiaohuanxiong.com/home) 套餐，提供企业级安全防护与开箱即用的丝滑体验——如果你不想自己搭环境、配 API key，可以直接通过小浣熊使用这些能力。
 
 小浣熊本次迎来产品能力与客户端体验的全面升级：
 
@@ -36,7 +34,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 - **全新客户端 + 本地 Agent OS**：云端模型负责复杂推理与多模态理解，本地 Agent OS 围绕本地文件、工作上下文与个人使用习惯，带来更个性化、本地化、安全化的 AI 原生办公体验。
 - **规模化验证**：1500 万个人用户、数千家企业用户的共同选择。
 
-> 👉 立即体验：[xiaohuanxiong.com](https://xiaohuanxiong.com/)
+> 👉 立即体验：[xiaohuanxiong.com](https://office.xiaohuanxiong.com/home)
 
 ## 如何使用
 
