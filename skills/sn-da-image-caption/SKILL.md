@@ -15,7 +15,7 @@ Analyze, extract data from, or understand image files (.png, .jpg, .jpeg, .gif, 
 
 ## scripts/caption.py — Image Caption
 
-The script converts images to text descriptions via a vision model. Set `VISION_API_KEY` and `VISION_API_BASE` environment variables before running.
+The script converts images to text descriptions via a vision model. Configure via `SN_API_KEY` (minimum required), or use `SN_VISION_API_KEY` / `SN_VISION_BASE_URL` / `SN_VISION_MODEL` for fine-grained control. See the project environment variable spec for the full fallback chain.
 
 ### Usage
 
@@ -41,7 +41,7 @@ python3 scripts/caption.py /mnt/data/image.png --model gemini-3.1-flash-lite-pre
 | Option | Description |
 |--------|------------|
 | `--prompt, -p` | Custom prompt (overrides auto-detection) |
-| `--model, -m` | Vision model (default: gpt-4o) |
+| `--model, -m` | Vision model (default: sensenova-6.7-flash-lite) |
 | `--json` | Output structured JSON instead of plain text |
 | `--batch` | Process all images in a directory |
 | `--output, -o` | Output file for batch results |
