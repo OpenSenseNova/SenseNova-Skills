@@ -23,6 +23,7 @@ python3 /path/to/sn-md-to-html-report/scripts/render_report.py input.md output.h
 - `--no-embed-images`：保留相对图片路径，适合文件夹整体发布。
 - `--with-js`：加入阅读进度、目录高亮、返回顶部等轻量交互。
 - `--keep-inline-toc`：保留 Markdown 正文中已有的目录；默认会移除正文目录，避免和侧边栏目录重复。
+- `--mermaid-source auto|cdn|local|none`：渲染 Markdown 中的 Mermaid 代码块。默认 `auto`，检测到 ```mermaid 代码块时使用 CDN；`local` 会引用输出 HTML 同目录下的 `mermaid.min.js`；`none` 保留为普通代码块。
 - `--title-style comfortable`：默认舒适报告模板。
 
 生成后运行图片检查：
@@ -47,6 +48,7 @@ python3 /path/to/sn-md-to-html-report/scripts/check_image_refs.py output.html
 3. 生成完整 HTML5。
    - CSS 内联到 `<style>`，不依赖 CDN、在线字体、外部 CSS。
    - 默认不需要 JavaScript；只有用户想要阅读进度、目录高亮、返回顶部时加少量原生 JS。
+   - Markdown 中的 ```mermaid 代码块会转换为 Mermaid 图表容器；如需完全离线分享，使用 `--mermaid-source local` 并将 `mermaid.min.js` 放在输出 HTML 同目录。
    - 图片默认嵌入为 `data:image/...`，让 HTML 单文件可独立打开。
 4. 自检输出。
    - 检查标题、目录、表格数量、图片数量是否与源文档大体一致。

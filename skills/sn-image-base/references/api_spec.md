@@ -21,7 +21,7 @@ python sn_agent_runner.py sn-image-generate \
     [--api-key <string>] \
     [--base-url <string>] \
     [--negative-prompt <string>] \
-    [--image-size 1k|2k] \
+    [--image-size 2k] \
     [--aspect-ratio <string>] \
     [--seed <int>] \
     [--unet-name <string>] \
@@ -37,9 +37,10 @@ python sn_agent_runner.py sn-image-generate \
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `--prompt` | string | **Yes** | - | Text prompt |
-| `--api-key` | string | No | Reads `SN_IMAGE_GEN_API_KEY` env var | API Key (CLI takes precedence; raises `MissingApiKeyError` if both are empty) |
+| `--api-key` | string | No | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | API Key (CLI takes precedence; raises `MissingApiKeyError` if all are empty) |
+| `--base-url` | string | No | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` | API base URL (CLI takes precedence) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
-| `--image-size` | string | No | `"2k"` | Image size: `1k` or `2k` |
+| `--image-size` | string | No | `"2k"` | Image size: `2k` only |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
 | `--seed` | int | No | `None` | Random seed (for reproducibility) |
 | `--unet-name` | string | No | `None` | UNet model name |
@@ -80,18 +81,18 @@ Image generated successfully
 
 ### API Key Notes
 
-`--api-key` is optional. CLI parameter takes precedence; if not provided, reads from `SN_IMAGE_GEN_API_KEY` env var. If both are empty, raises `MissingApiKeyError`:
+`--api-key` is optional. CLI parameter takes precedence; if not provided, reads `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY`. If all are empty, raises `MissingApiKeyError`:
 
 **text format**:
 
 ```
-Error: API key is required but was not provided. Set the SN_IMAGE_GEN_API_KEY environment variable or pass --api-key explicitly.
+Error: API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE_GEN_API_KEY only for an image-generation-specific override, or pass --api-key explicitly.
 ```
 
 **json format**:
 
 ```json
-{"status": "failed", "error": "API key is required but was not provided. Set the SN_IMAGE_GEN_API_KEY environment variable or pass --api-key explicitly.", "elapsed_seconds": 0.05}
+{"status": "failed", "error": "API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE_GEN_API_KEY only for an image-generation-specific override, or pass --api-key explicitly.", "elapsed_seconds": 0.05}
 ```
 
 ---
@@ -122,8 +123,8 @@ python sn_agent_runner.py sn-image-recognize \
 | `--user-prompt` | string | One of two | - | User instruction (mutually exclusive with `--user-prompt-path`) |
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
 | `--images` | string[] | **Yes** | - | List of image paths (supports multiple) |
-| `--api-key` | string | No | No hardcoded default | CLI > `SN_VISION_API_KEY` > `SN_CHAT_API_KEY`; raises `MissingApiKeyError` if all are empty |
-| `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_VISION_BASE_URL` > `SN_CHAT_BASE_URL` |
+| `--api-key` | string | No | No hardcoded default | CLI > `SN_VISION_API_KEY` > `SN_CHAT_API_KEY` > `SN_API_KEY`; raises `MissingApiKeyError` if all are empty |
+| `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_VISION_BASE_URL` > `SN_CHAT_BASE_URL` > `SN_BASE_URL` |
 | `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_VISION_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
@@ -150,7 +151,7 @@ This image shows an adorable orange cat napping in the sunlight.
   "status": "ok",
   "result": "This image shows an adorable orange cat napping in the sunlight.",
   "model": "sensenova-6.7-flash-lite",
-  "base_url": "https://token.sensenova.cn",
+  "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 2.15
 }
@@ -158,14 +159,19 @@ This image shows an adorable orange cat napping in the sunlight.
 
 ### Parameter Priority
 
-`--api-key`, `--base-url`, `--model`, and `--vlm-type` use priority: **CLI parameter > command-specific environment variable > shared `SN_CHAT_*` environment variable > built-in default**.
+`--api-key`, `--base-url`, `--model`, and `--vlm-type` use priority: **CLI parameter > command-specific environment variable > shared `SN_CHAT_*` environment variable > global `SN_*` environment variable > built-in default**.
 
 | Parameter | Built-in Default | Environment Variable |
 |-----------|-----------------|---------------------|
-| `--api-key` | None (required) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` |
-| `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` |
+| `--api-key` | None (required) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` |
+| `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` |
 | `--vlm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` |
+
+Compatibility note: host-only chat base URLs such as `https://token.sensenova.cn`
+are also accepted. If the base URL has no path, the runner inserts `/v1` before
+the interface endpoint; if it already has a path such as `/v1`, the runner
+appends only the interface endpoint path.
 
 ---
 
@@ -193,8 +199,8 @@ python sn_agent_runner.py sn-text-optimize \
 |-----------|------|----------|---------|-------------|
 | `--user-prompt` | string | One of two | - | User instruction (mutually exclusive with `--user-prompt-path`) |
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
-| `--api-key` | string | No | No hardcoded default | CLI > `SN_TEXT_API_KEY` > `SN_CHAT_API_KEY`; raises `MissingApiKeyError` if all are empty |
-| `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_TEXT_BASE_URL` > `SN_CHAT_BASE_URL` |
+| `--api-key` | string | No | No hardcoded default | CLI > `SN_TEXT_API_KEY` > `SN_CHAT_API_KEY` > `SN_API_KEY`; raises `MissingApiKeyError` if all are empty |
+| `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_TEXT_BASE_URL` > `SN_CHAT_BASE_URL` > `SN_BASE_URL` |
 | `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_TEXT_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
@@ -221,7 +227,7 @@ Optimized text content...
   "status": "ok",
   "result": "Optimized text content...",
   "model": "sensenova-6.7-flash-lite",
-  "base_url": "https://token.sensenova.cn",
+  "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 0.83
 }
@@ -229,14 +235,19 @@ Optimized text content...
 
 ### Parameter Priority
 
-`--api-key`, `--base-url`, `--model`, and `--llm-type` use priority: **CLI parameter > command-specific environment variable > shared `SN_CHAT_*` environment variable > built-in default**.
+`--api-key`, `--base-url`, `--model`, and `--llm-type` use priority: **CLI parameter > command-specific environment variable > shared `SN_CHAT_*` environment variable > global `SN_*` environment variable > built-in default**.
 
 | Parameter | Built-in Default | Environment Variable |
 |-----------|-----------------|---------------------|
-| `--api-key` | None (required) | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` |
-| `--base-url` | `https://token.sensenova.cn/v1` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` |
+| `--api-key` | None (required) | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` |
+| `--base-url` | `https://token.sensenova.cn/v1` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `--model` | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
 | `--llm-type` | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
+
+Compatibility note: host-only chat base URLs such as `https://token.sensenova.cn`
+are also accepted. If the base URL has no path, the runner inserts `/v1` before
+the interface endpoint; if it already has a path such as `/v1`, the runner
+appends only the interface endpoint path.
 
 ---
 
@@ -273,8 +284,8 @@ Error messages are written to stderr and do not affect stdout content.
 
 | Tool | Environment Variables (high → low priority) | Notes |
 |------|---------------------------------------------|-------|
-| `sn-image-generate` | `SN_IMAGE_GEN_API_KEY` | CLI takes precedence; reads this var if not provided; raises `MissingApiKeyError` if both are empty |
-| `sn-image-recognize` | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` | CLI > command-specific key > shared chat key; raises `MissingApiKeyError` if all are empty |
-| `sn-text-optimize` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` | CLI > command-specific key > shared chat key; raises `MissingApiKeyError` if all are empty |
+| `sn-image-generate` | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | CLI > optional image generation key > global key; raises `MissingApiKeyError` if all are empty |
+| `sn-image-recognize` | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | CLI > command-specific key > shared chat key > global key; raises `MissingApiKeyError` if all are empty |
+| `sn-text-optimize` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | CLI > command-specific key > shared chat key > global key; raises `MissingApiKeyError` if all are empty |
 
-`SN_CHAT_API_KEY` is the shared key for both text and vision chat calls. Use `SN_TEXT_API_KEY` or `SN_VISION_API_KEY` when a command needs a different provider.
+`SN_API_KEY` is the global key for all capabilities. `SN_CHAT_API_KEY` is the shared key for both text and vision chat calls. Use command-specific keys only when a command needs a different provider.

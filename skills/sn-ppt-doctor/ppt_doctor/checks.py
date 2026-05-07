@@ -84,32 +84,32 @@ def _find_sn_agent_runner() -> Path | None:
 # ---------------------------------------------------------------------------
 
 def check_text_chat_api_key() -> CheckResult:
-    val = _first_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY")
+    val = _first_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY")
     return CheckResult(
-        name="SN_TEXT_API_KEY / SN_CHAT_API_KEY",
+        name="SN_TEXT_API_KEY / SN_CHAT_API_KEY / SN_API_KEY",
         severity="hard",
         passed=val is not None,
-        detail="set" if val else "SN_TEXT_API_KEY or SN_CHAT_API_KEY is required for text chat calls; set it or run /skill sn-ppt-doctor to configure interactively",
+        detail="set" if val else "SN_API_KEY is required for text chat calls unless SN_TEXT_API_KEY or SN_CHAT_API_KEY is set; set it or run /skill sn-ppt-doctor to configure interactively",
     )
 
 
 def check_vision_chat_api_key() -> CheckResult:
-    val = _first_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY")
+    val = _first_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY")
     return CheckResult(
-        name="SN_VISION_API_KEY / SN_CHAT_API_KEY",
+        name="SN_VISION_API_KEY / SN_CHAT_API_KEY / SN_API_KEY",
         severity="hard",
         passed=val is not None,
-        detail="set" if val else "SN_VISION_API_KEY or SN_CHAT_API_KEY is required for vision chat calls; set it or run /skill sn-ppt-doctor to configure interactively",
+        detail="set" if val else "SN_API_KEY is required for vision chat calls unless SN_VISION_API_KEY or SN_CHAT_API_KEY is set; set it or run /skill sn-ppt-doctor to configure interactively",
     )
 
 
 def check_u1_api_key() -> CheckResult:
-    val = _env("SN_IMAGE_GEN_API_KEY")
+    val = _first_env("SN_IMAGE_GEN_API_KEY", "SN_API_KEY")
     return CheckResult(
-        name="SN_IMAGE_GEN_API_KEY",
+        name="SN_IMAGE_GEN_API_KEY / SN_API_KEY",
         severity="hard",
         passed=val is not None,
-        detail="set" if val else "SN_IMAGE_GEN_API_KEY is required for image generation calls",
+        detail="set" if val else "SN_API_KEY is required for image generation calls unless SN_IMAGE_GEN_API_KEY is set",
     )
 
 

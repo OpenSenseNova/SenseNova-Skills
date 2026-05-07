@@ -7,7 +7,7 @@
 ## 环境要求
 
 - **Python** 3.9 或更高版本（推荐 3.10+）。
-- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（`SN_IMAGE_GEN_API_KEY`、`SN_CHAT_API_KEY`，详见 Quick Start）。
+- **SN API** 凭据，用于图像生成与 LLM/VLM 接口（所有能力走同一网关时，`SN_BASE_URL` 和 `SN_API_KEY` 即可；详见 Quick Start）。
 
 ## 技能介绍
 
@@ -103,9 +103,11 @@ pip install -r skills/sn-image-base/requirements.txt
 将以下环境变量写入 `~/.openclaw/.env`（OpenClaw）或 `~/.hermes/.env`（Hermes）：
 
 ```ini
-SN_IMAGE_GEN_API_KEY="your-api-key"
-SN_CHAT_API_KEY="your-api-key"
+SN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="your-api-key"
 ```
+
+环境变量 fallback 优先级为：专用变量 > 领域共享变量 > 全局变量。若某个能力需要不同 provider，可再设置 `SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 或 `SN_IMAGE_GEN_*`。
 
 **注意：** 切勿将 `.env` 或 API Key 提交到 git。
 

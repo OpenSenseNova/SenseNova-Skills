@@ -60,15 +60,15 @@ python scripts/check_environment.py --verbose
   ✅ All required packages installed
 
 [3/3] Checking environment variables...
-  ❌ SN_IMAGE_GEN_API_KEY not set (required)
+  ❌ SN_IMAGE_GEN_API_KEY: Image generation API key is not set; configure SN_API_KEY, or configure SN_IMAGE_GEN_API_KEY only for an image-generation-specific override
 
   Some required environment variables are missing.
   Enter values below to save them to /path/to/.env.
   Press Enter to skip a variable.
 
-  SN_IMAGE_GEN_API_KEY: <user input>
+  SN_API_KEY: <user input>
 
-  ✅ Saved to /path/to/.env: SN_IMAGE_GEN_API_KEY
+  ✅ Saved to /path/to/.env: SN_API_KEY
   🔄 Reloading environment...
   ✅ Environment reloaded successfully
 
@@ -79,7 +79,7 @@ python scripts/check_environment.py --verbose
 If reload fails, the output will suggest restarting the agent:
 
 ```
-  ✅ Saved to /path/to/.env: SN_IMAGE_GEN_API_KEY
+  ✅ Saved to /path/to/.env: SN_API_KEY
   🔄 Reloading environment...
   ⚠️  Failed to reload environment: <error message>
   💡 Suggestion: Restart the agent to apply new configuration
@@ -144,16 +144,14 @@ pip install -r skills/sn-image-base/requirements.txt
 **Solution:**
 
 ```bash
-# Set environment variables in your shell
-export SN_IMAGE_GEN_API_KEY="your-api-key"
-export SN_IMAGE_GEN_BASE_URL="https://your-api-endpoint.com"
+# If all capabilities use the same gateway, set only the global values.
+export SN_API_KEY="your-api-key"
+export SN_BASE_URL="https://your-api-endpoint.com"
 
 # Or create a .env file
 cat > .env << EOF
-SN_IMAGE_GEN_API_KEY=your-api-key
-SN_IMAGE_GEN_BASE_URL=https://token.sensenova.cn/v1
-SN_CHAT_API_KEY=your-chat-api-key
-SN_CHAT_BASE_URL=https://token.sensenova.cn/v1
+SN_API_KEY=your-api-key
+SN_BASE_URL=https://token.sensenova.cn/v1
 SN_CHAT_TYPE=openai-completions
 SN_CHAT_MODEL=sensenova-6.7-flash-lite
 EOF
@@ -161,6 +159,8 @@ EOF
 # Load .env file
 source .env  # Or use a tool like python-dotenv
 ```
+
+Fallback priority is capability-specific variable > domain shared variable > global variable. For example, text calls use `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY`; vision calls use `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY`; image generation uses `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY`.
 
 ### API Connectivity Issues
 
