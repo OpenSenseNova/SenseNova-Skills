@@ -1,6 +1,6 @@
 # 深度研究与搜索相关技能
 
-简体中文 | [English](deep-research_en.md)
+简体中文 | [English](sn-deep-research.md)
 
 本文档汇总深度研究（`sn-deep-research`、`sn-research-planning`、`sn-dimension-research`、`sn-research-synthesis`、`sn-research-report`、`sn-report-format-discovery`）与搜索（`sn-search-academic`、`sn-search-code`、`sn-search-social-cn`、`sn-search-social-en`）相关技能。
 

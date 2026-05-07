@@ -1,6 +1,6 @@
 # 数据分析（DA）相关技能
 
-简体中文 | [English](data-analysis_en.md)
+简体中文 | [English](sn-data-analysis.md)
 
 本文档汇总数据分析（Data Analysis）相关技能（`sn-da-excel-workflow`、`sn-da-image-caption`、`sn-da-large-file-analysis`），覆盖 Excel 多表读取与清洗、大文件高性能分析、图像数据提取与可视化。
 

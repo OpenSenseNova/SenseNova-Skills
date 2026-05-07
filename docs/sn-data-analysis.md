@@ -1,6 +1,6 @@
 # Data Analysis (DA) Skills
 
-English | [简体中文](data-analysis.md)
+English | [简体中文](sn-data-analysis_cn.md)
 
 This document collects the data-analysis skills (`sn-da-excel-workflow`, `sn-da-image-caption`, `sn-da-large-file-analysis`) covering multi-sheet Excel ingestion and cleaning, high-performance large-file analysis, and image-based data extraction and visualization.
 

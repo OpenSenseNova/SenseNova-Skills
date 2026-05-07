@@ -1,6 +1,6 @@
 # Deep Research & Search Skills
 
-English | [简体中文](deep-research.md)
+English | [简体中文](sn-deep-research_cn.md)
 
 This document collects the sn-deep-research skills (`sn-deep-research`, `sn-research-planning`, `sn-dimension-research`, `sn-research-synthesis`, `sn-research-report`, `sn-report-format-discovery`) and the search skills (`sn-search-academic`, `sn-search-code`, `sn-search-social-cn`, `sn-search-social-en`).
 
