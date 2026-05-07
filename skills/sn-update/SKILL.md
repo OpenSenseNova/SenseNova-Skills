@@ -55,9 +55,16 @@ Persistent cache at `~/.cache/sn-update/repo/`. Default URL:
 `https://github.com/OpenSenseNova/SenseNova-Skills.git`. User may override
 with a fork URL.
 
-- **First run**: partial clone (`--filter=blob:none`) — keeps the cache
-  small while preserving history metadata for SHA queries.
-- **Subsequent runs**: fetch + hard-reset to the upstream default branch.
+- **First run**: if you want to actually limit blob download, use partial
+  clone with `--filter=blob:none --no-checkout`, then sparse-checkout only
+  the selected `skills/<name>` paths before copying them. `--filter=blob:none`
+  alone does **not** keep the cache small if the full worktree is checked out;
+  that checkout will still download most or all needed blobs. It still
+  preserves history metadata for SHA queries.
+- **Subsequent runs**: fetch + hard-reset to the upstream default branch, and
+  re-apply sparse-checkout for only the requested `skills/<name>` paths before
+  copying. If updating the whole `sn-*` bundle, expect most/all skill blobs to
+  be downloaded.
 - **URL changed**: if cache's `origin` differs from the requested URL,
   delete and re-clone.
 
