@@ -42,12 +42,29 @@ JPEG_QUALITY = 75
 CACHE_DIR = os.path.join(os.path.dirname(__file__), ".caption_cache")
 
 # ─── API settings (configure via environment variables) ─────────────
-# Set VISION_API_KEY and VISION_API_BASE before use.
-# VISION_API_BASE should point to an OpenAI-compatible endpoint.
+# Fallback chain: SN_VISION_* → SN_CHAT_* → SN_* → built-in default
+# Minimum setup: set SN_API_KEY
 
-DEFAULT_API_KEY = os.environ.get("VISION_API_KEY", "")
-DEFAULT_API_BASE = os.environ.get("VISION_API_BASE", "https://api.openai.com/v1")
-DEFAULT_MODEL = os.environ.get("VISION_MODEL", "gpt-4o")
+_BUILTIN_BASE_URL = "https://token.sensenova.cn/v1"
+_BUILTIN_MODEL = "sensenova-6.7-flash-lite"
+
+DEFAULT_API_KEY = (
+    os.environ.get("SN_VISION_API_KEY")
+    or os.environ.get("SN_CHAT_API_KEY")
+    or os.environ.get("SN_API_KEY")
+    or ""
+)
+DEFAULT_API_BASE = (
+    os.environ.get("SN_VISION_BASE_URL")
+    or os.environ.get("SN_CHAT_BASE_URL")
+    or os.environ.get("SN_BASE_URL")
+    or _BUILTIN_BASE_URL
+)
+DEFAULT_MODEL = (
+    os.environ.get("SN_VISION_MODEL")
+    or os.environ.get("SN_CHAT_MODEL")
+    or _BUILTIN_MODEL
+)
 
 # ─── Prompt templates ───────────────────────────────────────────────
 
@@ -269,9 +286,9 @@ def caption_image(
         return {"file": image_path, "error": f"Unsupported format: {ext}"}
 
     # Resolve config (pre-configured defaults, no setup needed)
-    model = model or os.environ.get("VISION_MODEL", DEFAULT_MODEL)
-    api_key = api_key or os.environ.get("VISION_API_KEY", DEFAULT_API_KEY)
-    api_base = api_base or os.environ.get("VISION_API_BASE", DEFAULT_API_BASE)
+    model = model or DEFAULT_MODEL
+    api_key = api_key or DEFAULT_API_KEY
+    api_base = api_base or DEFAULT_API_BASE
 
     # Detect type & prompt
     img_type = detect_image_type(os.path.basename(image_path), context)
@@ -353,7 +370,7 @@ def main():
     parser.add_argument("path", help="Image file path or directory (with --batch)")
     parser.add_argument("--prompt", "-p", default=None, help="Custom prompt")
     parser.add_argument("--model", "-m", default=None, help="Vision model name")
-    parser.add_argument("--api-key", default=None, help="API key (or set VISION_API_KEY)")
+    parser.add_argument("--api-key", default=None, help="API key (or set SN_API_KEY / SN_VISION_API_KEY)")
     parser.add_argument("--api-base", default=None, help="API base URL")
     parser.add_argument("--batch", action="store_true", help="Process all images in directory")
     parser.add_argument("--output", "-o", default=None, help="Output file for batch results (JSON)")
