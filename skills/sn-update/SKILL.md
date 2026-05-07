@@ -79,8 +79,9 @@ git -C <cache> log -1 --format=%H -- skills/<skill-name>
   holding the SHA from its last install.
 - **B — `.sn-release` marker** (fallback): one-line file holding the
   upstream tag name. Compare against `git describe --tags --abbrev=0`.
-- **C — `version:` field in SKILL.md frontmatter**: parse from YAML on
-  both sides.
+- **C — optional `version:` field in SKILL.md frontmatter**: parse from
+  YAML on both sides, but only for forks or skills that explicitly add this
+  field. If either side lacks it, C does not apply.
 - **Nothing usable** → treat as stale and install.
 
 Always write `.sn-version` on install so future runs can use A.
