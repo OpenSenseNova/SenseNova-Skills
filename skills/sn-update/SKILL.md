@@ -20,6 +20,7 @@ triggers:
   - "update SN skills"
   - "更新 sn skills"
   - "刷新 sn-*"
+  - "刷新 sn skills"
   - "更新 sn-ppt-standard"
   - "refresh sn-image-base"
   - "update sensenova skills"
