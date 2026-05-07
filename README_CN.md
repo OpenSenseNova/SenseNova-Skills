@@ -84,7 +84,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 📊 演示文稿（PPT）
 
-📖 详细使用指南：[`docs/ppt-generate.md`](docs/ppt-generate.md)（环境要求、Quick Start、API 配置与调用样例）。
+📖 详细使用指南：[`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md)（环境要求、Quick Start、API 配置与调用样例）。
 
 
 | 名称                                             | 标签         | 描述                                                                                                                         |
@@ -97,7 +97,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 📈 数据分析（DA）
 
-📖 详细使用指南：[`docs/data-analysis.md`](docs/data-analysis.md)（环境要求、Quick Start、API 配置与调用样例）。
+📖 详细使用指南：[`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md)（环境要求、Quick Start、API 配置与调用样例）。
 
 
 | 名称                                                                 | 标签         | 描述                                                                               |
@@ -109,7 +109,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 🔬 深度研究
 
-📖 详细使用指南：[`docs/deep-research.md`](docs/deep-research.md)（环境要求、`web_search` 硬检查、Quick Start 与各阶段调用）。
+📖 详细使用指南：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md)（环境要求、`web_search` 硬检查、Quick Start 与各阶段调用）。
 
 
 | 名称                                                                   | 标签        | 描述                                                                                      |
@@ -125,7 +125,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 🔍 搜索
 
-📖 搜索技能与深度研究合并在同一份文档：[`docs/deep-research.md`](docs/deep-research.md)（含各平台 API key、调用方式与统一 JSON 输出）。
+📖 搜索技能与深度研究合并在同一份文档：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md)（含各平台 API key、调用方式与统一 JSON 输出）。
 
 
 | 名称                                                     | 标签     | 描述                                                                                          |

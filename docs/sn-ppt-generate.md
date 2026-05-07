@@ -1,6 +1,6 @@
 # PPT Generation Skills
 
-English | [简体中文](ppt-generate.md)
+English | [简体中文](sn-ppt-generate_cn.md)
 
 This document collects the PPT generation skills (`sn-ppt-entry`, `sn-ppt-doctor`, `sn-ppt-creative`, `sn-ppt-standard`) used in OpenClaw / Hermes to produce `.pptx` decks from user prompts and reference documents.
 
@@ -51,11 +51,6 @@ SN_BASE_URL="https://token.sensenova.cn/v1"
 
 # LLM (outline, style_spec, content planning, image caption, page review)
 SN_CHAT_MODEL="sensenova-6.7-flash-lite"
-SN_VISION_MODEL="sensenova-6.7-flash-lite"
-
-# Text-to-image (required for creative mode, on-demand for standard mode)
-SN_IMAGE_GEN_MODEL_TYPE="sensenova"
-SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
 ```
 
 Optional variables `SN_IMAGE_GEN_*`, `SN_CHAT_*`, `SN_TEXT_*`, and `SN_VISION_*` override default models, gateways, or keys. If `SN_API_KEY` is set, `SN_IMAGE_GEN_API_KEY` is not needed unless image generation uses a different key. Full list: [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md).

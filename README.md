@@ -83,7 +83,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ### 📊 Presentations (PPT)
 
-📖 Full guide: [`docs/ppt-generate_en.md`](docs/ppt-generate_en.md) (prerequisites, Quick Start, API config, and invocation samples).
+📖 Full guide: [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md) (prerequisites, Quick Start, API config, and invocation samples).
 
 
 | Name                                           | Label                  | Description                                                                                                                                                                                                              |
@@ -96,7 +96,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ### 📈 Data Analysis (DA)
 
-📖 Full guide: [`docs/data-analysis_en.md`](docs/data-analysis_en.md) (prerequisites, Quick Start, API config, and invocation samples).
+📖 Full guide: [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md) (prerequisites, Quick Start, API config, and invocation samples).
 
 
 | Name                                                               | Label                                | Description                                                                                                                                                            |
@@ -108,7 +108,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ### 🔬 Deep Research
 
-📖 Full guide: [`docs/deep-research_en.md`](docs/deep-research_en.md) (prerequisites, `web_search` precheck, Quick Start, and per-stage invocation).
+📖 Full guide: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) (prerequisites, `web_search` precheck, Quick Start, and per-stage invocation).
 
 
 | Name                                                                 | Label                          | Description                                                                                                                                                       |
@@ -124,7 +124,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ### 🔍 Search
 
-📖 Search skills are documented together with deep research: [`docs/deep-research_en.md`](docs/deep-research_en.md) (includes per-platform API keys, invocation, and unified JSON output).
+📖 Search skills are documented together with deep research: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) (includes per-platform API keys, invocation, and unified JSON output).
 
 
 | Name                                                   | Label                  | Description                                                                                                                                |

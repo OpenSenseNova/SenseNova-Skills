@@ -14,7 +14,7 @@ Output (JSON only):
           "slot_kind": "decoration" | "concept_visual",
           "image_prompt": "<detailed T2I prompt, 40-120 words, inheriting style_spec mood/palette>",
           "aspect_ratio": "16:9",
-          "image_size": "1k" | "2k",
+          "image_size": "2k",
           "local_path": "images/page_XXX_<slot_id>.png",
           "status": "pending",
           "quality_review": null

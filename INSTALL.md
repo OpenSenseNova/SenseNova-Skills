@@ -332,10 +332,10 @@ Swap "OpenClaw" and the path for `hermes-agent` / `~/.hermes/skills/` to use thi
 
 Some skills need extra Python deps, API keys, or runtime tools. Check the relevant guide:
 
-- Image & visualization: [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md)
-- Presentations: [`docs/ppt-generate_en.md`](docs/ppt-generate_en.md)
-- Data analysis: [`docs/data-analysis_en.md`](docs/data-analysis_en.md)
-- Deep research / search: [`docs/deep-research_en.md`](docs/deep-research_en.md)
+- Image & visualization: [`docs/sn-image-generate.md`](docs/sn-image-generate.md)
+- Presentations: [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md)
+- Data analysis: [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md)
+- Deep research / search: [`docs/sn-deep-research.md`](docs/sn-deep-research.md)
 
 ---
 

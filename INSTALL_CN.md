@@ -333,9 +333,9 @@ cp -r skills/* ~/.hermes/skills/
 部分 skill 有自己的 Python 依赖、API key 或运行时要求，请按需查阅对应的使用指南：
 
 - 图像与可视化：[`docs/sn-image-generate.md`](docs/sn-image-generate.md)
-- 演示文稿：[`docs/ppt-generate.md`](docs/ppt-generate.md)
-- 数据分析：[`docs/data-analysis.md`](docs/data-analysis.md)
-- 深度研究 / 搜索：[`docs/deep-research.md`](docs/deep-research.md)
+- 演示文稿：[`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md)
+- 数据分析：[`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md)
+- 深度研究 / 搜索：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md)
 
 ---
 
