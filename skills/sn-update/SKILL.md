@@ -96,6 +96,11 @@ For each skill flagged "install":
    `~/.<agent>/skills_backup/<UTC-timestamp>/<skill-name>/`
    (e.g. `2026-04-30T15-29-07Z`).
 2. **Copy** `<cache>/skills/<skill-name>/` → `<agent-skills>/<skill-name>/`.
+   **Never symlink** (`ln -s`) from the cache. The cache lives under
+   `~/.cache/` with permissions the agent runtime may not be able to
+   traverse, and some runtimes refuse to load skills resolved through
+   symlinks. Always do a real recursive copy so the installed tree is
+   self-contained and owned by the agent skills dir.
 3. **Write `.sn-version`** with the upstream subtree SHA inside the new copy.
 
 If the bucket ends up empty (all targets were fresh installs), remove it.
