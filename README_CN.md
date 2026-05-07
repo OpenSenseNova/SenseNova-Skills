@@ -185,6 +185,14 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 - **完善的文档**：包含示例、产物约定、边界情况与失败处理
 - **必要的支撑资源**：通过 `references/`、`scripts/`、`prompts/` 提供补充上下文
 
+## 加入社区
+
+欢迎加入我们的交流群，分享反馈、获取支持，并第一时间了解最新进展。扫描下方二维码即可加入——期待你的声音！
+
+<p align="center">
+  <img src="assets/sensenova-skills-chatgroup.jpg" width="320">
+</p>
+
 ## 许可证
 
 MIT — 详见 [LICENSE](LICENSE)。

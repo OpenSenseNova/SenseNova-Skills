@@ -184,6 +184,14 @@ Feel free to use the skills here as templates for your own OpenClaw skills. The 
 - **Solid documentation**: examples, artifact contracts, edge cases, failure handling
 - **Supporting resources**: use `references/`, `scripts/`, `prompts/` to provide additional context
 
+## Join the Community
+
+Join our growing community to share feedback, get support, and stay updated on the latest developments. Scan the QR code below to hop into the chat — we'd love to hear from you!
+
+<p align="center">
+  <img src="assets/sensenova-skills-chatgroup.jpg" width="320">
+</p>
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
