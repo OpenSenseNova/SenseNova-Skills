@@ -1,11 +1,19 @@
 # SenseNova-Skills
 
 <p align="center">
+  <b><font size="4">English | <a href="README_CN.md">简体中文</a></font></b>
+</p>
+
+<p align="center">
   <img src="docs/images/teasers/teaser_v2.webp" width="100%">
 </p>
 
 <p align="center">
-  <b><font size="4">English | <a href="README_CN.md">简体中文</a></font></b>
+  <a href="https://platform.sensenova.cn"><img src="https://img.shields.io/badge/Website-platform.sensenova.cn-1f6feb?style=flat-square" alt="Website"></a>
+  <a href="https://xiaohuanxiong.com/"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_Raccoon-xiaohuanxiong.com-f29415?style=flat-square" alt="Raccoon"></a>
+  <a href="https://platform.sensenova.cn/token-plan"><img src="https://img.shields.io/badge/Token_Plan-Free-2ea44f?style=flat-square" alt="Token Plan"></a>
+  <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square" alt="SenseNova U1"></a>
+  <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square" alt="SenseNova 6.7"></a>
 </p>
 
 The SenseNova model family plugs directly into agent runtimes such as [OpenClaw](https://openclaw.ai/) and [hermes-agent](https://github.com/NousResearch/hermes-agent), with the skills in this repository extending the models with concrete, end-to-end office capabilities.
