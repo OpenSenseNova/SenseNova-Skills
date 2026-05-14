@@ -9,6 +9,14 @@ metadata:
   tier: aux
   category: diagnostic
   user_visible: true
+  openclaw:
+    requires:
+      bins:
+        - python3
+    envVars:
+      - name: SN_API_KEY
+        required: false
+        description: "Validated by the doctor; required by the PPT pipeline. The doctor can write it to .env interactively."
 triggers:
   - "sn-ppt-doctor"
   - "ppt 体检"

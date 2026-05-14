@@ -16,6 +16,35 @@ metadata:
   tier: 0
   category: infrastructure
   user_visible: false
+  openclaw:
+    requires:
+      env:
+        - SN_API_KEY
+      bins:
+        - python3
+    primaryEnv: SN_API_KEY
+    envVars:
+      - name: SN_API_KEY
+        required: true
+        description: "SenseNova API key shared by image generation, VLM, and LLM calls."
+      - name: SN_BASE_URL
+        required: false
+        description: "API base URL; defaults to https://token.sensenova.cn/v1."
+      - name: SN_IMAGE_GEN_MODEL
+        required: false
+        description: "Text-to-image model; defaults to sensenova-u1-fast."
+      - name: SN_IMAGE_GEN_MODEL_TYPE
+        required: false
+        description: "Image backend: sensenova | nano-banana | openai-image."
+      - name: SN_CHAT_MODEL
+        required: false
+        description: "LLM/VLM model name; defaults to sensenova-6.7-flash-lite."
+      - name: SN_IMAGE_GEN_API_KEY
+        required: false
+        description: "Overrides SN_API_KEY for image generation only."
+      - name: SN_CHAT_API_KEY
+        required: false
+        description: "Overrides SN_API_KEY for LLM/VLM calls only."
 ---
 
 # sn-image-base

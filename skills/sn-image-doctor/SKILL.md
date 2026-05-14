@@ -18,6 +18,14 @@ metadata:
   tier: 0
   category: infrastructure
   user_visible: true
+  openclaw:
+    requires:
+      bins:
+        - python3
+    envVars:
+      - name: SN_API_KEY
+        required: false
+        description: "Validated by the doctor; required by sn-image-base. The doctor can write it to .env interactively."
 ---
 
 # sn-image-doctor

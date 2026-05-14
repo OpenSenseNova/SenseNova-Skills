@@ -9,6 +9,27 @@ metadata:
   tier: 1
   category: scene
   user_visible: false
+  openclaw:
+    requires:
+      env:
+        - SN_API_KEY
+      bins:
+        - python3
+        - node
+    primaryEnv: SN_API_KEY
+    envVars:
+      - name: SN_API_KEY
+        required: true
+        description: "SenseNova API key; used for the LLM / VLM / text-to-image calls in run_stage.py."
+      - name: SN_BASE_URL
+        required: false
+        description: "API base URL; defaults to https://token.sensenova.cn/v1."
+      - name: SN_CHAT_MODEL
+        required: false
+        description: "LLM/VLM model name; defaults to sensenova-6.7-flash-lite."
+      - name: SN_IMAGE_GEN_MODEL
+        required: false
+        description: "Text-to-image model; defaults to sensenova-u1-fast."
 triggers:
   - "sn-ppt-standard"
 ---

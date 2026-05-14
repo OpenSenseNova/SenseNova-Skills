@@ -1,6 +1,12 @@
 ---
 name: sn-research-report
 description: 基于已有研究材料或草稿生成/修改最终 Markdown 研究报告的成稿 skill。遇到以下情况使用：①已有 deep research 产物 `synthesis.md`、`plan.json`、`sub_reports/*.md`，需要写成最终 `report.md`；②已有报告、草稿或文稿路径，需要重写、改写、润色、压缩、扩写、重组结构、增强摘要或补充表格/图示；③需要在报告成稿阶段主动规划并插入 Markdown 表格、Mermaid 图、AI 概念配图等视觉元素。仅用于终稿生成和文稿定向编辑；不用于从零调研、研究规划、联网取证、分维度研究或生成 `synthesis.md`。如果用户只是要求“深度研究/调研/写一份研究报告”且没有现成材料，应优先使用 `sn-deep-research`。
+metadata:
+  openclaw:
+    envVars:
+      - name: SN_API_KEY
+        required: false
+        description: "SenseNova API key; only needed when generating AI illustrations in report.md via sn-image-base."
 ---
 
 # Research Report

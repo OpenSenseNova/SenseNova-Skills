@@ -1,6 +1,22 @@
 ---
 name: sn-search-social-cn
 description: 搜索中文社交平台：B站视频、知乎问答、抖音视频。部分平台需要 cookie 认证，稳定性因平台而异。
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - python3
+    primaryEnv: ZHIHU_COOKIE
+    envVars:
+      - name: ZHIHU_COOKIE
+        required: false
+        description: "Required for Zhihu search; Zhihu queries fail without it."
+      - name: DOUYIN_COOKIE
+        required: false
+        description: "Required for Douyin search; Douyin queries fail without it."
+      - name: BILIBILI_COOKIE
+        required: false
+        description: "Optional Bilibili cookie; improves result quality."
 ---
 
 # sn-search-social-cn - 中文社交平台搜索

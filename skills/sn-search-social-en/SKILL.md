@@ -1,6 +1,19 @@
 ---
 name: sn-search-social-en
 description: 搜索英文社交平台：Reddit 帖子、Twitter/X 推文、YouTube 视频。用于获取英文社区讨论和视频内容。
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - python3
+    primaryEnv: TIKHUB_TOKEN
+    envVars:
+      - name: TIKHUB_TOKEN
+        required: false
+        description: "Required for Twitter/X search; routed via TikHub."
+      - name: YOUTUBE_API_KEY
+        required: false
+        description: "Required for YouTube search; YouTube Data API v3."
 ---
 
 # sn-search-social-en - 英文社交平台搜索

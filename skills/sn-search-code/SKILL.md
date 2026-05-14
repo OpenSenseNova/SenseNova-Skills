@@ -1,6 +1,22 @@
 ---
 name: sn-search-code
 description: 搜索开发者资源：GitHub 仓库/代码/Issue、Stack Overflow 问答、Hacker News 讨论、HuggingFace 模型/数据集/Space。用于查找代码示例、开源项目、技术问答、预训练模型。
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - python3
+    primaryEnv: GITHUB_TOKEN
+    envVars:
+      - name: GITHUB_TOKEN
+        required: false
+        description: "Required for GitHub code search (--type code); optional rate-limit boost for repo/issue search."
+      - name: SO_API_KEY
+        required: false
+        description: "Stack Exchange API key; optional rate-limit boost."
+      - name: HF_TOKEN
+        required: false
+        description: "HuggingFace token; optional rate-limit boost."
 ---
 
 # sn-search-code - 开发者搜索

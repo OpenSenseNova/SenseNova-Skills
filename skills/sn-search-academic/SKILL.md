@@ -1,6 +1,18 @@
 ---
 name: sn-search-academic
 description: 搜索学术论文和百科知识：ArXiv 预印本、Semantic Scholar（含引用数）、PubMed 生医文献、Wikipedia 百科。支持按章节读取 ArXiv HTML 全文和 PMC 开放获取全文，适合学术调研和深度阅读。
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - python3
+    envVars:
+      - name: S2_API_KEY
+        required: false
+        description: "Semantic Scholar API key; optional rate-limit boost."
+      - name: NCBI_API_KEY
+        required: false
+        description: "NCBI API key; optional, raises the PubMed rate limit from 3 to 10 req/s."
 ---
 
 # sn-search-academic - 学术搜索

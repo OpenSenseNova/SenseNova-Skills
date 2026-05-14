@@ -12,6 +12,10 @@ metadata:
   tier: 1
   category: meta
   user_visible: true
+  openclaw:
+    requires:
+      bins:
+        - git
 triggers:
   - "sn-update"
   - "更新 sn"

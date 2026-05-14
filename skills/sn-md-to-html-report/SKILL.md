@@ -1,6 +1,11 @@
 ---
 name: sn-md-to-html-report
 description: 将 Markdown 文档转换为美观、舒适、结构清晰、可直接打开的 HTML 长篇报告。适用于把 .md 文件转成 HTML、统一研究报告/行业报告/调研文档版式、生成可离线分享的单文件网页报告、嵌入或校验本地图片、修复 Markdown 表格分隔符导致的错列问题，或优化已有 HTML 报告的阅读留白、图片呈现、目录导航、表格响应式和打印样式。
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - python3
 ---
 
 # Markdown 转 HTML 报告

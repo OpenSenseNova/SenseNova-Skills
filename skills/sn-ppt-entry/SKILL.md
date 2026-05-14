@@ -11,6 +11,23 @@ metadata:
   tier: 1
   category: scene
   user_visible: true
+  openclaw:
+    requires:
+      env:
+        - SN_API_KEY
+      bins:
+        - python3
+    primaryEnv: SN_API_KEY
+    envVars:
+      - name: SN_API_KEY
+        required: true
+        description: "SenseNova API key; used for document captioning and downstream PPT generation."
+      - name: SN_BASE_URL
+        required: false
+        description: "API base URL; defaults to https://token.sensenova.cn/v1."
+      - name: SN_CHAT_MODEL
+        required: false
+        description: "LLM/VLM model name; defaults to sensenova-6.7-flash-lite."
 triggers:
   - "生成 PPT"
   - "做一套 PPT"
