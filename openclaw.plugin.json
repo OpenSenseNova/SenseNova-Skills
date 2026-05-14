@@ -1,0 +1,12 @@
+{
+  "id": "sensenova-skills",
+  "name": "SenseNova-Skills",
+  "description": "SenseNova agent skill suite: deep research, data analysis, image generation, infographics, and PPT generation.",
+  "version": "1.0.1",
+  "skills": ["./skills"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}
