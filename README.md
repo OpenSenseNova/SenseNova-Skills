@@ -43,6 +43,14 @@ These skills are designed to run inside an [Agent Skills](https://agentskills.io
 - **Recommended LLM**: pair them with the **[SenseNova Platform API](https://platform.sensenova.cn/token-plan)** — a free token plan is available.
 - **Install & configure**: follow the full walkthrough in **[`INSTALL.md`](INSTALL.md)**.
 
+**Fastest path for [OpenClaw](https://openclaw.ai/) users — install from ClawHub.** The full skill suite is published as a bundle plugin on [ClawHub](https://clawhub.ai/plugins/sensenova-skills), so one command pulls in every skill:
+
+```bash
+openclaw plugins install clawhub:sensenova-skills
+```
+
+Afterwards, configure the SenseNova API key and any per-category dependencies as described in [`INSTALL.md`](INSTALL.md). On hermes-agent or other runtimes — or if you'd rather track this repo directly — use one of the methods below.
+
 **Recommended: let the agent install the skills for you.** Hand it the repo URL and ask it to clone and drop the skills into the right directory — for example:
 
 > *"Please install SenseNova-Skills from https://github.com/OpenSenseNova/SenseNova-Skills into your skills directory."*

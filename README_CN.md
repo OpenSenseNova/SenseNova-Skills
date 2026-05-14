@@ -44,6 +44,14 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 - **推荐 LLM**：配合使用 **[SenseNova 平台 API](https://platform.sensenova.cn/token-plan)**（提供免费 token 套餐）。
 - **安装与配置**：完整流程请参考 **[`INSTALL_CN.md`](INSTALL_CN.md)**。
 
+**[OpenClaw](https://openclaw.ai/) 用户最快捷的方式 —— 从 ClawHub 安装。** 完整技能套件已作为 bundle plugin 发布到 [ClawHub](https://clawhub.ai/plugins/sensenova-skills)，一条命令即可装好全部 skill：
+
+```bash
+openclaw plugins install clawhub:sensenova-skills
+```
+
+安装后仍需按 [`INSTALL_CN.md`](INSTALL_CN.md) 配置 SenseNova API key 及各分类依赖。使用 hermes-agent 或其他运行时，或希望直接跟踪本仓库，请使用下方任一方式。
+
 **推荐做法：直接让 agent 帮你装好这些 skill。** 把仓库地址交给它，让它自己克隆并把内容拷贝到目标目录，例如：
 
 > *"请帮我把 https://github.com/OpenSenseNova/SenseNova-Skills 安装到你的 skills 目录。"*
