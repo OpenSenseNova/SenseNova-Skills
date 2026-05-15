@@ -3,7 +3,7 @@
 **English | [简体中文](README_CN.md)**
 
 <p align="center">
-  <img src="docs/images/teasers/teaser_v2.webp" width="100%">
+  <img src="docs/images/teasers/teaser_v3.png" width="100%">
 </p>
 
 <p align="center">
