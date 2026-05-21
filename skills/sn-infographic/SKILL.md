@@ -42,10 +42,15 @@ Features:
 
 | Parameter | Type | Default Value | Description |
 |-----------|------|---------------|-------------|
-| `user_prompt` | string | **Required** | User original request |
-| `max_rounds` | int | `1` | Maximum number of generation rounds |
-| `output_mode` | string | `friendly` | Output mode: friendly / verbose |
-| `prompts_expand_mode` | string | `auto` | expand strategy: auto / force / disable |
+| `user_prompt` | string | **Required** | Original user request. UTF-8 text; may include Markdown, URLs, or structured data. Length bounded only by the underlying LLM context budget. |
+| `max_rounds` | int | `1` | Maximum number of generation rounds. Valid range: `1`–`8`. When `max_rounds=1`, the Step 3 VLM review and the early-termination check are both skipped. |
+| `output_mode` | string | `friendly` | `friendly`: one-line content description + rank=1 single image |
+|               |        |               | `verbose`: full quality ranking + timing stats + all images (ordered by rank) |
+| `prompts_expand_mode` | string | `auto` | `auto`: evaluate `user_prompt` quality first; enter Step 2 expansion only when it falls short |
+|                       |        |          | `force`: skip evaluation, always execute Step 2 expansion |
+|                       |        |          | `disable`: skip Step 2, use `user_prompt` directly as `expanded_prompt` |
+| `aspect_ratio` | string | *inferred* (`16:9`) | Aspect ratio for image generation. Inferred from `user_prompt` (see `references/runtime-parameters.md`). |
+| `image_size` | string | *inferred* (`2k`) | Image size for image generation. Inferred from `user_prompt` (see `references/runtime-parameters.md`). |
 
 ## API Configuration
 
@@ -82,18 +87,53 @@ This skill uses a two-tier agent architecture:
 
 ### Main Agent Workflow
 
-1. Extract `user_prompt`, `max_rounds` (default 1), `output_mode` (default `friendly`), and `prompts_expand_mode` (default `auto`) from user request
+1. **Parameter extraction** from the user request, in three passes:
+   1. **Inline KV directives** — parse tokens of the form `key=value` where `key` ∈ {`max_rounds`, `output_mode`, `prompts_expand_mode`}; strip recognized tokens from the user message, and the remainder becomes `user_prompt`. Example: `"生成一张信息图 max_rounds=3 output_mode=verbose"` → `user_prompt="生成一张信息图"`, `max_rounds=3`, `output_mode=verbose`.
+   2. **Keyword recognition** (case-insensitive, applied to the stripped text) — fill any parameter not yet set by inline KV using the table below:
+
+      | Parameter | Trigger keywords | Resolved value |
+      |-----------|------------------|----------------|
+      | `output_mode` | `verbose`, `详细`, `详尽`, `完整统计` | `verbose` |
+      |               | `friendly`, `简洁`, `精简` | `friendly` |
+      | `max_rounds` | `N 轮`, `N rounds`, `重试 N 次` (parse `N`) | `N`, clamped to `[1, 8]` |
+      | `prompts_expand_mode` | `强制扩写`, `force expand`, `force expansion` | `force` |
+      |                       | `不扩写`, `跳过扩写`, `disable expansion`, `no expand` | `disable` |
+
+   3. **Defaults** — any parameter still unset falls back to `max_rounds=1`, `output_mode=friendly`, `prompts_expand_mode=auto`.
+
+   Precedence: **inline KV > keyword recognition > default**. Values from inline KV are validated against the Input Specification (out-of-range `max_rounds` clamped to `[1, 8]`; unrecognized enum values fall back to default and Main Agent should log the mismatch).
 2. Send uniform preflight message: `"Using sn-infographic skill to generate infographic, please wait..."`
 3. Start Worker Agent (Sub-Agent), passing in complete parameters and working directory
 4. When Worker Agent returns `status=ok` and `need_main_agent_send=true`:
-   - **max_rounds = 1**: Generate a one-sentence description of the image content from `expanded_prompt` in the returned JSON (always present for `status=ok`, see Return Contract), then send the rank=1 single image
-   - **max_rounds > 1, friendly mode**: Generate a one-sentence natural language description based on the rank=1 round's `result` and `violations`, send the evaluation text, then send the rank=1 single image
-   - **max_rounds > 1, verbose mode**: Send complete text summary message, then send all images in rank order to the user
+   - **max_rounds = 1**: Generate the Text Summary (see Output Format → friendly mode for length/language rules) from `expanded_prompt` in the returned JSON (always present for `status=ok`, see Return Contract), send it, then send the rank=1 single image
+   - **max_rounds > 1, friendly mode**: Generate the Text Summary based on the rank=1 round's `result` and `violations`, send it, then send the rank=1 single image
+   - **max_rounds > 1, verbose mode**: Render the verbose template (see Output Format → verbose mode for substitution rules) and send it, then send all images in rank order
 5. If Worker Agent returns `status=error`, report the real `error` field content to the user
 
 ### Worker Agent Workflow
 
-Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expand_mode`, and the working directory of this skill (`SN_IMAGE_INFOG`).
+Worker Agent receives `user_prompt`, `max_rounds`, `prompts_expand_mode`, and the working directory of this skill (`SKILL_DIR`). (`output_mode` stays on the Main Agent side — Worker has no branch that depends on it.)
+
+#### Worker Environment
+
+Variables referenced as `$NAME` in the bash snippets below. Worker must bind each before the step that consumes it.
+
+| Variable | Source | Used by |
+|----------|--------|---------|
+| `USER_PROMPT` | Main Agent input — original user request | Step 1 evaluation; Step 2.0 content analysis |
+| `MAX_ROUNDS` | Main Agent input (default `1`) | Step 3 loop bound; early-termination gate |
+| `PROMPTS_EXPAND_MODE` | Main Agent input (default `auto`) | branches Step 1 |
+| `SKILL_DIR` | Agent runtime resolves the current skill's install path (e.g. `~/.openclaw/skills/sn-infographic`, `~/.hermes/skills/sn-infographic`) | reads `references/*` |
+| `SN_IMAGE_BASE` | Agent runtime resolves by skill name `sn-image-base` in the installed-skill registry | runs `scripts/sn_agent_runner.py` |
+| `TASK_ID` | Step 0 (`date +%Y%m%d_%H%M%S`) | uniqueness token |
+| `TEMP_DIR` | Step 0 (`/tmp/openclaw/sn-infographic/${TASK_ID}`) | scratch dir for all intermediate artifacts |
+| `IMAGE_SIZE` | Step 0 (inferred from `USER_PROMPT`, default `2k`) | `sn-image-generate --image-size` |
+| `ASPECT_RATIO` | Step 0 (inferred from `USER_PROMPT`, default `16:9`) | `sn-image-generate --aspect-ratio` |
+| `EXPANDED_PROMPT` | Step 1 (copy of `USER_PROMPT` when Step 2 is skipped) or Step 2.3 (expanded result) | `sn-image-generate --prompt` |
+| `LAYOUT`, `STYLE` | Step 2.1 selection result (with fallback to `hub-spoke` / `corporate-memphis`) | Step 2.3 system-prompt assembly |
+| `ROUND` | Step 3 loop counter (`for ROUND in $(seq 1 "$MAX_ROUNDS")`) | per-round file naming (`round_${ROUND}.png`) |
+
+**Naming**: `$SKILL_DIR` for own files; `$SN_<SKILL_NAME>` (e.g. `$SN_IMAGE_BASE`) for cross-skill references.
 
 #### Step 0 — Initialization
 
@@ -106,7 +146,7 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
    ```
 
 2. Initialize an empty `rounds` list
-3. Infer `aspect_ratio` (default `16:9`) and `image_size` (default `2k`) from `user_prompt` based on the rules in `$SN_IMAGE_INFOG/references/runtime-parameters.md`
+3. Infer `aspect_ratio` (default `16:9`) and `image_size` (default `2k`) from `user_prompt` based on the rules in `$SKILL_DIR/references/runtime-parameters.md`
 
 #### Step 1 — `prompts_expand_mode` Processing
 
@@ -130,7 +170,7 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 **`auto` mode**:
 
 1. Call sn-text-optimize for evaluation
-2. Parse JSON, extract `required_results` and `optional_results`
+2. Parse JSON (response schema defined by `$SKILL_DIR/references/evaluation-standard.md`); extract `required_results` and `optional_results`
 3. Determine logic:
    - `required_pass`: All `answer` in `required_results` are `"yes"`
    - `optional_pass`: The number of `answer="yes"` in `optional_results` / total ≥ 0.6
@@ -149,7 +189,7 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 
 ```bash
 python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
-  --system-prompt-path "$SN_IMAGE_INFOG/references/evaluation-standard.md" \
+  --system-prompt-path "$SKILL_DIR/references/evaluation-standard.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json
 ```
@@ -160,7 +200,7 @@ python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
 
 ```bash
 ANALYSIS=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
-  --system-prompt-path "$SN_IMAGE_INFOG/references/analysis-framework.md" \
+  --system-prompt-path "$SKILL_DIR/references/analysis-framework.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json)
 ```
@@ -171,6 +211,8 @@ Save analysis result stdout to `analysis.json` in temporary directory `$TEMP_DIR
 echo "$ANALYSIS" > "$TEMP_DIR/analysis.json"
 ```
 
+Schema: `$SKILL_DIR/references/analysis-framework.md` (defines `data_type`, `tone`, `audience`, and the other fields consumed by Step 2.1 / 2.2).
+
 **2.1 Layout & Style Selection**
 
 1. Read analysis result from temporary directory `$TEMP_DIR/analysis.json`;
@@ -179,12 +221,12 @@ echo "$ANALYSIS" > "$TEMP_DIR/analysis.json"
   ANALYSIS=$(cat "$TEMP_DIR/analysis.json")
   ```
 
-2. Based on `data_type`, `tone`, `audience`, select `layout` and `style` based on the rules in `$SN_IMAGE_INFOG/references/layout-style-selection.md`;
+2. Based on `data_type`, `tone`, `audience`, select `layout` and `style` based on the rules in `$SKILL_DIR/references/layout-style-selection.md`;
 3. Validate the selection by checking the definition files exist; fall back to `hub-spoke` + `corporate-memphis` if missing:
 
   ```bash
-  [ -f "$SN_IMAGE_INFOG/references/layouts/${LAYOUT}.md" ] || LAYOUT=hub-spoke
-  [ -f "$SN_IMAGE_INFOG/references/styles/${STYLE}.md" ] || STYLE=corporate-memphis
+  [ -f "$SKILL_DIR/references/layouts/${LAYOUT}.md" ] || LAYOUT=hub-spoke
+  [ -f "$SKILL_DIR/references/styles/${STYLE}.md" ] || STYLE=corporate-memphis
   ```
 
 4. Save selection result to temporary directory: `$TEMP_DIR/layout-style.json`;
@@ -205,7 +247,7 @@ Read analysis result and structured content template, convert `user_prompt` into
 ```bash
 ANALYSIS=$(cat "$TEMP_DIR/analysis.json")
 LAYOUT_STYLE=$(cat "$TEMP_DIR/layout-style.json")
-STRUCTURED_CONTENT_TEMPLATE=$(cat "$SN_IMAGE_INFOG/references/structured-content-template.md")
+STRUCTURED_CONTENT_TEMPLATE=$(cat "$SKILL_DIR/references/structured-content-template.md")
 ```
 
 Follow the three phases defined in the template (High-Level Outline → Section Development → Data Integrity Check),
@@ -216,6 +258,8 @@ cat > "$TEMP_DIR/structured-content.md" << 'EOF'
 <Content generated based on structured-content-template.md format>
 EOF
 ```
+
+Structure: `$SKILL_DIR/references/structured-content-template.md`.
 
 **Rules**: All data must be preserved exactly. Do not rewrite. Do not add information that is not in the source.
 
@@ -228,13 +272,13 @@ LAYOUT=$(jq -r '.layout' "$TEMP_DIR/layout-style.json")
 STYLE=$(jq -r '.style' "$TEMP_DIR/layout-style.json")
 
 {
-  cat "$SN_IMAGE_INFOG/references/prompts-expand-system.md"
+  cat "$SKILL_DIR/references/prompts-expand-system.md"
   printf '\n\n---\n\n## Selected Layout: %s\n\n' "$LAYOUT"
-  cat "$SN_IMAGE_INFOG/references/layouts/${LAYOUT}.md"
+  cat "$SKILL_DIR/references/layouts/${LAYOUT}.md"
   printf '\n\n---\n\n## Selected Style: %s\n\n' "$STYLE"
-  cat "$SN_IMAGE_INFOG/references/styles/${STYLE}.md"
+  cat "$SKILL_DIR/references/styles/${STYLE}.md"
   printf '\n\n---\n\n## Output Template Reference\n\n'
-  cat "$SN_IMAGE_INFOG/references/base-prompt.md"
+  cat "$SKILL_DIR/references/base-prompt.md"
 } > "$TEMP_DIR/expand-system-prompt.md"
 ```
 
@@ -252,6 +296,8 @@ Parse JSON stdout, extract `result` field as `expanded_prompt`, and write to tem
 ```bash
 echo "$EXPANDED_PROMPT" > "$TEMP_DIR/expanded-prompt.txt"
 ```
+
+`expanded-prompt.txt`: single UTF-8 string, passed verbatim to `sn-image-generate --prompt` in Step 3.
 
 If parsing fails or truncation is suspected (the returned content is incomplete), Worker Agent must immediately return the Error Flow JSON (`status=error` with the real error message) to Main Agent and terminate — Worker is not allowed to message the user directly (see Responsibility Boundaries).
 
@@ -279,22 +325,25 @@ python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-image-generate \
 
 **Review Image** (only executed when `max_rounds > 1`):
 
-VLM configuration requirements:
-
-- When `max_rounds > 1`, call VLM for review
-- Select VLM model from OpenClaw configuration as parameter for image recognition
-- If no suitable VLM model exists in OpenClaw configuration: Worker Agent returns the Error Flow JSON (`status=error`) with an `error` message stating the current parameter combination cannot be executed and recommending the user add a VLM configuration or set `max_rounds=1` to avoid VLM calls. Main Agent surfaces this message to the user.
-- If VLM call times out or fails: do not fallback; Worker returns the Error Flow JSON with the real error in the `error` field (no direct user-facing messages from Worker).
+- If no VLM model is configured: return Error Flow JSON suggesting the user add a VLM configuration or set `max_rounds=1`.
+- If the VLM call fails/times out: no fallback; return Error Flow JSON with the real error.
 
 ```bash
 python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-image-recognize \
-  --system-prompt-path "$SN_IMAGE_INFOG/references/prompts-critic-system.md" \
+  --system-prompt-path "$SKILL_DIR/references/prompts-critic-system.md" \
   --user-prompt "Evaluate the diagram in the image against the rules. Output your assessment." \
   --images "$TEMP_DIR/round_${ROUND}.png" \
   --output-format json
 ```
 
-System prompt comes from `references/prompts-critic-system.md`, user prompt is provided directly.
+**Map VLM response into the per-round record** (the VLM response schema is defined in `$SKILL_DIR/references/prompts-critic-system.md`; each violation is a four-field object):
+
+- `vlm.result` → `rounds[i].result` (verbatim — `"PASS"` or `"FAIL"`)
+- `vlm.violations` → `rounds[i].violations` (passthrough verbatim — array of `{ rule_id, rule_name, detail, revised_description }` objects)
+- `len(vlm.violations)` → `rounds[i].violations_count`
+- `vlm.reasoning` → `rounds[i].reasoning` (verbatim string passthrough)
+
+When `max_rounds=1` (no VLM call), default the round record to `result="PASS"`, `violations=[]`, `violations_count=0`, `reasoning=""`.
 
 **Save Round Result**：
 
@@ -303,17 +352,22 @@ System prompt comes from `references/prompts-critic-system.md`, user prompt is p
   "round": 1,
   "image": "$TEMP_DIR/round_1.png",
   "result": "PASS|FAIL",
-  "violations_count": 0,
-  "violations": [],
-  "reasoning": "<Reasoning process, empty string when max_rounds=1>",
+  "violations_count": 1,
+  "violations": [
+    {
+      "rule_id": "5",
+      "rule_name": "Illegible Text",
+      "detail": "<offending element description>",
+      "revised_description": "<suggested fix per the prompts-critic-system.md standards>"
+    }
+  ],
+  "reasoning": "<VLM reasoning, or \"\" when max_rounds=1>",
   "timing": {
     "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
     "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
   }
 }
 ```
-
-Note: `elapsed_seconds` is read from the `--output-format json` return of each CLI call; `image_generation.model` is fixed to the hardcoded placeholder `"sn_image_model"` (sn-image-generate does not return the model field); `vlm_review.model` is read from the JSON return of sn-image-recognize. `timing.vlm_review` is omitted when `max_rounds=1`.
 
 **Early Termination Check** (only executed when `max_rounds > 1`):
 
@@ -328,14 +382,20 @@ Sort images by `violations_count` ascending + `round` ascending, return structur
 
 After Worker Agent completes, its last message must be and only be the following JSON string (bare JSON, no code fences, no preceding or trailing text).
 
+**Notation in the examples below:**
+
+- `<...>` — documentation placeholder; replace with the real value at runtime.
+- `A|B` — one of the listed literals; the returned JSON must contain exactly one of them (e.g. `"result": "PASS"` or `"result": "FAIL"`, never the literal string `"PASS|FAIL"`).
+- `$VAR` — must be expanded to the resolved value before serialization. For example, `"image": "$TEMP_DIR/round_1.png"` in the schema must be returned as the absolute path actually written by Step 3 (e.g. `"/tmp/openclaw/sn-infographic/20260521_120000/round_1.png"`), never the literal `"$TEMP_DIR/round_1.png"`.
+- Conditional fields — every field whose Rules entry says "omitted when …" must be physically absent from the JSON in that case, not present-with-`null`.
+
 **Normal Flow:**
 
 ```json
 {
   "status": "ok",
   "need_main_agent_send": true,
-  "output_mode": "friendly|verbose",
-  "expanded_prompt": "<always present in status=ok responses regardless of output_mode; value is original user_prompt when prompts_expand_skipped=true, otherwise the expanded result from Step 2.3>",
+  "expanded_prompt": "<original user_prompt if prompts_expand_skipped, else expanded result from Step 2.3>",
   "prompts_expand_skipped": true,
   "early_terminated": true,
   "timing": {
@@ -349,9 +409,16 @@ After Worker Agent completes, its last message must be and only be the following
       "round": 1,
       "image": "$TEMP_DIR/round_1.png",
       "result": "PASS|FAIL",
-      "violations_count": 0,
-      "violations": [],
-      "reasoning": "<Reasoning process, empty string when max_rounds=1>",
+      "violations_count": 1,
+      "violations": [
+        {
+          "rule_id": "5",
+          "rule_name": "Illegible Text",
+          "detail": "<offending element description>",
+          "revised_description": "<suggested fix>"
+        }
+      ],
+      "reasoning": "<VLM reasoning, or \"\" when max_rounds=1>",
       "timing": {
         "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
         "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
@@ -372,37 +439,35 @@ After Worker Agent completes, its last message must be and only be the following
 
 **Rules:**
 
-- `status=ok` must contain `need_main_agent_send: true`
-- `expanded_prompt` is always present in `status=ok` responses (regardless of `output_mode`); value is the original `user_prompt` when `prompts_expand_skipped=true`, otherwise the expanded prompt produced in Step 2.3
-- `prompts_expand_skipped` is present (value `true`) **only** when Step 2 is skipped — covers two cases:
-  - `prompts_expand_mode=disable`
-  - `prompts_expand_mode=auto` and Step 1 evaluation passes
-  The field is **omitted** (semantically `false`) in all other cases, i.e. `prompts_expand_mode=force` or `auto` with evaluation failing
-- `early_terminated` must contain when early termination (value is `true`), omitted when normal execution completes
-- `violations` is an array of strings, from review results
-- `reasoning` is an empty string when `max_rounds=1`
-- Top-level `timing` contains:
-  - `total_elapsed_seconds`: Worker Agent's wall time from Step 0 to returning JSON, calculated by Worker Agent itself
-  - `prompt_detection`: Step 1 evaluation call; **present only when `prompts_expand_mode=auto`** (omitted under `disable` and `force`, neither of which invokes the evaluation)
-  - `content_analysis`: Step 2.0 content analysis call; **omitted when Step 2 is skipped** (i.e. `prompts_expand_skipped=true`)
-  - `prompt_expand`: Step 2.3 prompt expansion call; **omitted when Step 2 is skipped** (i.e. `prompts_expand_skipped=true`)
-  - Each of the three sub-objects contains `elapsed_seconds` and `model` (read from the sn-text-optimize JSON return)
-- `rounds[].timing.image_generation.model` is fixed to the hardcoded placeholder `"sn_image_model"`
-- `rounds[].timing.vlm_review` is omitted when `max_rounds=1`
+- `status=ok` must contain `need_main_agent_send: true`.
+- `expanded_prompt`: always present in `status=ok`; value is original `user_prompt` when `prompts_expand_skipped=true`, else the Step 2.3 result.
+- `prompts_expand_skipped`: present (`true`) only when Step 2 is skipped (`prompts_expand_mode=disable`, or `auto` with passing evaluation); omitted otherwise.
+- `early_terminated`: present (`true`) only when Step 3 exited the loop early via a `PASS`; omitted otherwise (including all `max_rounds=1` runs).
+- `violations`: array of objects from the VLM response, schema `$SKILL_DIR/references/prompts-critic-system.md` (`rule_id`, `rule_name`, `detail`, `revised_description`). `[]` when `result=PASS` or `max_rounds=1`.
+- `violations_count`: `len(violations)`; `0` when `max_rounds=1`.
+- `reasoning`: VLM `reasoning` field verbatim; `""` when `max_rounds=1`.
+- When `max_rounds=1`, the single round's `result` defaults to `"PASS"` (image delivered without VLM check).
+- Top-level `timing`:
+  - `total_elapsed_seconds`: Worker wall time from Step 0 to JSON return.
+  - `prompt_detection`: `{elapsed_seconds, model}` from Step 1 evaluation. Present only when `prompts_expand_mode=auto`.
+  - `content_analysis`: `{elapsed_seconds, model}` from Step 2.0. Omitted when `prompts_expand_skipped=true`.
+  - `prompt_expand`: `{elapsed_seconds, model}` from Step 2.3. Omitted when `prompts_expand_skipped=true`.
+- `rounds[].timing.image_generation.model`: hardcoded `"sn_image_model"` (sn-image-generate returns no model field).
+- `rounds[].timing.vlm_review`: omitted when `max_rounds=1`.
 
 ## Output Format
 
 ### friendly mode (default)
 
-**Text Summary:**
+**Text Summary** — a one-sentence description generated by Main Agent. Length: **≤ 50 chars/字** regardless of language (1 Chinese character = 1 unit, 1 ASCII character = 1 unit). Language: follow the dominant language of `user_prompt` (predominantly Chinese → output Chinese; otherwise → output English).
 
-- **when `max_rounds = 1`**: Generate a one-sentence description of the image content based on `expanded_prompt`,不超过50字
-- **when `max_rounds > 1`**: Generate a one-sentence description of the image content based on `result` and `violations`,不超过50字：
-  - `result=PASS`: Describe in a positive tone
-  - `result=FAIL` (1-2 violations): Gently point out specific issues
-  - `result=FAIL` (3 or more): Objectively summarize the main issues
+- **when `max_rounds = 1`**: derive the description from `expanded_prompt` (focus on what the infographic depicts).
+- **when `max_rounds > 1`**: derive the description from the rank=1 round's `result` and `violations`:
+  - `result=PASS`: positive tone.
+  - `result=FAIL` (1–2 violations): briefly point out the specific issues.
+  - `result=FAIL` (≥ 3 violations): objectively summarize the main issues.
 
-**Image**: rank=1 best single image
+**Image**: rank=1 single image.
 
 ### verbose mode
 
@@ -420,6 +485,22 @@ Time statistics: Total <total>s | Prompt evaluation <t>s | Content analysis <t>s
 ---
 Images (sent in rank order)
 ```
+
+**Substitution rules:**
+
+| Placeholder | Rule |
+|-------------|------|
+| `[expanded \| not expanded, using original prompt]` | `not expanded, using original prompt` when `prompts_expand_skipped=true` is present in the Return JSON; otherwise `expanded`. |
+| `<expanded_prompt>` | The `expanded_prompt` field from the Return JSON, verbatim. |
+| `#k round=<n> result=… violations=…` | One line per entry in `rounds[]`, in rank order (`k = 1..len(rounds)`); `<n>` is `rounds[i].round`. |
+| `[early terminated]` | Append **only** to the round that actually triggered early termination (i.e. the `result=PASS` round that cut the loop). Omit on all other lines. If `early_terminated` is absent from the Return JSON, the tag never appears. |
+| `Total <total>s` | `timing.total_elapsed_seconds`. Always present. |
+| `Prompt evaluation <t>s` | `timing.prompt_detection.elapsed_seconds`. **Omit this `\| Prompt evaluation …` segment entirely** when `prompt_detection` is absent from the Return JSON. |
+| `Content analysis <t>s` | `timing.content_analysis.elapsed_seconds`. Omit the segment entirely when absent. |
+| `Prompt expansion <t>s` | `timing.prompt_expand.elapsed_seconds`. Omit the segment entirely when absent. |
+| `Image generation <t>s×<n> rounds` | `<t>` = sum of `rounds[].timing.image_generation.elapsed_seconds`; `<n>` = `len(rounds)`. |
+| `VLM review <t>s×<n> rounds` | `<t>` = sum of `rounds[].timing.vlm_review.elapsed_seconds` (only over rounds where the field exists); `<n>` = number of rounds with VLM review. Omit the segment entirely when `max_rounds=1` (no VLM review occurred). |
+| `Images (sent in rank order)` | Section header; image delivery itself follows the channel conventions of the host runtime. |
 
 ## Call Relationship
 
