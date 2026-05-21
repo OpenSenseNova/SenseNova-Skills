@@ -36,6 +36,12 @@ from sn_image_base.generation import (
 )
 from sn_image_base.llm import AnthropicMessagesAdapter, OpenAIChatAdapter
 
+# Allowed --image-size values, canonical lowercase form. Comparison is
+# case-insensitive (see run_image_generate). Pipeline currently locked to 2k
+# (PR #80); 1k / 4k remain available in the backend if a future caller adds
+# them here.
+ALLOWED_IMAGE_SIZES = frozenset({"2k"})
+
 
 def _resolve_prompt(
     direct: str | None,
@@ -80,7 +86,9 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument("--prompt", required=True, help="Text prompt for image generation")
     gen_parser.add_argument("--negative-prompt", default="", help="Negative prompt")
     gen_parser.add_argument(
-        "--image-size", default="2k", choices=["2k"], help="Image size preset"
+        "--image-size",
+        default="2k",
+        help="Image size preset (case-insensitive; only '2k' is currently supported)",
     )
     gen_parser.add_argument(
         "--aspect-ratio",
@@ -210,6 +218,15 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             output (image path), task_id, and message. exit_code is 0 on
             success and 1 on failure.
     """
+    normalized_size = args.image_size.strip().lower()
+    if normalized_size not in ALLOWED_IMAGE_SIZES:
+        raise ValueError(
+            f"image-size {args.image_size!r} is not supported. "
+            f"Accepted values (case-insensitive): {sorted(ALLOWED_IMAGE_SIZES)}. "
+            f"Retry with --image-size 2k."
+        )
+    args.image_size = normalized_size
+
     api_key = args.api_key or global_configs.SN_IMAGE_GEN_API_KEY
     if not api_key:
         raise MissingApiKeyError(global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY"))

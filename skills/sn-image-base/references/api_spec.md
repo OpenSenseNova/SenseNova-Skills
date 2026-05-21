@@ -40,7 +40,7 @@ python sn_agent_runner.py sn-image-generate \
 | `--api-key` | string | No | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | API Key (CLI takes precedence; raises `MissingApiKeyError` if all are empty) |
 | `--base-url` | string | No | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` | API base URL (CLI takes precedence) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
-| `--image-size` | string | No | `"2k"` | Image size: `2k` only |
+| `--image-size` | string | No | `"2k"` | Image size: `2k` only (case-insensitive); invalid value raises `ValueError` (see Error Handling) |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
 | `--seed` | int | No | `None` | Random seed (for reproducibility) |
 | `--unet-name` | string | No | `None` | UNet model name |
@@ -258,7 +258,7 @@ appends only the interface endpoint path.
 | Type | Source | Trigger | Output Format |
 |------|--------|---------|---------------|
 | `MissingApiKeyError` | Custom business exception | API Key not provided for `sn-image-generate` | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
-| `ValueError` (prompt) | `_resolve_prompt` | `--user-prompt` and `--user-prompt-path` both provided, neither provided, or file read failure | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
+| `ValueError` | `_resolve_prompt`, `run_image_generate` | prompt mutual-exclusion / neither provided / file-read failure; `--image-size` not in the allowed set | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
 | argparse missing param | argparse standard error | Missing required parameters for `sn-image-recognize`/`sn-text-optimize` | `usage: ...` + exit 2 |
 | HTTP error | httpx request layer | API returns non-2xx status code | `{"status": "failed", "error": "HTTP NNN", "message": "..."}` |
 | Request exception | httpx request layer | Network error, timeout, etc. | `{"status": "failed", "error": "<ExceptionType>", "message": "..."}` |

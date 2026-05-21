@@ -48,7 +48,7 @@ Image generation tool that calls the text-to-image-no-enhance API.
 |------|------|--------|------|
 | `--prompt` | string | **Required** | Prompt text for image generation |
 | `--negative-prompt` | string | `""` | Negative prompt |
-| `--image-size` | string | `2k` | Image size preset, supports `2k` only |
+| `--image-size` | string | `2k` | Image size preset, `2k` only (case-insensitive); invalid value → `status=failed` JSON |
 | `--aspect-ratio` | string | `16:9` | Aspect ratio, e.g. `1:1`, `16:9`, `9:16` |
 | `--seed` | int | `None` | Random seed for reproducible generation |
 | `--unet-name` | string | `None` | Specify a UNet model name |
