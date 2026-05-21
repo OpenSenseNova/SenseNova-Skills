@@ -92,7 +92,7 @@ Error: API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE
 **json format**:
 
 ```json
-{"status": "failed", "error": "API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE_GEN_API_KEY only for an image-generation-specific override, or pass --api-key explicitly.", "elapsed_seconds": 0.05}
+{"status": "failed", "error_type": "MissingApiKeyError", "error": "API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE_GEN_API_KEY only for an image-generation-specific override, or pass --api-key explicitly.", "elapsed_seconds": 0.05}
 ```
 
 ---
@@ -253,30 +253,33 @@ appends only the interface endpoint path.
 
 ## Error Handling
 
-### Error Types
-
-| Type | Source | Trigger | Output Format |
-|------|--------|---------|---------------|
-| `MissingApiKeyError` | Custom business exception | API Key not provided for `sn-image-generate` | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
-| `ValueError` | `_resolve_prompt`, `run_image_generate` | prompt mutual-exclusion / neither provided / file-read failure; `--image-size` not in the allowed set | text: `Error: ...` / json: `{"status": "failed", "error": "..."}` |
-| argparse missing param | argparse standard error | Missing required parameters for `sn-image-recognize`/`sn-text-optimize` | `usage: ...` + exit 2 |
-| HTTP error | httpx request layer | API returns non-2xx status code | `{"status": "failed", "error": "HTTP NNN", "message": "..."}` |
-| Request exception | httpx request layer | Network error, timeout, etc. | `{"status": "failed", "error": "<ExceptionType>", "message": "..."}` |
-
-### text format
-
-Error messages are written to stderr and do not affect stdout content.
-
-### json format
+All failure responses share the same JSON schema:
 
 ```json
 {
   "status": "failed",
-  "error": "error type",
-  "message": "detailed error message",
+  "error_type": "<exception class name or synthetic tag>",
+  "error": "<human-readable details>",
   "elapsed_seconds": 0.05
 }
 ```
+
+- `error_type`: the Python exception class name (e.g. `ValueError`, `MissingApiKeyError`, `HTTPStatusError`) for caught exceptions, or a synthetic tag (e.g. `EmptyResponse`) when the failure is not an exception. Agents can branch on this field to decide retry vs surface-to-user.
+- `error`: the human-readable detail string. For HTTP errors this includes the status code and response body; for ValueError / config errors this is the message thrown by the call site.
+- `elapsed_seconds`: wall-time the runner spent before returning the failure.
+
+In text mode, `error` is written to stderr (no `error_type` prefix). `stdout` is unaffected on failure.
+
+### Error sources
+
+| `error_type` | Source | Trigger |
+|--------------|--------|---------|
+| `MissingApiKeyError` | Custom business exception | API key not provided for `sn-image-generate` |
+| `ValueError` | `_resolve_prompt`, `run_image_generate`, backend `_resolve_size` | prompt mutual-exclusion / file-read failure; `--image-size` not in the allowed set; unsupported resolution / aspect ratio inside backend |
+| argparse missing param | argparse standard error | Missing required parameters for `sn-image-recognize` / `sn-text-optimize` (still exits via argparse's stderr + exit 2; **not** unified) |
+| `HTTPStatusError` (or backend's `U1HttpError` subclass) | httpx request layer | API returns non-2xx status code |
+| `httpx.HTTPError` / `OSError` | httpx request layer | Network error, timeout, etc. |
+| `EmptyResponse` | Backend post-processing | API returned 2xx but no image in the response |
 
 ---
 

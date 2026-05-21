@@ -338,7 +338,7 @@ async def run_image_recognize(args: argparse.Namespace) -> tuple[dict, int]:
             "interface_type": vlm_type,
         }, 0
     except Exception as exc:
-        return {"status": "failed", "error": str(exc)}, 1
+        return {"status": "failed", "error_type": type(exc).__name__, "error": str(exc)}, 1
     finally:
         await adapter.aclose()
 
@@ -384,7 +384,7 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
             "interface_type": llm_type,
         }, 0
     except Exception as exc:
-        return {"status": "failed", "error": str(exc)}, 1
+        return {"status": "failed", "error_type": type(exc).__name__, "error": str(exc)}, 1
     finally:
         await adapter.aclose()
 
@@ -526,7 +526,7 @@ def _output_result(output_format: str, result: dict, elapsed: float | None = Non
             # text-optimize/image-recognize use "result", image-generate uses "output"
             print(result.get("result") or result.get("output") or "")
         else:
-            print(result.get("message") or result["error"], file=sys.stderr)
+            print(result["error"], file=sys.stderr)
     return 0 if result["status"] == "ok" else 1
 
 
@@ -559,7 +559,7 @@ async def main_async(args: argparse.Namespace) -> int:
         if args.output_format == "json":
             print(
                 json.dumps(
-                    {"status": "failed", "error": str(exc), "elapsed_seconds": elapsed},
+                    {"status": "failed", "error_type": type(exc).__name__, "error": str(exc), "elapsed_seconds": elapsed},
                     ensure_ascii=False,
                 )
             )
@@ -572,7 +572,7 @@ async def main_async(args: argparse.Namespace) -> int:
         if args.output_format == "json":
             print(
                 json.dumps(
-                    {"status": "failed", "error": str(exc), "elapsed_seconds": elapsed},
+                    {"status": "failed", "error_type": type(exc).__name__, "error": str(exc), "elapsed_seconds": elapsed},
                     ensure_ascii=False,
                 )
             )

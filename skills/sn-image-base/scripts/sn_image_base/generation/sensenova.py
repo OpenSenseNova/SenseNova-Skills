@@ -178,14 +178,15 @@ class SensenovaText2ImageClient(T2IBaseClient):
                             details += f"\nIs any of the following environment variable(s) set correctly: {env_names_str}?"
             return {
                 "status": "failed",
-                "error": f"HTTP {exc.code}: {exc.message}",
-                "message": details,
+                "error_type": type(exc).__name__,
+                "error": f"HTTP {exc.code}: {exc.message}" + (f"\n{details}" if details else ""),
             }
         try:
             images_urls: list[str] = data["images_urls"]
             if not images_urls:
                 return {
                     "status": "failed",
+                    "error_type": "EmptyResponse",
                     "error": "No image generated from the model",
                 }
             url = images_urls[-1]
@@ -200,14 +201,14 @@ class SensenovaText2ImageClient(T2IBaseClient):
         except httpx.HTTPStatusError as exc:
             return {
                 "status": "failed",
-                "error": f"HTTP {exc.response.status_code}",
-                "message": f"http error: {exc.response.status_code} {exc.response.text}",
+                "error_type": type(exc).__name__,
+                "error": f"HTTP {exc.response.status_code}: {exc.response.text}",
             }
         except (httpx.HTTPError, OSError, ValueError) as exc:
             return {
                 "status": "failed",
-                "error": type(exc).__name__,
-                "message": f"request error: {exc}",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
             }
 
     @property
