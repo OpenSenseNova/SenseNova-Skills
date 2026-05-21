@@ -97,10 +97,16 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 
 #### Step 0 — Initialization
 
-1. Generate `task_id` (using timestamp, format `YYYYMMDD_HHMMSS`)
-2. Create a uniform temporary directory: `/tmp/openclaw/sn-infographic/<task_id>/` as `TEMP_DIR`
-3. Initialize an empty `rounds` list
-4. Infer `aspect_ratio` (default `16:9`) and `image_size` (default `2k`) from `user_prompt` based on the rules in `$SKILL_DIR/references/runtime-parameters.md`
+1. Generate `task_id` (timestamp, format `YYYYMMDD_HHMMSS`) and create the uniform temporary directory `/tmp/openclaw/sn-infographic/<task_id>/` as `TEMP_DIR`. `TEMP_DIR` must exist before any subsequent step writes to it:
+
+   ```bash
+   TASK_ID=$(date +%Y%m%d_%H%M%S)
+   TEMP_DIR="/tmp/openclaw/sn-infographic/${TASK_ID}"
+   mkdir -p "$TEMP_DIR"
+   ```
+
+2. Initialize an empty `rounds` list
+3. Infer `aspect_ratio` (default `16:9`) and `image_size` (default `2k`) from `user_prompt` based on the rules in `$SN_IMAGE_INFOG/references/runtime-parameters.md`
 
 #### Step 1 — `prompts_expand_mode` Processing
 
@@ -142,7 +148,7 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 
 ```bash
 python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
-  --system-prompt-path "$SKILL_DIR/references/evaluation-standard.md" \
+  --system-prompt-path "$SN_IMAGE_INFOG/references/evaluation-standard.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json
 ```
@@ -153,7 +159,7 @@ python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
 
 ```bash
 ANALYSIS=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
-  --system-prompt-path "$SKILL_DIR/references/analysis-framework.md" \
+  --system-prompt-path "$SN_IMAGE_INFOG/references/analysis-framework.md" \
   --user-prompt "$USER_PROMPT" \
   --output-format json)
 ```
@@ -172,15 +178,13 @@ echo "$ANALYSIS" > "$TEMP_DIR/analysis.json"
   ANALYSIS=$(cat "$TEMP_DIR/analysis.json")
   ```
 
-2. Based on `data_type`, `tone`, `audience`, select `layout` and `style` based on the rules in `$SKILL_DIR/references/layout-style-selection.md`;
-3. Read layout/style definition files:
+2. Based on `data_type`, `tone`, `audience`, select `layout` and `style` based on the rules in `$SN_IMAGE_INFOG/references/layout-style-selection.md`;
+3. Validate the selection by checking the definition files exist; fall back to `hub-spoke` + `corporate-memphis` if missing:
 
   ```bash
-  LAYOUT_DEF=$(cat "$SKILL_DIR/references/layouts/<layout>.md")
-  STYLE_DEF=$(cat "$SKILL_DIR/references/styles/<style>.md")
+  [ -f "$SN_IMAGE_INFOG/references/layouts/${LAYOUT}.md" ] || LAYOUT=hub-spoke
+  [ -f "$SN_IMAGE_INFOG/references/styles/${STYLE}.md" ] || STYLE=corporate-memphis
   ```
-
-  If file does not exist, fallback to `hub-spoke` + `corporate-memphis`.
 
 4. Save selection result to temporary directory: `$TEMP_DIR/layout-style.json`;
 
@@ -200,7 +204,7 @@ Read analysis result and structured content template, convert `user_prompt` into
 ```bash
 ANALYSIS=$(cat "$TEMP_DIR/analysis.json")
 LAYOUT_STYLE=$(cat "$TEMP_DIR/layout-style.json")
-STRUCTURED_CONTENT_TEMPLATE=$(cat "$SKILL_DIR/references/structured-content-template.md")
+STRUCTURED_CONTENT_TEMPLATE=$(cat "$SN_IMAGE_INFOG/references/structured-content-template.md")
 ```
 
 Follow the three phases defined in the template (High-Level Outline → Section Development → Data Integrity Check),
@@ -216,45 +220,29 @@ EOF
 
 **2.3 Prompt Expansion** (using `sn-image-base`'s `sn-text-optimize` tool):
 
-Read structured content and layout/style selection from temporary directory, dynamically concatenate system prompt, and write to temporary file:
+Read layout/style selection, then assemble the system prompt by **direct file concatenation** (do not use heredocs — layout/style files contain backticks and `$(...)` that an unquoted heredoc body would execute):
 
 ```bash
-STRUCTURED_CONTENT=$(cat "$TEMP_DIR/structured-content.md")
-LAYOUT_STYLE=$(cat "$TEMP_DIR/layout-style.json")
-LAYOUT=$(echo "$LAYOUT_STYLE" | jq -r '.layout')
-STYLE=$(echo "$LAYOUT_STYLE" | jq -r '.style')
-LAYOUT_DEF=$(cat "$SKILL_DIR/references/layouts/${LAYOUT}.md")
-STYLE_DEF=$(cat "$SKILL_DIR/references/styles/${STYLE}.md")
+LAYOUT=$(jq -r '.layout' "$TEMP_DIR/layout-style.json")
+STYLE=$(jq -r '.style' "$TEMP_DIR/layout-style.json")
 
-cat > "$TEMP_DIR/expand-system-prompt.md" << EOF
-$(cat "$SKILL_DIR/references/prompts-expand-system.md")
-
----
-
-## Selected Layout: $LAYOUT
-
-$LAYOUT_DEF
-
----
-
-## Selected Style: $STYLE
-
-$STYLE_DEF
-
----
-
-## Output Template Reference
-
-$(cat "$SKILL_DIR/references/base-prompt.md")
-EOF
+{
+  cat "$SN_IMAGE_INFOG/references/prompts-expand-system.md"
+  printf '\n\n---\n\n## Selected Layout: %s\n\n' "$LAYOUT"
+  cat "$SN_IMAGE_INFOG/references/layouts/${LAYOUT}.md"
+  printf '\n\n---\n\n## Selected Style: %s\n\n' "$STYLE"
+  cat "$SN_IMAGE_INFOG/references/styles/${STYLE}.md"
+  printf '\n\n---\n\n## Output Template Reference\n\n'
+  cat "$SN_IMAGE_INFOG/references/base-prompt.md"
+} > "$TEMP_DIR/expand-system-prompt.md"
 ```
 
-Use the content of `structured-content.md` as user-prompt, read system prompt from temporary file and call sn-text-optimize:
+Use the content of `structured-content.md` as user-prompt (passed via `--user-prompt-path` to avoid argv-length and quoting issues), read system prompt from temporary file and call sn-text-optimize:
 
 ```bash
 python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
   --system-prompt-path "$TEMP_DIR/expand-system-prompt.md" \
-  --user-prompt "$STRUCTURED_CONTENT" \
+  --user-prompt-path "$TEMP_DIR/structured-content.md" \
   --output-format json
 ```
 
@@ -264,11 +252,18 @@ Parse JSON stdout, extract `result` field as `expanded_prompt`, and write to tem
 echo "$EXPANDED_PROMPT" > "$TEMP_DIR/expanded-prompt.txt"
 ```
 
-If parsing fails or truncation is suspected (the returned content is incomplete), notify the user and terminate the workflow.
+If parsing fails or truncation is suspected (the returned content is incomplete), Worker Agent must immediately return the Error Flow JSON (`status=error` with the real error message) to Main Agent and terminate — Worker is not allowed to message the user directly (see Responsibility Boundaries).
 
 #### Step 3 — Image Generation Loop
 
-Execute `round` from `1` to `max_rounds` sequentially:
+Execute round `ROUND` from `1` to `max_rounds` sequentially. Inside each iteration set the shell variable `ROUND` to the current round number, and use `${ROUND}` in every path so successive rounds do not overwrite each other:
+
+```bash
+for ROUND in $(seq 1 "$MAX_ROUNDS"); do
+  # the Generate Image / Review Image / Save Round Result blocks below run inside this loop body
+  :
+done
+```
 
 **Generate Image** (using `sn-image-base`'s `sn-image-generate` tool):
 
@@ -277,7 +272,7 @@ python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-image-generate \
   --prompt "$EXPANDED_PROMPT" \
   --image-size "$IMAGE_SIZE" \
   --aspect-ratio "$ASPECT_RATIO" \
-  --save-path "$TEMP_DIR/round_<N>.png" \
+  --save-path "$TEMP_DIR/round_${ROUND}.png" \
   -o json
 ```
 
@@ -287,16 +282,14 @@ VLM configuration requirements:
 
 - When `max_rounds > 1`, call VLM for review
 - Select VLM model from OpenClaw configuration as parameter for image recognition
-- If no suitable VLM model exists in OpenClaw configuration:
-  - Notify user that current parameter combination cannot be executed
-  - Suggest adding VLM configuration or changing max_rounds to 1 to avoid VLM calls
-- If VLM call times out or fails: do not fallback, report the real error directly
+- If no suitable VLM model exists in OpenClaw configuration: Worker Agent returns the Error Flow JSON (`status=error`) with an `error` message stating the current parameter combination cannot be executed and recommending the user add a VLM configuration or set `max_rounds=1` to avoid VLM calls. Main Agent surfaces this message to the user.
+- If VLM call times out or fails: do not fallback; Worker returns the Error Flow JSON with the real error in the `error` field (no direct user-facing messages from Worker).
 
 ```bash
 python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-image-recognize \
   --system-prompt-path "$SN_IMAGE_INFOG/references/prompts-critic-system.md" \
   --user-prompt "Evaluate the diagram in the image against the rules. Output your assessment." \
-  --images "$TEMP_DIR/round_<N>.png" \
+  --images "$TEMP_DIR/round_${ROUND}.png" \
   --output-format json
 ```
 
