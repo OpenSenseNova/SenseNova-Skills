@@ -86,8 +86,8 @@ This skill uses a two-tier agent architecture:
 2. Send uniform preflight message: `"Using sn-infographic skill to generate infographic, please wait..."`
 3. Start Worker Agent (Sub-Agent), passing in complete parameters and working directory
 4. When Worker Agent returns `status=ok` and `need_main_agent_send=true`:
-   - **max_rounds = 1**: Send a one-sentence description of the image content, then send the rank=1 single image
-   - **max_rounds > 1, friendly mode**: Generate a one-sentence natural language description based on `result` and `violations`, send the evaluation text, then send the rank=1 single image
+   - **max_rounds = 1**: Generate a one-sentence description of the image content from `expanded_prompt` in the returned JSON (always present for `status=ok`, see Return Contract), then send the rank=1 single image
+   - **max_rounds > 1, friendly mode**: Generate a one-sentence natural language description based on the rank=1 round's `result` and `violations`, send the evaluation text, then send the rank=1 single image
    - **max_rounds > 1, verbose mode**: Send complete text summary message, then send all images in rank order to the user
 5. If Worker Agent returns `status=error`, report the real `error` field content to the user
 
@@ -124,7 +124,8 @@ Worker Agent receives `user_prompt`, `max_rounds`, `output_mode`, `prompts_expan
 
 **`force` mode**:
 
-- Directly execute Step 2
+- Skip evaluation entirely, always execute Step 2 (expansion is mandatory)
+- `prompts_expand_skipped` is **not** recorded — the field appears in the Return JSON only when Step 2 is skipped (see Return Contract rules)
 
 **`auto` mode**:
 
@@ -334,7 +335,7 @@ After Worker Agent completes, its last message must be and only be the following
   "status": "ok",
   "need_main_agent_send": true,
   "output_mode": "friendly|verbose",
-  "expanded_prompt": "<always contains when output_mode=verbose; value is original user_prompt when prompts_expand_skipped=true, otherwise is expanded result>",
+  "expanded_prompt": "<always present in status=ok responses regardless of output_mode; value is original user_prompt when prompts_expand_skipped=true, otherwise the expanded result from Step 2.3>",
   "prompts_expand_skipped": true,
   "early_terminated": true,
   "timing": {
@@ -372,16 +373,20 @@ After Worker Agent completes, its last message must be and only be the following
 **Rules:**
 
 - `status=ok` must contain `need_main_agent_send: true`
-- `expanded_prompt` must contain when `output_mode=verbose`; value is original `user_prompt` when `prompts_expand_skipped=true`
-- `prompts_expand_skipped` must contain when expand is not executed (value is `true`), covering two cases: `prompts_expand_mode=disable` and `prompts_expand_mode=auto` and evaluation passes and skip expand
+- `expanded_prompt` is always present in `status=ok` responses (regardless of `output_mode`); value is the original `user_prompt` when `prompts_expand_skipped=true`, otherwise the expanded prompt produced in Step 2.3
+- `prompts_expand_skipped` is present (value `true`) **only** when Step 2 is skipped — covers two cases:
+  - `prompts_expand_mode=disable`
+  - `prompts_expand_mode=auto` and Step 1 evaluation passes
+  The field is **omitted** (semantically `false`) in all other cases, i.e. `prompts_expand_mode=force` or `auto` with evaluation failing
 - `early_terminated` must contain when early termination (value is `true`), omitted when normal execution completes
 - `violations` is an array of strings, from review results
 - `reasoning` is an empty string when `max_rounds=1`
 - Top-level `timing` contains:
   - `total_elapsed_seconds`: Worker Agent's wall time from Step 0 to returning JSON, calculated by Worker Agent itself
-  - `prompt_detection`: Step 1 evaluation call, containing `elapsed_seconds` and `model` (read from sn-text-optimize JSON return); omitted when `prompts_expand_mode=disable`
-  - `content_analysis`: Step 2.0 content analysis call, containing `elapsed_seconds` and `model` (read from sn-text-optimize JSON return); omitted when expand is skipped
-  - `prompt_expand`: Step 2.3 prompt expansion call, containing `elapsed_seconds` and `model` (read from sn-text-optimize JSON return); omitted when expand is skipped
+  - `prompt_detection`: Step 1 evaluation call; **present only when `prompts_expand_mode=auto`** (omitted under `disable` and `force`, neither of which invokes the evaluation)
+  - `content_analysis`: Step 2.0 content analysis call; **omitted when Step 2 is skipped** (i.e. `prompts_expand_skipped=true`)
+  - `prompt_expand`: Step 2.3 prompt expansion call; **omitted when Step 2 is skipped** (i.e. `prompts_expand_skipped=true`)
+  - Each of the three sub-objects contains `elapsed_seconds` and `model` (read from the sn-text-optimize JSON return)
 - `rounds[].timing.image_generation.model` is fixed to the hardcoded placeholder `"sn_image_model"`
 - `rounds[].timing.vlm_review` is omitted when `max_rounds=1`
 
