@@ -186,9 +186,18 @@ Feel free to use the skills here as templates for your own OpenClaw skills. The 
 
 Join our growing community to share feedback, get support, and stay updated on the latest developments. Scan the QR code below to hop into the chat — we'd love to hear from you!
 
-<p align="center">
-  <img src="assets/sensenova-skills-chatgroup.jpg" width="320">
-</p>
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><b><a href="https://discord.com/invite/BuTXPHmQub">Discord</a></b></td>
+    <td align="center"><b>WeChat Group</b></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://discord.com/invite/BuTXPHmQub"><img src="assets/discord_qr.webp" width="160"/></a></td>
+    <td align="center"><img src="assets/sensenova-skills-chatgroup.jpg" width="160"/></td>
+  </tr>
+</table>
+</div>
 
 ## License
 
