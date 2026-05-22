@@ -210,8 +210,8 @@ python3 $SKILL_DIR/scripts/build_pptx.py --deck-dir <deck_dir>
 - 页序按 `outline.json` 的 `page_no` 排；缺失 `outline.json` 时按 `page_001..page_NNN` 走。
 - 缺失的 PNG 会插入空白页并在 stderr 记录一行，**不中止**；这样跟 Stage 4 的"失败跳过"语义一致。
 - 脚本失败（依赖缺失 / 写盘失败）：echo 失败原因，**不中止整个 skill**，仍进入 Stage 6 收尾；PNG 已在磁盘上。
-
-依赖：`python-pptx`（与 `sn-ppt-standard` 共用的打包思路；若运行环境未装，由 `sn-ppt-doctor` 的 env check 提示安装）。
+  如果 python-pptx 缺失导致失败：🚫 **不要尝试 pip install python-pptx**
+  或任何替代方案。PNG 页面已经是最终交付物，直接进入 Stage 6。
 
 ## Stage 6 — closing
 
