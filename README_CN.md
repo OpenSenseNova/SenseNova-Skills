@@ -195,7 +195,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
   </tr>
   <tr>
     <td align="center"><a href="https://discord.gg/cxkwXWjp"><img src="assets/discord_qr.webp" width="160"/></a></td>
-    <td align="center"><img src="assets/wechat_qr.webp" width="160"/></td>
+    <td align="center"><img src="assets/sensenova-skills-chatgroup.jpg" width="160"/></td>
   </tr>
 </table>
 </div>
