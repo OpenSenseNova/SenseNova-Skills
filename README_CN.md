@@ -187,9 +187,18 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 欢迎加入我们的交流群，分享反馈、获取支持，并第一时间了解最新进展。扫描下方二维码即可加入——期待你的声音！
 
-<p align="center">
-  <img src="assets/sensenova-skills-chatgroup.jpg" width="320">
-</p>
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><b><a href="https://discord.gg/cxkwXWjp">Discord</a></b></td>
+    <td align="center"><b>微信交流群</b></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://discord.gg/cxkwXWjp"><img src="assets/discord_qr.webp" width="160"/></a></td>
+    <td align="center"><img src="assets/wechat_qr.webp" width="160"/></td>
+  </tr>
+</table>
+</div>
 
 ## 许可证
 
