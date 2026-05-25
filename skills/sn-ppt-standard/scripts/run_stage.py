@@ -1042,6 +1042,14 @@ def cmd_export(deck: Path) -> int:
         last = [l for l in stdout.splitlines() if l.strip().startswith("{")]
         if last:
             info = json.loads(last[-1])
+            # Graceful skip: headless browser unavailable → not a failure
+            if info.get("status") == "skipped":
+                return {
+                    "status": "skipped",
+                    "stage": "export",
+                    "reason": info.get("reason"),
+                    "detail": info.get("detail"),
+                }
             converted = info.get("converted")
             pages = info.get("pages")
             failed = info.get("failed")

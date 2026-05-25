@@ -387,6 +387,45 @@ def check_python_deps() -> CheckResult:
     )
 
 
+def check_playwright_chromium(base: Path | None = None) -> CheckResult:
+    """Check if Playwright Chromium is available (optional — export can skip)."""
+    if base is None:
+        repo_root = Path(__file__).resolve().parents[3]
+        base = repo_root / "skills" / "sn-ppt-standard" / "scripts" / "export_pptx"
+
+    if not (base / "node_modules" / "playwright").exists():
+        return CheckResult(
+            name="PLAYWRIGHT_CHROMIUM",
+            severity="soft",
+            passed=True,
+            detail="Playwright not installed — PPTX export will be skipped. HTML pages still produced.",
+        )
+
+    try:
+        result = subprocess.run(
+            ["npx", "playwright", "install", "--dry-run", "chromium"],
+            capture_output=True, text=True, timeout=30,
+            cwd=str(base),
+        )
+        installed = "is already installed" in result.stdout
+    except Exception:
+        installed = False
+
+    if installed:
+        return CheckResult(
+            name="PLAYWRIGHT_CHROMIUM",
+            severity="soft",
+            passed=True,
+            detail="Playwright Chromium is installed — PPTX export available",
+        )
+    return CheckResult(
+        name="PLAYWRIGHT_CHROMIUM",
+        severity="soft",
+        passed=True,
+        detail="Chromium not available — PPTX export will be skipped. HTML pages still produced.",
+    )
+
+
 # ---------------------------------------------------------------------------
 # 4. Aggregator
 # ---------------------------------------------------------------------------
@@ -403,6 +442,7 @@ def run_all_checks() -> list[CheckResult]:
         check_ppt_deck_root_writable(),
         check_optional_env_vars(),
         check_export_pptx_node_modules(),
+        check_playwright_chromium(),
         check_python_deps(),
     ]
 

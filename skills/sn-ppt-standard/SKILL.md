@@ -31,6 +31,7 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 3. **Do NOT construct LLM prompts yourself.** `run_stage.py` is the only place that builds payloads.
 4. **Do NOT add `timing` / logging / retry layers.** The skill is intentionally thin.
 5. **Do NOT go silent between execs.** Echo a one-line Chinese progress message after each exec before issuing the next.
+6. **Do NOT use python-pptx or any alternative PPTX builder** when export is skipped or fails. The HTML pages are complete as-is — there is no fallback renderer. An absent PPTX is an acceptable ending state.
 
 ## Pipeline
 
@@ -122,7 +123,9 @@ Run `python $SKILL_DIR/lib/model_client.py health` to verify env before running 
 
 `scripts/export_pptx/html_to_pptx.mjs` is invoked with `--force` — skips built-in motif / real-photo gates (this skill doesn't use the motif protocol). PPTX still produces even if some slots are missing images.
 
-If the converter crashes, `run_stage.py export` returns `status: "failed"`. That's the deck's ending state; PPTX is simply absent.
+If the headless browser (Playwright/Chromium) is unavailable, the export returns `status: "skipped"` with reason `"headless_browser_unavailable"`. The PPTX file is absent — this is an expected degraded ending state. The HTML pages are the final deliverable.
+
+🚫 **DO NOT fall back to python-pptx, libreoffice, or any other converter.** DO NOT attempt to install Chromium system dependencies manually. Simply report the skip and finish.
 
 ## Does NOT
 
