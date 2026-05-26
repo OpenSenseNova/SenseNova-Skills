@@ -40,7 +40,7 @@ python sn_agent_runner.py sn-image-generate \
 | `--api-key` | string | No | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | API Key (CLI takes precedence; raises `MissingApiKeyError` if all are empty) |
 | `--base-url` | string | No | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` | API base URL (CLI takes precedence) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
-| `--image-size` | string | No | `"2k"` | Image size: `2k` only (case-insensitive); invalid value raises `ValueError` (see Error Handling) |
+| `--image-size` | string | No | `"2k"` | Image size (case-insensitive). Recommended: `2k`. `4k` optional, needs model support (sensenova rejects it → `ValueError`). Other values → `ValueError` (see Error Handling). |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
 | `--seed` | int | No | `None` | Random seed (for reproducibility) |
 | `--unet-name` | string | No | `None` | UNet model name |
@@ -275,7 +275,7 @@ In text mode, `error` is written to stderr (no `error_type` prefix). `stdout` is
 | `error_type` | Source | Trigger |
 |--------------|--------|---------|
 | `MissingApiKeyError` | Custom business exception | API key not provided for `sn-image-generate` |
-| `ValueError` | `_resolve_prompt`, `run_image_generate`, backend `_resolve_size` | prompt mutual-exclusion / file-read failure; `--image-size` not in the allowed set; unsupported resolution / aspect ratio inside backend |
+| `ValueError` | `_resolve_prompt`, `run_image_generate`, backend `_resolve_size` | prompt mutual-exclusion / file-read failure; `--image-size` not in the allowed input set; `4k` on unsupported models (1K/2K only); unsupported aspect ratio inside backend |
 | argparse missing param | argparse standard error | Missing required parameters for `sn-image-recognize` / `sn-text-optimize` (still exits via argparse's stderr + exit 2; **not** unified) |
 | `HTTPStatusError` (or backend's `U1HttpError` subclass) | httpx request layer | API returns non-2xx status code |
 | `httpx.HTTPError` / `OSError` | httpx request layer | Network error, timeout, etc. |

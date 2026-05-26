@@ -338,8 +338,10 @@ class OpenAIImageGenerationClient(T2IBaseClient):
             max_pixel = 1024**2
         elif resolution == "2K":
             max_pixel = 2048**2
+        elif resolution == "4K":
+            max_pixel = 4096**2
         else:
-            raise ValueError(f"Unsupported resolution: {resolution}")
+            raise ValueError(f"Unsupported resolution token: {resolution!r}")
         aspect_ratio_val = aspect_ratio_val or 1
         if aspect_ratio_val < 1 / 3 or aspect_ratio_val > 3:
             raise ValueError(f"Aspect ratio value must be between [1/3, 3], got {aspect_ratio_val}")

@@ -37,10 +37,12 @@ from sn_image_base.generation import (
 from sn_image_base.llm import AnthropicMessagesAdapter, OpenAIChatAdapter
 
 # Allowed --image-size values, canonical lowercase form. Comparison is
-# case-insensitive (see run_image_generate). Pipeline currently locked to 2k
-# (PR #80); 1k / 4k remain available in the backend if a future caller adds
-# them here.
-ALLOWED_IMAGE_SIZES = frozenset({"2k"})
+# case-insensitive (see run_image_generate). The runner forwards both 2k and 4k
+# to the configured backend; each backend then either renders the size, forwards
+# it upstream, or rejects it (e.g. the sensenova backend rejects 4k since it only
+# has 1K / 2K buckets). Any rejection surfaces as a status=failed JSON. 1k remains
+# backend-only until a caller adds it here.
+ALLOWED_IMAGE_SIZES = frozenset({"2k", "4k"})
 
 
 def _resolve_prompt(
@@ -88,7 +90,7 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument(
         "--image-size",
         default="2k",
-        help="Image size preset (case-insensitive; only '2k' is currently supported)",
+        help="Image size preset (case-insensitive), e.g. '2k' or '4k'; forwarded to the upstream model, which may reject an unsupported size",
     )
     gen_parser.add_argument(
         "--aspect-ratio",
@@ -221,10 +223,10 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
     """
     normalized_size = args.image_size.strip().lower()
     if normalized_size not in ALLOWED_IMAGE_SIZES:
+        accepted = ", ".join(sorted(ALLOWED_IMAGE_SIZES))
         raise ValueError(
             f"image-size {args.image_size!r} is not supported. "
-            f"Accepted values (case-insensitive): {sorted(ALLOWED_IMAGE_SIZES)}. "
-            f"Retry with --image-size 2k."
+            f"Accepted values (case-insensitive): {accepted}."
         )
     args.image_size = normalized_size
 

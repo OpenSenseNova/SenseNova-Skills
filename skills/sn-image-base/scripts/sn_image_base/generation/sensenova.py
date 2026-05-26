@@ -325,7 +325,13 @@ class SensenovaText2ImageClient(T2IBaseClient):
         elif resolution == "2K":
             buckets = BUCKETS_2K
         else:
-            raise ValueError(f"Unsupported resolution: {resolution!r}. Must be '1K' or '2K'.")
+            # The SenseNova backend only has 1K / 2K pixel buckets. Reject any
+            # other resolution (e.g. 4K) here; the ValueError propagates to the
+            # runner and is returned to the caller as a status=failed JSON.
+            raise ValueError(
+                f"image-size {resolution!r} is not supported by the SenseNova image backend "
+                f"(supported: 1K, 2K)."
+            )
         try:
             ws, _, hs = aspect_ratio.strip().partition(":")
             width = int(ws)
