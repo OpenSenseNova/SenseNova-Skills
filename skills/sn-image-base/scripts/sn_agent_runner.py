@@ -214,9 +214,10 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
 
     Returns:
         tuple[dict, int]:
-            A (result_dict, exit_code) pair. result_dict contains status,
-            output (image path), task_id, and message. exit_code is 0 on
-            success and 1 on failure.
+            A (result_dict, exit_code) pair. On success result_dict contains
+            status, output (image path), and message. On failure it contains
+            status, error_type, and error. exit_code is 0 on success and 1 on
+            failure.
     """
     normalized_size = args.image_size.strip().lower()
     if normalized_size not in ALLOWED_IMAGE_SIZES:

@@ -100,7 +100,8 @@ class NanoBananaText2ImageClient(T2IBaseClient):
 
         Returns:
             dict:
-                Dictionary with keys: status, output (path), message.
+                On success, keys: status, output (path), message. On failure,
+                keys: status, error_type, error.
         """
         model = model or self.model
         # Normalize image_size to uppercase for NanoBanana API
@@ -278,9 +279,9 @@ class NanoBananaText2ImageClient(T2IBaseClient):
                 finish_reasons.append(f_reason)
             for p in parts:
                 inline_data: dict[str, Any] = p.get("inlineData", {})
-                if inline_data:
-                    mime_type: str = inline_data.get("mimeType")  # pyright: ignore[reportAssignmentType]
-                    data: str = inline_data.get("data")  # pyright: ignore[reportAssignmentType]
+                mime_type = inline_data.get("mimeType")
+                data = inline_data.get("data")
+                if isinstance(mime_type, str) and isinstance(data, str):
                     images.append((data, mime_type))
         return {
             "images": images,

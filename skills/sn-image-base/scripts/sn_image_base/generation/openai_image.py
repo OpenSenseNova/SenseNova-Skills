@@ -101,7 +101,8 @@ class OpenAIImageGenerationClient(T2IBaseClient):
 
         Returns:
             dict:
-                Dictionary with keys: status, output (path), message.
+                On success, keys: status, output (path), message. On failure,
+                keys: status, error_type, error.
         """
         model = model or self.model or global_configs.SN_IMAGE_GEN_MODEL
         if not model:
@@ -298,8 +299,8 @@ class OpenAIImageGenerationClient(T2IBaseClient):
         images: list[tuple[bytes, str]] = []
         data_items: list[dict] = raw_data.get("data") or []
         for item in data_items:
-            encoded: str = item.get("b64_json") or ""
-            if not encoded:
+            encoded = item.get("b64_json")
+            if not isinstance(encoded, str) or not encoded:
                 continue
 
             if encoded.startswith("data:"):

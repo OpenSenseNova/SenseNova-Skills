@@ -124,7 +124,8 @@ class SensenovaText2ImageClient(T2IBaseClient):
 
         Returns:
             dict:
-                Dictionary with keys: status, output (path), message.
+                On success, keys: status, output (path), message. On failure,
+                keys: status, error_type, error.
         """
         model = model or self.model or global_configs.SN_IMAGE_GEN_MODEL
         # Normalize image_size to uppercase for NanoBanana API
@@ -364,7 +365,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
         images_urls: list[str] = []
         for item in raw_data.get("data", []):
             url = item.get("url")
-            if url:
+            if isinstance(url, str) and url:
                 images_urls.append(url)
         return {"images_urls": images_urls}
 
