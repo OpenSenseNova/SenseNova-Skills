@@ -237,14 +237,16 @@ Schema: `$SKILL_DIR/references/analysis-framework.md` (defines `data_type`, `ton
 
 **2.1 Layout & Style Selection**
 
+This is a **name-level, weighted-random pick** from the candidate tables in `$SKILL_DIR/references/layout-style-selection.md`; it operates purely on layout/style **names**. **Do NOT open any file under `references/layouts/` or `references/styles/` here**, and do not "compare options" to choose a best fit — the pick is random, not reasoned over file contents. The one selected layout file and one selected style file are read exactly once, later, in Step 2.3.
+
 1. Read analysis result from temporary directory `$TEMP_DIR/analysis.json`;
 
   ```bash
   ANALYSIS=$(cat "$TEMP_DIR/analysis.json")
   ```
 
-2. Based on `data_type`, `tone`, `audience`, select `layout` and `style` based on the rules in `$SKILL_DIR/references/layout-style-selection.md`;
-3. Validate the selection by checking the definition files exist; fall back to `hub-spoke` + `corporate-memphis` if missing:
+2. From `data_type` / `tone` / `audience`, run the candidate lookup + weighted-random sampling defined in `$SKILL_DIR/references/layout-style-selection.md` to obtain one `LAYOUT` name and one `STYLE` name (names only — no file reads);
+3. Validate the selection by checking the definition files exist (existence only via `[ -f ]`, still no reading); fall back to `hub-spoke` + `corporate-memphis` if missing:
 
   ```bash
   [ -f "$SKILL_DIR/references/layouts/${LAYOUT}.md" ] || LAYOUT=hub-spoke
@@ -547,3 +549,5 @@ Images (sent in rank order)
 - `references/structured-content-template.md` - Structured content template
 - `references/layouts/<layout>.md` - Layout definitions (87 layouts)
 - `references/styles/<style>.md` - Style definitions (66 styles)
+
+Read **only the selected** layout/style file (in Step 2.3); never bulk-read these two directories to choose — selection is name-level and random (Step 2.1).
