@@ -43,7 +43,9 @@ Supported values:
 - `21:9`
 - `9:21`
 
-Use the first matching rule:
+If the Main Agent already resolved an explicit `aspect_ratio` (the user stated a supported ratio upstream), and is a valid value (in the supported values above), use it directly and skip the rules below — this is rule 1 applied at the Main Agent boundary.
+
+Otherwise, use the first matching rule:
 
 1. If the user explicitly gives a supported ratio, use it directly.
 2. If the user confirms a ratio preference in a follow-up turn, use that confirmed value.
