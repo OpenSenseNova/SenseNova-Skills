@@ -36,7 +36,7 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 ## External research and image assets
 
 - Always use the web search skills for facts, research and knowledge grounding.
-- Always add real visual assets when a page benefits from them. Asset priority is: **generated image first**, **searched image second**, **authored SVG/CSS illustration last**. Do not mention the image-search provider name in prompts, progress, visible slide text, or user-facing summaries.
+- Always add real visual assets when a page benefits from them. Asset priority is: **searched image first**, **generated image second**, **authored SVG/CSS illustration last**. Do not mention the image-search provider name in prompts, progress, visible slide text, or user-facing summaries.
 - Never use placeholder images or placeholder boxes. Do not create grey blocks, 1x1 transparent PNGs, "image pending" labels, broken-image icons, fake thumbnails, or empty reserved frames.
 - If no generated/searched image exists for a slot, redesign the page without that raster image. Use an inline SVG or CSS-drawn visual only when it is an actual diagram/decoration that carries the slide's idea; otherwise use text, tables, charts, and layout.
 
