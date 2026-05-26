@@ -58,8 +58,15 @@ All API calls in this skill are executed through the `sn_agent_runner.py` of the
 
 |Call Type|Tool|Authentication Parameters|Description|
 |---|---|---|---|
-|**LLM**|`sn-text-optimize`|Default reads `SN_TEXT_API_KEY` / `SN_CHAT_API_KEY` environment variables|Converts user resume text into a detailed image generation prompt using `prompts/resume.md` as the system prompt|
-|**Image Generation**|`sn-image-generate`|Default reads `SN_IMAGE_GEN_API_KEY` environment variable|Generates the final resume image|
+|**LLM**|`sn-text-optimize`|Default reads `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY`|Converts user resume text into a detailed image generation prompt using `prompts/resume.md` as the system prompt|
+|**Image Generation**|`sn-image-generate`|Default reads `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY`|Generates the final resume image|
+
+If all capabilities use the same gateway, configure only:
+
+```ini
+SN_BASE_URL="https://your-api-endpoint.com/v1"
+SN_API_KEY="your-api-key"
+```
 
 **When encountering `MissingApiKeyError` or needing to specify a model**: pass parameters explicitly via CLI. See `$SN_IMAGE_BASE/references/api_spec.md`.
 

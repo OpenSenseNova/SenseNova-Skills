@@ -13,9 +13,9 @@ Checks performed:
    - All packages in sn-image-base/requirements.txt are installed
 
 3. Environment variables
-   Driven by sn_image_base.configs.Configs. Image generation uses SN_IMAGE_GEN_API_KEY,
-   while text/vision chat calls use SN_CHAT_* with optional SN_TEXT_* and
-   SN_VISION_* provider overrides.
+   Driven by sn_image_base.configs.Configs. The minimal shared-gateway setup is
+   SN_BASE_URL + SN_API_KEY. Capability-specific variables override shared and
+   global values when present.
 """
 
 import argparse

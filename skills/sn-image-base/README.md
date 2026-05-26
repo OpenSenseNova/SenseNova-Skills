@@ -39,11 +39,12 @@ Go to <https://platform.sensenova.cn/token-plan/> to register a free account and
 Set the following environment variables in `~/.openclaw/.env` (or `~/.hermes/.env` if you are using Hermes):
 
 ```ini
-# Image generation
-SN_IMAGE_GEN_API_KEY="<sensenova-token-plan-api-key>"
+# If all capabilities use the same gateway, these two variables are enough.
+SN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="<sensenova-token-plan-api-key>"
+
+# Optional model overrides
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"   # or other image generation models available in the SenseNova Token Plan
-# Text and vision chat runtime
-SN_CHAT_API_KEY="<sensenova-token-plan-api-key>"
 SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ```
 
@@ -69,18 +70,29 @@ Multiple sources of configuration are supported, the priority is (high to low):
 
 #### Image Generation
 
+Environment variables are resolved as: dedicated variable > domain shared variable > global variable.
+
+| Capability | API key fallback | Base URL fallback |
+| ---------- | ---------------- | ----------------- |
+| Text model | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
+| Vision model | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
+| Image generation | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` |
+
 Full configuration for image generation:
 
 | Config Key | Description | Default |
 | ---------- | ----------- | ------- |
-| `SN_IMAGE_GEN_API_KEY` | The API key for the SenseNova Token Plan | (Required) |
+| `SN_API_KEY` | Global API key used when capability-specific keys are unset | `""` |
+| `SN_BASE_URL` | Global base URL used when capability-specific base URLs are unset | `""` |
+| `SN_IMAGE_GEN_API_KEY` | Optional image-generation-only API key override | `SN_API_KEY` |
 | `SN_IMAGE_GEN_MODEL_TYPE` | The type of image generation model to use | `"sensenova"` |
 | `SN_IMAGE_GEN_MODEL` | The name of the image generation model to use | `"sensenova-u1-fast"` |
-| `SN_IMAGE_GEN_BASE_URL` | The base URL for the image generation API | `"https://token.sensenova.cn/v1"` |
+| `SN_IMAGE_GEN_BASE_URL` | The base URL for the image generation API | `SN_BASE_URL`, then `"https://token.sensenova.cn/v1"` |
 
 The default values are recommended for the [SenseNova](https://platform.sensenova.cn/).
 
-You only need to set the `SN_IMAGE_GEN_API_KEY`, and optionally set `SN_IMAGE_GEN_MODEL` to the model name provided by the token plan.
+When all capabilities use one gateway, set only `SN_BASE_URL` and `SN_API_KEY`.
+Set `SN_IMAGE_GEN_*` only when image generation needs a different provider.
 
 To use non-default image generation models, please:
 
@@ -117,7 +129,7 @@ To use non-default image generation models, please:
     SN_IMAGE_GEN_MODEL="gpt-image-2"
     ```
 
-4. (**Required**) Set `SN_IMAGE_GEN_API_KEY` to the API key for the image generation API.
+4. If image generation uses a different key than the global key, set `SN_IMAGE_GEN_API_KEY`. If `SN_API_KEY` already works for image generation, skip this.
 
     ```ini
     SN_IMAGE_GEN_API_KEY="sk-your-image-generation-api-key"
@@ -133,16 +145,16 @@ models only when needed:
 
 | Config Keys | Description | Default |
 | ----------- | ----------- | ------- |
-| `SN_CHAT_API_KEY` | API key for text and vision chat calls | (Required) |
-| `SN_CHAT_BASE_URL` | Shared base URL for the chat API | `"https://token.sensenova.cn/v1"` |
+| `SN_CHAT_API_KEY` | API key for text and vision chat calls | `SN_API_KEY` |
+| `SN_CHAT_BASE_URL` | Shared base URL for the chat API | `SN_BASE_URL`, then `"https://token.sensenova.cn/v1"` |
 | `SN_CHAT_TYPE` | Shared chat protocol type | `"openai-completions"` |
 | `SN_CHAT_MODEL` | Shared default model for text and vision chat calls | `"sensenova-6.7-flash-lite"` |
-| `SN_TEXT_API_KEY` | Optional text-only provider API key | `SN_CHAT_API_KEY` |
-| `SN_TEXT_BASE_URL` | Optional text-only provider base URL | `SN_CHAT_BASE_URL` |
+| `SN_TEXT_API_KEY` | Optional text-only provider API key | `SN_CHAT_API_KEY` -> `SN_API_KEY` |
+| `SN_TEXT_BASE_URL` | Optional text-only provider base URL | `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `SN_TEXT_TYPE` | Optional text-only protocol type | `SN_CHAT_TYPE` |
 | `SN_TEXT_MODEL` | Optional model override for `sn-text-optimize` | `SN_CHAT_MODEL` |
-| `SN_VISION_API_KEY` | Optional vision provider API key | `SN_CHAT_API_KEY` |
-| `SN_VISION_BASE_URL` | Optional vision provider base URL | `SN_CHAT_BASE_URL` |
+| `SN_VISION_API_KEY` | Optional vision provider API key | `SN_CHAT_API_KEY` -> `SN_API_KEY` |
+| `SN_VISION_BASE_URL` | Optional vision provider base URL | `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `SN_VISION_TYPE` | Optional vision protocol type | `SN_CHAT_TYPE` |
 | `SN_VISION_MODEL` | Optional vision-capable model override for `sn-image-recognize` | `SN_CHAT_MODEL` |
 
@@ -193,7 +205,7 @@ To use non-default shared chat settings, please:
     SN_TEXT_MODEL="gpt-5.5"
     ```
 
-4. (**Required**) Set `SN_CHAT_API_KEY` to the API key for the shared chat endpoint.
+4. Set `SN_CHAT_API_KEY` to the API key for the shared chat endpoint, or use global `SN_API_KEY`.
 
     ```ini
     SN_CHAT_API_KEY="sk-your-api-key"
@@ -204,12 +216,12 @@ To use non-default shared chat settings, please:
 ### Missing API key
 
 - Symptom: errors like "required but not set", "missing api key", or request unauthorized.
-- Fix: set `SN_IMAGE_GEN_API_KEY` for image generation, and set `SN_CHAT_API_KEY` for chat calls. Use `SN_TEXT_API_KEY` or `SN_VISION_API_KEY` when text and vision use different providers.
+- Fix: set global `SN_API_KEY` when all capabilities use one key. Do not also set `SN_IMAGE_GEN_API_KEY` unless image generation needs a different provider or key. Use `SN_CHAT_API_KEY`, `SN_TEXT_API_KEY`, or `SN_VISION_API_KEY` only when chat/text/vision needs a different provider.
 
 ### Wrong base URL
 
 - Symptom: request fails immediately, or URL validation/auth endpoint errors.
-- Fix: verify `SN_IMAGE_GEN_BASE_URL`, `SN_CHAT_BASE_URL`, `SN_TEXT_BASE_URL`, and `SN_VISION_BASE_URL` are full base URLs (with scheme + host), for example `https://token.sensenova.cn/v1`.
+- Fix: verify `SN_BASE_URL` or capability-specific base URLs are full base URLs (with scheme + host), for example `https://token.sensenova.cn/v1`.
 
 ### Unsupported model name
 

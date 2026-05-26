@@ -31,6 +31,7 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 3. **Do NOT construct LLM prompts yourself.** `run_stage.py` is the only place that builds payloads.
 4. **Do NOT add `timing` / logging / retry layers.** The skill is intentionally thin.
 5. **Do NOT go silent between execs.** Echo a one-line Chinese progress message after each exec before issuing the next.
+6. **Do NOT use python-pptx or any alternative PPTX builder** when export is skipped or fails. The HTML pages are complete as-is — there is no fallback renderer. An absent PPTX is an acceptable ending state.
 
 ## Pipeline
 
@@ -111,8 +112,8 @@ The script is stateless — re-run a subcommand and it'll overwrite its output a
 
 Configured via `.env` at the repo root (or `<repo>/skills/.env`). `model_client.py` auto-loads both. Required:
 
-- `SN_CHAT_API_KEY` for shared text/vision chat auth, or per-kind overrides `SN_TEXT_API_KEY` / `SN_VISION_API_KEY`
-- `SN_IMAGE_GEN_API_KEY`, `SN_IMAGE_GEN_BASE_URL`, `SN_IMAGE_GEN_MODEL`
+- `SN_API_KEY` for shared text/vision/image-generation auth, or per-kind overrides `SN_CHAT_API_KEY` / `SN_TEXT_API_KEY` / `SN_VISION_API_KEY` / `SN_IMAGE_GEN_API_KEY`
+- `SN_BASE_URL`, `SN_IMAGE_GEN_MODEL`
 
 Optional `SN_CHAT_BASE_URL` / `SN_TEXT_BASE_URL` / `SN_VISION_BASE_URL`, `SN_CHAT_MODEL` / `SN_TEXT_MODEL` / `SN_VISION_MODEL`, and `SN_CHAT_TIMEOUT` / `SN_TEXT_TIMEOUT` / `SN_VISION_TIMEOUT` override defaults.
 
@@ -122,7 +123,9 @@ Run `python $SKILL_DIR/lib/model_client.py health` to verify env before running 
 
 `scripts/export_pptx/html_to_pptx.mjs` is invoked with `--force` — skips built-in motif / real-photo gates (this skill doesn't use the motif protocol). PPTX still produces even if some slots are missing images.
 
-If the converter crashes, `run_stage.py export` returns `status: "failed"`. That's the deck's ending state; PPTX is simply absent.
+If the headless browser (Playwright/Chromium) is unavailable, the export returns `status: "skipped"` with reason `"headless_browser_unavailable"`. The PPTX file is absent — this is an expected degraded ending state. The HTML pages are the final deliverable.
+
+🚫 **DO NOT fall back to python-pptx, libreoffice, or any other converter.** DO NOT attempt to install Chromium system dependencies manually. Simply report the skip and finish.
 
 ## Does NOT
 

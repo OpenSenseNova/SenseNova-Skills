@@ -25,7 +25,8 @@ class MissingApiKeyError(BadConfigurationError):
 
     DEFAULT_MESSAGE = (
         "API key is required but was not provided. "
-        "Set the SN_IMAGE_GEN_API_KEY environment variable or pass --api-key explicitly."
+        "Set SN_API_KEY, or set SN_IMAGE_GEN_API_KEY only for an image-generation-specific "
+        "override, or pass --api-key explicitly."
     )
 
 
@@ -34,5 +35,5 @@ class InvalidBaseUrlError(BadConfigurationError):
 
     DEFAULT_MESSAGE = (
         "Base URL is required but was not provided. "
-        "Set the SN_IMAGE_GEN_BASE_URL environment variable or pass --base-url explicitly."
+        "Set SN_IMAGE_GEN_BASE_URL or SN_BASE_URL, or pass --base-url explicitly."
     )

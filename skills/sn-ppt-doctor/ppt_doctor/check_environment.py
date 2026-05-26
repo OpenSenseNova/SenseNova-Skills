@@ -10,7 +10,8 @@ self-contained design so OpenClaw can invoke it via a plain file path.
 
 Sections:
     1. CheckResult dataclass + shared helpers
-    2. Hard checks   (SN_CHAT_API_KEY or SN_TEXT/SN_VISION API keys, SN_IMAGE_GEN_API_KEY,
+    2. Hard checks   (SN_API_KEY or SN_CHAT/SN_TEXT/SN_VISION API keys,
+                      SN_API_KEY or SN_IMAGE_GEN_API_KEY,
                       SN_IMAGE_BASE discovery, sn_agent_runner executable,
                       Node >= 18)
     3. Soft checks   (PPT_DECK_ROOT writable, optional env vars,
@@ -120,32 +121,32 @@ def _find_sn_agent_runner() -> Path | None:
 
 
 def check_text_chat_api_key() -> CheckResult:
-    val = _first_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY")
+    val = _first_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY")
     return CheckResult(
-        name="SN_TEXT_API_KEY / SN_CHAT_API_KEY",
+        name="SN_TEXT_API_KEY / SN_CHAT_API_KEY / SN_API_KEY",
         severity="hard",
         passed=val is not None,
-        detail="set" if val else "SN_TEXT_API_KEY or SN_CHAT_API_KEY is required for text chat calls; set it or run /skill sn-ppt-doctor to configure interactively",
+        detail="set" if val else "SN_API_KEY is required for text chat calls unless SN_TEXT_API_KEY or SN_CHAT_API_KEY is set; set it or run /skill sn-ppt-doctor to configure interactively",
     )
 
 
 def check_vision_chat_api_key() -> CheckResult:
-    val = _first_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY")
+    val = _first_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY")
     return CheckResult(
-        name="SN_VISION_API_KEY / SN_CHAT_API_KEY",
+        name="SN_VISION_API_KEY / SN_CHAT_API_KEY / SN_API_KEY",
         severity="hard",
         passed=val is not None,
-        detail="set" if val else "SN_VISION_API_KEY or SN_CHAT_API_KEY is required for vision chat calls; set it or run /skill sn-ppt-doctor to configure interactively",
+        detail="set" if val else "SN_API_KEY is required for vision chat calls unless SN_VISION_API_KEY or SN_CHAT_API_KEY is set; set it or run /skill sn-ppt-doctor to configure interactively",
     )
 
 
 def check_u1_api_key() -> CheckResult:
-    val = _env("SN_IMAGE_GEN_API_KEY")
+    val = _first_env("SN_IMAGE_GEN_API_KEY", "SN_API_KEY")
     return CheckResult(
-        name="SN_IMAGE_GEN_API_KEY",
+        name="SN_IMAGE_GEN_API_KEY / SN_API_KEY",
         severity="hard",
         passed=val is not None,
-        detail="set" if val else "SN_IMAGE_GEN_API_KEY is required for image generation calls",
+        detail="set" if val else "SN_API_KEY is required for image generation calls unless SN_IMAGE_GEN_API_KEY is set",
     )
 
 
@@ -386,6 +387,45 @@ def check_python_deps() -> CheckResult:
     )
 
 
+def check_playwright_chromium(base: Path | None = None) -> CheckResult:
+    """Check if Playwright Chromium is available (optional — export can skip)."""
+    if base is None:
+        repo_root = Path(__file__).resolve().parents[3]
+        base = repo_root / "skills" / "sn-ppt-standard" / "scripts" / "export_pptx"
+
+    if not (base / "node_modules" / "playwright").exists():
+        return CheckResult(
+            name="PLAYWRIGHT_CHROMIUM",
+            severity="soft",
+            passed=True,
+            detail="Playwright not installed — PPTX export will be skipped. HTML pages still produced.",
+        )
+
+    try:
+        result = subprocess.run(
+            ["npx", "playwright", "install", "--dry-run", "chromium"],
+            capture_output=True, text=True, timeout=30,
+            cwd=str(base),
+        )
+        installed = "is already installed" in result.stdout
+    except Exception:
+        installed = False
+
+    if installed:
+        return CheckResult(
+            name="PLAYWRIGHT_CHROMIUM",
+            severity="soft",
+            passed=True,
+            detail="Playwright Chromium is installed — PPTX export available",
+        )
+    return CheckResult(
+        name="PLAYWRIGHT_CHROMIUM",
+        severity="soft",
+        passed=True,
+        detail="Chromium not available — PPTX export will be skipped. HTML pages still produced.",
+    )
+
+
 # ---------------------------------------------------------------------------
 # 4. Aggregator
 # ---------------------------------------------------------------------------
@@ -402,6 +442,7 @@ def run_all_checks() -> list[CheckResult]:
         check_ppt_deck_root_writable(),
         check_optional_env_vars(),
         check_export_pptx_node_modules(),
+        check_playwright_chromium(),
         check_python_deps(),
     ]
 
@@ -412,8 +453,7 @@ def run_all_checks() -> list[CheckResult]:
 
 
 REQUIRED = [
-    ("SN_CHAT_API_KEY", "shared text/vision chat API key"),
-    ("SN_IMAGE_GEN_API_KEY", "Image generation API key"),
+    ("SN_API_KEY", "global SN API key for text, vision, and image generation"),
 ]
 
 

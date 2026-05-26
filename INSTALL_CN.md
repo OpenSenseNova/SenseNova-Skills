@@ -24,7 +24,7 @@
 
 ## 0.5. 一键安装：Agent Pack（可选）
 
-如果不想手动跟着下面的步骤一路装下来，可以直接用 [Agent Pack](https://github.com/SenseTime-FVG/agent_pack) —— 一个跨平台一键安装器，把本文档里的所有步骤都帮你处理好：
+如果不想手动跟着下面的步骤一路装下来，可以直接用 [Agent Pack](https://github.com/OpenSenseNova/agent_pack) —— 一个跨平台一键安装器，把本文档里的所有步骤都帮你处理好：
 
 - 调用 OpenClaw 和/或 hermes-agent 的官方安装脚本完成安装
 - 配置 LLM 供应商（选 **Custom**，把 §0 里的三个值填进去即可）
@@ -33,13 +33,13 @@
 
 > 平台级前提（Windows 上的 WSL2、macOS 上的 Xcode CLT + Homebrew）**不会**被自动安装 —— 请先按照下面 §1.1 / §1.2 完成你所在平台的前置准备，然后回到这一节继续。Linux 无需手动准备。
 
-预编译的安装器发布在 [GitHub Releases 页面](https://github.com/SenseTime-FVG/agent_pack/releases/latest)：
+预编译的安装器发布在 [GitHub Releases 页面](https://github.com/OpenSenseNova/agent_pack/releases/latest)：
 
 | 平台 | 下载 | 使用方式 |
 |------|------|---------|
-| Windows | [去最新 release 下载 `-windows-x64.exe`](https://github.com/SenseTime-FVG/agent_pack/releases/latest) | 双击运行向导；安装过程在 WSL2 中执行，安装完成后当前 PowerShell 窗口会被接管，直接拉起 agent。 |
-| macOS | [去最新 release 下载 `-macos-universal.pkg`](https://github.com/SenseTime-FVG/agent_pack/releases/latest) | 双击后按图形向导完成产品选择和 LLM 配置；安装完成后会按所选产品自动打开 OpenClaw Gateway Terminal 与 dashboard，并打开 Hermes Terminal。 |
-| Linux | [去最新 release 下载 `-linux.sh`](https://github.com/SenseTime-FVG/agent_pack/releases/latest)，或使用右侧一行命令 | `chmod +x AgentPack-*-linux.sh && ./AgentPack-*-linux.sh`，或直接粘贴 `bash <(curl -fsSL https://raw.githubusercontent.com/SenseTime-FVG/agent_pack/main/linux/install.sh)` —— 两种方式都会在安装结束后用 `exec` 在当前 shell 里拉起 agent。 |
+| Windows | [去最新 release 下载 `-windows-x64.exe`](https://github.com/OpenSenseNova/agent_pack/releases/latest) | 双击运行向导；安装过程在 WSL2 中执行，安装完成后当前 PowerShell 窗口会被接管，直接拉起 agent。 |
+| macOS | [去最新 release 下载 `-macos-universal.pkg`](https://github.com/OpenSenseNova/agent_pack/releases/latest) | 双击后按图形向导完成产品选择和 LLM 配置；安装完成后会按所选产品自动打开 OpenClaw Gateway Terminal 与 dashboard，并打开 Hermes Terminal。 |
+| Linux | [去最新 release 下载 `-linux.sh`](https://github.com/OpenSenseNova/agent_pack/releases/latest)，或使用右侧一行命令 | `chmod +x AgentPack-*-linux.sh && ./AgentPack-*-linux.sh`，或直接粘贴 `bash <(curl -fsSL https://raw.githubusercontent.com/OpenSenseNova/agent_pack/main/linux/install.sh)` —— 两种方式都会在安装结束后用 `exec` 在当前 shell 里拉起 agent。 |
 
 安装器询问 LLM 供应商时，选 **Custom (OpenAI-compatible)**，把 §0 里的三个值填进去（Base URL、API Key、模型名）。如果你处在国内网络，可以设置环境变量 `AGENTPACK_CN=1` 启用 GitHub 镜像回退。
 
@@ -333,9 +333,9 @@ cp -r skills/* ~/.hermes/skills/
 部分 skill 有自己的 Python 依赖、API key 或运行时要求，请按需查阅对应的使用指南：
 
 - 图像与可视化：[`docs/sn-image-generate.md`](docs/sn-image-generate.md)
-- 演示文稿：[`docs/ppt-generate.md`](docs/ppt-generate.md)
-- 数据分析：[`docs/data-analysis.md`](docs/data-analysis.md)
-- 深度研究 / 搜索：[`docs/deep-research.md`](docs/deep-research.md)
+- 演示文稿：[`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md)
+- 数据分析：[`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md)
+- 深度研究 / 搜索：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md)
 
 ---
 

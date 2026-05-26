@@ -21,7 +21,11 @@ function ensureDependencies() {
 
   if (!existsSync(pptxgenMarker) || !existsSync(playwrightMarker)) {
     console.error('[setup] 首次运行，正在安装 npm 依赖...');
-    execSync('npm install --omit=dev', { cwd: __dirname, stdio: 'inherit' });
+    try {
+      execSync('npm install --omit=dev', { cwd: __dirname, stdio: 'inherit' });
+    } catch (e) {
+      throw new Error(`npm install failed: ${e.message}. Headless browser environment unavailable.`);
+    }
   }
 
   // 检查 chromium 是否已安装（playwright 在 ~/.cache/ms-playwright/ 下）
@@ -40,11 +44,16 @@ function ensureDependencies() {
     });
   } catch {
     console.error('[setup] 正在安装 Playwright Chromium（仅首次）...');
-    execSync('npx playwright install chromium', { cwd: __dirname, stdio: 'inherit' });
+    try {
+      execSync('npx playwright install chromium', { cwd: __dirname, stdio: 'inherit' });
+    } catch (e) {
+      throw new Error(`Chromium installation failed: ${e.message}. Cannot install headless browser in this environment.`);
+    }
   }
 }
 
-ensureDependencies();
+// ensureDependencies() 移到 main() 中调用，避免模块加载时崩溃。
+// missing browser → 优雅跳过，不抛异常。
 
 // 依赖就绪后再 import 业务模块
 const { ensureDeckPreconditions } = await import('./lib/cli_guards.mjs');
@@ -79,6 +88,23 @@ function parseArgs(args) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+
+  // 确保依赖安装（npm + playwright chromium）。
+  // missing browser → 输出 JSON skip 状态，优雅退出（不崩溃）。
+  try {
+    ensureDependencies();
+  } catch (e) {
+    const result = {
+      status: "skipped",
+      reason: "headless_browser_unavailable",
+      detail: `Playwright/Chromium cannot be installed in this environment: ${e.message}. PPTX export skipped — HTML pages are the final deliverable.`,
+      converted: 0,
+      pages: 0,
+      skipped: true,
+    };
+    console.log(JSON.stringify(result));
+    return;
+  }
 
   // 先下载远程图片并规范化 deck 结构
   if (args.deckDir && !args.batch) {

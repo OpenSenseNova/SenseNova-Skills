@@ -39,11 +39,12 @@
 将以下环境变量写入 `~/.openclaw/.env`（OpenClaw）或 `~/.hermes/.env`（Hermes）：
 
 ```ini
-# 图像生成
-SN_IMAGE_GEN_API_KEY="<sensenova-token-plan-api-key>"
+# 如果所有能力都走同一个网关，只需要配置这两个变量。
+SN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="<sensenova-token-plan-api-key>"
+
+# 可选模型覆盖
 SN_IMAGE_GEN_MODEL="sensenova-u1-fast"   # 或 Token Plan 中可用的其他图像生成模型
-# 文本与视觉 Chat Runtime
-SN_CHAT_API_KEY="<sensenova-token-plan-api-key>"
 SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ```
 
@@ -71,18 +72,29 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 
 #### 图像生成
 
+环境变量解析优先级为：专用变量 > 领域共享变量 > 全局变量。
+
+| 能力 | API key fallback | Base URL fallback |
+| ---- | ---------------- | ----------------- |
+| 文本模型 | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
+| 视觉模型 | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
+| 图像生成 | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` |
+
 图像生成完整配置如下：
 
 | 配置键 | 说明 | 默认值 |
 | ------ | ---- | ------ |
-| `SN_IMAGE_GEN_API_KEY` | SenseNova Token Plan 的 API Key | （必填） |
+| `SN_API_KEY` | 所有能力共用的全局 API Key | `""` |
+| `SN_BASE_URL` | 所有能力共用的全局基础 URL | `""` |
+| `SN_IMAGE_GEN_API_KEY` | 可选的图像生成专用 API key 覆盖 | `SN_API_KEY` |
 | `SN_IMAGE_GEN_MODEL_TYPE` | 图像生成模型类型 | `"sensenova"` |
 | `SN_IMAGE_GEN_MODEL` | 图像生成模型名 | `"sensenova-u1-fast"` |
-| `SN_IMAGE_GEN_BASE_URL` | 图像生成 API 的基础 URL | `"https://token.sensenova.cn/v1"` |
+| `SN_IMAGE_GEN_BASE_URL` | 图像生成 API 的基础 URL | `SN_BASE_URL`，然后 `"https://token.sensenova.cn/v1"` |
 
 默认值适用于 [SenseNova](https://platform.sensenova.cn/)。
 
-通常只需设置 `SN_IMAGE_GEN_API_KEY`，并可按需将 `SN_IMAGE_GEN_MODEL` 设置为 token plan 提供的模型名。
+如果所有能力走同一个网关，只需要设置 `SN_BASE_URL` 和 `SN_API_KEY`。
+仅当图像生成需要不同 provider 时，再设置 `SN_IMAGE_GEN_*`。
 
 如需使用非默认图像生成模型，请按以下步骤：
 
@@ -119,7 +131,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
     SN_IMAGE_GEN_MODEL="gpt-image-2"
     ```
 
-4. （必填）设置 `SN_IMAGE_GEN_API_KEY` 为图像生成 API 的密钥：
+4. 如果图像生成使用不同于全局 key 的密钥，再设置 `SN_IMAGE_GEN_API_KEY`。如果 `SN_API_KEY` 已可用于图像生成，则无需设置。
 
     ```ini
     SN_IMAGE_GEN_API_KEY="sk-your-image-generation-api-key"
@@ -133,16 +145,16 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 
 | 配置键 | 说明 | 默认值 |
 | ------ | ---- | ------ |
-| `SN_CHAT_API_KEY` | text/vision chat 调用共用 API key | （必填） |
-| `SN_CHAT_BASE_URL` | 共享 Chat API 基础 URL | `"https://token.sensenova.cn/v1"` |
+| `SN_CHAT_API_KEY` | text/vision chat 调用共用 API key | `SN_API_KEY` |
+| `SN_CHAT_BASE_URL` | 共享 Chat API 基础 URL | `SN_BASE_URL`，然后 `"https://token.sensenova.cn/v1"` |
 | `SN_CHAT_TYPE` | 共享 Chat 协议类型 | `"openai-completions"` |
 | `SN_CHAT_MODEL` | text/vision chat 调用共用默认模型 | `"sensenova-6.7-flash-lite"` |
-| `SN_TEXT_API_KEY` | 可选文本 provider API key | `SN_CHAT_API_KEY` |
-| `SN_TEXT_BASE_URL` | 可选文本 provider 基础 URL | `SN_CHAT_BASE_URL` |
+| `SN_TEXT_API_KEY` | 可选文本 provider API key | `SN_CHAT_API_KEY` -> `SN_API_KEY` |
+| `SN_TEXT_BASE_URL` | 可选文本 provider 基础 URL | `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `SN_TEXT_TYPE` | 可选文本协议类型 | `SN_CHAT_TYPE` |
 | `SN_TEXT_MODEL` | 可选的 `sn-text-optimize` 模型覆盖 | `SN_CHAT_MODEL` |
-| `SN_VISION_API_KEY` | 可选视觉 provider API key | `SN_CHAT_API_KEY` |
-| `SN_VISION_BASE_URL` | 可选视觉 provider 基础 URL | `SN_CHAT_BASE_URL` |
+| `SN_VISION_API_KEY` | 可选视觉 provider API key | `SN_CHAT_API_KEY` -> `SN_API_KEY` |
+| `SN_VISION_BASE_URL` | 可选视觉 provider 基础 URL | `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `SN_VISION_TYPE` | 可选视觉协议类型 | `SN_CHAT_TYPE` |
 | `SN_VISION_MODEL` | 可选的 `sn-image-recognize` 视觉模型覆盖 | `SN_CHAT_MODEL` |
 
@@ -192,7 +204,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
     SN_TEXT_MODEL="gpt-5.5"
     ```
 
-4. （必填）设置 `SN_CHAT_API_KEY` 为共享 chat endpoint 的 API key：
+4. 设置 `SN_CHAT_API_KEY` 为共享 chat endpoint 的 API key，或使用全局 `SN_API_KEY`：
 
     ```ini
     SN_CHAT_API_KEY="sk-your-api-key"
@@ -203,12 +215,12 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ### 缺少 API key
 
 - 现象：报错包含 "required but not set"、"missing api key" 或请求未授权。
-- 处理：图像生成需设置 `SN_IMAGE_GEN_API_KEY`；chat 调用需设置 `SN_CHAT_API_KEY`。如果文本和视觉使用不同 provider，可设置 `SN_TEXT_API_KEY` 或 `SN_VISION_API_KEY`。
+- 处理：如果所有能力使用同一个 key，设置全局 `SN_API_KEY` 即可。不要重复设置 `SN_IMAGE_GEN_API_KEY`，除非图像生成需要不同 provider 或 key；仅当 chat/text/vision 需要不同 provider 时，再设置 `SN_CHAT_API_KEY`、`SN_TEXT_API_KEY` 或 `SN_VISION_API_KEY`。
 
 ### base URL 配置错误
 
 - 现象：请求立即失败，或出现 URL 校验 / endpoint 相关错误。
-- 处理：检查 `SN_IMAGE_GEN_BASE_URL`、`SN_CHAT_BASE_URL`、`SN_TEXT_BASE_URL`、`SN_VISION_BASE_URL` 是否为完整基础 URL（包含 scheme + host），例如 `https://token.sensenova.cn/v1`。
+- 处理：检查 `SN_BASE_URL` 或能力专用 base URL 是否为完整基础 URL（包含 scheme + host），例如 `https://token.sensenova.cn/v1`。
 
 ### 模型名不支持
 

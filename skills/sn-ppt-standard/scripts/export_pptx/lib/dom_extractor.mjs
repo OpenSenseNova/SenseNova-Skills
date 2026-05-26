@@ -827,7 +827,20 @@ function _attachSvgPngsToIR(_ir, _svgPngs) {
  * @returns {Promise<Array<{path:string, ir:Object|null, error?:string}>>}
  */
 export async function extractPages(htmlPaths) {
-  const browser = await chromium.launch({ headless: true });
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+  } catch (e) {
+    // Browser unavailable — return null IR for every page.
+    // pptx_builder handles null IR gracefully (blank slide + continue).
+    console.error(`[dom_extractor] Chromium unavailable: ${e.message}`);
+    return htmlPaths.map(path => ({
+      path,
+      ir: null,
+      error: `Chromium unavailable: ${e.message}`,
+    }));
+  }
+
   const results = [];
 
   try {
