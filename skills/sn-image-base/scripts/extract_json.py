@@ -8,8 +8,9 @@ reads stdin, recovers the JSON value, and writes it (compact, UTF-8) to stdout.
 Recovery order:
     1. Parse the whole input as-is.
     2. Strip a surrounding markdown code fence, then parse.
-    3. Slice from the first opening bracket to its balanced close (string- and
-       escape-aware), then parse.
+    3. Scan each opening bracket to its balanced close (string- and
+       escape-aware), trying successive openers until one parses — so a valid
+       object/array after some junk is still recovered.
 
 Exit code 0 on success; 1 (with a message on stderr) when no JSON is found.
 Usage: some_command | python extract_json.py
@@ -17,8 +18,13 @@ Usage: some_command | python extract_json.py
 
 from __future__ import annotations
 
+import itertools
 import json
 import sys
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 def _strip_fence(text: str) -> str:
@@ -35,18 +41,12 @@ def _strip_fence(text: str) -> str:
     return "\n".join(lines)
 
 
-def _balanced_span(text: str) -> str | None:
-    """Return the substring from the first { or [ to its matching close.
+def _scan_balanced(text: str, start: int, open_ch: str, close_ch: str) -> int | None:
+    """Return the index of the close that balances the opener at ``start``.
 
-    Tracks string literals and escapes so braces inside strings don't count.
-    Returns None when no balanced span is found.
+    Tracks string literals and escapes so brackets inside strings don't count.
+    Returns None when the opener is never balanced.
     """
-    starts = [(text.find(o), o, c) for o, c in (("{", "}"), ("[", "]"))]
-    starts = [s for s in starts if s[0] != -1]
-    if not starts:
-        return None
-    start, open_ch, close_ch = min(starts, key=lambda t: t[0])
-
     depth = 0
     in_str = False
     escape = False
@@ -67,16 +67,31 @@ def _balanced_span(text: str) -> str | None:
         elif ch == close_ch:
             depth -= 1
             if depth == 0:
-                return text[start : i + 1]
+                return i
     return None
+
+
+def _balanced_spans(text: str) -> Iterator[str]:
+    """Yield balanced {...} / [...] substrings in opening-bracket order.
+
+    Scans successive openers so a later valid object/array is still found when
+    an earlier bracket region is not valid JSON. Nested openers are included;
+    the caller stops at the first span that parses.
+    """
+    for i, ch in enumerate(text):
+        if ch == "{":
+            end = _scan_balanced(text, i, "{", "}")
+        elif ch == "[":
+            end = _scan_balanced(text, i, "[", "]")
+        else:
+            continue
+        if end is not None:
+            yield text[i : end + 1]
 
 
 def extract_json(raw: str):
     """Recover a JSON value from raw text, or raise ValueError if none found."""
-    candidates = [raw, _strip_fence(raw)]
-    span = _balanced_span(raw)
-    if span is not None:
-        candidates.append(span)
+    candidates = itertools.chain((raw, _strip_fence(raw)), _balanced_spans(raw))
     for candidate in candidates:
         candidate = candidate.strip()
         if not candidate:

@@ -135,7 +135,7 @@ Variables referenced as `$NAME` in the bash snippets below. Worker must bind eac
 
 **Naming**: `$SKILL_DIR` for own files; `$SN_<SKILL_NAME>` (e.g. `$SN_IMAGE_BASE`) for cross-skill references.
 
-**JSON parsing**: every `sn_agent_runner.py ... -o json` call prints a JSON *envelope* on stdout (`{"status", "result", "model", ...}`; diagnostics go to stderr). The LLM's own JSON (evaluation / analysis steps) lives inside the `result` string and may carry stray prose or ` ```json ` fences. Before any `jq`, pipe the runner output through `$SN_IMAGE_BASE/scripts/extract_json.py` (reads stdin, prints the recovered JSON, exits non-zero when none is found); for steps that parse the inner LLM/VLM JSON, pipe `.result` through it as well. A non-zero exit means the response is unusable → return the Error Flow JSON.
+**JSON parsing**: every `sn_agent_runner.py ... -o json` call prints a JSON *envelope* on stdout (`{"status", "result", "model", ...}`; diagnostics go to stderr). A failed call sets `status` to a non-`ok` value (e.g. `failed`) and omits `result`, so **always confirm `.status == ok` on the envelope before reading `.result`** — otherwise a missing `.result` surfaces as the literal `null`, which is itself valid JSON and slips past both `jq -r` and `extract_json.py` (no error raised). The LLM's own JSON (evaluation / analysis steps) lives inside the `result` string and may carry stray prose or ` ```json ` fences. Before any `jq`, pipe the runner output through `$SN_IMAGE_BASE/scripts/extract_json.py` (reads stdin, prints the recovered JSON, exits non-zero when none is found); for steps that parse the inner LLM/VLM JSON, pipe `.result` through it as well. A non-`ok` status or a non-zero `extract_json.py` exit means the response is unusable → return the Error Flow JSON.
 
 #### Step 0 — Initialization
 
@@ -195,12 +195,15 @@ EVAL_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optim
   --user-prompt "$USER_PROMPT" \
   --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 
+# A failed runner envelope (status != ok) carries no .result.
+EVAL_STATUS=$(printf '%s' "$EVAL_ENVELOPE" | jq -r '.status')
+
 # evaluation JSON (required_results / optional_results) lives inside .result
 EVAL=$(printf '%s' "$EVAL_ENVELOPE" | jq -r '.result' \
   | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 ```
 
-If either `extract_json.py` exits non-zero, treat the evaluation as unparseable and default `should_expand = true` (conservative strategy, per auto-mode rule 4).
+If `EVAL_STATUS` is not `ok` (the evaluation call itself failed), or either `extract_json.py` exits non-zero, treat the evaluation as unparseable and default `should_expand = true` (conservative strategy, per auto-mode rule 4). Unlike Steps 2.0 / 2.3, a failed evaluation does **not** abort the Worker — `auto` mode falls back to expanding.
 
 #### Step 2 — Content Analysis + Layout & Style Selection + Prompt Expansion
 
@@ -213,9 +216,15 @@ ANALYSIS_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-o
   --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 ```
 
-Extract the inner analysis JSON from `.result` and save it to `$TEMP_DIR/analysis.json` (the **inner** JSON, not the envelope, so Step 2.1 can `jq` `data_type` / `tone` / `audience` directly). If `extract_json.py` exits non-zero, return the Error Flow JSON.
+First reject a failed runner envelope, then extract the inner analysis JSON from `.result` and save it to `$TEMP_DIR/analysis.json` (the **inner** JSON, not the envelope, so Step 2.1 can `jq` `data_type` / `tone` / `audience` directly). If the envelope `.status` is not `ok`, or `extract_json.py` exits non-zero, return the Error Flow JSON (`status=error`) carrying the envelope's `.error` to Main Agent and terminate.
 
 ```bash
+# A failed runner envelope (status != ok) has no .result → return Error Flow.
+if [ "$(printf '%s' "$ANALYSIS_ENVELOPE" | jq -r '.status')" != "ok" ]; then
+  ANALYSIS_ERROR=$(printf '%s' "$ANALYSIS_ENVELOPE" | jq -r '.error')
+  # return Error Flow JSON {"status":"error","error":"$ANALYSIS_ERROR"} to Main Agent and stop
+fi
+
 printf '%s' "$ANALYSIS_ENVELOPE" | jq -r '.result' \
   | python "$SN_IMAGE_BASE/scripts/extract_json.py" > "$TEMP_DIR/analysis.json"
 ```
@@ -300,16 +309,22 @@ EXPAND_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-opt
   --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 ```
 
-Extract the `result` field as `expanded_prompt` and write to temporary directory. Here `.result` is the expanded prompt **text** (not JSON), so only the envelope is parsed via `extract_json.py`:
+Extract the `result` field as `expanded_prompt` and write to temporary directory. Here `.result` is the expanded prompt **text** (not JSON), so only the envelope is parsed via `extract_json.py`. Confirm `.status == ok` first: a failed envelope has no `.result`, so `jq -r '.result'` would yield the literal string `null` and write `"null"` as the image prompt:
 
 ```bash
+# A failed runner envelope (status != ok) has no .result → return Error Flow.
+if [ "$(printf '%s' "$EXPAND_ENVELOPE" | jq -r '.status')" != "ok" ]; then
+  EXPAND_ERROR=$(printf '%s' "$EXPAND_ENVELOPE" | jq -r '.error')
+  # return Error Flow JSON {"status":"error","error":"$EXPAND_ERROR"} to Main Agent and stop
+fi
+
 EXPANDED_PROMPT=$(printf '%s' "$EXPAND_ENVELOPE" | jq -r '.result')
 echo "$EXPANDED_PROMPT" > "$TEMP_DIR/expanded-prompt.txt"
 ```
 
 `expanded-prompt.txt`: single UTF-8 string, passed verbatim to `sn-image-generate --prompt` in Step 3.
 
-If parsing fails or truncation is suspected (the returned content is incomplete), Worker Agent must immediately return the Error Flow JSON (`status=error` with the real error message) to Main Agent and terminate — Worker is not allowed to message the user directly (see Responsibility Boundaries).
+If the envelope status is not `ok`, parsing fails, or truncation is suspected (the returned content is incomplete), Worker Agent must immediately return the Error Flow JSON (`status=error` with the real error message — use the envelope's `.error` when present) to Main Agent and terminate — Worker is not allowed to message the user directly (see Responsibility Boundaries).
 
 #### Step 3 — Image Generation Loop
 
