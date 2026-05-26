@@ -26,6 +26,13 @@ triggers:
 
 Never mix — LLM / VLM through sn-image-base, or T2I through model_client — both violate policy.
 
+## Visual asset priority
+
+- Creative mode renders each slide as a generated full-page PNG, so **image generation is the first-priority visual path**.
+- If any supporting external visual reference is needed, use image search only as the second-priority source and do not mention the search provider name in prompts, visible slide text, progress, or summaries.
+- Do not create placeholders. If generation fails, record the page failure and continue; never write fake PNGs, grey boxes, broken-image icons, or "image pending" text.
+- SVG/CSS drawing is not a substitute for the required creative-mode full-slide PNG. Use SVG only in standard HTML mode as a last-resort authored illustration.
+
 ## Preconditions
 
 - `<deck_dir>/task_pack.json` exists and `ppt_mode == "creative"`
