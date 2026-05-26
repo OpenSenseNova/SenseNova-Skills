@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """PubMed 生物医学文献搜索。通过 NCBI E-utilities API。"""
-from __future__ import annotations
 
 import sys
 import xml.etree.ElementTree as ET
+
 
 from search_utils import build_parser, get_client, make_item, make_result, print_json
 
