@@ -220,7 +220,7 @@ ANALYSIS_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-o
   --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 ```
 
-First reject a failed runner envelope, then extract the inner analysis JSON from `.result` and save it to `$TEMP_DIR/analysis.json` (the **inner** JSON, not the envelope, so Step 2.1 can `jq` `data_type` / `tone` / `audience` directly). If the envelope `.status` is not `ok`, or `extract_json.py` exits non-zero, return the Error Flow JSON (`status=error`) carrying the envelope's `.error` to Main Agent and terminate.
+Save the **inner** analysis JSON from `.result` (not the envelope, so Step 2.1 can `jq` `data_type` / `tone` / `audience` directly) to `$TEMP_DIR/analysis.json`. The guard below rejects a failed envelope first (status not `ok` or `extract_json.py` non-zero → Error Flow with `.error`):
 
 ```bash
 # A failed runner envelope (status != ok) has no .result → return Error Flow.
@@ -330,7 +330,7 @@ echo "$EXPANDED_PROMPT" > "$TEMP_DIR/expanded-prompt.txt"
 
 `expanded-prompt.txt`: single UTF-8 string, passed verbatim to `sn-image-generate --prompt` in Step 3.
 
-If the envelope status is not `ok`, parsing fails, or truncation is suspected (the returned content is incomplete), Worker Agent must immediately return the Error Flow JSON (`status=error` with the real error message — use the envelope's `.error` when present) to Main Agent and terminate — Worker is not allowed to message the user directly (see Responsibility Boundaries).
+Beyond the status guard above, if parsing fails or truncation is suspected (the returned content is incomplete), the Worker must likewise return the Error Flow JSON (`status=error`, real message) and terminate — it must not message the user directly (see Responsibility Boundaries).
 
 #### Step 3 — Image Generation Loop
 
