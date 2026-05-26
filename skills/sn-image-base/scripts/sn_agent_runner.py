@@ -251,7 +251,10 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             timeout=args.timeout,
             ssl_verify=not args.insecure,
         )
-        print(f"Using SenseNova model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation")
+        print(
+            f"Using SenseNova model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation",
+            file=sys.stderr,
+        )
     elif global_configs.SN_IMAGE_GEN_MODEL_TYPE == "nano-banana":
         if not global_configs.SN_IMAGE_GEN_MODEL:
             env_var_help = global_configs.get_env_var_help("SN_IMAGE_GEN_MODEL")
@@ -263,7 +266,10 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             timeout=args.timeout,
             ssl_verify=not args.insecure,
         )
-        print(f"Using Nano Banana model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation")
+        print(
+            f"Using Nano Banana model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation",
+            file=sys.stderr,
+        )
     elif global_configs.SN_IMAGE_GEN_MODEL_TYPE == "openai-image":
         if not global_configs.SN_IMAGE_GEN_MODEL:
             env_var_help = global_configs.get_env_var_help("SN_IMAGE_GEN_MODEL")
@@ -274,7 +280,8 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             model=global_configs.SN_IMAGE_GEN_MODEL,
         )
         print(
-            f"Using OpenAI-compatible model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation"
+            f"Using OpenAI-compatible model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation",
+            file=sys.stderr,
         )
     else:
         supported_types = "sensenova, nano-banana, openai-image"
@@ -488,7 +495,10 @@ def _build_endpoint_and_adapter(
             api_key=api_key,
             model=model,
         )
-        print(f"Using Anthropic Messages adapter for {kind.upper()} {model!r} on {endpoint_url!r}")
+        print(
+            f"Using Anthropic Messages adapter for {kind.upper()} {model!r} on {endpoint_url!r}",
+            file=sys.stderr,
+        )
     else:
         endpoint = "/v1/chat/completions" if not base_url_obj.path else "/chat/completions"
         endpoint_url = f"{base_url_obj.geturl()}{endpoint}"
@@ -499,7 +509,10 @@ def _build_endpoint_and_adapter(
             api_key=api_key,
             model=model,
         )
-        print(f"Using OpenAI Chat adapter for {kind.upper()} {model!r} on {endpoint_url!r}")
+        print(
+            f"Using OpenAI Chat adapter for {kind.upper()} {model!r} on {endpoint_url!r}",
+            file=sys.stderr,
+        )
 
     return adapter
 

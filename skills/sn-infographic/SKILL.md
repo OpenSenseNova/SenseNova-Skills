@@ -135,6 +135,8 @@ Variables referenced as `$NAME` in the bash snippets below. Worker must bind eac
 
 **Naming**: `$SKILL_DIR` for own files; `$SN_<SKILL_NAME>` (e.g. `$SN_IMAGE_BASE`) for cross-skill references.
 
+**JSON parsing**: every `sn_agent_runner.py ... -o json` call prints a JSON *envelope* on stdout (`{"status", "result", "model", ...}`; diagnostics go to stderr). The LLM's own JSON (evaluation / analysis steps) lives inside the `result` string and may carry stray prose or ` ```json ` fences. Before any `jq`, pipe the runner output through `$SN_IMAGE_BASE/scripts/extract_json.py` (reads stdin, prints the recovered JSON, exits non-zero when none is found); for steps that parse the inner LLM/VLM JSON, pipe `.result` through it as well. A non-zero exit means the response is unusable → return the Error Flow JSON.
+
 #### Step 0 — Initialization
 
 1. Generate `task_id` (timestamp, format `YYYYMMDD_HHMMSS`) and create the uniform temporary directory `/tmp/openclaw/sn-infographic/<task_id>/` as `TEMP_DIR`. `TEMP_DIR` must exist before any subsequent step writes to it:
@@ -169,8 +171,8 @@ Variables referenced as `$NAME` in the bash snippets below. Worker must bind eac
 
 **`auto` mode**:
 
-1. Call sn-text-optimize for evaluation
-2. Parse JSON (response schema defined by `$SKILL_DIR/references/evaluation-standard.md`); extract `required_results` and `optional_results`
+1. Call sn-text-optimize for evaluation (see **Evaluation Call** below)
+2. Parse the inner evaluation JSON via `extract_json.py` (response schema defined by `$SKILL_DIR/references/evaluation-standard.md`); extract `required_results` and `optional_results`
 3. Determine logic:
    - `required_pass`: All `answer` in `required_results` are `"yes"`
    - `optional_pass`: The number of `answer="yes"` in `optional_results` / total ≥ 0.6
@@ -188,27 +190,34 @@ Variables referenced as `$NAME` in the bash snippets below. Worker must bind eac
 **Evaluation Call** (using `sn-image-base`'s `sn-text-optimize` tool):
 
 ```bash
-python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
+EVAL_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
   --system-prompt-path "$SKILL_DIR/references/evaluation-standard.md" \
   --user-prompt "$USER_PROMPT" \
-  --output-format json
+  --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
+
+# evaluation JSON (required_results / optional_results) lives inside .result
+EVAL=$(printf '%s' "$EVAL_ENVELOPE" | jq -r '.result' \
+  | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 ```
+
+If either `extract_json.py` exits non-zero, treat the evaluation as unparseable and default `should_expand = true` (conservative strategy, per auto-mode rule 4).
 
 #### Step 2 — Content Analysis + Layout & Style Selection + Prompt Expansion
 
 **2.0 Content Analysis** (using `sn-image-base`'s `sn-text-optimize` tool):
 
 ```bash
-ANALYSIS=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
+ANALYSIS_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
   --system-prompt-path "$SKILL_DIR/references/analysis-framework.md" \
   --user-prompt "$USER_PROMPT" \
-  --output-format json)
+  --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 ```
 
-Save analysis result stdout to `analysis.json` in temporary directory `$TEMP_DIR/analysis.json`:
+Extract the inner analysis JSON from `.result` and save it to `$TEMP_DIR/analysis.json` (the **inner** JSON, not the envelope, so Step 2.1 can `jq` `data_type` / `tone` / `audience` directly). If `extract_json.py` exits non-zero, return the Error Flow JSON.
 
 ```bash
-echo "$ANALYSIS" > "$TEMP_DIR/analysis.json"
+printf '%s' "$ANALYSIS_ENVELOPE" | jq -r '.result' \
+  | python "$SN_IMAGE_BASE/scripts/extract_json.py" > "$TEMP_DIR/analysis.json"
 ```
 
 Schema: `$SKILL_DIR/references/analysis-framework.md` (defines `data_type`, `tone`, `audience`, and the other fields consumed by Step 2.1 / 2.2).
@@ -285,15 +294,16 @@ STYLE=$(jq -r '.style' "$TEMP_DIR/layout-style.json")
 Use the content of `structured-content.md` as user-prompt (passed via `--user-prompt-path` to avoid argv-length and quoting issues), read system prompt from temporary file and call sn-text-optimize:
 
 ```bash
-python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
+EXPAND_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
   --system-prompt-path "$TEMP_DIR/expand-system-prompt.md" \
   --user-prompt-path "$TEMP_DIR/structured-content.md" \
-  --output-format json
+  --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 ```
 
-Parse JSON stdout, extract `result` field as `expanded_prompt`, and write to temporary directory:
+Extract the `result` field as `expanded_prompt` and write to temporary directory. Here `.result` is the expanded prompt **text** (not JSON), so only the envelope is parsed via `extract_json.py`:
 
 ```bash
+EXPANDED_PROMPT=$(printf '%s' "$EXPAND_ENVELOPE" | jq -r '.result')
 echo "$EXPANDED_PROMPT" > "$TEMP_DIR/expanded-prompt.txt"
 ```
 
