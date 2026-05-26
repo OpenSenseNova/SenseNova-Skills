@@ -150,60 +150,59 @@ Variables referenced as `$NAME` in the bash snippets below. Worker must bind eac
 2. Initialize an empty `rounds` list
 3. Infer `aspect_ratio` (default `16:9`) and `image_size` (default `2k`) from `user_prompt` based on the rules in `$SKILL_DIR/references/runtime-parameters.md`
 
-#### Step 1 — `prompts_expand_mode` Processing
+#### Step 1 — Expansion Gate (mandatory; decides whether Step 2 runs)
 
-**`disable` mode**:
+This step **always runs**. It produces the gate decision `should_expand` and, whenever Step 2 is skipped, sets `EXPANDED_PROMPT` and records `prompts_expand_skipped = true`.
 
-- Skip expand, directly use `user_prompt` as `expanded_prompt`
-- Assign variable and write to temporary directory:
+`PROMPTS_EXPAND_MODE` here is the **already-resolved input** handed over by the Main Agent — Step 1 *acts on* it, it does **not** re-parse the user request. Resolving the mode value (Main Agent parameter extraction) and running this gate are two different jobs: completing the former does **not** complete Step 1. **Do not skip this step**; in `auto` mode the evaluation call below is mandatory — never infer `should_expand` from the prompt's apparent quality.
 
-  ```bash
-  EXPANDED_PROMPT="$USER_PROMPT"
-  echo "$EXPANDED_PROMPT" > "$TEMP_DIR/expanded-prompt.txt"
-  ```
+Only **Step 2 (expansion)** is ever skipped, and only when this gate decides so. The branch depends on `PROMPTS_EXPAND_MODE`:
 
-- Record `prompts_expand_skipped = true`
+**`auto` mode** (default):
 
-**`force` mode**:
+1. Run the evaluation call (mandatory). The inner evaluation JSON lives inside `.result`; its schema is `$SKILL_DIR/references/evaluation-standard.md` (`required_results`, `optional_results`).
 
-- Skip evaluation entirely, always execute Step 2 (expansion is mandatory)
-- `prompts_expand_skipped` is **not** recorded — the field appears in the Return JSON only when Step 2 is skipped (see Return Contract rules)
+   ```bash
+   EVAL_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
+     --system-prompt-path "$SKILL_DIR/references/evaluation-standard.md" \
+     --user-prompt "$USER_PROMPT" \
+     --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
 
-**`auto` mode**:
+   # A failed runner envelope (status != ok) carries no .result.
+   EVAL_STATUS=$(printf '%s' "$EVAL_ENVELOPE" | jq -r '.status')
 
-1. Call sn-text-optimize for evaluation (see **Evaluation Call** below)
-2. Parse the inner evaluation JSON via `extract_json.py` (response schema defined by `$SKILL_DIR/references/evaluation-standard.md`); extract `required_results` and `optional_results`
-3. Determine logic:
-   - `required_pass`: All `answer` in `required_results` are `"yes"`
-   - `optional_pass`: The number of `answer="yes"` in `optional_results` / total ≥ 0.6
+   EVAL=$(printf '%s' "$EVAL_ENVELOPE" | jq -r '.result' \
+     | python "$SN_IMAGE_BASE/scripts/extract_json.py")
+   ```
+
+2. Decide `should_expand`:
+   - `required_pass`: all `answer` in `required_results` are `"yes"`
+   - `optional_pass`: count of `answer="yes"` in `optional_results` / total ≥ 0.6
    - `should_expand = not (required_pass and optional_pass)`
-4. If JSON parsing fails, default `should_expand = true` (conservative strategy)
-5. If `should_expand = false`: Skip Step 2, assign variable and write to temporary directory, record `prompts_expand_skipped = true`:
+3. **Conservative fallback**: if `EVAL_STATUS` is not `ok` (the evaluation call itself failed) or `extract_json.py` exits non-zero, default `should_expand = true`. Unlike Steps 2.0 / 2.3, a failed evaluation does **not** abort the Worker — `auto` falls back to expanding.
+4. If `should_expand = true`: execute Step 2.
+5. If `should_expand = false`: skip Step 2, set `EXPANDED_PROMPT` to the original prompt, record `prompts_expand_skipped = true`:
 
    ```bash
    EXPANDED_PROMPT="$USER_PROMPT"
    echo "$EXPANDED_PROMPT" > "$TEMP_DIR/expanded-prompt.txt"
    ```
 
-6. If `should_expand = true`: Execute Step 2
+**`force` mode**:
 
-**Evaluation Call** (using `sn-image-base`'s `sn-text-optimize` tool):
+- Skip the evaluation, always execute Step 2 (expansion is mandatory).
+- `prompts_expand_skipped` is **not** recorded — the field appears in the Return JSON only when Step 2 is skipped (see Return Contract rules).
 
-```bash
-EVAL_ENVELOPE=$(python "$SN_IMAGE_BASE/scripts/sn_agent_runner.py" sn-text-optimize \
-  --system-prompt-path "$SKILL_DIR/references/evaluation-standard.md" \
-  --user-prompt "$USER_PROMPT" \
-  --output-format json | python "$SN_IMAGE_BASE/scripts/extract_json.py")
+**`disable` mode**:
 
-# A failed runner envelope (status != ok) carries no .result.
-EVAL_STATUS=$(printf '%s' "$EVAL_ENVELOPE" | jq -r '.status')
+- Skip both the evaluation and Step 2; use `user_prompt` directly as `expanded_prompt`:
 
-# evaluation JSON (required_results / optional_results) lives inside .result
-EVAL=$(printf '%s' "$EVAL_ENVELOPE" | jq -r '.result' \
-  | python "$SN_IMAGE_BASE/scripts/extract_json.py")
-```
+  ```bash
+  EXPANDED_PROMPT="$USER_PROMPT"
+  echo "$EXPANDED_PROMPT" > "$TEMP_DIR/expanded-prompt.txt"
+  ```
 
-If `EVAL_STATUS` is not `ok` (the evaluation call itself failed), or either `extract_json.py` exits non-zero, treat the evaluation as unparseable and default `should_expand = true` (conservative strategy, per auto-mode rule 4). Unlike Steps 2.0 / 2.3, a failed evaluation does **not** abort the Worker — `auto` mode falls back to expanding.
+- Record `prompts_expand_skipped = true`.
 
 #### Step 2 — Content Analysis + Layout & Style Selection + Prompt Expansion
 
