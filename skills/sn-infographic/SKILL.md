@@ -74,7 +74,7 @@ This skill uses a two-tier agent architecture:
 | Role | Responsibility |
 |------|----------------|
 | **Main Agent** | Receive user request, normalize parameters, send preflight, start Worker, collect results, send text and images to user |
-| **Worker Agent** | Execute orchestration loop (expand → multiple rounds of generation + review → sort), return structured JSON |
+| **Worker Agent** | Execute the generation pipeline (expand → multiple rounds of generation + review → sort), return structured JSON |
 
 **Responsibility Boundaries**:
 
@@ -150,13 +150,15 @@ Variables referenced as `$NAME` in the bash snippets below. Worker must bind eac
 2. Initialize an empty `rounds` list
 3. Infer `aspect_ratio` (default `16:9`) and `image_size` (default `2k`) from `user_prompt` based on the rules in `$SKILL_DIR/references/runtime-parameters.md`
 
-#### Step 1 — Expansion Gate (mandatory; decides whether Step 2 runs)
+#### Step 1 — Decide whether to rewrite the image prompt (always runs)
 
-This step **always runs**. It produces the gate decision `should_expand` and, whenever Step 2 is skipped, sets `EXPANDED_PROMPT` and records `prompts_expand_skipped = true`.
+This step decides whether to **rewrite/expand the user's image-generation `prompt` text** before Step 3 generates the image, and produces the boolean `should_expand`. When Step 2 is skipped it also sets `EXPANDED_PROMPT` and records `prompts_expand_skipped = true`.
 
-`PROMPTS_EXPAND_MODE` here is the **already-resolved input** handed over by the Main Agent — Step 1 *acts on* it, it does **not** re-parse the user request. Resolving the mode value (Main Agent parameter extraction) and running this gate are two different jobs: completing the former does **not** complete Step 1. **Do not skip this step**; in `auto` mode the evaluation call below is mandatory — never infer `should_expand` from the prompt's apparent quality.
+**Scope (do not over-read the step name).** "Expand" here means *rewriting the text prompt for image generation*, nothing more. This is **not** task decomposition, plan generation, or a plan-review gate, and Step 1 starts no agents of its own — it is a single `sn-text-optimize` call made by the Worker itself. Do not map it onto any `subagent-driven-development` / `delegate_task`-style workflow, and write no plan files. (The Worker is the only sub-agent this skill uses, started once by the Main Agent; the Worker spawns none of its own — see Responsibility Boundaries.)
 
-Only **Step 2 (expansion)** is ever skipped, and only when this gate decides so. The branch depends on `PROMPTS_EXPAND_MODE`:
+`PROMPTS_EXPAND_MODE` is the **already-resolved input** handed over by the Main Agent — Step 1 *acts on* it, it does **not** re-parse the user request. Resolving the mode value (Main Agent parameter extraction) and running this decision are two different jobs: completing the former does **not** complete Step 1. **Do not skip this step**; in `auto` mode the evaluation call below is mandatory — never infer `should_expand` from the prompt's apparent quality.
+
+Only **Step 2 (prompt expansion)** is ever skipped, and only when this step decides so. The branch depends on `PROMPTS_EXPAND_MODE`:
 
 **`auto` mode** (default):
 
@@ -424,7 +426,7 @@ After Worker Agent completes, its last message must be and only be the following
   "early_terminated": true,
   "timing": {
     "total_elapsed_seconds": 35.12,
-    "prompt_detection": { "elapsed_seconds": 2.11, "model": "sensenova-6.7-flash-lite" },
+    "prompt_evaluation": { "elapsed_seconds": 2.11, "model": "sensenova-6.7-flash-lite" },
     "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-6.7-flash-lite" },
     "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-6.7-flash-lite" }
   },
@@ -473,7 +475,7 @@ After Worker Agent completes, its last message must be and only be the following
 - When `max_rounds=1`, the single round's `result` defaults to `"PASS"` (image delivered without VLM check).
 - Top-level `timing`:
   - `total_elapsed_seconds`: Worker wall time from Step 0 to JSON return.
-  - `prompt_detection`: `{elapsed_seconds, model}` from Step 1 evaluation. Present only when `prompts_expand_mode=auto`.
+  - `prompt_evaluation`: `{elapsed_seconds, model}` from Step 1 evaluation. Present only when `prompts_expand_mode=auto`.
   - `content_analysis`: `{elapsed_seconds, model}` from Step 2.0. Omitted when `prompts_expand_skipped=true`.
   - `prompt_expand`: `{elapsed_seconds, model}` from Step 2.3. Omitted when `prompts_expand_skipped=true`.
 - `rounds[].timing.image_generation.model`: hardcoded `"sn_image_model"` (sn-image-generate returns no model field).
@@ -519,7 +521,7 @@ Images (sent in rank order)
 | `#k round=<n> result=… violations=…` | One line per entry in `rounds[]`, in rank order (`k = 1..len(rounds)`); `<n>` is `rounds[i].round`. |
 | `[early terminated]` | Append **only** to the round that actually triggered early termination (i.e. the `result=PASS` round that cut the loop). Omit on all other lines. If `early_terminated` is absent from the Return JSON, the tag never appears. |
 | `Total <total>s` | `timing.total_elapsed_seconds`. Always present. |
-| `Prompt evaluation <t>s` | `timing.prompt_detection.elapsed_seconds`. **Omit this `\| Prompt evaluation …` segment entirely** when `prompt_detection` is absent from the Return JSON. |
+| `Prompt evaluation <t>s` | `timing.prompt_evaluation.elapsed_seconds`. **Omit this `\| Prompt evaluation …` segment entirely** when `prompt_evaluation` is absent from the Return JSON. |
 | `Content analysis <t>s` | `timing.content_analysis.elapsed_seconds`. Omit the segment entirely when absent. |
 | `Prompt expansion <t>s` | `timing.prompt_expand.elapsed_seconds`. Omit the segment entirely when absent. |
 | `Image generation <t>s×<n> rounds` | `<t>` = sum of `rounds[].timing.image_generation.elapsed_seconds`; `<n>` = `len(rounds)`. |
