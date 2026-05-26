@@ -50,9 +50,9 @@ Features:
 |                       |        |          | `force`: skip evaluation, always execute Step 2 expansion |
 |                       |        |          | `disable`: skip Step 2, use `user_prompt` directly as `expanded_prompt` |
 | `aspect_ratio` | string | *inferred* (`16:9`) | Set by **Main Agent** when the user states an explicit supported ratio (e.g. `16:9` / `9:16`, optionally via `宽高比` / `画面比例` / `aspect ratio`); otherwise left unset and the **Worker** infers it in Step 0 from `user_prompt` (orientation / scene cues) per `references/runtime-parameters.md`. |
-| `image_size` | string | *inferred* (`2k`) | **Derived, not user-set.** The Worker infers it in Step 0 from `user_prompt` (`1k` only when the user explicitly asks for a cheaper / faster / smaller draft, else `2k`) per `references/runtime-parameters.md`; there is no inline-KV or keyword directive for it. |
+| `image_size` | string | *inferred* (`2k`) | Set by **Main Agent** when the user states an explicit size (`2k` / `4k`); otherwise the **Worker** infers it in Step 0 (currently a single option, `2k`). `4k` is forwarded to the model and may be rejected (e.g. sensenova) → surfaced as an error. |
 
-> **Who extracts what:** Main Agent parameter extraction resolves `max_rounds`, `output_mode`, `prompts_expand_mode`, and `aspect_ratio` (only when the user gives an explicit ratio). `image_size`, and `aspect_ratio` without an explicit value, are inferred by the Worker in Step 0.
+> **Who extracts what:** Main Agent parameter extraction resolves `max_rounds`, `output_mode`, `prompts_expand_mode`, and `aspect_ratio` / `image_size` (each only when the user gives an explicit value). `aspect_ratio` and `image_size` without an explicit value are inferred by the Worker in Step 0.
 
 ## API Configuration
 
@@ -90,7 +90,7 @@ This skill uses a two-tier agent architecture:
 ### Main Agent Workflow
 
 1. **Parameter extraction** from the user request, in three passes:
-   1. **Inline KV directives** — parse tokens of the form `key=value` where `key` ∈ {`max_rounds`, `output_mode`, `prompts_expand_mode`, `aspect_ratio`}; strip recognized tokens from the user message, and the remainder becomes `user_prompt`. Example: `"生成一张信息图 max_rounds=3 output_mode=verbose"` → `user_prompt="生成一张信息图"`, `max_rounds=3`, `output_mode=verbose`.
+   1. **Inline KV directives** — parse tokens of the form `key=value` where `key` ∈ {`max_rounds`, `output_mode`, `prompts_expand_mode`, `aspect_ratio`, `image_size`}; strip recognized tokens from the user message, and the remainder becomes `user_prompt`. Example: `"生成一张信息图 max_rounds=3 output_mode=verbose"` → `user_prompt="生成一张信息图"`, `max_rounds=3`, `output_mode=verbose`.
    2. **Keyword recognition** (case-insensitive, applied to the stripped text) — fill any parameter not yet set by inline KV using the table below:
 
       | Parameter | Trigger keywords | Resolved value |
@@ -101,8 +101,9 @@ This skill uses a two-tier agent architecture:
       | `prompts_expand_mode` | `强制扩写`, `force expand`, `force expansion` | `force` |
       |                       | `不扩写`, `跳过扩写`, `disable expansion`, `no expand` | `disable` |
       | `aspect_ratio` | an explicit supported ratio (`16:9` `9:16` `4:3` `3:4` `1:1` `2:3` `3:2` `4:5` `5:4` `21:9` `9:21`), with or without a `宽高比` / `画面比例` / `比例` / `aspect ratio` lead-in | that ratio (validated against the supported set in `runtime-parameters.md`; unsupported value → leave unset for Worker inference) |
+      | `image_size` | an explicit supported size (`2k` `4k`), with or without an `image_size` / `分辨率` / `清晰度` / `image size` lead-in | that size (vague quality words like `高清` / `超清` do **not** count); unsupported value → leave unset for Worker inference |
 
-   3. **Defaults** — any parameter still unset falls back to `max_rounds=1`, `output_mode=friendly`, `prompts_expand_mode=auto`. `aspect_ratio` has **no** Main-Agent default: when no explicit ratio is detected it is left unset for the Worker to infer in Step 0.
+   3. **Defaults** — any parameter still unset falls back to `max_rounds=1`, `output_mode=friendly`, `prompts_expand_mode=auto`. `aspect_ratio` and `image_size` have **no** Main-Agent default: when no explicit value is detected they are left unset for the Worker to infer in Step 0.
 
    Precedence: **inline KV > keyword recognition > default**. Values from inline KV are validated against the Input Specification (out-of-range `max_rounds` clamped to `[1, 8]`; unrecognized enum values fall back to default and Main Agent should log the mismatch).
 2. Send uniform preflight message: `"Using sn-infographic skill to generate infographic, please wait..."`
@@ -115,7 +116,7 @@ This skill uses a two-tier agent architecture:
 
 ### Worker Agent Workflow
 
-Worker Agent receives `user_prompt`, `max_rounds`, `prompts_expand_mode`, an optional `aspect_ratio` (set only when the user gave an explicit ratio), and the working directory of this skill (`SKILL_DIR`). (`output_mode` stays on the Main Agent side — Worker has no branch that depends on it.)
+Worker Agent receives `user_prompt`, `max_rounds`, `prompts_expand_mode`, an optional `aspect_ratio` and `image_size` (each set only when the user gave an explicit value), and the working directory of this skill (`SKILL_DIR`). (`output_mode` stays on the Main Agent side — Worker has no branch that depends on it.)
 
 #### Worker Environment
 
@@ -130,7 +131,7 @@ Variables referenced as `$NAME` in the bash snippets below. Worker must bind eac
 | `SN_IMAGE_BASE` | Agent runtime resolves by skill name `sn-image-base` in the installed-skill registry | runs `scripts/sn_agent_runner.py` |
 | `TASK_ID` | Step 0 (`date +%Y%m%d_%H%M%S`) | uniqueness token |
 | `TEMP_DIR` | Step 0 (`/tmp/openclaw/sn-infographic/${TASK_ID}`) | scratch dir for all intermediate artifacts |
-| `IMAGE_SIZE` | Step 0 (inferred from `USER_PROMPT`, default `2k`) | `sn-image-generate --image-size` |
+| `IMAGE_SIZE` | Main Agent input when the user stated an explicit size, else Step 0 inference from `USER_PROMPT` (single option, `2k`) | `sn-image-generate --image-size` |
 | `ASPECT_RATIO` | Main Agent input when the user stated an explicit ratio, else Step 0 inference from `USER_PROMPT` (default `16:9`) | `sn-image-generate --aspect-ratio` |
 | `EXPANDED_PROMPT` | Step 1 (copy of `USER_PROMPT` when Step 2 is skipped) or Step 2.3 (expanded result) | `sn-image-generate --prompt` |
 | `LAYOUT`, `STYLE` | Step 2.1 selection result (with fallback to `hub-spoke` / `corporate-memphis`) | Step 2.3 system-prompt assembly |
@@ -151,7 +152,7 @@ Variables referenced as `$NAME` in the bash snippets below. Worker must bind eac
    ```
 
 2. Initialize an empty `rounds` list
-3. Resolve `aspect_ratio`: if the Main Agent passed an explicit `aspect_ratio`, use it as-is (assign to `ASPECT_RATIO`); otherwise infer it (default `16:9`) from `user_prompt`. Always infer `image_size` (default `2k`) from `user_prompt`. Both follow the rules in `$SKILL_DIR/references/runtime-parameters.md`.
+3. Resolve `aspect_ratio` and `image_size` (bind to `ASPECT_RATIO` / `IMAGE_SIZE`): use the explicit Main Agent value when present, else infer from `user_prompt` per `$SKILL_DIR/references/runtime-parameters.md`. Defaults: `aspect_ratio` → `16:9`; `image_size` inference currently has a single option, `2k`.
 
 #### Step 1 — Decide whether to rewrite the image prompt (always runs)
 
