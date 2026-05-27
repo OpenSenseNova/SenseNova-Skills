@@ -100,7 +100,8 @@ class NanoBananaText2ImageClient(T2IBaseClient):
 
         Returns:
             dict:
-                Dictionary with keys: status, output (path), message.
+                On success, keys: status, output (path), message. On failure,
+                keys: status, error_type, error.
         """
         model = model or self.model
         # Normalize image_size to uppercase for NanoBanana API
@@ -150,14 +151,15 @@ class NanoBananaText2ImageClient(T2IBaseClient):
                             details += f"\nIs any of the following environment variable(s) set correctly: {env_names_str}?"
             return {
                 "status": "failed",
-                "error": f"HTTP {exc.code}: {exc.message}",
-                "message": details,
+                "error_type": type(exc).__name__,
+                "error": f"HTTP {exc.code}: {exc.message}" + (f"\n{details}" if details else ""),
             }
         try:
             images = data["images"]
             if not images:
                 return {
                     "status": "failed",
+                    "error_type": "EmptyResponse",
                     "error": "No image generated from the model",
                 }
             image, mime_type = images[-1]
@@ -173,14 +175,14 @@ class NanoBananaText2ImageClient(T2IBaseClient):
         except httpx.HTTPStatusError as exc:
             return {
                 "status": "failed",
-                "error": f"HTTP {exc.response.status_code}",
-                "message": f"http error: {exc.response.status_code} {exc.response.text}",
+                "error_type": type(exc).__name__,
+                "error": f"HTTP {exc.response.status_code}: {exc.response.text}",
             }
         except (httpx.HTTPError, OSError, ValueError) as exc:
             return {
                 "status": "failed",
-                "error": type(exc).__name__,
-                "message": f"request error: {exc}",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
             }
 
     @property
@@ -277,9 +279,9 @@ class NanoBananaText2ImageClient(T2IBaseClient):
                 finish_reasons.append(f_reason)
             for p in parts:
                 inline_data: dict[str, Any] = p.get("inlineData", {})
-                if inline_data:
-                    mime_type: str = inline_data.get("mimeType")  # pyright: ignore[reportAssignmentType]
-                    data: str = inline_data.get("data")  # pyright: ignore[reportAssignmentType]
+                mime_type = inline_data.get("mimeType")
+                data = inline_data.get("data")
+                if isinstance(mime_type, str) and isinstance(data, str):
                     images.append((data, mime_type))
         return {
             "images": images,
