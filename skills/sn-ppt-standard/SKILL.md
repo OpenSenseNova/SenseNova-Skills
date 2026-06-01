@@ -24,9 +24,9 @@ This skill is **self-contained** — no dependency on `sn-image-base` for LLM/VL
 
 Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 
-When `ppt_mode == "fast"`: generate slides directly and efficiently — skip optional web research, minimize image search, prioritize getting slides in front of the user quickly. Run the full pipeline including PPTX export. After completion, present the results and invite modification feedback.
+When `ppt_mode == "fast"`: generate slides directly and efficiently — skip optional web research, minimize image search, prioritize getting slides in front of the user quickly. Run the full pipeline including PPTX export. After completion, present the results and invite modification feedback. **Data handling**: use uploaded documents first. If no data is available, use mock/example data but explicitly label it as "[示例数据]" so the user knows to replace it.
 
-When `ppt_mode == "standard"`: run the full pipeline with all research and image search as described below.
+When `ppt_mode == "standard"`: run the full pipeline with all research and image search as described below. **Data handling**: use uploaded documents first. If documents don't cover a needed data point, search the web. If search fails, ask the user to provide the data. Never fabricate numbers — missing data is better than wrong data.
 
 ## 🚫 Hard rules (the main agent MUST NOT)
 
