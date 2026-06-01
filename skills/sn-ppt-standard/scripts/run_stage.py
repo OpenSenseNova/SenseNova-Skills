@@ -1237,6 +1237,8 @@ def _run_concurrent(tasks: list[tuple], concurrency: int) -> list[dict]:
     """
     results: list[dict | None] = [None] * len(tasks)
     concurrency = max(1, min(int(concurrency), 16))
+    _progress(f"Starting {len(tasks)} items with {concurrency} workers...")
+    completed_count = 0
     with ThreadPoolExecutor(max_workers=concurrency) as ex:
         future_to_i = {}
         for i, (fn, args, kwargs, label) in enumerate(tasks):
@@ -1249,7 +1251,8 @@ def _run_concurrent(tasks: list[tuple], concurrency: int) -> list[dict]:
             except Exception as e:  # noqa: BLE001
                 code, payload = 1, {"status": "failed", "error": f"{type(e).__name__}: {e}"[:300]}
             status = payload.get("status", "failed")
-            _progress(f"[{label}] {status}")
+            completed_count += 1
+            _progress(f"[{completed_count}/{len(tasks)}] {label} {status}")
             results[i] = {"label": label, "exit_code": code, "payload": payload}
     return [r for r in results if r is not None]
 
