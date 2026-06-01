@@ -37,8 +37,8 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
      - creative: full-page PNG generation per slide. Ask only if the user specifically requests image-driven visual style.
 
      If `ppt_mode` is ambiguous, call `ask_user` with these two options:
-     - "快速模式 — 先直接生成 PPT，然后根据你的反馈反复修改"
-     - "标准模式 — 先确定风格和内容方向，再正式生成"
+     - "Fast mode — build the PPT now and iterate based on your feedback"
+     - "Standard mode — plan the style and content first, then build"
 2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
 3. For each parameter missing or ambiguous, call `ask_user` one at a time, in the order:
    `ppt_mode -> role -> audience -> scene -> page_count`.
@@ -169,7 +169,7 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
 
 1. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** PPTX is produced by the downstream mode skills through their designated scripts. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`.
 2. **Wait for `ask_user` responses.** When you ask the user a question, do NOT proceed until they reply. Never continue with assumed or default values.
-3. **There is NO "lightweight mode" or "HTML 直出" shortcut.** Always enter the full pipeline via `/skill sn-ppt-entry` → `sn-ppt-standard` or `sn-ppt-creative`. Never generate a standalone HTML file, single-file output, or raw PPTX directly. The only valid PPT modes are `fast`, `standard`, and `creative` — all of them go through the pipeline. Any concept of "轻量级 HTML 直出" or "lightweight mode" is a hallucination.
+3. **There is NO "lightweight mode" or "HTML 直出" shortcut.** Always enter the full pipeline via `/skill sn-ppt-entry` → `sn-ppt-standard` or `sn-ppt-creative`. Never generate a standalone HTML file, single-file output, or raw PPTX directly. The only valid PPT modes are `fast`, `standard`, and `creative` — all of them go through the pipeline. Any concept of a "lightweight HTML direct output" shortcut is a hallucination.
 
 ## Failure handling
 
