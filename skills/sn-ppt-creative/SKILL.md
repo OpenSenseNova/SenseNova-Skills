@@ -267,3 +267,7 @@ Emit:
 5. **Do NOT retry on first failure.** If the same stage fails twice in a row with the same error, treat it as permanent and move on.
 6. **Do NOT generate editable JSON from PNG** (out of scope).
 7. **Language integrity.** All user-visible text MUST match the user's query language. A single English slide in a Chinese deck is a regression.
+8. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** `scripts/build_pptx.py` is the ONLY way to produce a PPTX. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`. If PPTX build fails, the PNG pages are the final deliverable.
+9. **Do NOT fabricate data.** All numbers and factual claims MUST come from the user's documents or web search. Use qualitative descriptions if no data source is available.
+10. **Wait for responses.** If you ask the user a question, do NOT proceed until they reply. Never assume default values.
+11. **Multi-round edits: regenerate.** When the user requests changes, re-run the affected pipeline stages. Do NOT sed/perl/patch files in-place.

@@ -31,9 +31,13 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 3. **Do NOT construct LLM prompts yourself.** `run_stage.py` is the only place that builds payloads.
 4. **Do NOT add `timing` / logging / retry layers.** The skill is intentionally thin.
 5. **Do NOT go silent between execs.** Echo a one-line Chinese progress message after each exec before issuing the next.
-6. **Do NOT use python-pptx or any alternative PPTX builder** when export is skipped or fails. The HTML pages are complete as-is — there is no fallback renderer. An absent PPTX is an acceptable ending state.
+6. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** `run_stage.py export` is the ONLY way to produce a PPTX file. Never write Python scripts that import `pptx` or Node scripts that import `pptxgenjs`. If export fails or is skipped, the HTML pages are the final deliverable.
 7. **Do NOT re-run a failing stage more than twice.** If the same `run_stage.py` subcommand fails with the same error on two consecutive attempts, treat it as a permanent failure. Echo the failure, record the skipped stage, and move on. Partial output is better than a stuck retry loop.
 8. **Language integrity.** All user-visible text MUST match the user's query language. If the query is Chinese, every title, bullet, caption, label, and footnote MUST be in Chinese — even if source documents are in English. A single English title in a Chinese deck is a regression.
+9. **Image integration.** All images used in slides MUST be saved under `<deck_dir>/images/` and referenced via relative paths from HTML (e.g., `../images/photo.jpg`). Never leave remote URLs in final HTML. Never use colored rectangles as image placeholders. If a searched/downloaded image exists on disk, it MUST appear in the corresponding page HTML.
+10. **Do NOT fabricate data.** All numbers, statistics, and factual claims MUST come from the user's uploaded documents or from web search results. If no data source is available, use qualitative descriptions instead of invented numbers.
+11. **Wait for `ask_user` responses.** When you ask the user a question (e.g., to clarify parameters or confirm style), do NOT proceed until the user replies. Never continue with assumed/default values without explicit confirmation.
+12. **Multi-round edits: regenerate, do not patch.** When the user requests changes to an existing deck, re-run the affected pipeline stages from scratch. Do NOT edit files in-place with sed/perl/Python string manipulation — the artifact schemas are machine-generated and easy to corrupt.
 
 ## Visual quality standards
 
