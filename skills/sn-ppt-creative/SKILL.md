@@ -264,5 +264,6 @@ Emit:
 2. **Do NOT fake images.** Failed T2I → record failed, move on. No 1x1 placeholder PNGs.
 3. **Do NOT use `model_client.t2i`** — T2I must go through `sn-image-base`. `model_client` handles only LLM / VLM.
 4. **Do NOT use `sn-text-optimize` or `sn-image-recognize`** from sn-image-base — those must go through `model_client.llm` / `model_client.vlm`.
-5. **Do NOT retry on first failure.**
+5. **Do NOT retry on first failure.** If the same stage fails twice in a row with the same error, treat it as permanent and move on.
 6. **Do NOT generate editable JSON from PNG** (out of scope).
+7. **Language integrity.** All user-visible text MUST match the user's query language. A single English slide in a Chinese deck is a regression.

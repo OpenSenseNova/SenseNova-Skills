@@ -32,6 +32,14 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 4. **Do NOT add `timing` / logging / retry layers.** The skill is intentionally thin.
 5. **Do NOT go silent between execs.** Echo a one-line Chinese progress message after each exec before issuing the next.
 6. **Do NOT use python-pptx or any alternative PPTX builder** when export is skipped or fails. The HTML pages are complete as-is — there is no fallback renderer. An absent PPTX is an acceptable ending state.
+7. **Do NOT re-run a failing stage more than twice.** If the same `run_stage.py` subcommand fails with the same error on two consecutive attempts, treat it as a permanent failure. Echo the failure, record the skipped stage, and move on. Partial output is better than a stuck retry loop.
+8. **Language integrity.** All user-visible text MUST match the user's query language. If the query is Chinese, every title, bullet, caption, label, and footnote MUST be in Chinese — even if source documents are in English. A single English title in a Chinese deck is a regression.
+
+## Visual quality standards
+
+- The style_spec MUST NOT default to safe/bland choices (e.g., white background + blue accents + black text). Actively prefer distinctive, themed styles.
+- Each page HTML MUST have visual density: use color blocks, decorative elements, background gradients, and layout variety. A page that looks like a Word document (white background, title + bullet list, no decoration) is a FAILURE.
+- Avoid low-contrast text. All body text must have at least 4.5:1 contrast ratio against its background.
 
 ## External research and image assets
 
@@ -125,6 +133,13 @@ Configured via `.env` at the repo root (or `<repo>/skills/.env`). `model_client.
 Optional `SN_CHAT_BASE_URL` / `SN_TEXT_BASE_URL` / `SN_VISION_BASE_URL`, `SN_CHAT_MODEL` / `SN_TEXT_MODEL` / `SN_VISION_MODEL`, and `SN_CHAT_TIMEOUT` / `SN_TEXT_TIMEOUT` / `SN_VISION_TIMEOUT` override defaults.
 
 Run `python $SKILL_DIR/lib/model_client.py health` to verify env before running the pipeline.
+
+### HTML content check before export
+
+Before running `export`, verify that every `pages/page_NNN.html` has substantive content:
+- File size > 1KB and contains visible text beyond empty boilerplate
+- If any page HTML is suspiciously small (< 500 bytes), re-run `page-html` for that page
+- Only proceed to export when all pages pass
 
 ## Export PPTX gate
 
