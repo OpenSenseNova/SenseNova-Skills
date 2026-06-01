@@ -31,7 +31,10 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `audience`
    - `scene` (where the deck will be used)
    - `page_count`
-   - `ppt_mode` in {creative, standard}
+   - `ppt_mode` in {fast, standard, creative}. Choose based on the user's prompt:
+     - fast: when the user wants a quick draft to review and iterate on. Triggers: "快速", "draft", "先看看", "预览", "草稿", "试一下", "quick", "rapid", "sketch", "先做一版", "看看效果". Generate slides quickly, skip optional research.
+     - standard: when the user wants a polished, research-backed presentation. Triggers: "正式", "完整", "详细", "full", "complete", "detailed". Full pipeline with research and image search.
+     - creative: when the user requests creative/image-driven visual style. Triggers: "创意", "creative", "全页图", "poster-style", "visual". Full-page PNG per slide.
 2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
 3. For each parameter missing or ambiguous, call `ask_user` one at a time, in the order:
    `ppt_mode -> role -> audience -> scene -> page_count`.
@@ -194,8 +197,9 @@ Final message includes a short summary:
 ```
 
 Then dispatch:
-- ppt_mode=creative -> invoke `/skill sn-ppt-creative deck_dir=<abs>`
+- ppt_mode=fast -> invoke `/skill sn-ppt-standard deck_dir=<abs>`
 - ppt_mode=standard -> invoke `/skill sn-ppt-standard deck_dir=<abs>`
+- ppt_mode=creative -> invoke `/skill sn-ppt-creative deck_dir=<abs>`
 
 ## Does NOT
 

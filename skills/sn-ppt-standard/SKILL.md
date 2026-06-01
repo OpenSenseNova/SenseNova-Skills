@@ -19,10 +19,14 @@ This skill is **self-contained** — no dependency on `sn-image-base` for LLM/VL
 
 ## Preconditions
 
-- `<deck_dir>/task_pack.json` exists and `ppt_mode == "standard"`
+- `<deck_dir>/task_pack.json` exists and `ppt_mode in {"standard", "fast"}`
 - `<deck_dir>/info_pack.json` exists
 
 Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
+
+When `ppt_mode == "fast"`: generate slides directly and efficiently — skip optional web research, minimize image search, prioritize getting slides in front of the user quickly. Run the full pipeline including PPTX export. After completion, present the results and invite modification feedback.
+
+When `ppt_mode == "standard"`: run the full pipeline with all research and image search as described below.
 
 ## 🚫 Hard rules (the main agent MUST NOT)
 
@@ -62,6 +66,17 @@ $R batch-page-html  --deck-dir $D [--concurrency 4]
 
 $R export        --deck-dir $D              # -> <deck_id>.pptx
 ```
+
+### Style preview checkpoint
+
+After `style_spec.json` is produced, **pause for user confirmation** before proceeding to outline and page generation:
+
+1. Read `style_spec.json` and describe the visual direction to the user: primary colors, typography, and overall mood
+2. Ask whether to proceed or modify (e.g., "change the primary color to blue", "make it more minimalist")
+3. If the user requests changes, re-run the style stage with the updated preferences
+4. Only proceed to outline after the user confirms
+
+Progress echo: `[1] style_spec.json ✓ — waiting for style confirmation`. Do not run outline until the user confirms.
 
 `batch-gen-image` serializes writes to `asset_plan.json` under a process-local lock so concurrent workers don't clobber each other.
 
