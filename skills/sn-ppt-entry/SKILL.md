@@ -158,6 +158,11 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
 }
 ```
 
+## 🚫 Hard rules
+
+1. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** PPTX is produced by the downstream mode skills (sn-ppt-standard / sn-ppt-creative) through their designated scripts. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`.
+2. **Wait for `ask_user` responses.** When you ask the user a question, do NOT proceed until they reply. Never continue with assumed or default values.
+
 ## Failure handling
 
 - Missing required env var -> stop, tell user `/skill sn-ppt-doctor`.
