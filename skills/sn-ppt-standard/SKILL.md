@@ -63,12 +63,14 @@ $R style         --deck-dir $D              # -> style_spec.json
 $R outline       --deck-dir $D              # -> outline.json
 $R asset-plan    --deck-dir $D              # -> asset_plan.json
 
-# Per-item forms — one progress line per item:
+# Per-item forms — one progress line per item. PREFERRED for visibility:
+# each exec returns quickly with status, keeping the user informed.
 $R gen-image     --deck-dir $D --page N --slot SLOT_ID
 $R page-html     --deck-dir $D --page N
 
-# Batch (concurrent) equivalents — default 4 workers. Each prints one summary
-# JSON to stdout plus per-item status lines to stderr.
+# Batch (concurrent) equivalents. Use only when there are many items (>10)
+# AND individual execs would exceed time budget. Batch commands block until
+# ALL items complete — the user sees no progress during execution.
 $R batch-gen-image  --deck-dir $D [--concurrency 4]
 $R batch-page-html  --deck-dir $D [--concurrency 4]
 
@@ -76,6 +78,8 @@ $R export        --deck-dir $D              # -> <deck_id>.pptx
 ```
 
 `batch-gen-image` serializes writes to `asset_plan.json` under a process-local lock so concurrent workers don't clobber each other.
+
+**Prefer individual commands over batch.** Running `gen-image` and `page-html` one page at a time gives the user visible progress on every page. Batch commands are faster but opaque — use them sparingly and only for large decks.
 
 ### How `page-html` works (two LLM calls per page)
 
