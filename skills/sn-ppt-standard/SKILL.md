@@ -27,11 +27,18 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 ## 🚫 Hard rules (the main agent MUST NOT)
 
 1. **Do NOT write Python scripts that loop over pages or slots** in a single exec. Use the batch subcommands, or per-item execs in the agent's own loop of tool_calls.
-2. **Do NOT fake image generation.** If `gen-image` fails, don't write a placeholder PNG — the HTML stage will redesign around the missing slot.
+2. **Do NOT fake image generation.** If `gen-image` and its image-search fallback both fail, don't write a placeholder PNG — the HTML stage will redesign around the missing slot.
 3. **Do NOT construct LLM prompts yourself.** `run_stage.py` is the only place that builds payloads.
 4. **Do NOT add `timing` / logging / retry layers.** The skill is intentionally thin.
 5. **Do NOT go silent between execs.** Echo a one-line Chinese progress message after each exec before issuing the next.
 6. **Do NOT use python-pptx or any alternative PPTX builder** when export is skipped or fails. The HTML pages are complete as-is — there is no fallback renderer. An absent PPTX is an acceptable ending state.
+
+## External research and image assets
+
+- Always use the web search skills for facts, research and knowledge grounding.
+- Always add real visual assets when a page benefits from them. Asset priority is: **searched image first**, **generated image second**, **authored SVG/CSS illustration last**. Do not mention the image-search provider name in prompts, progress, visible slide text, or user-facing summaries.
+- Never use placeholder images or placeholder boxes. Do not create grey blocks, 1x1 transparent PNGs, "image pending" labels, broken-image icons, fake thumbnails, or empty reserved frames.
+- If no generated/searched image exists for a slot, redesign the page without that raster image. Use an inline SVG or CSS-drawn visual only when it is an actual diagram/decoration that carries the slide's idea; otherwise use text, tables, charts, and layout.
 
 ## Pipeline
 
