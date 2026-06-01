@@ -31,10 +31,14 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `audience`
    - `scene` (where the deck will be used)
    - `page_count`
-   - `ppt_mode` in {fast, standard, creative}. Choose based on the user's prompt:
-     - fast: when the user wants a quick draft to review and iterate on. Triggers: "快速", "draft", "先看看", "预览", "草稿", "试一下", "quick", "rapid", "sketch", "先做一版", "看看效果". Generate slides quickly, skip optional research.
-     - standard: when the user wants a polished, research-backed presentation. Triggers: "正式", "完整", "详细", "full", "complete", "detailed". Full pipeline with research and image search.
-     - creative: when the user requests creative/image-driven visual style. Triggers: "创意", "creative", "全页图", "poster-style", "visual". Full-page PNG per slide.
+   - `ppt_mode` in {fast, standard, creative}. **Always ask the user to choose** unless the user has already explicitly stated their preference:
+     - fast: "Build now and iterate" — the AI jumps straight into making complete slides, then invites feedback and iterates until the user is happy. Best for quick drafts, brainstorming, and rapid iteration.
+     - standard: "Plan thoroughly first, then build" — the AI first aligns on colors, fonts, and tone with a style preview, does thorough research, then builds a polished presentation. Best for formal, delivery-ready work.
+     - creative: full-page PNG generation per slide. Ask only if the user specifically requests image-driven visual style.
+
+     If `ppt_mode` is ambiguous, call `ask_user` with these two options:
+     - "快速模式 — 先直接生成 PPT，然后根据你的反馈反复修改"
+     - "标准模式 — 先确定风格和内容方向，再正式生成"
 2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
 3. For each parameter missing or ambiguous, call `ask_user` one at a time, in the order:
    `ppt_mode -> role -> audience -> scene -> page_count`.

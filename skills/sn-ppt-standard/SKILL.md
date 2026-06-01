@@ -24,9 +24,9 @@ This skill is **self-contained** — no dependency on `sn-image-base` for LLM/VL
 
 Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 
-When `ppt_mode == "fast"`: generate slides directly and efficiently — skip optional web research, minimize image search, prioritize getting slides in front of the user quickly. Run the full pipeline including PPTX export. After completion, present the results and invite modification feedback. **Data handling**: use uploaded documents first. If no data is available, use mock/example data but explicitly label it as "[示例数据]" so the user knows to replace it.
+When `ppt_mode == "fast"`: **build first, then iterate.** Jump straight into making complete slides — content and visuals included — without upfront research or planning. Skip the style preview checkpoint. Run the full pipeline including PPTX export. Once the PPT is generated, present it and explicitly invite feedback: "What would you like to change?" The cycle of feedback and adjustment continues until the user is satisfied. **Data handling**: use uploaded documents first. If no data is available, use mock/example data but explicitly label it as "[示例数据]".
 
-When `ppt_mode == "standard"`: run the full pipeline with all research and image search as described below. **Data handling**: use uploaded documents first. If documents don't cover a needed data point, search the web. If search fails, ask the user to provide the data. Never fabricate numbers — missing data is better than wrong data.
+When `ppt_mode == "standard"`: **plan thoroughly first, then build.** The style preview checkpoint is active — pause after style_spec.json for user confirmation. Align on colors, fonts, and tone before proceeding. Do thorough research and image search. Produce a polished, delivery-ready presentation. **Data handling**: documents first, web search second, ask user as last resort. Never fabricate numbers.
 
 ## 🚫 Hard rules (the main agent MUST NOT)
 
@@ -69,9 +69,9 @@ $R batch-page-html  --deck-dir $D [--concurrency 4]
 $R export        --deck-dir $D              # -> <deck_id>.pptx
 ```
 
-### Style preview checkpoint
+### Style preview checkpoint (standard mode only)
 
-After `style_spec.json` is produced, **pause for user confirmation** before proceeding to outline and page generation:
+When `ppt_mode == "standard"`: after `style_spec.json` is produced, **pause for user confirmation** before proceeding to outline and page generation:
 
 1. Read `style_spec.json` and describe the visual direction to the user: primary colors, typography, and overall mood
 2. Ask whether to proceed or modify (e.g., "change the primary color to blue", "make it more minimalist")
@@ -79,6 +79,8 @@ After `style_spec.json` is produced, **pause for user confirmation** before proc
 4. Only proceed to outline after the user confirms
 
 Progress echo: `[1] style_spec.json ✓ — waiting for style confirmation`. Do not run outline until the user confirms.
+
+When `ppt_mode == "fast"`: **skip this checkpoint.** Proceed directly from style to outline and all subsequent stages without pausing. The user will iterate on the finished PPT.
 
 `batch-gen-image` serializes writes to `asset_plan.json` under a process-local lock so concurrent workers don't clobber each other.
 
