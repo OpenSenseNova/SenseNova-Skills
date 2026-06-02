@@ -1019,6 +1019,12 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     if not rewritten_query:
         return _fail(f"page-html rewrite p{page_no}: empty rewrite output", page_no=page_no)
 
+    # Prepend an explicit language hint so the HTML generator never defaults to
+    # the wrong language, even if the rewrite output is ambiguous.
+    lang = _resolve_language(tp, ip)
+    lang_name = "Chinese (zh)" if lang == "zh" else "English (en)"
+    rewritten_query = f"Target language for all visible text: {lang_name}.\n\n{rewritten_query}"
+
     # Persist the rewritten query for debugging / manual re-run.
     query_path = deck / "pages" / f"page_{page_no:03d}.query.txt"
     _write_text(query_path, rewritten_query)
