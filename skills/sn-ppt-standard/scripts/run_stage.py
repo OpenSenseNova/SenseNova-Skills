@@ -462,11 +462,17 @@ def cmd_asset_plan(deck: Path) -> int:
             page["slots"] = []
             continue
 
-        # Filter slots by whitelist
+        # Filter slots by whitelist. Missing or empty slot_kind defaults to
+        # "decoration" instead of being silently dropped — a bare intent string
+        # from the outline should still produce an image slot.
         filtered = []
         for slot in page.get("slots", []):
-            kind = slot.get("slot_kind", "")
-            if kind not in _ALLOWED_SLOT_KINDS:
+            kind = slot.get("slot_kind", "").strip()
+            if not kind:
+                kind = "decoration"
+                slot["slot_kind"] = kind
+                dropped_kinds.append(f"p{pno}/{slot.get('slot_id','?')}=<empty>→decoration")
+            elif kind not in _ALLOWED_SLOT_KINDS:
                 dropped_kinds.append(f"p{pno}/{slot.get('slot_id','?')}={kind!r}")
                 continue
             sid = slot.get("slot_id", "slot")
