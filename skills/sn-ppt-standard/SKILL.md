@@ -68,18 +68,19 @@ $R asset-plan    --deck-dir $D              # -> asset_plan.json
 $R gen-image     --deck-dir $D --page N --slot SLOT_ID
 $R page-html     --deck-dir $D --page N
 
-# Batch (concurrent) equivalents. Use only when there are many items (>10)
-# AND individual execs would exceed time budget. Batch commands block until
-# ALL items complete — the user sees no progress during execution.
+# Batch (concurrent) equivalents. Use when individual execs would exceed
+# time budget. Batch commands block until ALL items complete.
+# Concurrency for batch-page-html: 1 (≤4 pages), 2 (5-8 pages), 4 (9+ pages).
+# Concurrency for batch-gen-image: default 4.
 $R batch-gen-image  --deck-dir $D [--concurrency 4]
-$R batch-page-html  --deck-dir $D [--concurrency 4]
+$R batch-page-html  --deck-dir $D --concurrency N
 
 $R export        --deck-dir $D              # -> <deck_id>.pptx
 ```
 
 `batch-gen-image` serializes writes to `asset_plan.json` under a process-local lock so concurrent workers don't clobber each other.
 
-**Prefer individual commands over batch.** Running `gen-image` and `page-html` one page at a time gives the user visible progress on every page. Batch commands are faster but opaque — use them sparingly and only for large decks.
+**Prefer individual commands for small decks.** For ≤4 pages, use individual `page-html` commands — one page per exec gives visible progress. For 5+ pages, use `batch-page-html` with the concurrency listed above.
 
 ### How `page-html` works (two LLM calls per page)
 
