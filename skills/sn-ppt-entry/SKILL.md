@@ -32,6 +32,7 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `scene` (where the deck will be used)
    - `page_count`
    - `ppt_mode` in {creative, standard}
+   - `language` — detect from the user's query: `zh` if the query is predominantly Chinese, `en` if predominantly English. Do NOT ask the user; just infer and record it.
 2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
 3. For each parameter missing or ambiguous, call `ask_user` one at a time, in the order:
    `ppt_mode -> role -> audience -> scene -> page_count`.
@@ -126,7 +127,8 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
     "role": "...",
     "audience": "...",
     "scene": "...",
-    "page_count": 10
+    "page_count": 10,
+    "language": "zh"
   },
   "created_at": "2026-04-21T15:45:00+08:00",
   "skill_version": "0.1.0"

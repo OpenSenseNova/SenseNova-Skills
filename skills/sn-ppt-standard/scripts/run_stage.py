@@ -88,6 +88,28 @@ def _load_prompt(name: str) -> str:
     return re.sub(r"<<<INLINE:\s*([^>]+)>>>", expand, raw)
 
 
+def _has_cjk(text: str) -> bool:
+    """Return True if text contains a significant proportion of CJK characters."""
+    if not text:
+        return False
+    cjk = sum(1 for ch in text if '一' <= ch <= '鿿' or '㐀' <= ch <= '䶿')
+    return cjk >= 3  # at least 3 CJK chars = Chinese
+
+
+def _resolve_language(tp: dict, ip: dict) -> str:
+    """Resolve the target language: params.language first, then detect from user query."""
+    lang = tp.get("params", {}).get("language", "").strip()
+    if lang in ("zh", "en"):
+        return lang
+    query = ip.get("user_query") or ""
+    if _has_cjk(query):
+        return "zh"
+    # If the query is short and all-ASCII, check if task_pack params hint otherwise
+    if query and all(ord(ch) < 128 for ch in query):
+        return "en"
+    return "zh"  # safe default
+
+
 def _strip_code_fences(s: str) -> str:
     """Remove leading/trailing ``` fences the model sometimes adds."""
     s = s.strip()
@@ -980,7 +1002,7 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
         "inherited_image_alt": (inherited_image or {}).get("alt") or None,
         "inherited_image_caption_hint": inherited_image_caption_hint,
         "available_slot_images": available_slot_images,
-        "language": tp.get("params", {}).get("language", "zh"),
+        "language": _resolve_language(tp, ip),
     }
     try:
         rewritten_query = llm(
