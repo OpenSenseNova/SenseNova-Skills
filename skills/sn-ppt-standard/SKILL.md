@@ -64,7 +64,8 @@ $R page-html     --deck-dir $D --page N
 # AND individual execs would exceed time budget. Batch commands block until
 # ALL items complete — the user sees no progress during execution.
 $R batch-gen-image  --deck-dir $D [--concurrency 4]
-$R batch-page-html  --deck-dir $D [--concurrency 4]
+$R batch-page-html  --deck-dir $D --concurrency N
+# batch-page-html concurrency: 1 (≤4 pages) / 2 (5-8 pages) / 4 (9+ pages)
 
 $R export        --deck-dir $D              # -> <deck_id>.pptx
 ```
@@ -84,7 +85,7 @@ When `ppt_mode == "fast"`: **skip this checkpoint.** Proceed directly from style
 
 `batch-gen-image` serializes writes to `asset_plan.json` under a process-local lock so concurrent workers don't clobber each other.
 
-**Prefer individual commands over batch.** Running `gen-image` and `page-html` one page at a time gives the user visible progress on every page. Batch commands are faster but opaque — use them sparingly and only for large decks.
+**Prefer individual commands for small decks.** For ≤4 pages, use individual `page-html` commands. For 5+ pages, use `batch-page-html` with the concurrency scale above.
 
 ### How `page-html` works (two LLM calls per page)
 
