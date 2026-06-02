@@ -142,7 +142,8 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
     "audience": "...",
     "scene": "...",
     "page_count": 10,
-    "language": "zh"
+    "language": "zh",
+    "image_source": "ai-gen"
   },
   "created_at": "2026-04-21T15:45:00+08:00",
   "skill_version": "0.1.0"
@@ -194,7 +195,7 @@ Emit a short chat reply at each boundary. Silence between ask_user rounds and mo
 |---|---|
 | Right after entering sn-ppt-entry | `已进入 sn-ppt-entry，开始收集参数...` |
 | Missing a param | `缺少参数：<role>，马上问你` (then ask_user) |
-| All 5 params collected | `参数齐备：mode=standard, role=...。开始创建 deck_dir...` |
+| All params collected | `参数齐备：mode=standard, image_source=ai-gen, role=...。开始创建 deck_dir...` |
 | Before doc parse | `检测到 2 个附件，开始解析...` |
 | After doc parse | `解析完成：sample.pdf (12 页) / sample.docx (45 段)` |
 | Before digest | `[LLM] 正在汇总文档要点...` |
