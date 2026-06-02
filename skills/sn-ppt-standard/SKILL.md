@@ -45,12 +45,33 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 - Each page HTML MUST have visual density: use color blocks, decorative elements, background gradients, and layout variety. A page that looks like a Word document (white background, title + bullet list, no decoration) is a FAILURE.
 - Avoid low-contrast text. All body text must have at least 4.5:1 contrast ratio against its background.
 
-## External research and image assets
+## Image sourcing
 
-- Always use the web search skills for facts, research and knowledge grounding.
-- Always add real visual assets when a page benefits from them. Asset priority is: **searched image first**, **generated image second**, **authored SVG/CSS illustration last**. Do not mention the image-search provider name in prompts, progress, visible slide text, or user-facing summaries.
-- Never use placeholder images or placeholder boxes. Do not create grey blocks, 1x1 transparent PNGs, "image pending" labels, broken-image icons, fake thumbnails, or empty reserved frames.
-- If no generated/searched image exists for a slot, redesign the page without that raster image. Use an inline SVG or CSS-drawn visual only when it is an actual diagram/decoration that carries the slide's idea; otherwise use text, tables, charts, and layout.
+The user's `image_source` preference (from `task_pack.params`) determines how images are obtained:
+
+**`web-search`**: Search the web for real images via the `sn-search-image` skill. Each result includes the image URL, source page, title, and domain — easy to trace and attribute. Save downloaded images under `<deck_dir>/images/` and reference them with relative paths in HTML.
+
+**`ai-gen`**: Use AI image generation via `gen-image` / `sn-image-base`. Asset priority for standard image slots: **searched image first**, **generated image second**, **authored SVG/CSS illustration last**. Do not mention the image-search provider name in prompts, progress, visible slide text, or user-facing summaries.
+
+**`none`**: No raster images — use text, tables, charts, and CSS visuals only.
+
+### Infographic slots (U1-generated diagrams)
+
+For flowcharts, process diagrams, organizational charts, and complex data visualizations, the pipeline creates `infographic` slots (slot_kind=`infographic`). These are **always AI-generated via U1** — web search is not used for infographics because they visualize content-specific data.
+
+When `gen-image` processes an infographic slot, U1 generates a clean, professionally styled diagram. If U1 generation fails, fall back to ECharts, CSS, or text tables.
+
+### Image search as fallback
+
+When `image_source` is `ai-gen` and generation fails for a slot, use web search as a backup (if `SERPER_API_KEY` is set).
+
+### No junk — hard constraint
+
+Never use: grey boxes, 1×1 transparent PNGs, "image pending" labels, broken-image icons, fake thumbnails, empty reserved frames, or colored rectangles as image placeholders. If no good image turns up for a slot — from any source — rework the page completely.
+
+## External research
+
+- Always use the web search skills (`sn-search-web`) for facts, research, and knowledge grounding.
 
 ## Pipeline
 
