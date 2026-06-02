@@ -976,10 +976,13 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     }
     available_slot_images: list[dict] = []
     for slot in page_plan.get("slots") or []:
-        if slot.get("status") == "failed" or not slot.get("local_path"):
+        if slot.get("status") != "ok" or not slot.get("local_path"):
             continue
         local_path = slot["local_path"]
-        size = _read_image_size(deck / local_path)
+        image_file = deck / local_path
+        if not image_file.is_file():
+            continue
+        size = _read_image_size(image_file)
         entry: dict = {
             "path": local_path,
             "slot_id": slot.get("slot_id"),
