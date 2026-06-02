@@ -33,10 +33,24 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `page_count`
    - `ppt_mode` in {creative, standard}
    - `language` — detect from the user's query: `zh` if the query is predominantly Chinese, `en` if predominantly English. Do NOT ask the user; just infer and record it.
+   - `image_source` — whether the deck needs images and how to get them:
+     - `ai-gen`: use AI generation for images (default if unset)
+     - `web-search`: search the web for real images via Serper
+     - `none`: no images, text/CSS visuals only
 2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
 3. For each parameter missing or ambiguous, call `ask_user` one at a time, in the order:
-   `ppt_mode -> role -> audience -> scene -> page_count`.
+   `ppt_mode -> image_source -> role -> audience -> scene -> page_count`.
    Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他".
+
+   For `image_source`, ask: "Do you want images in this presentation, and how should they be sourced?"
+   - "AI generation — create images from scratch using AI"
+   - "Web search — pull real photos and images from the web (requires Serper API key)"
+   - "No images — use text, charts, and CSS visuals only"
+
+   If the user picks web search and `SERPER_API_KEY` is not set in the environment, tell them:
+   "To use web image search, you need a Serper API key. Sign up at https://serper.dev to get a free key, then add `SERPER_API_KEY=your-key` to your `.env` file."
+
+   Store the user's choice as `image_source` in `task_pack.params`.
 4. Create deck_dir — **location is FIXED, do not guess**:
    - Parent: always `$(pwd)/ppt_decks/`. In OpenClaw, cwd at skill-invocation time is the agent's workspace directory (e.g. `~/.openclaw/workspace/`). Do NOT use `/tmp`, the home directory, the repo root, or `$SKILL_DIR` as the parent. Do NOT honor `$PPT_DECK_ROOT` either — it's been removed to avoid drift.
    - Parent directory must be created if missing: `mkdir -p $(pwd)/ppt_decks`.

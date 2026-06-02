@@ -49,7 +49,7 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 
 The user's `image_source` preference (from `task_pack.params`) determines how images are obtained:
 
-**`web-search`**: Search the web for real images via the `sn-search-image` skill. Each result includes the image URL, source page, title, and domain — easy to trace and attribute. Save downloaded images under `<deck_dir>/images/` and reference them with relative paths in HTML.
+**`web-search`**: Search the web for real images via the `sn-search-image` skill. Each result includes the image URL, source page, title, and domain — easy to trace and attribute. Save downloaded images under `<deck_dir>/images/` and reference them with relative paths in HTML. Web search is ideal for real product photos, landmark shots, or anything AI can't draw accurately.
 
 **`ai-gen`**: Use AI image generation via `gen-image` / `sn-image-base`. Asset priority for standard image slots: **searched image first**, **generated image second**, **authored SVG/CSS illustration last**. Do not mention the image-search provider name in prompts, progress, visible slide text, or user-facing summaries.
 
@@ -67,7 +67,7 @@ When `image_source` is `ai-gen` and generation fails for a slot, use web search 
 
 ### No junk — hard constraint
 
-Never use: grey boxes, 1×1 transparent PNGs, "image pending" labels, broken-image icons, fake thumbnails, empty reserved frames, or colored rectangles as image placeholders. If no good image turns up for a slot — from any source — rework the page completely.
+Never use: grey boxes, 1×1 transparent PNGs, "image pending" labels, broken-image icons, fake thumbnails, empty reserved frames, or colored rectangles as image placeholders. If no good image turns up for a slot — from any source — rework the page completely. Different layout, different approach. The user must never see that awkward hole where a picture should be.
 
 ## External research
 
