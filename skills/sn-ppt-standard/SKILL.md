@@ -24,7 +24,30 @@ This skill is **self-contained** — no dependency on `sn-image-base` for LLM/VL
 
 Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 
-When `ppt_mode == "fast"`: **build first, then iterate.** Make decisions autonomously — do not ask the user about colors, fonts, page count, or layout preferences. Infer reasonable defaults from the query and start building immediately. Skip optional web search and image search. Run the full pipeline including PPTX export. Once done, present the result and explicitly invite feedback. **Data**: use uploaded documents first; if none, use mock data labeled `[Sample Data]` and tell the user in chat which data needs replacement. **Images**: AI generation for decorative images, ECharts for charts — no questions asked.
+When `ppt_mode == "fast"`: **build first, then iterate.** Make decisions autonomously — do not ask the user about colors, fonts, page count, or layout preferences. Infer reasonable defaults from the query and start building immediately. Skip optional web search and image search. Run the full pipeline including PPTX export. **Data**: use uploaded documents first; if none, use mock data labeled `[Sample Data]` and tell the user in chat which data needs replacement. **Images**: AI generation for decorative images, ECharts for charts — no questions asked.
+
+### Post-generation (fast mode only)
+
+After the PPTX is generated, do NOT just say "done, any feedback?" Instead, provide a **structured set of refinement suggestions** based on the actual content you generated. This helps the user understand what changed between your fast draft and what a polished standard-mode version would look like.
+
+**1. Quick wins (3-5 specific suggestions):** Point to concrete things the user could improve with one-line instructions. Tie each suggestion to a specific slide or element. Examples:
+- "Slide 3: replace the mock revenue numbers with your actual Q4 data"
+- "Slide 5: swap the generic team photo placeholder with your real team picture"
+- "Cover slide: try a darker background for more impact — I can switch it to deep navy"
+- "Slide 7: the bar chart is using sample data — give me your real numbers and I'll regenerate it"
+
+**2. Standard-mode comparison (2-3 gaps):** Explain what would have been different in standard mode, so the user knows what they're trading off. Examples:
+- "In standard mode, I would have searched the web for competitor benchmarks to include on slide 4 — right now those numbers are estimates labeled [Sample Data]"
+- "Standard mode includes a style preview checkpoint where you would have confirmed the coral-red accent color before I built all 12 slides"
+- "With image search enabled, slides 2 and 8 could use real product photos instead of the AI-generated decorative images"
+
+**3. Suggested next actions (3-4 paths):** Offer concrete directions the user can take:
+- "Replace mock data: tell me which slides need real numbers and I'll update them"
+- "Adjust style: I can change the color palette, fonts, or layout density across all slides at once"
+- "Add a section: if you need a financial projections or risk analysis section, I can insert new slides"
+- "Promote to standard: if this draft is close to what you need, I can re-run it in standard mode with full research and image search for a delivery-ready version"
+
+When the user responds with a change request, apply it immediately and re-present the updated suggestions.
 
 When `ppt_mode == "standard"`: **plan thoroughly first, then build.** Do thorough research and image search. Produce a polished, delivery-ready presentation. **Data**: documents first, web search second, ask user as last resort. Never fabricate numbers.
 
