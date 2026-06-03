@@ -89,6 +89,21 @@ $R export        --deck-dir $D              # -> <deck_id>.pptx
 
 This split keeps converter-facing mechanical contracts (chart container id = `chart_N`, `{renderer:'svg'}`, `__pptxChartsReady` counter, allowed chart types, etc.) in the generator's system prompt — not buried in the natural-language query where they'd get smoothed out.
 
+## Stage failure handling
+
+When a `run_stage.py` subcommand fails (exit code 1):
+
+- **Echo the failure** and proceed to the next stage. A failed style stage does not block outline; a failed outline does not block export.
+- **Only abort the pipeline** for unrecoverable errors: permanently invalid model name, missing or revoked API key, model returns HTTP 401/403. If the same error is clearly unrecoverable (not a timeout or transient gateway issue), stop and report.
+- **Timeout, no-response, and gateway errors are transient** — treat them like the retry rules in rule #7 and move on.
+- Stages after a failure use whichever artifacts exist from earlier stages. If `style_spec.json` is missing because the style stage failed, the remaining stages work around it — outline can use defaults, page-html can use a generic style.
+- After all stages complete (some succeeded, some failed), still run `export` — it produces whatever is available.
+
+Progress echo for failures:
+
+| After failed style | `[1] style ✗ 模型超时，继续后续阶段` |
+| After failed outline | `[2] outline ✗ JSON 解析失败，继续后续阶段` |
+
 ## Output on each exec
 
 One JSON line to stdout:

@@ -271,3 +271,12 @@ Emit:
 9. **Do NOT fabricate data.** All numbers and factual claims MUST come from the user's documents or web search. Use qualitative descriptions if no data source is available.
 10. **Wait for responses.** If you ask the user a question, do NOT proceed until they reply. Never assume default values.
 11. **Multi-round edits: regenerate.** When the user requests changes, re-run the affected pipeline stages. Do NOT sed/perl/patch files in-place.
+
+## Stage failure handling
+
+When a stage fails (style, outline, T2I generation):
+
+- **Echo the failure and continue** to the next stage. A failed style does not block outline; a failed outline blocks the pages that depend on it, but other pages can still render.
+- **Only abort entirely** for unrecoverable errors: permanently invalid model name, missing/revoked API key, HTTP 401/403 from the model provider.
+- **Timeouts, no-response, and gateway errors are transient** — do not abort the pipeline for them.
+- After any stage failure, still run Stage 5 (PPTX packaging) — it produces whatever PNGs are available, inserting blank slides for missing pages.
