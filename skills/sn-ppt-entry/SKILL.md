@@ -31,26 +31,34 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `audience`
    - `scene` (where the deck will be used)
    - `page_count`
-   - `ppt_mode` in {creative, standard}
-   - `language` — determine from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). **You, the LLM, are responsible for detecting this — do NOT ask the user.** Check the script and vocabulary used in the query. If the query is Chinese but you cannot confidently tell whether it's Simplified or Traditional, use `zh-Hans` as the fallback but note in your response that the user should confirm if they need Traditional.
-   - `image_source` — whether the deck needs images and how to get them:
-     - `ai-gen`: use AI generation for images (default if unset)
-     - `web-search`: search the web for real images via Serper
-     - `none`: no images, text/CSS visuals only
+   - `language` — detect from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). Do NOT ask the user; just infer and record it. If unsure, use `zh-Hans`.
 2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
-3. For each parameter missing or ambiguous, call `ask_user` one at a time, in the order:
-   `ppt_mode -> image_source -> role -> audience -> scene -> page_count`.
-   Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他".
+3. **Always explicitly ask the user these three questions** — even if the user's prompt seems to hint at an answer. Call `ask_user` in order:
 
-   For `image_source`, ask: "Do you want images in this presentation, and how should they be sourced?"
-   - "AI generation — create images from scratch using AI"
-   - "Web search — pull real photos and images from the web (requires Serper API key)"
+   **Question 1 — Mode:**
+   "Which generation mode should I use?"
+   - "Fast mode — build the slides now so you can review and iterate"
+   - "Standard mode — plan the style and content thoroughly first, then build"
+   - "Creative mode — full-page AI-generated images per slide"
+
+   Store as `ppt_mode` in `task_pack`.
+
+   **Question 2 — Normal images (decorative / conceptual):**
+   "Should I include images in this presentation, and how should they be sourced?"
+   - "AI generation — create images from scratch (fastest)"
+   - "Web search — pull real photos from the web (requires Serper API key)"
    - "No images — use text, charts, and CSS visuals only"
 
-   If the user picks web search and `SERPER_API_KEY` is not set in the environment, tell them:
-   "To use web image search, you need a Serper API key. Sign up at https://serper.dev to get a free key, then add `SERPER_API_KEY=your-key` to your `.env` file."
+   If the user picks web search and `SERPER_API_KEY` is not set in the environment, tell them how to get a free key at https://serper.dev. Store as `image_source` in `task_pack.params`.
 
-   Store the user's choice as `image_source` in `task_pack.params`.
+   **Question 3 — Infographics (charts, flowcharts, diagrams):**
+   "For data visualizations like charts, flowcharts, and diagrams, should I use AI-generated infographics or render them with ECharts?"
+   - "AI-generated infographics — U1 creates custom diagram images"
+   - "ECharts — rendered as interactive charts in the HTML"
+
+   Store as `infographic_source` in `task_pack.params` (`"ai-gen"` or `"echarts"`).
+
+   After these three, collect `role -> audience -> scene -> page_count` — only ask if not already stated by the user. Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他".
 4. Create deck_dir — **location is FIXED, do not guess**:
    - Parent: always `$(pwd)/ppt_decks/`. In OpenClaw, cwd at skill-invocation time is the agent's workspace directory (e.g. `~/.openclaw/workspace/`). Do NOT use `/tmp`, the home directory, the repo root, or `$SKILL_DIR` as the parent. Do NOT honor `$PPT_DECK_ROOT` either — it's been removed to avoid drift.
    - Parent directory must be created if missing: `mkdir -p $(pwd)/ppt_decks`.
@@ -136,14 +144,15 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
 {
   "deck_id": "AI产品发布会_20260318_154500",
   "deck_dir": "/abs/path/ppt_decks/AI产品发布会_20260318_154500",
-  "ppt_mode": "creative",
+  "ppt_mode": "standard",
   "params": {
     "role": "...",
     "audience": "...",
     "scene": "...",
     "page_count": 10,
     "language": "zh",
-    "image_source": "ai-gen"
+    "image_source": "ai-gen",
+    "infographic_source": "ai-gen"
   },
   "created_at": "2026-04-21T15:45:00+08:00",
   "skill_version": "0.1.0"
