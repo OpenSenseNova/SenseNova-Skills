@@ -164,6 +164,7 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
 
 1. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** PPTX is produced by the downstream mode skills (sn-ppt-standard / sn-ppt-creative) through their designated scripts. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`.
 2. **Wait for `ask_user` responses.** When you ask the user a question, do NOT proceed until they reply. Never continue with assumed or default values.
+3. **Validate paths before writing.** Always `ls` or `pwd` to verify the current working directory before creating files. The only valid output location is `$(pwd)/ppt_decks/<deck_dir>/`. Never write to `/workspace/`, `/tmp/`, `~/`, or any hallucinated path. If a path doesn't start with the verified `$(pwd)`, it's wrong.
 
 ## Failure handling
 

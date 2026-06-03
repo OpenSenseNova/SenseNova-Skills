@@ -29,9 +29,9 @@ Never mix — LLM / VLM through sn-image-base, or T2I through model_client — b
 ## Visual asset priority
 
 - Creative mode renders each slide as a generated full-page PNG, so **image generation is the first-priority visual path**.
-- If any supporting external visual reference is needed, use image search only as the second-priority source and do not mention the search provider name in prompts, visible slide text, progress, or summaries.
-- Do not create placeholders. If generation fails, record the page failure and continue; never write fake PNGs, grey boxes, broken-image icons, or "image pending" text.
-- SVG/CSS drawing is not a substitute for the required creative-mode full-slide PNG. Use SVG only in standard HTML mode as a last-resort authored illustration.
+- If image generation fails for a page, use web search (`sn-search-image`) as a fallback to find a real image that fits the page's topic. Each search result includes the image URL, source page, title, and domain for traceability.
+- Do not create placeholders. If generation and search both fail, record the page failure and continue; never write fake PNGs, grey boxes, broken-image icons, or "image pending" text.
+- Do not mention the search provider name in prompts, visible slide text, progress, or summaries.
 
 ## Preconditions
 
@@ -271,13 +271,4 @@ Emit:
 9. **Do NOT fabricate data.** All numbers and factual claims MUST come from the user's documents or web search. Use qualitative descriptions if no data source is available.
 10. **Wait for responses.** If you ask the user a question, do NOT proceed until they reply. Never assume default values.
 11. **Multi-round edits: regenerate.** When the user requests changes, re-run the affected pipeline stages. Do NOT sed/perl/patch files in-place.
-
-## Stage failure handling
-
-When a stage fails (style, outline, T2I generation):
-
-- **Echo the failure and continue** to the next stage. A failed style does not block outline; a failed outline blocks the pages that depend on it, but other pages can still render.
-- **Only abort entirely** for unrecoverable errors: permanently invalid model name, missing/revoked API key, HTTP 401/403 from the model provider.
-- **Timeouts, no-response, and gateway errors are transient** — do not abort the pipeline for them.
-- **Never fall back to python-pptx or alternative tools** when a stage fails. The remedy is to re-run that stage, skip it and continue, or work around missing artifacts. `scripts/build_pptx.py` is the only path to package slides.
-- After any stage failure, still run Stage 5 (PPTX packaging) — it produces whatever PNGs are available, inserting blank slides for missing pages.
+12. **Validate paths before writing.** All output goes under `<deck_dir>/` — the absolute path written in `task_pack.json`. Before writing any file, verify the parent directory exists. Never write to `/workspace/`, `/tmp/`, `~/`, `./`, or any hallucinated path.
