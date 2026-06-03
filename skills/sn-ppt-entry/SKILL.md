@@ -62,11 +62,11 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
 
    Store as `infographic_source` in `task_pack.params` (`"ai-gen"` or `"echarts"`).
 
-   If `ppt_mode == "fast"`: skip image questions. Default to `image_source = "ai-gen"` and `infographic_source = "echarts"`. Fast mode prioritizes speed — AI generation for images, ECharts for charts.
-   
-   If `ppt_mode == "creative"`: skip image questions. Default to `image_source = "ai-gen"` (full-page T2I rendering). Infographics are not applicable.
+   If `ppt_mode == "fast"`: skip image questions. Default to `image_source = "ai-gen"` and `infographic_source = "echarts"`. **Also skip role/audience/scene/page_count questions** — infer reasonable defaults from the user's query and move directly to building slides. Fast mode means fewer questions, faster start. If the user didn't explicitly state these, make your best guess and proceed.
 
-5. Collect `role -> audience -> scene -> page_count` — only ask if not already stated by the user. Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他".
+   If `ppt_mode == "creative"`: skip image questions. Default to `image_source = "ai-gen"` (full-page T2I rendering). Infographics are not applicable. Skip role/audience/scene/page_count unless explicitly stated.
+
+5. Collect `role -> audience -> scene -> page_count` — **for standard mode only**. Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他". For fast/creative modes, infer from the query and move on.
 6. Create deck_dir — **location is FIXED, do not guess**:
    - Parent: always `$(pwd)/ppt_decks/`. In OpenClaw, cwd at skill-invocation time is the agent's workspace directory (e.g. `~/.openclaw/workspace/`). Do NOT use `/tmp`, the home directory, the repo root, or `$SKILL_DIR` as the parent. Do NOT honor `$PPT_DECK_ROOT` either — it's been removed to avoid drift.
    - Parent directory must be created if missing: `mkdir -p $(pwd)/ppt_decks`.
