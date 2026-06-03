@@ -71,7 +71,7 @@ class LLMConfig:
     api_key: str
     base_url: str
     model: str
-    timeout: float = 120.0
+    timeout: float = 300.0
 
     @classmethod
     def from_env(cls) -> "LLMConfig":
@@ -79,7 +79,7 @@ class LLMConfig:
             api_key=_env("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY"),
             base_url=_env("SN_TEXT_BASE_URL", "SN_CHAT_BASE_URL", "SN_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
             model=_env("SN_TEXT_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
-            timeout=float(_env("SN_TEXT_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
+            timeout=float(_env("SN_TEXT_TIMEOUT", "SN_CHAT_TIMEOUT", default="300")),
         )
 
 
@@ -88,7 +88,7 @@ class VLMConfig:
     api_key: str
     base_url: str
     model: str
-    timeout: float = 120.0
+    timeout: float = 300.0
 
     @classmethod
     def from_env(cls) -> "VLMConfig":
@@ -96,7 +96,7 @@ class VLMConfig:
             api_key=_env("SN_VISION_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY"),
             base_url=_env("SN_VISION_BASE_URL", "SN_CHAT_BASE_URL", "SN_BASE_URL", default=_DEFAULT_CHAT_BASE_URL),
             model=_env("SN_VISION_MODEL", "SN_CHAT_MODEL", default=_DEFAULT_CHAT_MODEL),
-            timeout=float(_env("SN_VISION_TIMEOUT", "SN_CHAT_TIMEOUT", default="120")),
+            timeout=float(_env("SN_VISION_TIMEOUT", "SN_CHAT_TIMEOUT", default="300")),
         )
 
 
