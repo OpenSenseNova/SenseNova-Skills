@@ -38,6 +38,7 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 10. **Do NOT fabricate data.** All numbers, statistics, and factual claims MUST come from the user's uploaded documents or from web search results. If no data source is available, use qualitative descriptions instead of invented numbers.
 11. **Wait for `ask_user` responses.** When you ask the user a question (e.g., to clarify parameters or confirm style), do NOT proceed until the user replies. Never continue with assumed/default values without explicit confirmation.
 12. **Multi-round edits: regenerate, do not patch.** When the user requests changes to an existing deck, re-run the affected pipeline stages from scratch. Do NOT edit files in-place with sed/perl/Python string manipulation — the artifact schemas are machine-generated and easy to corrupt.
+13. **Validate paths before writing.** All output goes under `<deck_dir>/` — the absolute path written in `task_pack.json`. Before writing any file, verify the parent directory exists. Never write to `/workspace/`, `/tmp/`, `~/`, `./`, or any path not rooted at `<deck_dir>`. If a command's `--output` or `--save-path` argument doesn't start with `<deck_dir>/`, it's wrong.
 
 ## Visual quality standards
 

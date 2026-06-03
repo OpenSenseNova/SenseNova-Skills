@@ -271,3 +271,4 @@ Emit:
 9. **Do NOT fabricate data.** All numbers and factual claims MUST come from the user's documents or web search. Use qualitative descriptions if no data source is available.
 10. **Wait for responses.** If you ask the user a question, do NOT proceed until they reply. Never assume default values.
 11. **Multi-round edits: regenerate.** When the user requests changes, re-run the affected pipeline stages. Do NOT sed/perl/patch files in-place.
+12. **Validate paths before writing.** All output goes under `<deck_dir>/` — the absolute path written in `task_pack.json`. Before writing any file, verify the parent directory exists. Never write to `/workspace/`, `/tmp/`, `~/`, `./`, or any hallucinated path.
