@@ -19,10 +19,14 @@ This skill is **self-contained** — no dependency on `sn-image-base` for LLM/VL
 
 ## Preconditions
 
-- `<deck_dir>/task_pack.json` exists and `ppt_mode == "standard"`
+- `<deck_dir>/task_pack.json` exists and `ppt_mode in {"standard", "fast"}`
 - `<deck_dir>/info_pack.json` exists
 
 Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
+
+When `ppt_mode == "fast"`: **build first, then iterate.** Jump straight into making complete slides without upfront research. Skip optional web search and image search. Run the full pipeline including PPTX export. Once done, present the result and explicitly invite feedback. **Data**: use uploaded documents first; if none, use mock data labeled `[Sample Data]` and tell the user in chat which data needs replacement.
+
+When `ppt_mode == "standard"`: **plan thoroughly first, then build.** Do thorough research and image search. Produce a polished, delivery-ready presentation. **Data**: documents first, web search second, ask user as last resort. Never fabricate numbers.
 
 ## 🚫 Hard rules (the main agent MUST NOT)
 
@@ -99,6 +103,19 @@ $R batch-page-html  --deck-dir $D --concurrency N
 
 $R export        --deck-dir $D              # -> <deck_id>.pptx
 ```
+
+### Style preview checkpoint (standard mode only)
+
+When `ppt_mode == "standard"`: after `style_spec.json` is produced, **pause for user confirmation** before proceeding to outline:
+
+1. Read `style_spec.json` and describe the visual direction: primary colors, typography, and overall mood
+2. Ask whether to proceed or modify (e.g., "change the primary color to blue")
+3. If the user requests changes, re-run the style stage with updated preferences
+4. Only proceed to outline after the user confirms
+
+Progress echo: `[1] style_spec.json ✓ — waiting for style confirmation`.
+
+When `ppt_mode == "fast"`: **skip this checkpoint.** Proceed directly through all stages without pausing.
 
 `batch-gen-image` serializes writes to `asset_plan.json` under a process-local lock so concurrent workers don't clobber each other.
 
