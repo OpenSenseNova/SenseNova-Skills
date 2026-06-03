@@ -88,22 +88,22 @@ def _load_prompt(name: str) -> str:
     return re.sub(r"<<<INLINE:\s*([^>]+)>>>", expand, raw)
 
 
-# High-frequency characters that differ between Traditional and Simplified Chinese.
-# If a query contains several of these, it's almost certainly Traditional Chinese.
+# Static fallback: high-frequency characters that differ between Traditional and
+# Simplified Chinese. Only used when params.language is not explicitly set by the
+# entry-skill LLM. The LLM's judgment takes precedence.
 _TRAD_ONLY_CHARS: set[str] = {
     ch for ch in (
         "臺體國學會對時後開關頭書長門問見說話為無於與從過還進東點線裡麼這們個"
         "衛護讓讀認識談論變應實發現願繼續經歷選擇確簡單複雜關係產業價值標準"
         "醫藥護療網際電腦資訊軟體硬體記憶鍵盤螢幕觸控行動裝置應用程式瀏覽器"
         "畫藝術音樂電影戲劇傳統歷史文化節慶慶祝結婚禮儀風俗習慣"
-        "質際際連亂亂藥藥護務務衛衛護護讓讓讀讀書書認識認識談談論論變變應應"
     )
 }
 
 
 def _detect_chinese_variant(text: str) -> str | None:
-    """Return 'zh-Hant' if text looks Traditional, 'zh-Hans' if Simplified, or None
-    if not clearly Chinese."""
+    """Static fallback: return 'zh-Hant' / 'zh-Hans' based on trad-only chars.
+    Returns None if the text is not clearly Chinese."""
     cjk_count = 0
     trad_count = 0
     for ch in text:
@@ -113,28 +113,28 @@ def _detect_chinese_variant(text: str) -> str | None:
                 trad_count += 1
     if cjk_count < 3:
         return None
-    # If ≥2 distinct Traditional-only chars appear, classify as Traditional
     return "zh-Hant" if trad_count >= 2 else "zh-Hans"
 
 
 def _resolve_language(tp: dict, ip: dict) -> str:
-    """Resolve the target language: params.language first, then detect from user query.
-    Returns 'zh-Hans', 'zh-Hant', or 'en'."""
+    """Resolve the target language.
+
+    1. params.language from the entry-skill LLM (highest priority).
+    2. Static CJK-variant detection on the user query (fallback).
+    3. ASCII → 'en', else 'zh-Hans'.
+    """
     lang = tp.get("params", {}).get("language", "").strip()
     if lang in ("zh-Hans", "zh-Hant", "en"):
         return lang
-    if lang == "zh":
-        # Legacy "zh" — try to detect the variant from the query
-        query = ip.get("user_query") or ""
-        variant = _detect_chinese_variant(query)
-        return variant or "zh-Hans"
     query = ip.get("user_query") or ""
-    variant = _detect_chinese_variant(query)
-    if variant:
-        return variant
+    # Legacy "zh" — try to detect the variant
+    if lang == "zh" or not lang:
+        variant = _detect_chinese_variant(query)
+        if variant:
+            return variant
     if query and all(ord(ch) < 128 for ch in query):
         return "en"
-    return "zh-Hans"  # safe default
+    return "zh-Hans"
 
 
 def _strip_code_fences(s: str) -> str:

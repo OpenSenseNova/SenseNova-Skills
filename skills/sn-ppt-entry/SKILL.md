@@ -32,7 +32,7 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `scene` (where the deck will be used)
    - `page_count`
    - `ppt_mode` in {creative, standard}
-   - `language` — detect from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). Do NOT ask the user; just infer and record it.
+   - `language` — determine from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). **You, the LLM, are responsible for detecting this — do NOT ask the user.** Check the script and vocabulary used in the query. If the query is Chinese but you cannot confidently tell whether it's Simplified or Traditional, use `zh-Hans` as the fallback but note in your response that the user should confirm if they need Traditional.
    - `image_source` — whether the deck needs images and how to get them:
      - `ai-gen`: use AI generation for images (default if unset)
      - `web-search`: search the web for real images via Serper
