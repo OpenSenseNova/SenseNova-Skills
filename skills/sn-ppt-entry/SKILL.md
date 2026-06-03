@@ -32,8 +32,7 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `scene` (where the deck will be used)
    - `page_count`
    - `ppt_mode` in {creative, standard}
-<<<<<<< HEAD
-   - `language` — determine from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). **You, the LLM, are responsible for detecting this — do NOT ask the user.** Check the script and vocabulary used in the query. If unsure, use `zh-Hans` as the fallback.
+   - `language` — determine from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). **You, the LLM, are responsible for detecting this — do NOT ask the user.** Check the script and vocabulary used in the query. If unsure, use `zh-Hans` as the fallback but note in your response that the user should confirm if they need Traditional.
 2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
 3. For each parameter missing or ambiguous, call `ask_user` one at a time, in the order:
    `ppt_mode -> role -> audience -> scene -> page_count`.
