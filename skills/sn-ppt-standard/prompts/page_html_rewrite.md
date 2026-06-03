@@ -57,6 +57,7 @@
    - **图的内容描述**（必写）：取 `intent`（首选）或 `image_prompt`（次选）的语义，用一句中文写明这张图画的是什么。例："`images/page_005_hero.png` 是一张服务器机房氛围照，远景蓝光 + 机柜剪影"。
    - **尺寸**（如有 `w`/`h`/`aspect`）：把宽高 + aspect 明文写出，并给出建议显示尺寸（保持原生 aspect ratio，绝不强制拉伸）。例："原生 1280×768、aspect 约 1.67，建议放在右侧约占 600×360 的区域里"。
    - **位置和用途**：建议这张图在版面中的位置（左 / 右 / 上 / 下 / 满版），并基于其内容描述给出贴合的 caption / 标签 / 配文方向。
+   - **Infographic images**: if an available image's intent describes a chart, diagram, or data visualization, instruct the generator to use this image INSTEAD of rendering an ECharts block. The infographic image already contains the structured diagram — do not duplicate it with ECharts.
    - 如果某项没有 w/h（读取失败），就跳过尺寸只写 path + 内容描述 + 位置。
    - 如果 `available_slot_images` 为空，query 要明说"这页没有可用的配图，请用纯文字 + CSS 装饰把版面填满，不要留大片空白"。
 

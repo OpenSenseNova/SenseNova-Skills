@@ -441,7 +441,7 @@ def cmd_outline(deck: Path) -> int:
     return _ok(path="outline.json", pages=len(pages))
 
 
-_ALLOWED_SLOT_KINDS = {"decoration", "concept_visual"}
+_ALLOWED_SLOT_KINDS = {"decoration", "concept_visual", "infographic"}
 
 
 def cmd_asset_plan(deck: Path) -> int:
@@ -569,9 +569,18 @@ def cmd_gen_image(deck: Path, page_no: int, slot_id: str) -> int:
     save_path = deck / slot["local_path"]
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
+    prompt = slot["image_prompt"]
+    if slot.get("slot_kind") == "infographic":
+        prompt = (
+            "Infographic-style diagram with clean layout, clear labels, and professional design. "
+            "Use icons, arrows, and structured data visualization where appropriate. "
+            "No UI chrome, no watermarks, no garbled text.\n\n"
+            f"{prompt}"
+        )
+
     cmd = [
         sys.executable, str(runner), "sn-image-generate",
-        "--prompt", slot["image_prompt"],
+        "--prompt", prompt,
         "--aspect-ratio", slot.get("aspect_ratio", "16:9"),
         "--image-size", slot.get("image_size", "2k"),
         "--save-path", str(save_path),

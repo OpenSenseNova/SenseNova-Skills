@@ -19,10 +19,14 @@ This skill is **self-contained** — no dependency on `sn-image-base` for LLM/VL
 
 ## Preconditions
 
-- `<deck_dir>/task_pack.json` exists and `ppt_mode == "standard"`
+- `<deck_dir>/task_pack.json` exists and `ppt_mode in {"standard", "fast"}`
 - `<deck_dir>/info_pack.json` exists
 
 Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
+
+When `ppt_mode == "fast"`: **build first, then iterate.** Jump straight into making complete slides without upfront research. Skip optional web search and image search. Run the full pipeline including PPTX export. Once done, present the result and explicitly invite feedback. **Data**: use uploaded documents first; if none, use mock data labeled `[Sample Data]` and tell the user in chat which data needs replacement.
+
+When `ppt_mode == "standard"`: **plan thoroughly first, then build.** Do thorough research and image search. Produce a polished, delivery-ready presentation. **Data**: documents first, web search second, ask user as last resort. Never fabricate numbers.
 
 ## 🚫 Hard rules (the main agent MUST NOT)
 
@@ -46,12 +50,33 @@ Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 - Each page HTML MUST have visual density: use color blocks, decorative elements, background gradients, and layout variety. A page that looks like a Word document (white background, title + bullet list, no decoration) is a FAILURE.
 - Avoid low-contrast text. All body text must have at least 4.5:1 contrast ratio against its background.
 
-## External research and image assets
+## Image sourcing
 
-- Always use the web search skills for facts, research and knowledge grounding.
-- Always add real visual assets when a page benefits from them. Asset priority is: **searched image first**, **generated image second**, **authored SVG/CSS illustration last**. Do not mention the image-search provider name in prompts, progress, visible slide text, or user-facing summaries.
-- Never use placeholder images or placeholder boxes. Do not create grey blocks, 1x1 transparent PNGs, "image pending" labels, broken-image icons, fake thumbnails, or empty reserved frames.
-- If no generated/searched image exists for a slot, redesign the page without that raster image. Use an inline SVG or CSS-drawn visual only when it is an actual diagram/decoration that carries the slide's idea; otherwise use text, tables, charts, and layout.
+The user's `image_source` preference (from `task_pack.params`) determines how images are obtained:
+
+**`web-search`**: Search the web for real images via the `sn-search-image` skill. Each result includes the image URL, source page, title, and domain — easy to trace and attribute. Save downloaded images under `<deck_dir>/images/` and reference them with relative paths in HTML. Web search is ideal for real product photos, landmark shots, or anything AI can't draw accurately.
+
+**`ai-gen`**: Use AI image generation via `gen-image` / `sn-image-base`. Asset priority for standard image slots: **searched image first**, **generated image second**, **authored SVG/CSS illustration last**. Do not mention the image-search provider name in prompts, progress, visible slide text, or user-facing summaries.
+
+**`none`**: No raster images — use text, tables, charts, and CSS visuals only.
+
+### Infographic slots (U1-generated diagrams)
+
+For flowcharts, process diagrams, organizational charts, and complex data visualizations, the pipeline creates `infographic` slots (slot_kind=`infographic`). These are **always AI-generated via U1** — web search is not used for infographics because they visualize content-specific data.
+
+When `gen-image` processes an infographic slot, U1 generates a clean, professionally styled diagram. If U1 generation fails, fall back to ECharts, CSS, or text tables.
+
+### Image search as fallback
+
+When `image_source` is `ai-gen` and generation fails for a slot, use web search as a backup (if `SERPER_API_KEY` is set).
+
+### No junk — hard constraint
+
+Never use: grey boxes, 1×1 transparent PNGs, "image pending" labels, broken-image icons, fake thumbnails, empty reserved frames, or colored rectangles as image placeholders. If no good image turns up for a slot — from any source — rework the page completely. Different layout, different approach. The user must never see that awkward hole where a picture should be.
+
+## External research
+
+- Always use the web search skills (`sn-search-web`) for facts, research, and knowledge grounding.
 
 ## Pipeline
 
@@ -78,6 +103,19 @@ $R batch-page-html  --deck-dir $D --concurrency N
 
 $R export        --deck-dir $D              # -> <deck_id>.pptx
 ```
+
+### Style preview checkpoint (standard mode only)
+
+When `ppt_mode == "standard"`: after `style_spec.json` is produced, **pause for user confirmation** before proceeding to outline:
+
+1. Read `style_spec.json` and describe the visual direction: primary colors, typography, and overall mood
+2. Ask whether to proceed or modify (e.g., "change the primary color to blue")
+3. If the user requests changes, re-run the style stage with updated preferences
+4. Only proceed to outline after the user confirms
+
+Progress echo: `[1] style_spec.json ✓ — waiting for style confirmation`.
+
+When `ppt_mode == "fast"`: **skip this checkpoint.** Proceed directly through all stages without pausing.
 
 `batch-gen-image` serializes writes to `asset_plan.json` under a process-local lock so concurrent workers don't clobber each other.
 
