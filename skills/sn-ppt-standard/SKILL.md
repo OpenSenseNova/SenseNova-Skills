@@ -96,6 +96,7 @@ When a `run_stage.py` subcommand fails (exit code 1):
 - **Echo the failure** and proceed to the next stage. A failed style stage does not block outline; a failed outline does not block export.
 - **Only abort the pipeline** for unrecoverable errors: permanently invalid model name, missing or revoked API key, model returns HTTP 401/403. If the same error is clearly unrecoverable (not a timeout or transient gateway issue), stop and report.
 - **Timeout, no-response, and gateway errors are transient** — treat them like the retry rules in rule #7 and move on.
+- **Never fall back to python-pptx or alternative tools** when a stage fails. The remedy is to re-run that stage, skip it and continue, or work around missing artifacts — not to switch to a different PPTX builder. `run_stage.py` is the only path to generate slides.
 - Stages after a failure use whichever artifacts exist from earlier stages. If `style_spec.json` is missing because the style stage failed, the remaining stages work around it — outline can use defaults, page-html can use a generic style.
 - After all stages complete (some succeeded, some failed), still run `export` — it produces whatever is available.
 
