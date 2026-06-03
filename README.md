@@ -173,6 +173,37 @@ A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs
 
 - Depends on: [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md), [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
 
+## FAQ
+
+### PPT generation times out on complex decks. What should I do?
+
+For `sn-ppt-standard`, each slide is generated as a complete HTML page. Content-heavy decks, such as an 11-page deck with complex layouts, charts, and detailed styling, may need more time than the default LLM timeout.
+
+Increase the text and vision timeout values before running the PPT pipeline:
+
+```bash
+export SN_TEXT_TIMEOUT=300
+export SN_VISION_TIMEOUT=300
+```
+
+You can also set the shared fallback timeout:
+
+```bash
+export SN_CHAT_TIMEOUT=300
+```
+
+If both `SN_TEXT_TIMEOUT` and `SN_CHAT_TIMEOUT` are set, `SN_TEXT_TIMEOUT` takes priority for text LLM calls. If both `SN_VISION_TIMEOUT` and `SN_CHAT_TIMEOUT` are set, `SN_VISION_TIMEOUT` takes priority for vision calls.
+
+### Some Chinese text in an infographic is unclear. What should I do?
+
+For `sn-infographic`, run more than one generation round so the skill can use VLM review to check the generated image and prefer outputs with fewer visual issues:
+
+```text
+Create a Chinese infographic about <topic> max_rounds=3 output_mode=verbose
+```
+
+When `max_rounds=1`, VLM review is skipped. Setting `max_rounds` to `2` or higher gives the workflow a chance to catch problems such as garbled Chinese text, duplicated/overlapping characters, and unclear text-image layout.
+
 ## Contributing
 
 Feel free to use the skills here as templates for your own OpenClaw skills. The qualities that make a skill good:

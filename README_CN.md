@@ -174,6 +174,37 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 - 依赖技能：[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
 
+## 常见问题
+
+### PPT 生成在复杂页面上超时怎么办？
+
+`sn-ppt-standard` 会把每一页幻灯片生成为一份完整的 HTML 页面。对于内容较重的 PPT，例如 11 页且包含复杂布局、图表和细致样式的页面，默认的 LLM 超时时间可能不够。
+
+运行 PPT 流程前，可以调大文本与视觉模型的超时时间：
+
+```bash
+export SN_TEXT_TIMEOUT=300
+export SN_VISION_TIMEOUT=300
+```
+
+也可以设置共享兜底超时时间：
+
+```bash
+export SN_CHAT_TIMEOUT=300
+```
+
+如果同时设置了 `SN_TEXT_TIMEOUT` 和 `SN_CHAT_TIMEOUT`，文本 LLM 调用会优先使用 `SN_TEXT_TIMEOUT`。如果同时设置了 `SN_VISION_TIMEOUT` 和 `SN_CHAT_TIMEOUT`，视觉模型调用会优先使用 `SN_VISION_TIMEOUT`。
+
+### 中文信息图中部分文字不够清晰怎么办？
+
+使用 `sn-infographic` 时，可以增加生成轮数，让技能启用 VLM review 检查生成结果，并优先选择视觉问题更少的输出：
+
+```text
+生成一张关于<主题>的中文信息图 max_rounds=3 output_mode=verbose
+```
+
+当 `max_rounds=1` 时，VLM review 会被跳过。将 `max_rounds` 设置为 `2` 或更高，可以让流程有机会发现中文乱码、重复/重叠文字、文图排版不清晰等问题。
+
 ## 贡献
 
 欢迎以本仓库的技能为模板创建你自己的 OpenClaw 技能。一个好技能的核心要素：
