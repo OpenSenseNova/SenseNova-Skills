@@ -32,10 +32,10 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `scene` (where the deck will be used)
    - `page_count`
    - `language` — detect from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). Do NOT ask the user; just infer and record it. If unsure, use `zh-Hans`.
-2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
-3. **Always explicitly ask the user these three questions** — even if the user's prompt seems to hint at an answer. Call `ask_user` in order:
+2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 10 (see "Resume" below).
+3. **Always ask the user which mode to use first.** Call `ask_user`:
 
-   **Question 1 — Mode:**
+   **Question — Mode:**
    "Which generation mode should I use?"
    - "Fast mode — build the slides now so you can review and iterate"
    - "Standard mode — plan the style and content thoroughly first, then build"
@@ -43,37 +43,45 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
 
    Store as `ppt_mode` in `task_pack`.
 
-   **Question 2 — Normal images (decorative / conceptual):**
-   "Should I include images in this presentation, and how should they be sourced?"
-   - "AI generation — create images from scratch (fastest)"
+4. **Only ask image-related questions for standard mode.** Fast mode and creative mode have fixed defaults — asking extra questions defeats the purpose of "fast."
+
+   If `ppt_mode == "standard"`, ask two more questions:
+
+   **Question — Normal images (decorative / conceptual):**
+   "Should I include images, and how should they be sourced?"
+   - "AI generation — create images from scratch"
    - "Web search — pull real photos from the web (requires Serper API key)"
    - "No images — use text, charts, and CSS visuals only"
 
-   If the user picks web search and `SERPER_API_KEY` is not set in the environment, tell them how to get a free key at https://serper.dev. Store as `image_source` in `task_pack.params`.
+   If the user picks web search and `SERPER_API_KEY` is not set, tell them how to get a free key at https://serper.dev. Store as `image_source` in `task_pack.params`.
 
-   **Question 3 — Infographics (charts, flowcharts, diagrams):**
-   "For data visualizations like charts, flowcharts, and diagrams, should I use AI-generated infographics or render them with ECharts?"
+   **Question — Infographics (charts, flowcharts, diagrams):**
+   "For charts and diagrams, should I use AI-generated infographics or ECharts?"
    - "AI-generated infographics — U1 creates custom diagram images"
    - "ECharts — rendered as interactive charts in the HTML"
 
    Store as `infographic_source` in `task_pack.params` (`"ai-gen"` or `"echarts"`).
 
-   After these three, collect `role -> audience -> scene -> page_count` — only ask if not already stated by the user. Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他".
-4. Create deck_dir — **location is FIXED, do not guess**:
+   If `ppt_mode == "fast"`: skip image questions. Default to `image_source = "ai-gen"` and `infographic_source = "echarts"`. Fast mode prioritizes speed — AI generation for images, ECharts for charts.
+   
+   If `ppt_mode == "creative"`: skip image questions. Default to `image_source = "ai-gen"` (full-page T2I rendering). Infographics are not applicable.
+
+5. Collect `role -> audience -> scene -> page_count` — only ask if not already stated by the user. Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他".
+6. Create deck_dir — **location is FIXED, do not guess**:
    - Parent: always `$(pwd)/ppt_decks/`. In OpenClaw, cwd at skill-invocation time is the agent's workspace directory (e.g. `~/.openclaw/workspace/`). Do NOT use `/tmp`, the home directory, the repo root, or `$SKILL_DIR` as the parent. Do NOT honor `$PPT_DECK_ROOT` either — it's been removed to avoid drift.
    - Parent directory must be created if missing: `mkdir -p $(pwd)/ppt_decks`.
    - Deck name: `<topic_concise>_<YYYYMMDD_HHMMSS>`.
    - Full deck_dir path: `$(pwd)/ppt_decks/<topic_concise>_<YYYYMMDD_HHMMSS>/`.
    - Immediately resolve to absolute (`realpath` / `Path.resolve()`) before writing it into `task_pack.json` — downstream must see an absolute path.
-   - Create subdirs: `pages/` always; `images/` only if `ppt_mode=standard`.
+   - Create subdirs: `pages/` always; `images/` if `ppt_mode in {standard, fast}`.
    - If `$(pwd)/ppt_decks/` cannot be created (permission denied) → **abort**, tell the user to check workspace permissions.
-5. If user attached reference_docs (pdf/docx/md/txt):
+7. If user attached reference_docs (pdf/docx/md/txt):
    - Run `$SKILL_DIR/scripts/parse_user_docs.py --files <paths...> --output <deck_dir>/raw_documents.json`. The `--output` flag tells the script to write the JSON itself (recommended — works reliably even on agents that don't handle shell redirection well). The script prints a single-line JSON status `{"status":"ok","output":"...","documents":N,"errors":M}` to stdout when `--output` is used.
    - Call the LLM with `$SKILL_DIR/prompts/document_digest.md` as system prompt + (user_query + concatenated document text) as user prompt. See "Invoking the LLM" below.
    - On success: write `document_digest` JSON into `info_pack.document_digest`.
    - On failure: degrade — set `info_pack.document_digest = null`, continue (do NOT abort entry).
-6. Write `task_pack.json` + `info_pack.json` to deck_dir (see "Schemas" below). All path-bearing fields **absolute**.
-7. **Caption every image once with VLM** (mandatory, idempotent — runs after `info_pack.json` is written so both pools are visible):
+8. Write `task_pack.json` + `info_pack.json` to deck_dir (see "Schemas" below). All path-bearing fields **absolute**.
+9. **Caption every image once with VLM** (mandatory, idempotent — runs after `info_pack.json` is written so both pools are visible):
    ```bash
    python3 $SKILL_DIR/scripts/caption_images.py --deck-dir <deck_dir>
    ```
@@ -83,7 +91,7 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - Already-captioned images are **skipped silently**, so re-running is cheap and safe. Only newly added images incur a VLM call.
    - Failures don't abort: the script reports them in the JSON status; downstream stages fall back to filename / alt / digest hint when a caption is missing.
    Downstream (sn-ppt-standard `cmd_page_html`) reads these cached captions and **never** re-captions — that's the "single source of truth" rule. If you change image files in a deck, delete their `vlm_caption` (or `reference_image_captions[path]`) entry and re-run this script to refresh.
-8. Dispatch to `sn-ppt-creative` or `sn-ppt-standard` based on `task_pack.ppt_mode`.
+10. Dispatch to `sn-ppt-creative` or `sn-ppt-standard` based on `task_pack.ppt_mode`.
 
 ## ask_user boundary conditions
 
