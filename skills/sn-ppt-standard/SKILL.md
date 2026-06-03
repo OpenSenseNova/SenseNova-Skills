@@ -24,7 +24,7 @@ This skill is **self-contained** — no dependency on `sn-image-base` for LLM/VL
 
 Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 
-When `ppt_mode == "fast"`: **build first, then iterate.** Jump straight into making complete slides without upfront research. Skip optional web search and image search. Run the full pipeline including PPTX export. Once done, present the result and explicitly invite feedback. **Data**: use uploaded documents first; if none, use mock data labeled `[Sample Data]` and tell the user in chat which data needs replacement.
+When `ppt_mode == "fast"`: **build first, then iterate.** Make decisions autonomously — do not ask the user about colors, fonts, page count, or layout preferences. Infer reasonable defaults from the query and start building immediately. Skip optional web search and image search. Run the full pipeline including PPTX export. Once done, present the result and explicitly invite feedback. **Data**: use uploaded documents first; if none, use mock data labeled `[Sample Data]` and tell the user in chat which data needs replacement. **Images**: AI generation for decorative images, ECharts for charts — no questions asked.
 
 When `ppt_mode == "standard"`: **plan thoroughly first, then build.** Do thorough research and image search. Produce a polished, delivery-ready presentation. **Data**: documents first, web search second, ask user as last resort. Never fabricate numbers.
 
