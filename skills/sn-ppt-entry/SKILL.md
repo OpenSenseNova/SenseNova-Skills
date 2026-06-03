@@ -32,7 +32,7 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `scene` (where the deck will be used)
    - `page_count`
    - `ppt_mode` in {creative, standard}
-   - `language` — detect from the user's query: `zh` if the query is predominantly Chinese, `en` if predominantly English. Do NOT ask the user; just infer and record it.
+   - `language` — detect from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). Do NOT ask the user; just infer and record it.
    - `image_source` — whether the deck needs images and how to get them:
      - `ai-gen`: use AI generation for images (default if unset)
      - `web-search`: search the web for real images via Serper

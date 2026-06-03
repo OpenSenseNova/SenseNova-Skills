@@ -88,26 +88,53 @@ def _load_prompt(name: str) -> str:
     return re.sub(r"<<<INLINE:\s*([^>]+)>>>", expand, raw)
 
 
-def _has_cjk(text: str) -> bool:
-    """Return True if text contains a significant proportion of CJK characters."""
-    if not text:
-        return False
-    cjk = sum(1 for ch in text if '一' <= ch <= '鿿' or '㐀' <= ch <= '䶿')
-    return cjk >= 3  # at least 3 CJK chars = Chinese
+# High-frequency characters that differ between Traditional and Simplified Chinese.
+# If a query contains several of these, it's almost certainly Traditional Chinese.
+_TRAD_ONLY_CHARS: set[str] = {
+    ch for ch in (
+        "臺體國學會對時後開關頭書長門問見說話為無於與從過還進東點線裡麼這們個"
+        "衛護讓讀認識談論變應實發現願繼續經歷選擇確簡單複雜關係產業價值標準"
+        "醫藥護療網際電腦資訊軟體硬體記憶鍵盤螢幕觸控行動裝置應用程式瀏覽器"
+        "畫藝術音樂電影戲劇傳統歷史文化節慶慶祝結婚禮儀風俗習慣"
+        "質際際連亂亂藥藥護務務衛衛護護讓讓讀讀書書認識認識談談論論變變應應"
+    )
+}
+
+
+def _detect_chinese_variant(text: str) -> str | None:
+    """Return 'zh-Hant' if text looks Traditional, 'zh-Hans' if Simplified, or None
+    if not clearly Chinese."""
+    cjk_count = 0
+    trad_count = 0
+    for ch in text:
+        if '一' <= ch <= '鿿' or '㐀' <= ch <= '䶿':
+            cjk_count += 1
+            if ch in _TRAD_ONLY_CHARS:
+                trad_count += 1
+    if cjk_count < 3:
+        return None
+    # If ≥2 distinct Traditional-only chars appear, classify as Traditional
+    return "zh-Hant" if trad_count >= 2 else "zh-Hans"
 
 
 def _resolve_language(tp: dict, ip: dict) -> str:
-    """Resolve the target language: params.language first, then detect from user query."""
+    """Resolve the target language: params.language first, then detect from user query.
+    Returns 'zh-Hans', 'zh-Hant', or 'en'."""
     lang = tp.get("params", {}).get("language", "").strip()
-    if lang in ("zh", "en"):
+    if lang in ("zh-Hans", "zh-Hant", "en"):
         return lang
+    if lang == "zh":
+        # Legacy "zh" — try to detect the variant from the query
+        query = ip.get("user_query") or ""
+        variant = _detect_chinese_variant(query)
+        return variant or "zh-Hans"
     query = ip.get("user_query") or ""
-    if _has_cjk(query):
-        return "zh"
-    # If the query is short and all-ASCII, check if task_pack params hint otherwise
+    variant = _detect_chinese_variant(query)
+    if variant:
+        return variant
     if query and all(ord(ch) < 128 for ch in query):
         return "en"
-    return "zh"  # safe default
+    return "zh-Hans"  # safe default
 
 
 def _strip_code_fences(s: str) -> str:
@@ -1037,8 +1064,13 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     # Prepend an explicit language hint so the HTML generator never defaults to
     # the wrong language, even if the rewrite output is ambiguous.
     lang = _resolve_language(tp, ip)
-    lang_name = "Chinese (zh)" if lang == "zh" else "English (en)"
-    rewritten_query = f"Target language for all visible text: {lang_name}.\n\n{rewritten_query}"
+    if lang == "zh-Hant":
+        lang_hint = "Target language for all visible text: Traditional Chinese (zh-Hant). Use traditional characters (繁體中文) throughout."
+    elif lang == "zh-Hans":
+        lang_hint = "Target language for all visible text: Simplified Chinese (zh-Hans). Use simplified characters (简体中文) throughout."
+    else:
+        lang_hint = "Target language for all visible text: English (en)."
+    rewritten_query = f"{lang_hint}\n\n{rewritten_query}"
 
     # Persist the rewritten query for debugging / manual re-run.
     query_path = deck / "pages" / f"page_{page_no:03d}.query.txt"
