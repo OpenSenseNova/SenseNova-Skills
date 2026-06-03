@@ -31,18 +31,34 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - `audience`
    - `scene` (where the deck will be used)
    - `page_count`
-   - `ppt_mode` in {fast, standard, creative}. **Always ask the user to choose** unless the user has already explicitly stated their preference:
-     - fast: "Build now and iterate" — the AI jumps straight into making complete slides, then invites feedback and iterates until the user is happy. Best for quick drafts, brainstorming, and rapid iteration.
-     - standard: "Plan thoroughly first, then build" — the AI first aligns on colors, fonts, and tone with a style preview, does thorough research, then builds a polished presentation. Best for formal, delivery-ready work.
-     - creative: full-page PNG generation per slide. Ask only if the user specifically requests image-driven visual style.
-
-     If `ppt_mode` is ambiguous, call `ask_user` with these two options:
-     - "Fast mode — build the PPT now and iterate based on your feedback"
-     - "Standard mode — plan the style and content first, then build"
+   - `language` — detect from the user's query: `zh-Hans` (Simplified Chinese), `zh-Hant` (Traditional Chinese), or `en` (English). Do NOT ask the user; just infer and record it. If unsure, use `zh-Hans`.
 2. If `task_pack.json` + `info_pack.json` already exist in a deck_dir the user refers to, read them and jump to step 7 (see "Resume" below).
-3. For each parameter missing or ambiguous, call `ask_user` one at a time, in the order:
-   `ppt_mode -> role -> audience -> scene -> page_count`.
-   Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他".
+3. **Always explicitly ask the user these three questions** — even if the user's prompt seems to hint at an answer. Call `ask_user` in order:
+
+   **Question 1 — Mode:**
+   "Which generation mode should I use?"
+   - "Fast mode — build the slides now so you can review and iterate"
+   - "Standard mode — plan the style and content thoroughly first, then build"
+   - "Creative mode — full-page AI-generated images per slide"
+
+   Store as `ppt_mode` in `task_pack`.
+
+   **Question 2 — Normal images (decorative / conceptual):**
+   "Should I include images in this presentation, and how should they be sourced?"
+   - "AI generation — create images from scratch (fastest)"
+   - "Web search — pull real photos from the web (requires Serper API key)"
+   - "No images — use text, charts, and CSS visuals only"
+
+   If the user picks web search and `SERPER_API_KEY` is not set in the environment, tell them how to get a free key at https://serper.dev. Store as `image_source` in `task_pack.params`.
+
+   **Question 3 — Infographics (charts, flowcharts, diagrams):**
+   "For data visualizations like charts, flowcharts, and diagrams, should I use AI-generated infographics or render them with ECharts?"
+   - "AI-generated infographics — U1 creates custom diagram images"
+   - "ECharts — rendered as interactive charts in the HTML"
+
+   Store as `infographic_source` in `task_pack.params` (`"ai-gen"` or `"echarts"`).
+
+   After these three, collect `role -> audience -> scene -> page_count` — only ask if not already stated by the user. Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他".
 4. Create deck_dir — **location is FIXED, do not guess**:
    - Parent: always `$(pwd)/ppt_decks/`. In OpenClaw, cwd at skill-invocation time is the agent's workspace directory (e.g. `~/.openclaw/workspace/`). Do NOT use `/tmp`, the home directory, the repo root, or `$SKILL_DIR` as the parent. Do NOT honor `$PPT_DECK_ROOT` either — it's been removed to avoid drift.
    - Parent directory must be created if missing: `mkdir -p $(pwd)/ppt_decks`.
@@ -128,12 +144,15 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
 {
   "deck_id": "AI产品发布会_20260318_154500",
   "deck_dir": "/abs/path/ppt_decks/AI产品发布会_20260318_154500",
-  "ppt_mode": "creative",
+  "ppt_mode": "standard",
   "params": {
     "role": "...",
     "audience": "...",
     "scene": "...",
-    "page_count": 10
+    "page_count": 10,
+    "language": "zh",
+    "image_source": "ai-gen",
+    "infographic_source": "ai-gen"
   },
   "created_at": "2026-04-21T15:45:00+08:00",
   "skill_version": "0.1.0"
@@ -167,9 +186,9 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
 
 ## 🚫 Hard rules
 
-1. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** PPTX is produced by the downstream mode skills through their designated scripts. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`.
+1. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** PPTX is produced by the downstream mode skills (sn-ppt-standard / sn-ppt-creative) through their designated scripts. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`.
 2. **Wait for `ask_user` responses.** When you ask the user a question, do NOT proceed until they reply. Never continue with assumed or default values.
-3. **There is NO "lightweight mode" or "HTML 直出" shortcut.** Always enter the full pipeline via `/skill sn-ppt-entry` → `sn-ppt-standard` or `sn-ppt-creative`. Never generate a standalone HTML file, single-file output, or raw PPTX directly. The only valid PPT modes are `fast`, `standard`, and `creative` — all of them go through the pipeline. Any concept of a "lightweight HTML direct output" shortcut is a hallucination.
+3. **Validate paths before writing.** Always `ls` or `pwd` to verify the current working directory before creating files. The only valid output location is `$(pwd)/ppt_decks/<deck_dir>/`. Never write to `/workspace/`, `/tmp/`, `~/`, or any hallucinated path. If a path doesn't start with the verified `$(pwd)`, it's wrong.
 
 ## Failure handling
 
@@ -186,7 +205,7 @@ Emit a short chat reply at each boundary. Silence between ask_user rounds and mo
 |---|---|
 | Right after entering sn-ppt-entry | `已进入 sn-ppt-entry，开始收集参数...` |
 | Missing a param | `缺少参数：<role>，马上问你` (then ask_user) |
-| All 5 params collected | `参数齐备：mode=standard, role=...。开始创建 deck_dir...` |
+| All params collected | `参数齐备：mode=standard, image_source=ai-gen, role=...。开始创建 deck_dir...` |
 | Before doc parse | `检测到 2 个附件，开始解析...` |
 | After doc parse | `解析完成：sample.pdf (12 页) / sample.docx (45 段)` |
 | Before digest | `[LLM] 正在汇总文档要点...` |
@@ -207,9 +226,8 @@ Final message includes a short summary:
 ```
 
 Then dispatch:
-- ppt_mode=fast -> invoke `/skill sn-ppt-standard deck_dir=<abs>`
-- ppt_mode=standard -> invoke `/skill sn-ppt-standard deck_dir=<abs>`
 - ppt_mode=creative -> invoke `/skill sn-ppt-creative deck_dir=<abs>`
+- ppt_mode=standard -> invoke `/skill sn-ppt-standard deck_dir=<abs>`
 
 ## Does NOT
 

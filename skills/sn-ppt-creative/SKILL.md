@@ -29,9 +29,9 @@ Never mix — LLM / VLM through sn-image-base, or T2I through model_client — b
 ## Visual asset priority
 
 - Creative mode renders each slide as a generated full-page PNG, so **image generation is the first-priority visual path**.
-- If any supporting external visual reference is needed, use image search only as the second-priority source and do not mention the search provider name in prompts, visible slide text, progress, or summaries.
-- Do not create placeholders. If generation fails, record the page failure and continue; never write fake PNGs, grey boxes, broken-image icons, or "image pending" text.
-- SVG/CSS drawing is not a substitute for the required creative-mode full-slide PNG. Use SVG only in standard HTML mode as a last-resort authored illustration.
+- If image generation fails for a page, use web search (`sn-search-image`) as a fallback to find a real image that fits the page's topic. Each search result includes the image URL, source page, title, and domain for traceability.
+- Do not create placeholders. If generation and search both fail, record the page failure and continue; never write fake PNGs, grey boxes, broken-image icons, or "image pending" text.
+- Do not mention the search provider name in prompts, visible slide text, progress, or summaries.
 
 ## Preconditions
 
@@ -264,5 +264,11 @@ Emit:
 2. **Do NOT fake images.** Failed T2I → record failed, move on. No 1x1 placeholder PNGs.
 3. **Do NOT use `model_client.t2i`** — T2I must go through `sn-image-base`. `model_client` handles only LLM / VLM.
 4. **Do NOT use `sn-text-optimize` or `sn-image-recognize`** from sn-image-base — those must go through `model_client.llm` / `model_client.vlm`.
-5. **Do NOT retry on first failure.**
+5. **Do NOT retry on first failure.** If the same stage fails twice in a row with the same error, treat it as permanent and move on.
 6. **Do NOT generate editable JSON from PNG** (out of scope).
+7. **Language integrity.** All user-visible text MUST match the user's query language. A single English slide in a Chinese deck is a regression.
+8. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** `scripts/build_pptx.py` is the ONLY way to produce a PPTX. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`. If PPTX build fails, the PNG pages are the final deliverable.
+9. **Do NOT fabricate data.** All numbers and factual claims MUST come from the user's documents or web search. Use qualitative descriptions if no data source is available.
+10. **Wait for responses.** If you ask the user a question, do NOT proceed until they reply. Never assume default values.
+11. **Multi-round edits: regenerate.** When the user requests changes, re-run the affected pipeline stages. Do NOT sed/perl/patch files in-place.
+12. **Validate paths before writing.** All output goes under `<deck_dir>/` — the absolute path written in `task_pack.json`. Before writing any file, verify the parent directory exists. Never write to `/workspace/`, `/tmp/`, `~/`, `./`, or any hallucinated path.

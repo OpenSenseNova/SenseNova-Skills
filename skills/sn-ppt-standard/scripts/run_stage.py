@@ -88,6 +88,55 @@ def _load_prompt(name: str) -> str:
     return re.sub(r"<<<INLINE:\s*([^>]+)>>>", expand, raw)
 
 
+# Static fallback: high-frequency characters that differ between Traditional and
+# Simplified Chinese. Only used when params.language is not explicitly set by the
+# entry-skill LLM. The LLM's judgment takes precedence.
+_TRAD_ONLY_CHARS: set[str] = {
+    ch for ch in (
+        "臺體國學會對時後開關頭書長門問見說話為無於與從過還進東點線裡麼這們個"
+        "衛護讓讀認識談論變應實發現願繼續經歷選擇確簡單複雜關係產業價值標準"
+        "醫藥護療網際電腦資訊軟體硬體記憶鍵盤螢幕觸控行動裝置應用程式瀏覽器"
+        "畫藝術音樂電影戲劇傳統歷史文化節慶慶祝結婚禮儀風俗習慣"
+    )
+}
+
+
+def _detect_chinese_variant(text: str) -> str | None:
+    """Static fallback: return 'zh-Hant' / 'zh-Hans' based on trad-only chars.
+    Returns None if the text is not clearly Chinese."""
+    cjk_count = 0
+    trad_count = 0
+    for ch in text:
+        if '一' <= ch <= '鿿' or '㐀' <= ch <= '䶿':
+            cjk_count += 1
+            if ch in _TRAD_ONLY_CHARS:
+                trad_count += 1
+    if cjk_count < 3:
+        return None
+    return "zh-Hant" if trad_count >= 2 else "zh-Hans"
+
+
+def _resolve_language(tp: dict, ip: dict) -> str:
+    """Resolve the target language.
+
+    1. params.language from the entry-skill LLM (highest priority).
+    2. Static CJK-variant detection on the user query (fallback).
+    3. ASCII → 'en', else 'zh-Hans'.
+    """
+    lang = tp.get("params", {}).get("language", "").strip()
+    if lang in ("zh-Hans", "zh-Hant", "en"):
+        return lang
+    query = ip.get("user_query") or ""
+    # Legacy "zh" — try to detect the variant
+    if lang == "zh" or not lang:
+        variant = _detect_chinese_variant(query)
+        if variant:
+            return variant
+    if query and all(ord(ch) < 128 for ch in query):
+        return "en"
+    return "zh-Hans"
+
+
 def _strip_code_fences(s: str) -> str:
     """Remove leading/trailing ``` fences the model sometimes adds."""
     s = s.strip()
@@ -392,7 +441,7 @@ def cmd_outline(deck: Path) -> int:
     return _ok(path="outline.json", pages=len(pages))
 
 
-_ALLOWED_SLOT_KINDS = {"decoration", "concept_visual"}
+_ALLOWED_SLOT_KINDS = {"decoration", "concept_visual", "infographic"}
 
 
 def cmd_asset_plan(deck: Path) -> int:
@@ -440,11 +489,17 @@ def cmd_asset_plan(deck: Path) -> int:
             page["slots"] = []
             continue
 
-        # Filter slots by whitelist
+        # Filter slots by whitelist. Missing or empty slot_kind defaults to
+        # "decoration" instead of being silently dropped — a bare intent string
+        # from the outline should still produce an image slot.
         filtered = []
         for slot in page.get("slots", []):
-            kind = slot.get("slot_kind", "")
-            if kind not in _ALLOWED_SLOT_KINDS:
+            kind = slot.get("slot_kind", "").strip()
+            if not kind:
+                kind = "decoration"
+                slot["slot_kind"] = kind
+                dropped_kinds.append(f"p{pno}/{slot.get('slot_id','?')}=<empty>→decoration")
+            elif kind not in _ALLOWED_SLOT_KINDS:
                 dropped_kinds.append(f"p{pno}/{slot.get('slot_id','?')}={kind!r}")
                 continue
             sid = slot.get("slot_id", "slot")
@@ -514,9 +569,18 @@ def cmd_gen_image(deck: Path, page_no: int, slot_id: str) -> int:
     save_path = deck / slot["local_path"]
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
+    prompt = slot["image_prompt"]
+    if slot.get("slot_kind") == "infographic":
+        prompt = (
+            "Infographic-style diagram with clean layout, clear labels, and professional design. "
+            "Use icons, arrows, and structured data visualization where appropriate. "
+            "No UI chrome, no watermarks, no garbled text.\n\n"
+            f"{prompt}"
+        )
+
     cmd = [
         sys.executable, str(runner), "sn-image-generate",
-        "--prompt", slot["image_prompt"],
+        "--prompt", prompt,
         "--aspect-ratio", slot.get("aspect_ratio", "16:9"),
         "--image-size", slot.get("image_size", "2k"),
         "--save-path", str(save_path),
@@ -954,10 +1018,13 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     }
     available_slot_images: list[dict] = []
     for slot in page_plan.get("slots") or []:
-        if slot.get("status") == "failed" or not slot.get("local_path"):
+        if slot.get("status") != "ok" or not slot.get("local_path"):
             continue
         local_path = slot["local_path"]
-        size = _read_image_size(deck / local_path)
+        image_file = deck / local_path
+        if not image_file.is_file():
+            continue
+        size = _read_image_size(image_file)
         entry: dict = {
             "path": local_path,
             "slot_id": slot.get("slot_id"),
@@ -980,7 +1047,7 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
         "inherited_image_alt": (inherited_image or {}).get("alt") or None,
         "inherited_image_caption_hint": inherited_image_caption_hint,
         "available_slot_images": available_slot_images,
-        "language": tp.get("params", {}).get("language", "zh"),
+        "language": _resolve_language(tp, ip),
     }
     try:
         rewritten_query = llm(
@@ -993,6 +1060,17 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     rewritten_query = rewritten_query.strip()
     if not rewritten_query:
         return _fail(f"page-html rewrite p{page_no}: empty rewrite output", page_no=page_no)
+
+    # Prepend an explicit language hint so the HTML generator never defaults to
+    # the wrong language, even if the rewrite output is ambiguous.
+    lang = _resolve_language(tp, ip)
+    if lang == "zh-Hant":
+        lang_hint = "Target language for all visible text: Traditional Chinese (zh-Hant). Use traditional characters (繁體中文) throughout."
+    elif lang == "zh-Hans":
+        lang_hint = "Target language for all visible text: Simplified Chinese (zh-Hans). Use simplified characters (简体中文) throughout."
+    else:
+        lang_hint = "Target language for all visible text: English (en)."
+    rewritten_query = f"{lang_hint}\n\n{rewritten_query}"
 
     # Persist the rewritten query for debugging / manual re-run.
     query_path = deck / "pages" / f"page_{page_no:03d}.query.txt"
