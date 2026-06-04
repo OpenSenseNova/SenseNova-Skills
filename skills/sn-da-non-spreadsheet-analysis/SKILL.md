@@ -1,5 +1,5 @@
 ---
-name: sn-da-other-files
+name: sn-da-non-spreadsheet-analysis
 description: "Word / PDF / PPT 文档解析与数据分析引擎。覆盖三类文件格式的全量提取、表格数值化、图表理解与跨文档汇总分析。**遇到以下任一情况就主动使用本 skill**：①用户上传或指定了 .docx / .doc / .pdf / .pptx / .ppt 文件并要求分析、提取或统计其中内容；②用户出现触发词：Word分析 / PDF解析 / PPT提取 / 文档分析 / 报告解析 / 幻灯片分析 / 发票提取 / 合同分析 / 文档统计 / 错别字 / 语病 / 字号检查 / 简历分析 / 多文档对比；③任务涉及从文档中提取表格、数值、图表、格式（颜色/高亮/字号）、组织架构、时间线等结构化信息。仅不用于：Excel/CSV 数据分析（使用 sn-da-excel-workflow）、纯图片分析（使用 sn-da-image-caption）。"
 ---
 
@@ -49,7 +49,7 @@ print(f"File type: {ext}")
 | `.pptx` / `.ppt` | `capability/ppt-analysis/SKILL.md` |
 
 ```
-read_file(path="<skills_root>/sn-da-other-files/capability/<format>-analysis/SKILL.md")
+read_file(path="<skills_root>/sn-da-non-spreadsheet-analysis/capability/<format>-analysis/SKILL.md")
 ```
 
 Load **only the sub-skill you need** — do not load all three at once.
@@ -137,7 +137,7 @@ def caption_image(image_path, prompt=None):
 ## Available sub-skills
 
 ```
-sn-da-other-files/capability/word-analysis/SKILL.md   — .docx/.doc
-sn-da-other-files/capability/pdf-analysis/SKILL.md    — .pdf
-sn-da-other-files/capability/ppt-analysis/SKILL.md    — .pptx/.ppt
+sn-da-non-spreadsheet-analysis/capability/word-analysis/SKILL.md   — .docx/.doc
+sn-da-non-spreadsheet-analysis/capability/pdf-analysis/SKILL.md    — .pdf
+sn-da-non-spreadsheet-analysis/capability/ppt-analysis/SKILL.md    — .pptx/.ppt
 ```
