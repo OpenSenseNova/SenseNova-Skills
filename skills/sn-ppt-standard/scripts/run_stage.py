@@ -88,50 +88,15 @@ def _load_prompt(name: str) -> str:
     return re.sub(r"<<<INLINE:\s*([^>]+)>>>", expand, raw)
 
 
-# Static fallback: high-frequency characters that differ between Traditional and
-# Simplified Chinese. Only used when params.language is not explicitly set by the
-# entry-skill LLM. The LLM's judgment takes precedence.
-_TRAD_ONLY_CHARS: set[str] = {
-    ch for ch in (
-        "臺體國學會對時後開關頭書長門問見說話為無於與從過還進東點線裡麼這們個"
-        "衛護讓讀認識談論變應實發現願繼續經歷選擇確簡單複雜關係產業價值標準"
-        "醫藥護療網際電腦資訊軟體硬體記憶鍵盤螢幕觸控行動裝置應用程式瀏覽器"
-        "畫藝術音樂電影戲劇傳統歷史文化節慶慶祝結婚禮儀風俗習慣"
-    )
-}
-
-
-def _detect_chinese_variant(text: str) -> str | None:
-    """Static fallback: return 'zh-Hant' / 'zh-Hans' based on trad-only chars.
-    Returns None if the text is not clearly Chinese."""
-    cjk_count = 0
-    trad_count = 0
-    for ch in text:
-        if '一' <= ch <= '鿿' or '㐀' <= ch <= '䶿':
-            cjk_count += 1
-            if ch in _TRAD_ONLY_CHARS:
-                trad_count += 1
-    if cjk_count < 3:
-        return None
-    return "zh-Hant" if trad_count >= 2 else "zh-Hans"
-
-
 def _resolve_language(tp: dict, ip: dict) -> str:
-    """Resolve the target language.
-
-    1. params.language from the entry-skill LLM (highest priority).
-    2. Static CJK-variant detection on the user query (fallback).
-    3. ASCII → 'en', else 'zh-Hans'.
-    """
+    """Resolve the target language from params.language set by the entry-skill LLM.
+    Falls back to 'zh-Hans' when not explicitly set."""
     lang = tp.get("params", {}).get("language", "").strip()
     if lang in ("zh-Hans", "zh-Hant", "en"):
         return lang
+    if lang == "zh":
+        return "zh-Hans"
     query = ip.get("user_query") or ""
-    # Legacy "zh" — try to detect the variant
-    if lang == "zh" or not lang:
-        variant = _detect_chinese_variant(query)
-        if variant:
-            return variant
     if query and all(ord(ch) < 128 for ch in query):
         return "en"
     return "zh-Hans"
