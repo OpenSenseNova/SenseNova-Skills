@@ -1,9 +1,16 @@
 ---
 name: sn-ppt-standard
 description: |
-  Standard-mode PPT pipeline. All LLM / VLM / T2I calls are wrapped in a
+  Standard and fast PPT pipeline. All LLM / VLM / T2I calls are wrapped in a
   single CLI entry (scripts/run_stage.py). The main agent's job is simple:
   emit ONE shell command per stage, never write loops, never write prompts.
+  
+  Standard mode plans thoroughly with a style preview checkpoint, web research,
+  and image search for polished, delivery-ready presentations. Fast mode builds
+  a complete draft immediately with autonomous decisions, then provides
+  structured refinement suggestions so the user can iterate quickly. Supports
+  AI-generated infographics (U1) for diagrams and flowcharts, web image search
+  (Serper) for real photos, and ECharts for data charts.
 metadata:
   project: SenseNova-Skills
   tier: 1
