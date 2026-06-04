@@ -18,6 +18,8 @@ triggers:
 
 # sn-ppt-creative
 
+> **⚠️ This skill must be invoked through `/skill sn-ppt-entry`.** Never start here directly — the entry skill collects parameters and writes `task_pack.json` + `info_pack.json` that this skill requires. If you arrived here without those files, stop and tell the user to enter via `/skill sn-ppt-entry` or "生成 PPT".
+
 ## Call-routing policy
 
 | Kind | Backend |

@@ -22,6 +22,8 @@ triggers:
 
 # sn-ppt-standard
 
+> **⚠️ This skill must be invoked through `/skill sn-ppt-entry`.** Never start here directly — the entry skill collects parameters, parses uploaded files, and writes `task_pack.json` + `info_pack.json` that this skill requires. If you arrived here without those files, stop and tell the user to enter via `/skill sn-ppt-entry` or "生成 PPT".
+
 This skill is **self-contained** — no dependency on `sn-image-base` for LLM/VLM (T2I still goes through `sn-image-base`). Every call through `$SKILL_DIR/scripts/run_stage.py`. Every subcommand is deterministic: one input set → one output artifact → one-line JSON status.
 
 ## Preconditions
@@ -157,6 +159,22 @@ When `ppt_mode == "fast"`: **skip this checkpoint.** Proceed directly through al
 2. **Generate** — `prompts/page_html.md` is a hard-contract system prompt (document shell, image path format, ECharts rules, single-layer background, `<span>` wrapping rule, language lock). Receives the rewritten query as the user message and returns the final `<!DOCTYPE html>...</html>`.
 
 This split keeps converter-facing mechanical contracts (chart container id = `chart_N`, `{renderer:'svg'}`, `__pptxChartsReady` counter, allowed chart types, etc.) in the generator's system prompt — not buried in the natural-language query where they'd get smoothed out.
+
+## Stage failure handling
+
+When a `run_stage.py` subcommand fails (exit code 1):
+
+- **Echo the failure** and proceed to the next stage. A failed style stage does not block outline; a failed outline does not block export.
+- **Only abort the pipeline** for unrecoverable errors: permanently invalid model name, missing or revoked API key, model returns HTTP 401/403. If the same error is clearly unrecoverable (not a timeout or transient gateway issue), stop and report.
+- **Timeout, no-response, and gateway errors are transient** — treat them like the retry rules in rule #7 and move on.
+- **Never fall back to python-pptx or alternative tools** when a stage fails. The remedy is to re-run that stage, skip it and continue, or work around missing artifacts — not to switch to a different PPTX builder. `run_stage.py` is the only path to generate slides.
+- Stages after a failure use whichever artifacts exist from earlier stages. If `style_spec.json` is missing because the style stage failed, the remaining stages work around it — outline can use defaults, page-html can use a generic style.
+- After all stages complete (some succeeded, some failed), still run `export` — it produces whatever is available.
+
+Progress echo for failures:
+
+| After failed style | `[1] style ✗ 模型超时，继续后续阶段` |
+| After failed outline | `[2] outline ✗ JSON 解析失败，继续后续阶段` |
 
 ## Output on each exec
 
