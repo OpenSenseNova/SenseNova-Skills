@@ -293,8 +293,8 @@ def cmd_preflight(deck: Path) -> int:
     if not ip_path.exists():
         return _fail("info_pack.json missing")
     tp = _load_json(tp_path)
-    if tp.get("ppt_mode") != "standard":
-        return _fail(f"ppt_mode is {tp.get('ppt_mode')!r}, expected 'standard'")
+    if tp.get("ppt_mode") not in {"standard", "fast"}:
+        return _fail(f"ppt_mode is {tp.get('ppt_mode')!r}, expected 'standard' or 'fast'")
     (deck / "pages").mkdir(exist_ok=True)
     (deck / "images").mkdir(exist_ok=True)
 
@@ -1332,7 +1332,9 @@ def cmd_batch_gen_image(deck: Path, concurrency: int) -> int:
     )
 
 
-def cmd_batch_page_html(deck: Path, concurrency: int) -> int:
+def cmd_batch_page_html(deck: Path, concurrency: int,
+                        start_page: int | None = None,
+                        end_page: int | None = None) -> int:
     outline_path = deck / "outline.json"
     if not outline_path.exists():
         return _fail("outline.json missing")
@@ -1342,9 +1344,13 @@ def cmd_batch_page_html(deck: Path, concurrency: int) -> int:
         pno = int(page.get("page_no", 0))
         if pno <= 0:
             continue
+        if start_page is not None and pno < start_page:
+            continue
+        if end_page is not None and pno > end_page:
+            continue
         tasks.append((cmd_page_html, (deck, pno), {}, f"p{pno:03d}/html"))
     if not tasks:
-        return _fail("no pages in outline")
+        return _fail("no pages in outline matching range")
     results = _run_concurrent(tasks, concurrency)
     ok = sum(1 for r in results if r["exit_code"] == 0)
     failed = [
@@ -1434,11 +1440,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     # Batch / concurrent variants (default concurrency=4). Each fans out its
     # per-item work across a thread pool so LLM / VLM / T2I wait times overlap.
-    for name in ("batch-gen-image", "batch-page-html", "batch-refine-page"):
+    for name in ("batch-gen-image", "batch-refine-page"):
         sp = sub.add_parser(name)
         sp.add_argument("--deck-dir", type=Path, required=True)
         sp.add_argument("--concurrency", type=int, default=4,
                         help="max parallel workers (default 4, clamped to 1-16)")
+
+    sp = sub.add_parser("batch-page-html")
+    sp.add_argument("--deck-dir", type=Path, required=True)
+    sp.add_argument("--concurrency", type=int, default=4,
+                    help="max parallel workers (default 4, clamped to 1-16)")
+    sp.add_argument("--start-page", type=int, default=None,
+                    help="first page to process (1-based, inclusive)")
+    sp.add_argument("--end-page", type=int, default=None,
+                    help="last page to process (1-based, inclusive)")
 
     return p
 
@@ -1465,7 +1480,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "batch-gen-image":
         return cmd_batch_gen_image(deck, args.concurrency)
     if args.cmd == "batch-page-html":
-        return cmd_batch_page_html(deck, args.concurrency)
+        return cmd_batch_page_html(deck, args.concurrency,
+                                   getattr(args, "start_page", None),
+                                   getattr(args, "end_page", None))
     if args.cmd == "batch-refine-page":
         return cmd_batch_refine_page(deck, args.concurrency)
     return _fail(f"unknown command {args.cmd!r}")
