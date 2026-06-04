@@ -2,9 +2,11 @@
 name: sn-ppt-creative
 description: |
   Creative-mode PPT pipeline. One full-page 16:9 PNG per slide.
-  LLM / VLM calls go through sn-ppt-standard/lib/model_client.py (shared thin client).
-  Text-to-image (the actual png rendering) goes through sn-image-base/scripts/sn_agent_runner.py.
-  Expects task_pack.json + info_pack.json already written by sn-ppt-entry.
+  LLM / VLM calls go through sn-ppt-standard/lib/model_client.py (shared thin
+  client). Text-to-image (the actual png rendering) goes through
+  sn-image-base/scripts/sn_agent_runner.py. Falls back to web image search
+  when T2I generation fails. Expects task_pack.json + info_pack.json already
+  written by sn-ppt-entry.
 metadata:
   project: SenseNova-Skills
   tier: 1

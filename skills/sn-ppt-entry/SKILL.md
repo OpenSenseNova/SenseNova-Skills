@@ -1,10 +1,14 @@
 ---
 name: sn-ppt-entry
 description: |
-  Entry point for PPT generation. Collects role / audience / scene / page_count /
-  ppt_mode (creative or standard), parses uploaded pdf/docx/md/txt files,
-  produces task_pack.json + info_pack.json in a new deck_dir, then dispatches
-  to sn-ppt-creative or sn-ppt-standard. Use when the user asks to make a PPT /
+  Entry point for PPT generation. Asks the user to choose a mode (fast,
+  standard, or creative), then collects role / audience / scene / page_count
+  as needed. For standard mode, also asks how images should be sourced (AI
+  generation, web search, or none) and whether charts should use AI-generated
+  infographics or ECharts. Parses uploaded pdf/docx/md/txt files, produces
+  task_pack.json + info_pack.json in a new deck_dir, then dispatches to
+  sn-ppt-creative or sn-ppt-standard. Fast mode skips optional questions and
+  gets straight to building. Use when the user asks to make a PPT /
   presentation / 演示 / PPT.
 metadata:
   project: SenseNova-Skills
