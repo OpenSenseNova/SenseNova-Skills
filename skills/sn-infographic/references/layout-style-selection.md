@@ -2,6 +2,8 @@
 
 Resolved by the Worker Agent's own reasoning — no additional LLM call required.
 
+**Operate on names only.** This whole procedure manipulates layout/style **names** (e.g. `hub-spoke`, `corporate-memphis`). **Never open the definition files under `references/layouts/*.md` or `references/styles/*.md` to make the choice** — the pick is a weighted *random* draw, not a quality comparison, so their contents are irrelevant here. Only the two finally-selected files are read, once, in SKILL.md Step 2.3.
+
 ## Step 1 — Layout Candidates (by data_type)
 
 Analyze the information structure of `user_prompt`, determine the `data_type`, and map to layout candidates.
@@ -62,17 +64,28 @@ Each context has a primary (match_score=1.0) and alternatives (match_score=0.7).
 
 ## Step 3 — Random Sampling
 
-Layout and style are sampled independently using the same process:
-
-1. Build a weighted candidate pool: repeat the primary item **10 times**, each alternative item **9 times**, then randomly pick **3 items** from all available options outside the current data_type / context and repeat each **1 time**, then merge into the candidate pool
-2. Shuffle the pool with bash `shuf` and take the first item as the result:
+Layout and style are sampled independently using the same process, **on names only**. The "all available options" universe is just the **filenames** under `references/layouts/` and `references/styles/` — enumerate them with `ls` (names, not contents):
 
 ```bash
-LAYOUT=$(printf '%s\n' "${LAYOUT_POOL[@]}" | shuf | head -1)
-STYLE=$(printf '%s\n' "${STYLE_POOL[@]}" | shuf | head -1)
+mapfile -t ALL_LAYOUTS < <(ls "$SKILL_DIR/references/layouts/" | sed 's/\.md$//')
+mapfile -t ALL_STYLES  < <(ls "$SKILL_DIR/references/styles/"  | sed 's/\.md$//')
 ```
 
-The weighting gives primary and alternatives roughly equal win probability (~10:9), with non-matching items having a combined win probability of ~10%.
+For each of layout and style, build the weighted pool from the matched row of the table above — the **primary** name ×10, each **alternative** name ×9, plus **3 random names** drawn from the full `ls` list (outside the current data_type / context) ×1 — then shuffle and take the first. Example for layout (style is identical with `ALL_STYLES`):
+
+```bash
+PRIMARY_LAYOUT="hub-spoke"                       # match_score=1.0 row for this data_type
+ALT_LAYOUTS=(jigsaw multi-focal venn-diagram)    # match_score=0.7 alternatives
+
+LAYOUT_POOL=()
+for _ in $(seq 10); do LAYOUT_POOL+=("$PRIMARY_LAYOUT"); done
+for a in "${ALT_LAYOUTS[@]}"; do for _ in $(seq 9); do LAYOUT_POOL+=("$a"); done; done
+for r in $(printf '%s\n' "${ALL_LAYOUTS[@]}" | shuf | head -3); do LAYOUT_POOL+=("$r"); done
+
+LAYOUT=$(printf '%s\n' "${LAYOUT_POOL[@]}" | shuf | head -1)
+```
+
+The weighting gives primary and alternatives roughly equal win probability (~10:9), with the random non-matching items a combined ~10%.
 
 ## Fallback
 

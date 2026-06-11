@@ -36,6 +36,14 @@ from sn_image_base.generation import (
 )
 from sn_image_base.llm import AnthropicMessagesAdapter, OpenAIChatAdapter
 
+# Allowed --image-size values, canonical lowercase form. Comparison is
+# case-insensitive (see run_image_generate). The runner forwards both 2k and 4k
+# to the configured backend; each backend then either renders the size, forwards
+# it upstream, or rejects it (e.g. the sensenova backend rejects 4k since it only
+# has 1K / 2K buckets). Any rejection surfaces as a status=failed JSON. 1k remains
+# backend-only until a caller adds it here.
+ALLOWED_IMAGE_SIZES = frozenset({"2k", "4k"})
+
 
 def _resolve_prompt(
     direct: str | None,
@@ -80,7 +88,9 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument("--prompt", required=True, help="Text prompt for image generation")
     gen_parser.add_argument("--negative-prompt", default="", help="Negative prompt")
     gen_parser.add_argument(
-        "--image-size", default="2k", choices=["2k"], help="Image size preset"
+        "--image-size",
+        default="2k",
+        help="Image size preset (case-insensitive), e.g. '2k' or '4k'; forwarded to the upstream model, which may reject an unsupported size",
     )
     gen_parser.add_argument(
         "--aspect-ratio",
@@ -206,10 +216,20 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
 
     Returns:
         tuple[dict, int]:
-            A (result_dict, exit_code) pair. result_dict contains status,
-            output (image path), task_id, and message. exit_code is 0 on
-            success and 1 on failure.
+            A (result_dict, exit_code) pair. On success result_dict contains
+            status, output (image path), and message. On failure it contains
+            status, error_type, and error. exit_code is 0 on success and 1 on
+            failure.
     """
+    normalized_size = args.image_size.strip().lower()
+    if normalized_size not in ALLOWED_IMAGE_SIZES:
+        accepted = ", ".join(sorted(ALLOWED_IMAGE_SIZES))
+        raise ValueError(
+            f"image-size {args.image_size!r} is not supported. "
+            f"Accepted values (case-insensitive): {accepted}."
+        )
+    args.image_size = normalized_size
+
     api_key = args.api_key or global_configs.SN_IMAGE_GEN_API_KEY
     if not api_key:
         raise MissingApiKeyError(global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY"))
@@ -233,7 +253,10 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             timeout=args.timeout,
             ssl_verify=not args.insecure,
         )
-        print(f"Using SenseNova model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation")
+        print(
+            f"Using SenseNova model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation",
+            file=sys.stderr,
+        )
     elif global_configs.SN_IMAGE_GEN_MODEL_TYPE == "nano-banana":
         if not global_configs.SN_IMAGE_GEN_MODEL:
             env_var_help = global_configs.get_env_var_help("SN_IMAGE_GEN_MODEL")
@@ -245,7 +268,10 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             timeout=args.timeout,
             ssl_verify=not args.insecure,
         )
-        print(f"Using Nano Banana model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation")
+        print(
+            f"Using Nano Banana model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation",
+            file=sys.stderr,
+        )
     elif global_configs.SN_IMAGE_GEN_MODEL_TYPE == "openai-image":
         if not global_configs.SN_IMAGE_GEN_MODEL:
             env_var_help = global_configs.get_env_var_help("SN_IMAGE_GEN_MODEL")
@@ -256,7 +282,8 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             model=global_configs.SN_IMAGE_GEN_MODEL,
         )
         print(
-            f"Using OpenAI-compatible model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation"
+            f"Using OpenAI-compatible model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation",
+            file=sys.stderr,
         )
     else:
         supported_types = "sensenova, nano-banana, openai-image"
@@ -321,7 +348,7 @@ async def run_image_recognize(args: argparse.Namespace) -> tuple[dict, int]:
             "interface_type": vlm_type,
         }, 0
     except Exception as exc:
-        return {"status": "failed", "error": str(exc)}, 1
+        return {"status": "failed", "error_type": type(exc).__name__, "error": str(exc)}, 1
     finally:
         await adapter.aclose()
 
@@ -367,7 +394,7 @@ async def run_text_optimize(args: argparse.Namespace) -> tuple[dict, int]:
             "interface_type": llm_type,
         }, 0
     except Exception as exc:
-        return {"status": "failed", "error": str(exc)}, 1
+        return {"status": "failed", "error_type": type(exc).__name__, "error": str(exc)}, 1
     finally:
         await adapter.aclose()
 
@@ -470,7 +497,10 @@ def _build_endpoint_and_adapter(
             api_key=api_key,
             model=model,
         )
-        print(f"Using Anthropic Messages adapter for {kind.upper()} {model!r} on {endpoint_url!r}")
+        print(
+            f"Using Anthropic Messages adapter for {kind.upper()} {model!r} on {endpoint_url!r}",
+            file=sys.stderr,
+        )
     else:
         endpoint = "/v1/chat/completions" if not base_url_obj.path else "/chat/completions"
         endpoint_url = f"{base_url_obj.geturl()}{endpoint}"
@@ -481,7 +511,10 @@ def _build_endpoint_and_adapter(
             api_key=api_key,
             model=model,
         )
-        print(f"Using OpenAI Chat adapter for {kind.upper()} {model!r} on {endpoint_url!r}")
+        print(
+            f"Using OpenAI Chat adapter for {kind.upper()} {model!r} on {endpoint_url!r}",
+            file=sys.stderr,
+        )
 
     return adapter
 
@@ -509,7 +542,7 @@ def _output_result(output_format: str, result: dict, elapsed: float | None = Non
             # text-optimize/image-recognize use "result", image-generate uses "output"
             print(result.get("result") or result.get("output") or "")
         else:
-            print(result.get("message") or result["error"], file=sys.stderr)
+            print(result["error"], file=sys.stderr)
     return 0 if result["status"] == "ok" else 1
 
 
@@ -542,7 +575,7 @@ async def main_async(args: argparse.Namespace) -> int:
         if args.output_format == "json":
             print(
                 json.dumps(
-                    {"status": "failed", "error": str(exc), "elapsed_seconds": elapsed},
+                    {"status": "failed", "error_type": type(exc).__name__, "error": str(exc), "elapsed_seconds": elapsed},
                     ensure_ascii=False,
                 )
             )
@@ -555,7 +588,7 @@ async def main_async(args: argparse.Namespace) -> int:
         if args.output_format == "json":
             print(
                 json.dumps(
-                    {"status": "failed", "error": str(exc), "elapsed_seconds": elapsed},
+                    {"status": "failed", "error_type": type(exc).__name__, "error": str(exc), "elapsed_seconds": elapsed},
                     ensure_ascii=False,
                 )
             )

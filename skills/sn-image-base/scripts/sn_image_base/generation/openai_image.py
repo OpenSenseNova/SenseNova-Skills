@@ -101,7 +101,8 @@ class OpenAIImageGenerationClient(T2IBaseClient):
 
         Returns:
             dict:
-                Dictionary with keys: status, output (path), message.
+                On success, keys: status, output (path), message. On failure,
+                keys: status, error_type, error.
         """
         model = model or self.model or global_configs.SN_IMAGE_GEN_MODEL
         if not model:
@@ -165,14 +166,15 @@ class OpenAIImageGenerationClient(T2IBaseClient):
                             details += f"\nIs any of the following environment variable(s) set correctly: {env_names_str}?"
             return {
                 "status": "failed",
-                "error": f"HTTP {exc.code}: {exc.message}",
-                "message": details,
+                "error_type": type(exc).__name__,
+                "error": f"HTTP {exc.code}: {exc.message}" + (f"\n{details}" if details else ""),
             }
         try:
             images = data["images"]
             if not images:
                 return {
                     "status": "failed",
+                    "error_type": "EmptyResponse",
                     "error": "No image generated from the model",
                 }
             image_bytes, mime_type = images[-1]
@@ -187,14 +189,14 @@ class OpenAIImageGenerationClient(T2IBaseClient):
         except httpx.HTTPStatusError as exc:
             return {
                 "status": "failed",
-                "error": f"HTTP {exc.response.status_code}",
-                "message": f"http error: {exc.response.status_code} {exc.response.text}",
+                "error_type": type(exc).__name__,
+                "error": f"HTTP {exc.response.status_code}: {exc.response.text}",
             }
         except (httpx.HTTPError, OSError, ValueError) as exc:
             return {
                 "status": "failed",
-                "error": type(exc).__name__,
-                "message": f"request error: {exc}",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
             }
 
     @property
@@ -297,8 +299,8 @@ class OpenAIImageGenerationClient(T2IBaseClient):
         images: list[tuple[bytes, str]] = []
         data_items: list[dict] = raw_data.get("data") or []
         for item in data_items:
-            encoded: str = item.get("b64_json") or ""
-            if not encoded:
+            encoded = item.get("b64_json")
+            if not isinstance(encoded, str) or not encoded:
                 continue
 
             if encoded.startswith("data:"):
@@ -336,8 +338,10 @@ class OpenAIImageGenerationClient(T2IBaseClient):
             max_pixel = 1024**2
         elif resolution == "2K":
             max_pixel = 2048**2
+        elif resolution == "4K":
+            max_pixel = 4096**2
         else:
-            raise ValueError(f"Unsupported resolution: {resolution}")
+            raise ValueError(f"Unsupported resolution token: {resolution!r}")
         aspect_ratio_val = aspect_ratio_val or 1
         if aspect_ratio_val < 1 / 3 or aspect_ratio_val > 3:
             raise ValueError(f"Aspect ratio value must be between [1/3, 3], got {aspect_ratio_val}")

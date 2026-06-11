@@ -6,7 +6,6 @@ limit check to avoid PoolTimeout and 'Too many open files' under high concurrenc
 
 import contextlib
 import json
-import resource
 from typing import Any
 
 import httpx
@@ -34,6 +33,8 @@ def check_file_descriptor_limit(max_connections: int, margin: int = 200) -> None
         RuntimeError: If soft limit < max_connections + margin.
     """
     try:
+        import resource  # POSIX-only; absent on Windows
+
         soft, _hard = resource.getrlimit(resource.RLIMIT_NOFILE)
     except (ImportError, AttributeError, OSError):
         return

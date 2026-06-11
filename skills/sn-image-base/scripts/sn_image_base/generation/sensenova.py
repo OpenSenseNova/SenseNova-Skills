@@ -124,7 +124,8 @@ class SensenovaText2ImageClient(T2IBaseClient):
 
         Returns:
             dict:
-                Dictionary with keys: status, output (path), message.
+                On success, keys: status, output (path), message. On failure,
+                keys: status, error_type, error.
         """
         model = model or self.model or global_configs.SN_IMAGE_GEN_MODEL
         # Normalize image_size to uppercase for NanoBanana API
@@ -178,14 +179,15 @@ class SensenovaText2ImageClient(T2IBaseClient):
                             details += f"\nIs any of the following environment variable(s) set correctly: {env_names_str}?"
             return {
                 "status": "failed",
-                "error": f"HTTP {exc.code}: {exc.message}",
-                "message": details,
+                "error_type": type(exc).__name__,
+                "error": f"HTTP {exc.code}: {exc.message}" + (f"\n{details}" if details else ""),
             }
         try:
             images_urls: list[str] = data["images_urls"]
             if not images_urls:
                 return {
                     "status": "failed",
+                    "error_type": "EmptyResponse",
                     "error": "No image generated from the model",
                 }
             url = images_urls[-1]
@@ -200,14 +202,14 @@ class SensenovaText2ImageClient(T2IBaseClient):
         except httpx.HTTPStatusError as exc:
             return {
                 "status": "failed",
-                "error": f"HTTP {exc.response.status_code}",
-                "message": f"http error: {exc.response.status_code} {exc.response.text}",
+                "error_type": type(exc).__name__,
+                "error": f"HTTP {exc.response.status_code}: {exc.response.text}",
             }
         except (httpx.HTTPError, OSError, ValueError) as exc:
             return {
                 "status": "failed",
-                "error": type(exc).__name__,
-                "message": f"request error: {exc}",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
             }
 
     @property
@@ -323,7 +325,13 @@ class SensenovaText2ImageClient(T2IBaseClient):
         elif resolution == "2K":
             buckets = BUCKETS_2K
         else:
-            raise ValueError(f"Unsupported resolution: {resolution!r}. Must be '1K' or '2K'.")
+            # The SenseNova backend only has 1K / 2K pixel buckets. Reject any
+            # other resolution (e.g. 4K) here; the ValueError propagates to the
+            # runner and is returned to the caller as a status=failed JSON.
+            raise ValueError(
+                f"image-size {resolution!r} is not supported by the SenseNova image backend "
+                f"(supported: 1K, 2K)."
+            )
         try:
             ws, _, hs = aspect_ratio.strip().partition(":")
             width = int(ws)
@@ -363,7 +371,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
         images_urls: list[str] = []
         for item in raw_data.get("data", []):
             url = item.get("url")
-            if url:
+            if isinstance(url, str) and url:
                 images_urls.append(url)
         return {"images_urls": images_urls}
 
