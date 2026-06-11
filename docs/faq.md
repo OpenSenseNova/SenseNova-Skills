@@ -87,7 +87,7 @@ The paid Token Plan is in preparation and is expected to launch later. Please wa
 
 ## Q: What if the Anthropic format isn't supported?
 
-SenseNova supports both the Anthropic Messages format (via `https://token.sensenova.cn`) and the OpenAI-compatible format (via `https://token.sensenova.cn/v1`). Claude Code can connect using the Anthropic format directly, with no protocol conversion required. For the exact configuration, see the Provider configuration section of the [SenseNova-Skills Agent access tutorial](https://sensetime.feishu.cn/wiki/EgmIwUnOpiXVPIkGUdVcAHTNnGd).
+SenseNova supports both the Anthropic Messages format (via `https://token.sensenova.cn`) and the OpenAI-compatible format (via `https://token.sensenova.cn/v1`). Claude Code can connect using the Anthropic format directly, with no protocol conversion required. For the exact configuration, see the Provider configuration section of the [SenseNova-Skills Agent access tutorial](https://sensetime.feishu.cn/wiki/LYuWwvwABiRtvgkce6DcwCw8nec).
 
 ## Q: What if the model name isn't recognized?
 
@@ -114,4 +114,4 @@ If you've confirmed the key is correct but still get a 401, regenerate the key a
 
 ---
 
-> **Provider configuration reference:** For how to configure providers for SenseNova models (cc-switch, Claude Code, Codex, etc.), see the [SenseNova-Skills Agent access tutorial](https://sensetime.feishu.cn/wiki/EgmIwUnOpiXVPIkGUdVcAHTNnGd).
+> **Provider configuration reference:** For how to configure providers for SenseNova models (cc-switch, Claude Code, Codex, etc.), see the [SenseNova-Skills Agent access tutorial](https://sensetime.feishu.cn/wiki/LYuWwvwABiRtvgkce6DcwCw8nec).
