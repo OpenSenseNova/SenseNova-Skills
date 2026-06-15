@@ -174,6 +174,10 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 - 依赖技能：[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
 
+## 常见问题
+
+接入与运行中的常见问题（400/401 报错、限流、PPT 超时、信息图质量、模型名等）解答见 [`docs/faq_CN.md`](docs/faq_CN.md)。
+
 ## 贡献
 
 欢迎以本仓库的技能为模板创建你自己的 OpenClaw 技能。一个好技能的核心要素：

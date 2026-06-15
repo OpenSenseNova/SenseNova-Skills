@@ -173,6 +173,10 @@ A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs
 
 - Depends on: [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md), [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
 
+## FAQ
+
+Common setup and runtime questions (400/401 errors, rate limits, PPT timeouts, infographic quality, model names) are answered in [`docs/faq.md`](docs/faq.md).
+
 ## Contributing
 
 Feel free to use the skills here as templates for your own OpenClaw skills. The qualities that make a skill good:
