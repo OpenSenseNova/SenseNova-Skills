@@ -7,8 +7,9 @@
     "test": "node --test test/test_style_parser.mjs test/test_pptx_builder.mjs test/test_cli_review_guard.mjs"
   },
   "dependencies": {
-    "pptxgenjs": "^3.12.0",
+    "echarts": "^5.4.3",
+    "pdf-lib": "^1.17.1",
     "playwright": "^1.50.0",
-    "echarts": "^5.4.3"
+    "pptxgenjs": "^3.12.0"
   }
 }

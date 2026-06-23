@@ -4,8 +4,9 @@ description: |
   Entry point for PPT generation. Asks the user to choose a mode (fast,
   standard, or creative), then collects role / audience / scene / page_count
   as needed. For standard mode, also asks how images should be sourced (AI
-  generation, web search, or none) and whether charts should use AI-generated
-  infographics or ECharts. Parses uploaded pdf/docx/md/txt files, produces
+  generation, web search, or none), whether charts should use AI-generated
+  infographics or ECharts, and whether the final deliverable should be PPTX or
+  PDF. Parses uploaded pdf/docx/md/txt files, produces
   task_pack.json + info_pack.json in a new deck_dir, then dispatches to
   sn-ppt-creative or sn-ppt-standard. Fast mode skips optional questions and
   gets straight to building. Use when the user asks to make a PPT /
@@ -47,9 +48,9 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
 
    Store as `ppt_mode` in `task_pack`.
 
-4. **Only ask image-related questions for standard mode.** Fast mode and creative mode have fixed defaults — asking extra questions defeats the purpose of "fast."
+4. **Only ask standard-mode option questions for standard mode.** Fast mode and creative mode have fixed defaults — asking extra questions defeats the purpose of "fast."
 
-   If `ppt_mode == "standard"`, ask two more questions:
+   If `ppt_mode == "standard"`, ask three more questions:
 
    **Question — Normal images (decorative / conceptual):**
    "Should I include images, and how should they be sourced?"
@@ -66,9 +67,16 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
 
    Store as `infographic_source` in `task_pack.params` (`"ai-gen"` or `"echarts"`).
 
-   If `ppt_mode == "fast"`: skip image questions. Default to `image_source = "ai-gen"` and `infographic_source = "echarts"`. **Also skip role/audience/scene/page_count questions** — infer reasonable defaults from the user's query and move directly to building slides. Fast mode means fewer questions, faster start. If the user didn't explicitly state these, make your best guess and proceed.
+   **Question — Final output:**
+   "Which final file format should I generate?"
+   - "PPTX — editable PowerPoint deck"
+   - "PDF — fixed-layout presentation file"
 
-   If `ppt_mode == "creative"`: skip image questions. Default to `image_source = "ai-gen"` (full-page T2I rendering). Infographics are not applicable. Skip role/audience/scene/page_count unless explicitly stated.
+   Store as `output_format` in `task_pack.params` (`"pptx"` or `"pdf"`). Default to `"pptx"` only if resuming an older `task_pack.json` that lacks this field; do not silently default during a new standard-mode run.
+
+   If `ppt_mode == "fast"`: skip image/output questions. Default to `image_source = "ai-gen"`, `infographic_source = "echarts"`, and `output_format = "pptx"`. **Also skip role/audience/scene/page_count questions** — infer reasonable defaults from the user's query and move directly to building slides. Fast mode means fewer questions, faster start. If the user didn't explicitly state these, make your best guess and proceed.
+
+   If `ppt_mode == "creative"`: skip image/output questions. Default to `image_source = "ai-gen"` (full-page T2I rendering) and `output_format = "pptx"`. Infographics are not applicable. Skip role/audience/scene/page_count unless explicitly stated.
 
 5. Collect `role -> audience -> scene -> page_count` — **for standard mode only**. Use the wording in `references/ask_user_templates.md`. 2-3 options per question; do not write "其他". For fast/creative modes, infer from the query and move on.
 6. Create deck_dir — **location is FIXED, do not guess**:
@@ -164,7 +172,8 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
     "page_count": 10,
     "language": "zh",
     "image_source": "ai-gen",
-    "infographic_source": "ai-gen"
+    "infographic_source": "ai-gen",
+    "output_format": "pptx"
   },
   "created_at": "2026-04-21T15:45:00+08:00",
   "skill_version": "0.1.0"
@@ -217,7 +226,7 @@ Emit a short chat reply at each boundary. Silence between ask_user rounds and mo
 |---|---|
 | Right after entering sn-ppt-entry | `已进入 sn-ppt-entry，开始收集参数...` |
 | Missing a param | `缺少参数：<role>，马上问你` (then ask_user) |
-| All params collected | `参数齐备：mode=standard, image_source=ai-gen, role=...。开始创建 deck_dir...` |
+| All params collected | `参数齐备：mode=standard, image_source=ai-gen, output_format=pptx, role=...。开始创建 deck_dir...` |
 | Before doc parse | `检测到 2 个附件，开始解析...` |
 | After doc parse | `解析完成：sample.pdf (12 页) / sample.docx (45 段)` |
 | Before digest | `[LLM] 正在汇总文档要点...` |

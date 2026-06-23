@@ -137,7 +137,7 @@ $R batch-page-html  --deck-dir $D --concurrency N [--start-page S --end-page E]
 $R batch-page-html  --deck-dir $D --concurrency 4 --start-page 1 --end-page 8
 $R batch-page-html  --deck-dir $D --concurrency 4 --start-page 9 --end-page 16
 
-$R export        --deck-dir $D              # -> <deck_id>.pptx
+$R export        --deck-dir $D              # -> <deck_id>.pptx or <deck_id>.pdf from task_pack.params.output_format
 ```
 
 ### Style preview checkpoint (standard mode only)
@@ -207,7 +207,7 @@ For `gen-image` failures: **don't retry**, don't substitute — the HTML stage w
 | Per gen-image | `[图 5/14] page_003/hero ✓` or `... ✗ 服务端 502` |
 | After all gen-image | `图片生成阶段完成：成功 12，失败 2` |
 | Per page-html | `[页 3/10] HTML ✓` |
-| After export | `PPTX ✓ (10/10 页)` or `PPTX 失败: ...` |
+| After export | `PPTX ✓ (10/10 页)` / `PDF ✓ (10/10 页)` or `导出失败: ...` |
 
 **Silence for more than ~30 seconds = a bug.**
 
@@ -241,11 +241,17 @@ Before running `export`, verify that every `pages/page_NNN.html` has substantive
 - If any page HTML is suspiciously small (< 500 bytes), re-run `page-html` for that page
 - Only proceed to export when all pages pass
 
-## Export PPTX gate
+## Export gate
 
-`scripts/export_pptx/html_to_pptx.mjs` is invoked with `--force` — skips built-in motif / real-photo gates (this skill doesn't use the motif protocol). PPTX still produces even if some slots are missing images.
+`scripts/run_stage.py export` reads `task_pack.params.output_format`.
 
-If the headless browser (Playwright/Chromium) is unavailable, the export returns `status: "skipped"` with reason `"headless_browser_unavailable"`. The PPTX file is absent — this is an expected degraded ending state. The HTML pages are the final deliverable.
+- `output_format == "pptx"` invokes `scripts/export_pptx/html_to_pptx.mjs --force`. This skips built-in motif / real-photo gates (this skill doesn't use the motif protocol). PPTX still produces even if some slots are missing images.
+- `output_format == "pdf"` invokes `scripts/export_pptx/html_to_pdf.mjs --force`. The PDF path opens each page HTML as a top-level Chromium document, uses screen media with print backgrounds enabled, scales oversized slide canvases down to fit the fixed 1600×900 page, prints one PDF per page, then merges the pages with `pdf-lib`. It is not a screenshot-backed PDF path.
+- If `output_format` is missing because the deck was created by an older entry skill, ask the user to choose PPTX or PDF before export, then run `export --format <pptx|pdf>`.
+
+If the headless browser (Playwright/Chromium) is unavailable, the export returns `status: "skipped"` with reason `"headless_browser_unavailable"`. The selected output file is absent — this is an expected degraded ending state. The HTML pages are the final deliverable.
+
+PDF sizing constraint: because some models emit HTML canvases larger than the expected slide size, the PDF exporter must fit by measuring the rendered slide target (`.wrapper`, `.slide.canvas`, `.slide`, or `body`) and scaling down any page larger than 1600×900. Never crop oversized pages silently.
 
 🚫 **DO NOT fall back to python-pptx, libreoffice, or any other converter.** DO NOT attempt to install Chromium system dependencies manually. Simply report the skip and finish.
 

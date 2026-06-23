@@ -1069,11 +1069,26 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     )
 
 
-def cmd_export(deck: Path) -> int:
+def _resolve_output_format(deck: Path, requested: str | None = None) -> str:
+    fmt = (requested or "").strip().lower()
+    if not fmt:
+        try:
+            tp = _load_json(deck / "task_pack.json")
+            fmt = str(tp.get("params", {}).get("output_format") or "").strip().lower()
+        except Exception:
+            fmt = ""
+    if fmt in {"pdf", "pptx"}:
+        return fmt
+    return "pptx"
+
+
+def cmd_export(deck: Path, output_format: str | None = None) -> int:
     import subprocess
-    converter = SKILL_DIR / "scripts" / "export_pptx" / "html_to_pptx.mjs"
+    fmt = _resolve_output_format(deck, output_format)
+    converter_name = "html_to_pdf.mjs" if fmt == "pdf" else "html_to_pptx.mjs"
+    converter = SKILL_DIR / "scripts" / "export_pptx" / converter_name
     if not converter.exists():
-        return _fail("export_pptx/html_to_pptx.mjs missing — run npm install in scripts/export_pptx")
+        return _fail(f"export_pptx/{converter_name} missing — run npm install in scripts/export_pptx")
     cmd = ["node", str(converter), "--deck-dir", str(deck), "--force"]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
@@ -1087,18 +1102,20 @@ def cmd_export(deck: Path) -> int:
             info = json.loads(last[-1])
             # Graceful skip: headless browser unavailable → not a failure
             if info.get("status") == "skipped":
-                return {
+                print(json.dumps({
                     "status": "skipped",
                     "stage": "export",
+                    "format": fmt,
                     "reason": info.get("reason"),
                     "detail": info.get("detail"),
-                }
+                }, ensure_ascii=False))
+                return 0
             converted = info.get("converted")
             pages = info.get("pages")
             failed = info.get("failed")
     except Exception:
         pass
-    return _ok(pages=pages, converted=converted, failed=failed)
+    return _ok(format=fmt, pages=pages, converted=converted, failed=failed)
 
 
 # ---------------------------------------------------------------------------
@@ -1417,9 +1434,14 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="run_stage")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    for name in ("preflight", "style", "outline", "asset-plan", "export"):
+    for name in ("preflight", "style", "outline", "asset-plan"):
         sp = sub.add_parser(name)
         sp.add_argument("--deck-dir", type=Path, required=True)
+
+    sp = sub.add_parser("export")
+    sp.add_argument("--deck-dir", type=Path, required=True)
+    sp.add_argument("--format", choices=("pptx", "pdf"), default=None,
+                    help="override task_pack.params.output_format")
 
     sp = sub.add_parser("gen-image")
     sp.add_argument("--deck-dir", type=Path, required=True)
@@ -1476,7 +1498,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "refine-page":
         return cmd_refine_page(deck, args.page)
     if args.cmd == "export":
-        return cmd_export(deck)
+        return cmd_export(deck, getattr(args, "format", None))
     if args.cmd == "batch-gen-image":
         return cmd_batch_gen_image(deck, args.concurrency)
     if args.cmd == "batch-page-html":
