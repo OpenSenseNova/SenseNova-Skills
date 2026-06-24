@@ -289,6 +289,14 @@ In the interactive prompt, type something like "hello" — a coherent reply mean
 
 ## 3. Load this repo's skills
 
+> **OpenClaw users — quickest option:** the full skill suite is published as a bundle plugin on [ClawHub](https://clawhub.ai/plugins/sensenova-skills). Instead of the clone-based steps below, install everything in one command:
+>
+> ```bash
+> openclaw plugins install clawhub:sensenova-skills
+> ```
+>
+> Then jump to [§3.4](#34-per-category-skill-prerequisites) for per-category prerequisites and [§4](#4-end-to-end-smoke-test) for the smoke test. Steps §3.1–§3.3 below are for hermes-agent, manual setups, or tracking this repo directly.
+
 ### 3.1 Clone the repo
 
 ```bash
