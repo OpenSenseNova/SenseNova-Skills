@@ -283,8 +283,6 @@ def main(argv: list[str] | None = None) -> int:
     # Annotate indices for cross-reference from digest / outline
     for di, d in enumerate(documents):
         d["doc_index"] = di
-        for ti, _t in enumerate(d.get("tables") or []):
-            pass  # kept as plain list for simplicity; consumers index by position
         for ii, img in enumerate(d.get("inherited_images") or []):
             img["image_index"] = ii
             img["doc_index"] = di
