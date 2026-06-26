@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Reddit 搜索。通过 Reddit 公开 JSON API（无需认证）。"""
-from __future__ import annotations
 
 import sys
+
 
 from search_utils import build_parser, get_client, make_item, make_result, print_json
 

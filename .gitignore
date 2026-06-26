@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
 .pytest_cache/
 
 # Worktrees (managed by `git worktree`)
@@ -10,3 +11,9 @@ tmp/
 
 # Node
 node_modules/
+
+# Local research outputs
+deep-research-reports/
+
+# Claude Code local config / skills
+.claude/

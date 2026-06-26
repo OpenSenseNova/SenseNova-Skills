@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Stack Overflow 搜索。通过 Stack Exchange API v2.3。"""
-from __future__ import annotations
 
 import sys
+
 
 from search_utils import build_parser, get_client, get_key, make_item, make_result, print_json
 

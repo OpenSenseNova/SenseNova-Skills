@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """Wikipedia 搜索。通过 MediaWiki API。"""
-from __future__ import annotations
 
 import sys
 
+
 from search_utils import build_parser, get_client, make_item, make_result, print_json
+
+WIKIPEDIA_USER_AGENT = (
+    "sensenova-claw sn-search-academic "
+    "(https://github.com/SenseTime-FVG/sensenova-claw)"
+)
 
 
 def _api_url(lang: str) -> str:
@@ -23,7 +28,7 @@ def search(query: str, limit: int, lang: str = "en") -> list[dict]:
         "utf8": 1,
     }
 
-    with get_client() as client:
+    with get_client(headers={"User-Agent": WIKIPEDIA_USER_AGENT}) as client:
         resp = client.get(_api_url(lang), params=params)
         resp.raise_for_status()
         data = resp.json()

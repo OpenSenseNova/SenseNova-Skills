@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Hacker News 搜索。通过 Algolia HN Search API。"""
-from __future__ import annotations
 
 import sys
+
 
 from search_utils import build_parser, get_client, make_item, make_result, print_json
 

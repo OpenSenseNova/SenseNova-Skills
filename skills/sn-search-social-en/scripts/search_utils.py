@@ -4,27 +4,27 @@
 提供标准 JSON 输出、CLI 脚手架、httpx helper 和配置读取。
 所有搜索脚本通过 sys.path 导入此模块。
 """
-from __future__ import annotations
 
 import argparse
 import json
 import os
 import sys
+from pathlib import Path
 from typing import Any
+
+def _dependency_hint(package: str) -> str:
+    skill_dir = Path(__file__).resolve().parents[1]
+    requirements = skill_dir / "requirements.txt"
+    return (
+        f"缺少依赖 {package}。请安装到当前 Python 环境："
+        f"python3 -m pip install -r {requirements}"
+    )
+
 
 try:
     import httpx
-except ImportError:
-    json.dump(
-        {
-            "success": False,
-            "error": "缺少 httpx，请运行：python3 -m pip install -r skills/sn-search-social-en/requirements.txt",
-        },
-        sys.stdout,
-        ensure_ascii=False,
-    )
-    sys.stdout.write("\n")
-    sys.exit(1)
+except ImportError as exc:
+    raise SystemExit(_dependency_hint("httpx")) from exc
 
 # ---------------------------------------------------------------------------
 # 标准输出

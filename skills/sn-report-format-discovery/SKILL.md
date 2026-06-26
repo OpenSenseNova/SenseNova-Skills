@@ -1,263 +1,276 @@
 ---
 name: sn-report-format-discovery
-description: 发现特定报告类型的结构规范与写作约束；当需要判断“这类报告应该长什么样”、为报告生成章节结构/必备元素/风格约束，或为 deep research 的 `report_shape` 提供依据时使用。适用于行业/市场/竞品分析、技术选型、政策/法律/公共事务、学术/医学综述、尽职调查、事件追踪与事实核查等场景，也可单独用于报告格式研究。
+description: 用于规划研究报告且目标格式或结构未知时。通过锚点注册表发现权威报告标准和真实范例，并提取结构化报告蓝图。
 ---
 
-# Report Format Discovery
+# sn-report-format-discovery（报告格式发现）
 
-回答“这类报告应该长什么样”。它研究的是**报告格式本身**，不是正文事实、研究结论或执行计划。
-
-这个 skill 既可以：
-
-- **独立使用**：用户单独询问某类报告的标准结构、章节建议、必备元素和写法约束。
-- **嵌入 deep research**：为 `plan.json.report_shape` 或其他结构化格式规格提供依据。
+在规划研究维度之前，先搞清楚目标报告应该长什么样。本 skill 提供"如何发现报告格式标准"的方法论，而非固定模板。
 
 ## 核心原则
 
-- **格式本身是可研究对象**：优先查标准制定者、发布机构、期刊/监管/行业组织的原文。
-- **可信来源优先于通用模板**：宁可基于 1-2 个高可信来源抽结构，也不要用二手教程拼凑。
-- **标准与范例互补**：标准说明“应包含什么”，高质量范例说明“实际如何组织”。
-- **只抽结构，不抽结论**：只产出章节、必备元素、风格约束、反模式和适用场景。
-- **输出服从调用场景**：独立使用时直接返回格式规格；嵌入工作流时适配调用方要求的字段结构。
+1. **报告格式是可研究的问题**——标准的制定者是确定的，可以被搜索和验证
+2. **固定入口，动态导航**——写死的是"去哪里找"（锚点），动态的是"找什么"（具体领域标准）
+3. **区分标准指南和真实范例**——指南告诉你"应该怎么写"，范例告诉你"实际长什么样"，两者互补
 
-## 适用场景
+## 工作流程
 
-优先覆盖 deep research 常见的 6 类场景：
+```
+步骤 1: 从 briefing 识别 → 领域 + 报告类型 + 受众
+步骤 2: 选择锚点策略（学术或行业）
+步骤 3: 从锚点出发搜索 → 标准指南 + 真实范例
+步骤 4: 每搜到一个结果，验证 is_primary_source
+步骤 5: 通过验证的来源 ≥ 3 份 → 停止搜索；不足则继续下一锚点（最多 8 轮）
+步骤 6: 提取结构规范 → 输出 blueprint.json
+```
 
-1. **行业 / 市场 / 竞品 / 趋势研究**
-2. **技术选型 / 架构评估 / 产品方案比较**
-3. **政策 / 法律 / 监管 / 公共事务**
-4. **学术 / 医学 / 社科综述与证据整合**
-5. **尽职调查 / 实体调查 / 风险审查**
-6. **事件追踪 / 时间线还原 / 事实核查**
+---
 
-如果用户请求不属于以上场景，也可按“最接近的报告类型”处理，不要强行套模板。
+## 锚点注册表
 
-## 输入
+### 学术领域锚点
 
-可接受最小输入：
+#### 锚点 A1：EQUATOR Network（报告规范总站）
 
-- 用户原始请求；或
-- `{report_dir}/request.md`
+EQUATOR Network 索引了 400+ 个研究报告规范（PRISMA、CONSORT、STROBE、MOOSE 等），覆盖几乎所有学术报告类型。
 
-可选补充输入：
+**搜索方式**：
+```
+site:equator-network.org {report_type} reporting guideline
+```
 
-- 明确的 `domain`
-- 明确的 `genre`
-- `audience` / 使用场景
-- `region`
-- 调用方要求的输出路径或输出 schema
+**示例**：
+- 系统综述 → `site:equator-network.org systematic review` → PRISMA 2020
+- 随机对照试验 → `site:equator-network.org randomised trial` → CONSORT
+- 观察性研究 → `site:equator-network.org observational study` → STROBE
+- 诊断准确性 → `site:equator-network.org diagnostic accuracy` → STARD
+- 质性研究 → `site:equator-network.org qualitative research` → SRQR / COREQ
 
-若输入不足，先从请求中推断：
+**适用范围**：生物医学、心理学、公共卫生、护理等有成熟报告规范的领域。
 
-- `domain`：研究领域
-- `genre`：报告类型，如行业研究、技术选型、政策简报、学术综述、尽调、事件追踪
-- `audience`：目标读者和使用场景
-- `region`：中国、美国、欧盟、全球等；无明确要求可留空
+#### 锚点 A2：期刊投稿指南
 
-## 执行流程
+期刊自己定义了投稿格式。不写死具体期刊，而是**先找到领域对应的顶级期刊，再获取其投稿指南**。
 
-1. **识别报告任务**：判断用户要写的是哪类报告，服务什么判断或决策。
-2. **锁定场景类型**：把任务归入最接近的核心场景，不要混用多个主类型。
-3. **选择可信入口**：按场景选择标准、模板、权威指南、真实高质量范例。
-4. **筛选来源**：优先原始来源，剔除教程、营销文、新闻转述和低质量聚合。
-5. **抽取结构**：提取章节、必备元素、图表/表格、语气约束、反模式。
-6. **判断是否足够**：若已有 1-3 个可信来源且结构趋于稳定，即可停止。
-7. **适配输出**：按独立模式或工作流模式输出格式规格。
+**搜索方式**（两步）：
+```
+# 步骤 1: 找到领域顶级期刊（通过高引综述）
+用 sn-search-academic skill 搜索: "{领域关键词} survey OR review"
+从结果中提取发表期刊名（优选引用数高的）
 
-## 来源优先级
+# 步骤 2: 获取该期刊的投稿指南
+"{journal_name}" author guidelines OR guide to authors OR submission guidelines
+```
 
-按场景选入口，不要机械地全搜。
+**验证**：URL 路径通常包含 `/authors/`、`/submit/`、`/guidelines/`、`/for-authors/`。
 
-### 1. 学术 / 医学 / 社科综述
+**适用范围**：所有学术领域——每个领域都有对应的顶级期刊。
 
-优先级：
+#### 锚点 A3：方法论权威手册（少量极稳定来源）
 
-1. 报告规范或方法学组织：EQUATOR、PRISMA、CONSORT、STROBE、Cochrane、NLM、APA 等。
-2. 目标领域顶级期刊的 author guidelines / guide for authors。
-3. 高质量综述论文、官方 handbook 或系统综述教学资料。
+| 手册 | 域名 | 覆盖范围 |
+|------|------|---------|
+| Cochrane Handbook | training.cochrane.org | 系统综述、Meta 分析 |
+| NLM Reporting Guidelines | nlm.nih.gov | 所有生物医学研究类型的报告标准索引 |
+| APA Publication Manual | apastyle.apa.org | 心理学及社科领域写作规范 |
 
-### 2. 行业 / 市场 / 竞品 / 趋势研究
+**搜索方式**：
+```
+site:training.cochrane.org {report_type} structure
+site:nlm.nih.gov reporting guidelines {research_type}
+```
 
-优先级：
+#### 学术领域搜索优先级
 
-1. 监管披露模板、交易所披露要求、行业协会标准。
-2. 头部咨询、投研、产业机构发布的完整研究报告。
-3. 大型机构、国际组织或统计机构的行业分析框架。
+```
+1. EQUATOR Network（如果领域有对应的 reporting guideline）
+2. 期刊投稿指南（通过高引综述定位期刊）
+3. 方法论手册（Cochrane / NLM / APA）
+4. 领域内高引综述论文的实际目录结构（作为范例）
+```
 
-### 3. 技术选型 / 架构评估 / 产品比较
+对于 CS/AI/工程等**无成熟报告规范**的领域，EQUATOR 可能无结果。此时跳过步骤 1，直接从步骤 2（期刊指南）和步骤 4（高引综述范例）入手。
 
-优先级：
+---
 
-1. 官方评估框架、采购/招标模板、架构决策记录规范、云厂商/标准组织最佳实践。
-2. 高质量技术选型文档、架构评估模板、企业 RFC / ADR 范式。
-3. 头部工程团队公开的评估矩阵或对比报告。
+### 行业研究领域锚点
 
-重点抽取：
+#### 锚点 B1：监管机构披露模板（法定标准）
 
-- 评估维度
-- 比较矩阵
-- 约束条件
-- 风险与取舍
-- 推荐与适用场景
+监管机构定义了法定的报告格式。不写死具体机构，而是**根据行业所在地区定位对应监管机构**。
 
-### 4. 政策 / 法律 / 监管 / 公共事务
+**搜索策略**：
+```
+# 识别地区 → 搜索对应监管机构
+中国上市公司: site:csrc.gov.cn 信息披露 OR 年报格式
+美国上市公司: site:sec.gov filing template OR form 10-K
+欧盟: site:esma.europa.eu reporting template
+香港: site:hkex.com.hk listing rules disclosure
 
-优先级：
+# 特定行业监管
+银行: site:cbirc.gov.cn OR site:federalreserve.gov
+医药: site:nmpa.gov.cn OR site:fda.gov
+```
 
-1. 政府、监管机构、法院、国际组织的正式文档或模板。
-2. 智库、政策研究机构、议会/国会研究服务机构的报告格式。
-3. 同类政策简报、法律备忘录、监管说明的高质量范例。
+**适用范围**：涉及合规、上市公司分析、监管政策的研究。无监管要求的行业可跳过。
 
-### 5. 尽职调查 / 实体调查 / 风险审查
+#### 锚点 B2：CFA Institute Research Standards（职业标准）
 
-优先级：
+投资研究领域的全球职业标准。
 
-1. 监管披露要求、合规审查清单、审计/风控框架。
-2. 投资、咨询、法律、审计机构常见尽调结构。
-3. 公开可得的高质量尽调模板或调查框架。
+**搜索方式**：
+```
+site:cfainstitute.org research objectivity standards
+site:cfainstitute.org global investment performance standards
+```
 
-重点抽取：
+**适用范围**：投资研究、券商研报、基金分析。
 
-- 对象概览
-- 核心风险类别
-- 证据缺口
-- 红旗事项
-- 结论等级或后续动作
+#### 锚点 B3：真实范例发现（行业头部机构报告）
 
-### 6. 事件追踪 / 事实核查 / 时间线还原
+不写死哪些券商/咨询公司，而是**搜索同类报告，从结果中识别头部机构**。
 
-优先级：
+**搜索方式**：
+```
+# 中文行业研报
+"{行业}" 深度研报 OR 行业研究报告 filetype:pdf
+"{行业}" 行业深度 site:research.cicc.com OR site:mckinsey.com.cn
 
-1. 主流事实核查机构方法说明。
-2. 调查报道、事件复盘、事故报告、官方通报的结构。
-3. 新闻编辑手册或调查型报道格式规范。
+# 英文行业报告
+"{industry}" industry report OR market analysis filetype:pdf
+"{industry}" deep dive site:mckinsey.com OR site:bcg.com OR site:bain.com
 
-重点抽取：
+# 国际组织报告（特定行业）
+"{industry}" report site:worldbank.org OR site:imf.org OR site:oecd.org OR site:who.int
+```
 
-- 时间线
-- 各方说法
-- 已确认 / 未确认事实
-- 证据等级
-- 后续影响
+**适用范围**：所有行业研究。不要求找到特定机构的报告，而是找到**任何头部机构发布的同类报告作为结构范例**。
 
-## 采信规则
+#### 行业研究搜索优先级
 
-采信来源前，先判断它是否真的能用于抽结构。
+```
+1. 监管模板（如果涉及合规/上市公司）
+2. CFA 标准（如果是投资研究）
+3. 同类真实报告范例（从搜索结果中识别头部机构发布的报告）
+4. 头部咨询公司的公开方法论（McKinsey/BCG/Bain）
+```
 
-正向信号至少命中 2 项：
+---
 
-- 来自官方机构、期刊、标准组织、监管机构、国际组织或公认头部机构。
-- 是 PDF 原文、官方页面、author guidelines、handbook、checklist、template 或完整报告。
-- 有明确标题层级、目录、章节说明、checklist 或必备元素列表。
-- 有发布机构、日期、版本号、DOI、文档编号或法规编号。
-- 内容足够完整，能抽结构，而不是只有摘要。
+## 验证协议：is_primary_source
 
-命中任一负向信号则丢弃：
+搜到内容后，需要验证**拿到的是报告本体/标准原文，而不是二手描述**。
 
-- “如何写报告”的个人教程或营销文章。
-- 新闻稿、媒体摘要、二手转述。
-- 内容聚合站、论坛回答、博客搬运、低质量下载站。
-- 正文过短，无法看到结构。
-- 来源身份不明或无法确认发布机构。
+这是一个结构特征检测，不需要模型做主观判断。
 
-不要为了凑来源数量降低采信标准。
+### 采信规则：命中 2+ 个 positive signal
 
-## 搜索退出
+| # | 正向信号 | 检测方式 |
+|---|----------------|---------|
+| 1 | 有完整目录/标题层级结构（至少 3 级） | 计数 heading 层级 |
+| 2 | 有明确的发布机构和日期 | 页面中存在机构名 + 发布/更新日期 |
+| 3 | 有 DOI 或官方文档编号 | 页面中存在 `10.xxxx/` 或编号 |
+| 4 | 来自 PDF 原文或官方页面 | URL 以 .pdf 结尾，或路径含 /publications/ /research/ /reports/ |
+| 5 | 包含 checklist 或结构性要求列表 | 页面中有编号列表描述必选章节/元素 |
 
-- 理想情况：采信 2-3 个来源后停止。
-- 如果只有 1 个高可信标准来源，也可以输出格式规格，但要说明来源有限。
-- 如果 6-8 轮搜索仍无可信来源，回退到通用结构，并说明回退原因。
-- 不要重复搜索同一个入口；换关键词、机构类型或报告类型视角。
+### 丢弃规则：命中任意 1 个 negative signal
 
-## 抽取内容
+| # | 负向信号 | 说明 |
+|---|----------------|------|
+| 1 | 是"如何写报告"的教程 | 二手描述，非标准本身 |
+| 2 | 是报告的新闻摘要/媒体报道 | 转述不是原文 |
+| 3 | 正文内容不超过 500 字 | 摘要而非全文 |
+| 4 | 来自内容聚合站 | 知乎/CSDN/medium/搜狐/百家号 |
+| 5 | URL 含 blog/post/answer/article 等路径 | 通常是个人博文 |
 
-只抽这些内容：
+### 验证失败处理
 
-- 报告类型名称和适用场景
-- 推荐或强制章节结构
-- 每个章节必须包含的元素
-- 非章节必备元素，如矩阵表、方法说明、风险清单、流程图、摘要格式
-- 风格和约束，如客观语气、证据等级、披露口径、是否区分事实与判断
-- 对后续研究或成稿会产生约束的结构要求
+单次验证失败不终止搜索——丢弃该结果，继续尝试下一个候选。只有当退出条件触发时才停止。
 
-不要抽这些内容：
+---
 
-- 来源报告的具体结论
-- 与用户主题无关的行业观点
-- 正文事实材料
-- 正式引用编号或参考文献列表
+## 退出条件
 
-## 输出模式
+格式发现按目标驱动，不按轮次驱动。
 
-根据调用场景输出，不强绑单一文件名。
+### 成功退出
 
-### 模式 A：独立使用
+**通过验证的来源（标准指南 + 真实范例合计）≥ 3 份** → 停止搜索，提取 blueprint。
 
-如果用户只是问“这类报告应该怎么写 / 应该有哪些章节 / 有没有标准结构”，直接在对话中或按用户指定路径输出格式规格。
+示例：
+- 1 份标准指南 + 2 份真实范例 = 3 ✓
+- 0 份标准指南 + 3 份真实范例 = 3 ✓（有些领域没有正式标准，纯靠范例也可以）
+- 2 份标准指南 + 1 份真实范例 = 3 ✓
 
-推荐结构：
+### 超时退出
+
+**已执行 8 轮搜索仍不足 3 份** → 用已有结果生成 blueprint：
+- 如果有 1-2 份通过验证的来源 → 基于已有结果生成 blueprint，在 `fallback_reason` 中说明来源不足
+- 如果 0 份 → `fallback_used: true`，回退到通用模板
+
+### 不要做
+
+- 不要为了凑数降低验证标准
+- 不要因为"已经搜了 3 轮"而提前停止——如果还有未尝试的锚点且当前不足 3 份，继续搜
+- 不要重复搜索同一个锚点
+
+---
+
+## 输出格式：报告蓝图（Report Blueprint）
+
+格式发现的产出是一个独立的 `blueprint.json` 文件（不嵌入 plan.json，因为 blueprint 一旦确定不再变化，而 plan.json 在波间回顾时会被修改）。
 
 ```json
 {
-  "genre": "报告类型",
-  "domain": "研究领域",
-  "audience": "目标读者",
-  "format_basis": [
+  "genre": "报告类型名称（如 Systematic Review / 行业深度研报）",
+  "domain": "领域（如 AI/NLP / 新能源汽车）",
+  "discovery_sources": [
     {
-      "type": "standard_guideline | official_template | real_exemplar | domain_convention | fallback",
-      "name": "来源名称",
-      "url": "来源 URL，如有",
-      "credibility_reason": "为什么可信",
-      "what_extracted": "从中抽取的结构要点"
+      "type": "standard_guideline",
+      "name": "来源名称（如 PRISMA 2020）",
+      "url": "原文 URL",
+      "what_extracted": "从中提取了什么（如 27-item checklist）"
+    },
+    {
+      "type": "real_exemplar",
+      "name": "范例名称（如 ACM Computing Surveys 综述投稿指南）",
+      "url": "原文 URL",
+      "what_extracted": "从中提取了什么（如 章节结构要求）"
     }
   ],
   "sections": [
     {
       "name": "章节名",
       "required": true,
-      "purpose": "该章节承担什么功能",
-      "elements": ["必须包含的内容"],
-      "source_basis": ["对应 format_basis.name"]
+      "elements": ["该章节必须包含的元素"],
+      "notes": "来自标准的特殊要求说明"
     }
   ],
-  "mandatory_elements": ["必须包含的非章节元素"],
-  "style": {
-    "tone": "写作风格",
-    "tables_or_figures": ["推荐的表格或图"],
-    "domain_specific_metrics": ["领域特有指标或口径"],
-    "anti_patterns": ["不应做的事"]
+  "mandatory_elements": [
+    "必须包含的非章节元素（如 PRISMA flow diagram、对比矩阵表格）"
+  ],
+  "conventions": {
+    "citation_style": "引用格式（如 Vancouver numbered / APA 7th）",
+    "tone": "写作风格（如 objective, evidence-based）",
+    "domain_specific_metrics": ["领域特有指标（如 effect sizes, I², p-value）"],
+    "anti_patterns": ["不应做的事（如 不要在 Results 中加入 Discussion）"]
   },
   "fallback_used": false,
   "fallback_reason": null
 }
 ```
 
-### 模式 B：deep research / planning 内嵌
+当回退到通用模板时：
 
-如果调用方需要把结果放进 `plan.json.report_shape`，保留至少这些信息：
-
-- `format_basis`
-- `sections`
-- `mandatory_elements`
-- `style`
-
-如果本地 schema 更简化，可以压缩字段，但不要丢掉“结构依据”。
-
-## 质量门槛
-
-- `sections` 来自可信来源的结构抽取，而不是凭空生成。
-- 每个 `format_basis` 都说明可信原因和抽取内容。
-- `mandatory_elements` 和 `style` 能帮助后续研究或成稿判断需要什么材料。
-- 若不是 fallback，至少有一个可信来源支撑结构。
-- 若使用 fallback，必须说明搜索失败原因和回退逻辑。
-- 输出必须能被单独使用，而不依赖 deep research 其他阶段。
-
-## 常见失败
-
-- 使用二手教程替代标准原文。
-- 找到真实报告后抽取其结论，而不是结构。
-- 把格式规格写成研究计划或终稿大纲。
-- 忽略受众和使用场景，套通用模板。
-- 为凑来源数量降低可信标准。
-- 只适配 deep research，导致单独使用时不可读或不可复用。
+```json
+{
+  "genre": "...",
+  "domain": "...",
+  "discovery_sources": [],
+  "sections": [],
+  "mandatory_elements": [],
+  "conventions": {},
+  "fallback_used": true,
+  "fallback_reason": "已执行 8 轮搜索，未找到该领域的权威报告标准，使用 sn-research-report skill 通用模板"
+}
+```

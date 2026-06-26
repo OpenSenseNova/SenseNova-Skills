@@ -1,239 +1,339 @@
 ---
 name: sn-search-academic
-description: 搜索学术论文和百科知识：ArXiv 预印本、Semantic Scholar（含引用数）、PubMed 生医文献、Wikipedia 百科。支持按章节读取 ArXiv HTML 全文和 PMC 开放获取全文，适合学术调研和深度阅读。
+description: 用于学术调研、论文精读、相关工作梳理、百科知识查询和引用链追溯。
 ---
 
 # sn-search-academic - 学术搜索
 
-搜索 ArXiv、Semantic Scholar、PubMed、Wikipedia 四个学术平台，并提供 ArXiv 和 PMC 的**全文章节阅读**能力。全部免费，部分脚本有可选 API key 可提升限额。
+使用三个统一入口完成学术调研：
 
-## 依赖
+- `search.py`：搜索论文和百科条目
+- `paper.py`：列出论文章节，读取论文全文或指定章节
+- `refTree.py`：查询论文的 references 和 citations
 
-运行脚本前先安装本 skill 的 Python 依赖：
-
-```bash
-python3 -m pip install -r skills/sn-search-academic/requirements.txt
-```
-
-如果项目使用 `uv` 环境：
-
-```bash
-uv pip install -r skills/sn-search-academic/requirements.txt
-```
-
-`arxiv_paper.py` 需要 `beautifulsoup4` 解析 ArXiv HTML；其他脚本主要依赖 `httpx` 发起请求。
+不要直接调用历史 provider 脚本；它们只是统一入口的内部实现细节。
+需要 provider 回退链、参数分发或完整输出字段时，按需读取 `references/search.md`、`references/paper.md`、`references/refTree.md`。
 
 ## 可用脚本
 
-| 脚本 | 平台 | 用途 | API key |
-|------|------|------|---------|
-| `arxiv_search.py` | ArXiv | 预印本搜索，支持作者/标题/ID查询 | 无需 |
-| `arxiv_paper.py` | ArXiv HTML | 按章节读取 ArXiv 论文全文 | 无需 |
-| `semantic_scholar_search.py` | Semantic Scholar | 全学科搜索，含引用数和 TLDR | 无需（有 key 限额更高） |
-| `semantic_scholar_refs.py` | Semantic Scholar | 引用追溯：查论文的参考文献（backward）或被引论文（forward） | 无需（有 key 限额更高） |
-| `pubmed_search.py` | PubMed | 生医文献搜索，含结构化摘要和 PMC ID | 无需（有 key 限额更高） |
-| `pmc_paper.py` | PMC | 按章节读取 PMC 开放获取论文全文 | 无需（有 key 限额更高） |
-| `wikipedia_search.py` | Wikipedia | 百科文章搜索，支持多语言 | 无需 |
+| 脚本 | 用途 | 主要输入 | 主要输出 |
+|------|------|----------|----------|
+| `scripts/search.py` | 搜索论文/百科 | `query`，可选 `--source`、`--limit`、`--category`、`--lang` | 按 source 分组的论文/百科条目，位于 `source_results[*].items` |
+| `scripts/paper.py` | 列出章节，读取论文全文或章节 | 论文 ID，可选 `--source`、`--list_section`、`--section` | 章节列表位于 `sections`；全文或章节正文位于 `content` |
+| `scripts/refTree.py` | 查询引用树 | `--paper_id`、`--title`，可选 `--direction` | 参考文献与被引论文，位于 `source_results[*].references` / `source_results[*].citations` |
+
+## 执行约定
+
+本技能的 `scripts/...`、`requirements.txt`、`references/...` 路径均相对本 skill 目录；若当前工作目录不同，先解析为绝对路径，不要依赖 `${SKILL_DIR}` 运行时变量。
+
+调用约定：
+
+- 不要并行启动多个本技能脚本；`search.py` 和 `refTree.py` 内部已经处理并发、超时和 provider 回退链。
+- 长结果优先加 `--output <path>` 写入文件，再读取必要字段，避免终端输出过长。
+- `--provider-timeout` 表示单个 provider 超时；默认使用脚本内置超时。
+
+## 依赖
+
+首次运行或脚本提示缺库时，使用本技能的依赖清单安装到当前 Python 环境：
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+不要在脚本内部自动安装依赖。若安装失败、网络不可用或包不可用，停止使用对应脚本并改用 WebSearch/browser-use，说明缺少依赖。
+
+Crawler 回退还需要额外运行时环境：
+
+```bash
+python3 -m playwright install firefox
+```
+
+`arxiv_crawler_search.py` 和 `semantic_scholar_crawler_refTree.py` 还需要 Node.js，以及某个当前目录或祖先目录中已安装 `camoufox-js` 的 `node_modules`。缺少这些环境时，不要尝试绕过；改用非 crawler provider 或网页搜索。
 
 ## 参数说明
 
-### arxiv_search.py
+### search.py
+
+统一搜索入口。默认搜索所有支持的 source，并按 source 分组返回结果。
 
 ```bash
-python3 scripts/arxiv_search.py <query> [选项]
+python3 scripts/search.py <query> [选项]
 ```
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| `query` | 搜索关键词（使用 `--id-list` 时可省略） | — |
-| `--limit`, `-n` | 返回结果数量 | 10 |
-| `--category`, `-c` | ArXiv 分类过滤（见下方"ArXiv 分类速查"） | — |
-| `--sort` | 排序方式：`relevance`, `date`, `submitted` | relevance |
-| `--author`, `-a` | 按作者过滤，多个用逗号分隔 | — |
-| `--title-only` | 仅在标题中搜索 | — |
-| `--id-list` | 直接按 arXiv ID 获取元数据，逗号分隔 | — |
+| `query` | 搜索关键词，必填位置参数 | - |
+| `--source`, `--sources`, `-s` | 搜索源；支持重复传参或逗号分隔 | `all` |
+| `--limit`, `-n` | 每个 source 返回数量 | `10` |
+| `--category`, `-c` | ArXiv 分类过滤，只传给支持分类的 source | - |
+| `--lang`, `-l` | 语言提示，只传给支持语言参数的 source | - |
+| `--output`, `-o` | 将最终 JSON 写入文件 | - |
+| `--provider-timeout` | 每个 provider 的超时时间，单位秒；`0` 表示不限制 | `60` |
+
+支持的 `--source`：
+
+- `all`
+- `arxiv`
+- `semantic`
+- `google_scholar`
+- `pubmed`
+- `wikipedia`
+
+示例：
 
 ```bash
-python3 scripts/arxiv_search.py "transformer attention mechanism" --limit 5
-python3 scripts/arxiv_search.py "diffusion model" --author "ho jonathan" --category cs.CV
-python3 scripts/arxiv_search.py --id-list "2409.05591,2301.07041"
+python3 scripts/search.py "retrieval augmented generation" --limit 5
+python3 scripts/search.py "diffusion model" --source arxiv,semantic --category cs.CV --limit 5
+python3 scripts/search.py "阿尔茨海默病 多模态诊断" --source pubmed,wikipedia --lang zh --limit 5
+python3 scripts/search.py "agentic memory" --source all --limit 8 --output results/search.json
 ```
 
-**输出字段**：`title`, `url`, `snippet`（摘要）, `arxiv_id`, `authors`, `published`, `updated`, `pdf_url`, `html_url`, `categories`, `primary_category`, `comment`, `journal_ref`, `doi`
+### paper.py
 
-### arxiv_paper.py
-
-按章节读取 ArXiv 论文正文（需论文有 HTML 版本，2020 年后多数论文支持）。
+统一论文阅读入口。默认按 arXiv 论文读取；读取 PMC 论文时显式传 `--source pmc`。不确定章节名时先用 `--list_section` 列出可用章节，再用 `--section` 精读。
 
 ```bash
-python3 scripts/arxiv_paper.py <arxiv_id> [--section SECTION_NAME]
-```
-
-| 参数 | 说明 |
-|------|------|
-| `arxiv_id` | arXiv ID（如 `2409.05591` 或 `2409.05591v2`） |
-| `--section`, `-s` | 章节名（大小写不敏感，支持部分匹配）。不指定则列出所有章节。 |
-
-```bash
-python3 scripts/arxiv_paper.py 2409.05591                      # 列出章节
-python3 scripts/arxiv_paper.py 2409.05591 --section introduction
-python3 scripts/arxiv_paper.py 2409.05591 --section method
-```
-
-**列出章节输出字段**：`arxiv_id`, `abs_url`, `html_url`, `pdf_url`, `section_count`, `sections[]`（name, level）
-
-**读取章节输出字段**：`arxiv_id`, `section`, `level`, `content`, `char_count`
-
-### semantic_scholar_search.py
-
-```bash
-python3 scripts/semantic_scholar_search.py <query> [选项]
+python3 scripts/paper.py <id> [选项]
 ```
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| `query` | 搜索关键词（必填） | — |
-| `--limit`, `-n` | 返回结果数量 | 10 |
-| `--api-key` | Semantic Scholar API Key（也可通过 `S2_API_KEY` 环境变量） | — |
+| `id` | 论文 ID。arXiv 支持原始 ID、`arXiv:` 前缀、abs/pdf URL；PMC 支持 `PMC11119143`、`11119143`、PMC URL | - |
+| `--source` | 论文来源：`arxiv` 或 `pmc` | `arxiv` |
+| `--section`, `-s` | 读取指定章节；不填则读取全文 | - |
+| `--list_section`, `--list-section` | 列出论文可用章节，不返回正文；不能和 `--section` 同时使用 | false |
+| `--output`, `-o` | 将最终 JSON 写入文件 | - |
+
+示例：
 
 ```bash
-python3 scripts/semantic_scholar_search.py "transformer architecture" --limit 5
-python3 scripts/semantic_scholar_search.py "RLHF language model" --limit 10
+python3 scripts/paper.py 2603.00729
+python3 scripts/paper.py 2603.00729 --list_section
+python3 scripts/paper.py arXiv:2603.00729 --section introduction
+python3 scripts/paper.py 2603.00729 --section method --output results/paper-method.json
+python3 scripts/paper.py PMC11119143 --source pmc
+python3 scripts/paper.py PMC11119143 --source pmc --list-section
+python3 scripts/paper.py PMC11119143 --source pmc --section results
 ```
 
-**输出字段**：`title`, `url`, `snippet`（摘要，缺失时降级为 tldr）, `tldr`, `authors`, `year`, `venue`, `publication_date`, `citation_count`, `influential_citation_count`, `reference_count`, `is_open_access`, `open_access_pdf`, `fields_of_study`, `publication_types`, `doi`, `arxiv_id`, `paper_id`
+### refTree.py
 
-### semantic_scholar_refs.py
-
-引用追溯：给定一篇论文，查询它的参考文献（backward）或被引论文（forward）。
+统一引用树入口。`--paper_id` 和 `--title` 都必填；标题用于回退时精确匹配。
 
 ```bash
-python3 scripts/semantic_scholar_refs.py <paper_id> <direction> [选项]
-```
-
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| `paper_id` | 论文标识符：S2 ID、DOI（`10.xxxx/...`）、ArXiv ID（`2301.07041`）、PMID（`PMID:12345678`） | — |
-| `direction` | `references`=参考文献（backward），`citations`=被引论文（forward） | — |
-| `--limit`, `-n` | 返回结果数量 | 20 |
-| `--min-citations` | 最低引用数过滤 | 0 |
-| `--year-min` | 最早年份过滤 | — |
-| `--year-max` | 最晚年份过滤 | — |
-| `--api-key` | Semantic Scholar API Key（可选） | — |
-
-```bash
-# 查看某篇论文引用了哪些论文（backward：找奠基工作）
-python3 scripts/semantic_scholar_refs.py 2301.07041 references --limit 10
-
-# 查看某篇论文被谁引用（forward：找后续进展）
-python3 scripts/semantic_scholar_refs.py 2301.07041 citations --limit 10 --min-citations 50
-
-# 用 DOI 查引用，限定 2023 年以后
-python3 scripts/semantic_scholar_refs.py "10.1038/s41586-024-07487-w" citations --year-min 2023
-
-# 找高引参考文献
-python3 scripts/semantic_scholar_refs.py ARXIV:2005.14165 references --min-citations 100 --limit 5
-```
-
-**输出字段**：`title`, `url`, `snippet`（摘要/tldr）, `authors`, `year`, `venue`, `citation_count`, `influential_citation_count`, `is_open_access`, `open_access_pdf`, `doi`, `arxiv_id`, `paper_id`, `citation_contexts`（引用上下文句子，最多 3 条）, `citation_intents`（引用意图）
-
-**输出额外字段**：`source_paper`（被查询论文的标题/年份/引用数）, `total_available`（该方向总论文数）, `returned`（过滤后返回数）
-
-### pubmed_search.py
-
-支持 PubMed 查询语法，如字段限定（`cancer[Title]`）、日期范围（`2024[pdat]`）。
-
-```bash
-python3 scripts/pubmed_search.py <query> [选项]
+python3 scripts/refTree.py --paper_id <paper_id> --title <title> [选项]
 ```
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| `query` | 搜索关键词，支持 PubMed 查询语法 | — |
-| `--limit`, `-n` | 返回结果数量 | 10 |
-| `--api-key` | NCBI API Key（可选，限额从 3 req/s 升至 10 req/s） | — |
+| `--paper_id` | 论文 ID：Semantic Scholar ID、DOI、ArXiv ID、PMID 等 | - |
+| `--title` | 论文标题，必填 | - |
+| `--direction` | 查询方向：`references` 或 `citations`；不填则两者都查 | - |
+| `--source`, `--sources`, `-s` | 引用树 source；当前支持 `all`、`semantic` | `all` |
+| `--limit`, `-n` | 每个 source、每个 direction 返回数量 | `10` |
+| `--api-key` | Semantic Scholar API 密钥，可选 | - |
+| `--provider-timeout` | 每个 provider 的超时时间，单位秒；`0` 表示不限制 | `60` |
+| `--output`, `-o` | 将最终 JSON 写入文件 | - |
+
+注意：参数名是 `--paper_id`，不是 `--paper-id`；`paper_id` 不支持位置参数。
+
+示例：
 
 ```bash
-python3 scripts/pubmed_search.py "CRISPR gene editing" --limit 5
-python3 scripts/pubmed_search.py "Alzheimer[Title] AND treatment[Title]" --limit 5
+python3 scripts/refTree.py --paper_id "2309.16609" --title "Qwen Technical Report"
+python3 scripts/refTree.py --paper_id "2309.16609" --title "Qwen Technical Report" --direction references --limit 20
+python3 scripts/refTree.py --paper_id "10.1038/s41586-024-07487-w" --title "AlphaFold 3" --direction citations
+python3 scripts/refTree.py --paper_id "2309.16609" --title "Qwen Technical Report" --output results/refTree.json
 ```
 
-**输出字段**：`title`, `url`, `snippet`（结构化摘要）, `authors`, `pmid`, `pmc_id`（有值则可传入 `pmc_paper.py`）, `pmc_url`, `journal`, `pub_date`, `volume`, `issue`, `pages`, `keywords`, `pub_types`, `doi`
+## 输出格式
 
-### pmc_paper.py
+所有脚本都输出 JSON。先看顶层 `success`；失败时读取 `error`、`errors` 和 `attempts` 判断是无结果、超时还是 provider 失败。
 
-读取 PubMed Central 开放获取全文（约 700 万篇生医论文，占 PubMed 约 35%）。`pubmed_search.py` 结果中 `pmc_id` 为 `null` 的论文无法使用本工具。
+### search.py 输出
 
-```bash
-python3 scripts/pmc_paper.py <pmc_id> [--section SECTION_NAME]
-python3 scripts/pmc_paper.py --pmid <pmid> [--section SECTION_NAME]
+CLI 输出的顶层不包含 `items`，论文条目在 `source_results[*].items` 中：
+
+```json
+{
+  "success": true,
+  "query": "retrieval augmented generation",
+  "provider": "search.py",
+  "sources": ["arxiv", "semantic"],
+  "source_results": [
+    {
+      "source": "arxiv",
+      "success": true,
+      "provider": "arxiv_official",
+      "items": [
+        {
+          "source": "arxiv",
+          "provider": "arxiv_official",
+          "title": "Example title",
+          "abstract": "Example abstract",
+          "citation_count": null,
+          "arxiv_id": "2301.00001",
+          "url": "https://arxiv.org/abs/2301.00001"
+        }
+      ],
+      "attempts": [],
+      "error": null
+    }
+  ],
+  "errors": [],
+  "error": null
+}
 ```
 
-| 参数 | 说明 |
-|------|------|
-| `pmc_id` | PMC ID（如 `PMC11119143` 或 `11119143`） |
-| `--pmid` | PubMed ID，自动转换为 PMC ID（与 `pmc_id` 二选一） |
-| `--section`, `-s` | 章节名（大小写不敏感，支持部分匹配）。不指定则列出所有章节。 |
-| `--api-key` | NCBI API Key（可选） |
+常用 item 字段：
 
-```bash
-python3 scripts/pmc_paper.py PMC11119143                       # 列出章节
-python3 scripts/pmc_paper.py PMC11119143 --section introduction
-python3 scripts/pmc_paper.py --pmid 38786024 --section conclusion
+- 通用：`title`、`abstract`、`snippet`、`url`、`citation_count`、`doi`
+- arXiv：`arxiv_id`、`pdf_url`、`categories`
+- Semantic Scholar：`paper_id`、`venue`、`year`
+- PubMed：`pmid`、`pmc_id`、`journal`、`pub_date`
+- Wikipedia：`page_id`、`word_count`、`section_title`
+
+### paper.py 输出
+
+默认读取全文；指定 `--section` 时读取章节。正文在顶层 `content`：
+
+```json
+{
+  "success": true,
+  "source": "arxiv",
+  "provider": "arxiv_html",
+  "arxiv_id": "2603.00729",
+  "section": "introduction",
+  "content": "<全文或章节正文>",
+  "char_count": 12345,
+  "attempts": [],
+  "error": null
+}
 ```
 
-**列出章节输出字段**：`pmc_id`, `pmid`, `title`, `pmc_url`, `section_count`, `sections[]`（name, level，含子章节层级）
+指定 `--list_section` 时只返回章节结构，不返回 `content`：
 
-**读取章节输出字段**：`pmc_id`, `section`, `level`, `content`（含子章节文本）, `char_count`
-
-### wikipedia_search.py
-
-```bash
-python3 scripts/wikipedia_search.py <query> [选项]
+```json
+{
+  "success": true,
+  "source": "arxiv",
+  "provider": "arxiv_html",
+  "arxiv_id": "2603.00729",
+  "section_count": 2,
+  "sections": [
+    {"name": "Abstract", "level": 0},
+    {"name": "1 Introduction", "level": 1}
+  ],
+  "attempts": [],
+  "error": null
+}
 ```
 
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| `query` | 搜索关键词（必填） | — |
-| `--limit`, `-n` | 返回结果数量 | 10 |
-| `--lang`, `-l` | 语言版本（`en`, `zh`, `ja`, `de`, `fr` 等） | en |
+常用字段：
 
-```bash
-python3 scripts/wikipedia_search.py "machine learning" --limit 5
-python3 scripts/wikipedia_search.py "深度学习" --lang zh --limit 5
+- arXiv：`arxiv_id`、`title`、`abs_url`、`html_url`、`pdf_url`、`section_count`、`sections`
+- PMC：`pmc_id`、`pmid`、`title`、`pmc_url`、`section_count`、`sections`
+- 指定 `--list_section` 时返回 `sections` 和 `section_count`，不包含 `content`
+- 指定 `--section` 时会包含 `section`；不指定 `--list_section` / `--section` 时读取全文
+
+### refTree.py 输出
+
+引用树结果在 `source_results[*].references` 和 `source_results[*].citations`：
+
+```json
+{
+  "success": true,
+  "id": "2309.16609",
+  "title": "Qwen Technical Report",
+  "provider": "refTree.py",
+  "direction": "all",
+  "source_results": [
+    {
+      "source": "semantic",
+      "success": true,
+      "provider": "semantic_official",
+      "references": [
+        {
+          "title": "Example reference",
+          "abstract": "Example abstract",
+          "citation_count": 128,
+          "paper_id": "example-reference-id",
+          "arxiv_id": "2301.00001"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Example citing paper",
+          "abstract": "Example abstract",
+          "citation_count": 42,
+          "paper_id": "example-citing-id",
+          "doi": "10.1234/example"
+        }
+      ],
+      "attempts": [],
+      "error": null
+    }
+  ],
+  "errors": [],
+  "error": null
+}
 ```
+
+如果使用 `--output`，三个脚本都会在 JSON 中额外加入 `output_path`。
+
+## 并发与限流约定
+这些脚本会访问外部学术服务，必须控制请求频率。
+执行本技能脚本时：
+- 不要并发运行多个搜索脚本。
+- 不要使用并行工具同时调用多个 `python3 scripts/...` 命令。
+- 一次只运行一个脚本命令，等待结果返回后再运行下一个。
+- 批量查询时，优先使用脚本自带的 `--limit`、`--id-list` 等参数，而不是启动多个进程。
+- 如果需要连续调用，按顺序执行，并在必要时等待数秒。
 
 ## 全文阅读工作流
 
-搜索脚本返回摘要，阅读脚本返回正文。两者配合可按需精读，节省 token。
+搜索结果只有摘要时，用 `paper.py` 先列章节，再补充全文或关键章节。
 
-**ArXiv 论文**：
-1. `arxiv_search.py` 搜索 → 获取 `arxiv_id`
-2. `arxiv_paper.py <id>` 列章节 → `arxiv_paper.py <id> --section introduction` 快速判断是否深入
-3. 按需读取 `method` / `experiment` / `conclusion`
-
-**PMC 生医论文**：
-1. `pubmed_search.py` 搜索 → 结果中取 `pmc_id`（非 null 才有全文）
-2. `pmc_paper.py <pmc_id>` 列章节 → 按需读取关键章节
+1. 先用 `search.py` 搜索，优先从 `source_results[*].items` 里记录 `title`、`arxiv_id`、`pmc_id`、`paper_id`、`doi`、`citation_count`。
+2. 如果条目有 `arxiv_id`，先用 `python3 scripts/paper.py <arxiv_id> --source arxiv --list_section` 查看章节；再用 `--section <section>` 精读。
+3. 如果条目有 `pmc_id`，先用 `python3 scripts/paper.py <pmc_id> --source pmc --list_section` 查看章节；再按需读 `--section <section>` 。
+4. 如果需要整体理解，再不带 `--section` / `--list_section` 读取全文。
+5. 全文很长时使用 `--output results/paper.json`，再读取 `content`、`sections`、`char_count` 等字段。
 
 ## 引用追溯工作流
 
 通过论文的引用关系发现关键词搜索覆盖不到的相关工作。
 
-**Backward（找奠基工作）**：
-1. 关键词搜索找到高相关论文 → 取其 `paper_id` 或 `arxiv_id`
-2. `semantic_scholar_refs.py <id> references --min-citations 50` → 找到高引参考文献
-3. 筛选与研究问题相关的条目 → 用 `arxiv_paper.py` 或 `pmc_paper.py` 深入阅读
+通过 references 找奠基工作，通过 citations 找后续进展。`refTree.py` 需要同时传论文 ID 和标题。
 
-**Forward（找后续进展）**：
+**后向追溯（找奠基工作）**：
+
+
+1. 关键词搜索找到高相关论文 → 取其 `paper_id` 或 `arxiv_id` 和 `title`
+2. `refTree.py --paper_id "<id>" --title "<title>" --direction references --limit 20`  → 找到高引参考文献
+3. 筛选与研究问题相关的条目 → 用 `paper.py`深入阅读
+
+**前向追踪（找后续进展）**：
+
 1. 找到领域奠基论文或关键论文 → 取其 ID
-2. `semantic_scholar_refs.py <id> citations --year-min 2024 --min-citations 10` → 找到近期高引跟进工作
-3. 筛选与研究问题相关的条目 → 深入阅读
+2. `refTree.py --paper_id "<id>" --title "<title>" --direction citations --limit 20` → 找到近期高引跟进工作
+3. 筛选与研究问题相关的条目 → 用 `paper.py`深入阅读
 
-**Citation Chain（追溯演化路径）**：
+**引用链：构建演化路径**
+
 1. 从种子论文 A 出发 → backward 找到 A 的关键参考文献 B
 2. 从 B 出发 → forward 找到引用 B 的后续工作（可能发现 A 没引用的相关论文 C）
 3. 形成 B → A → ... 和 B → C → ... 的知识脉络
+
+## 主工作流
+严格遵循本工作流去执行学术搜索的全流程
+
+1. 在提供的学术平台选择所有可能的平台搜索学术文献
+2. 如果摘要不足或论文高度相关时，列出章节，尝试读取论文章节或全文，判断论文和搜索需求的相关性
+3. 选择相关性高的论文，搜索它的参考文献和被引（使用引用追溯工作流）。
+4. 选择引用树中 高引用的文献，执行步骤 2、步骤 3。
+5. 重复以上步骤，进行多轮搜索，尽可能多的进行搜索。
+6. 当文献数量、引用链和全文证据足够支撑回答时停止搜索，并在结论中说明主要依据。
 
 ## ArXiv 分类速查
 
@@ -269,19 +369,3 @@ python3 scripts/wikipedia_search.py "深度学习" --lang zh --limit 5
 | **生物/医学** | `q-bio.NC` | 神经科学 |
 | | `q-bio.GN` | 基因组学 |
 | | `q-bio.QM` | 定量方法 |
-
-## 输出格式
-
-所有脚本输出标准 JSON：
-
-```json
-{
-  "success": true,
-  "query": "...",
-  "provider": "arxiv|semantic_scholar|pubmed|wikipedia",
-  "items": [{"title": "...", "url": "...", "snippet": "...", ...}],
-  "error": null
-}
-```
-
-`arxiv_paper.py` 和 `pmc_paper.py` 不走 `items` 格式，直接返回结构化对象（见各自"输出字段"说明）。

@@ -1,34 +1,30 @@
 ---
 name: sn-search-code
-description: 搜索开发者资源：GitHub 仓库/代码/Issue、Stack Overflow 问答、Hacker News 讨论、HuggingFace 模型/数据集/Space。用于查找代码示例、开源项目、技术问答、预训练模型。
+description: 用于查找代码示例、开源项目、GitHub Issue、技术问答、开发者讨论、HuggingFace 模型/数据集/Space。
 ---
 
 # sn-search-code - 开发者搜索
 
-搜索 GitHub、Stack Overflow、Hacker News、HuggingFace 四个开发者核心平台。所有脚本无需 API key 即可使用，但 GitHub `--type code` 搜索是例外（见下方说明）。
-
-## 依赖
-
-运行脚本前先安装本 skill 的 Python 依赖：
-
-```bash
-python3 -m pip install -r skills/sn-search-code/requirements.txt
-```
-
-如果项目使用 `uv` 环境：
-
-```bash
-uv pip install -r skills/sn-search-code/requirements.txt
-```
+搜索 GitHub、Stack Overflow、Hacker News、HuggingFace 四个开发者核心平台。所有脚本无需 API 密钥 即可使用，但 GitHub `--type code` 搜索是例外（见下方说明）。
 
 ## 可用脚本
 
-| 脚本 | 平台 | 用途 | API key |
+| 脚本 | 平台 | 用途 | API 密钥 |
 |------|------|------|---------|
 | `github_search.py` | GitHub | 仓库、代码、Issue 搜索 | `code` 类型**必须**；其他类型可选（提高限额） |
 | `stackoverflow_search.py` | Stack Overflow | 技术问答搜索 | 无需 |
 | `hackernews_search.py` | Hacker News | 技术新闻和讨论 | 无需 |
 | `huggingface_search.py` | HuggingFace | 模型、数据集、Space 搜索 | 可选 `HF_TOKEN`（提高限额） |
+
+## 依赖
+
+首次运行或脚本提示缺库时，使用本技能的依赖清单安装到当前 Python 环境：
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+不要在脚本内部自动安装依赖。若安装失败、网络不可用或包不可用，停止使用对应脚本并改用网页搜索，说明缺少依赖。
 
 ## 参数说明
 
@@ -68,7 +64,7 @@ python3 scripts/stackoverflow_search.py <query> [选项]
 | `--limit`, `-n` | 返回结果数量 | 10 |
 | `--sort` | 排序方式：`relevance`, `votes`, `creation`, `activity` | relevance |
 | `--tagged` | 按标签过滤，多个用分号分隔（如 `python;asyncio`） | — |
-| `--api-key` | Stack Exchange API key（也可通过 `SO_API_KEY` 环境变量设置，可选，提高限额） | — |
+| `--api-key` | Stack Exchange API 密钥（也可通过 `SO_API_KEY` 环境变量设置，可选，提高限额） | — |
 
 ```bash
 python3 scripts/stackoverflow_search.py "python async await" --limit 5

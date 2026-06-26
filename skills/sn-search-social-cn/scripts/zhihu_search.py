@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """知乎搜索。通过知乎内部 API（需要 cookie 认证）。"""
-from __future__ import annotations
 
 import re
 import sys
 import tempfile
 from datetime import datetime, timezone
+
 
 from search_utils import build_parser, get_client, get_key, make_item, make_result, print_json
 
