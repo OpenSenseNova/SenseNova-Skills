@@ -1,33 +1,29 @@
 ---
 name: sn-search-social-en
-description: 搜索英文社交平台：Reddit 帖子、Twitter/X 推文、YouTube 视频。用于获取英文社区讨论和视频内容。
+description: 用于搜索英文社交平台，包括 Reddit 帖子、Twitter/X 推文和 YouTube 视频。
 ---
 
 # sn-search-social-en - 英文社交平台搜索
 
 搜索 Reddit、Twitter/X、YouTube 三个英文社交平台。
 
-## 依赖
-
-运行脚本前先安装本 skill 的 Python 依赖：
-
-```bash
-python3 -m pip install -r skills/sn-search-social-en/requirements.txt
-```
-
-如果项目使用 `uv` 环境：
-
-```bash
-uv pip install -r skills/sn-search-social-en/requirements.txt
-```
-
 ## 可用脚本
 
-| 脚本 | 平台 | 用途 | API key |
+| 脚本 | 平台 | 用途 | API 密钥 |
 |------|------|------|---------|
 | `reddit_search.py` | Reddit | 帖子和讨论搜索 | 无需 |
 | `twitter_search.py` | Twitter/X | 推文搜索 | 需 `TIKHUB_TOKEN` |
 | `youtube_search.py` | YouTube | 视频搜索 | 需 `YOUTUBE_API_KEY` |
+
+## 依赖
+
+首次运行或脚本提示缺库时，使用本技能的依赖清单安装到当前 Python 环境：
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+不要在脚本内部自动安装依赖。若安装失败、网络不可用或包不可用，停止使用对应脚本并改用网页搜索，说明缺少依赖。
 
 ## 参数说明
 
@@ -77,7 +73,7 @@ python3 scripts/youtube_search.py <query> [选项]
 |------|------|--------|
 | `query` | 搜索关键词（必填） | — |
 | `--limit`, `-n` | 返回结果数量 | 10 |
-| `--api-key` | YouTube API Key（也可通过 `YOUTUBE_API_KEY` 环境变量设置，必填） | — |
+| `--api-key` | YouTube API 密钥（也可通过 `YOUTUBE_API_KEY` 环境变量设置，必填） | — |
 | `--order` | 排序方式：`relevance`, `date`, `viewCount`, `rating` | relevance |
 
 ```bash

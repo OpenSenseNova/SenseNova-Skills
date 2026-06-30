@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """抖音搜索。通过抖音 Web API（需要 cookie 认证，稳定性较低）。"""
-from __future__ import annotations
 
 import sys
+
 
 from search_utils import build_parser, get_client, get_key, make_item, make_result, print_json
 

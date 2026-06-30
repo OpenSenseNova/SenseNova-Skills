@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """GitHub 搜索：仓库、代码、Issue。通过 GitHub REST API。"""
-from __future__ import annotations
 
 import sys
+
 
 from search_utils import build_parser, get_client, get_key, make_item, make_result, print_json
 

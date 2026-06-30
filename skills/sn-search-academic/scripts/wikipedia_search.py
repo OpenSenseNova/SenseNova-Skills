@@ -7,8 +7,8 @@ import sys
 from search_utils import build_parser, get_client, make_item, make_result, print_json
 
 WIKIPEDIA_USER_AGENT = (
-    "sensenova sn-search-academic "
-    "(https://github.com/SenseTime-FVG/sensenova-skills)"
+    "sensenova-claw sn-search-academic "
+    "(https://github.com/SenseTime-FVG/sensenova-claw)"
 )
 
 

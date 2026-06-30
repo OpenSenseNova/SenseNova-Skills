@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """HuggingFace 搜索：模型、数据集、Space。通过 HuggingFace Hub API。"""
-from __future__ import annotations
 
 import sys
+
 
 from search_utils import build_parser, get_client, get_key, make_item, make_result, print_json
 

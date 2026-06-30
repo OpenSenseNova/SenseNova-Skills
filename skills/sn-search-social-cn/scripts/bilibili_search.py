@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """B站搜索。通过 Bilibili Web API（无需认证即可搜索）。"""
-from __future__ import annotations
 
 import sys
+
 
 from search_utils import build_parser, get_client, get_key, make_item, make_result, print_json
 
