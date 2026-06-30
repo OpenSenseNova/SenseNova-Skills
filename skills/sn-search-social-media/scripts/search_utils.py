@@ -88,7 +88,7 @@ _DEFAULT_TIMEOUT = 15
 _DEFAULT_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/125.0.0.0 Safari/537.36"
+    "Chrome/125.0.0.0 Safari/537.36 sensenova-sn-search-social-media/1.0"
 )
 
 
