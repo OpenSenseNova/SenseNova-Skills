@@ -121,11 +121,9 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | 名称                                                                   | 标签        | 描述                                                                                      |
 | -------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
 | [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **深度研究入口** | **深度研究功能的统一入口**，规划 → 分维度取证 → 综合 → 成稿（`report.md`）的全流程编排器，产物落盘到 `report_dir`，支持断点续跑。 |
-| [`sn-research-planning`](skills/sn-research-planning/SKILL.md)             | 研究规划      | 基于 `request.md` 一次性产出 `plan.json`，覆盖定界、报告形态、维度拆解、关键问题、搜索策略、依赖与完成标准。                     |
-| [`sn-dimension-research`](skills/sn-dimension-research/SKILL.md)           | 单维度取证     | 按 `plan.json` 中维度的 `search_strategy` 调用搜索、筛选证据、交叉验证，产出 `sub_reports/{dimension_id}.md`。 |
-| [`sn-research-synthesis`](skills/sn-research-synthesis/SKILL.md)           | 综合判断      | 把多个 `sub_reports` 综合为 `synthesis.md`，明确主线判断、证据强弱、跨维度共识、关键冲突与不确定性。                       |
 | [`sn-research-report`](skills/sn-research-report/SKILL.md)                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
 | [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | 报告形态发现    | 研究"这类报告应该长什么样"，给出章节结构、必备元素与风格约束；可独立使用，也可为 sn-deep-research 的 `report_shape` 提供依据。          |
+| [`sn-prepare-citations`](skills/sn-prepare-citations/SKILL.md)                 | 引用渲染      | 将 `[^source_id]` 脚注后处理为编号引用，并基于 evidence sources 追加参考文献。 |
 | [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)             | Markdown → HTML 报告 | 把研究产出的 `report.md`（或任意 Markdown 文档）转换成单文件、可离线打开的 HTML 阅读视图——内嵌图片、侧栏目录、自适应表格，并自动修复表格分隔符。 |
 
 
