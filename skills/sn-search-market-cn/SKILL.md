@@ -5,6 +5,10 @@ description: Use when researching China market, industry, macro, trade, procurem
 
 # 中国市场商业搜索
 
+## 凭证配置
+
+API key、token 与 cookie 统一建议写在仓库根目录 `.env`（参考 `.env.example`），并由 runtime 或用户在执行前加载为同名环境变量。脚本仍只从环境变量或显式 CLI 参数读取凭证；不要把真实密钥写入 skill payload、报告、日志或提交。
+
 只使用本技能列出的中国官方免费资源。不要补充表外资源；遇到注册、登录、验证码、授权码、API key、OAuth、数字签名对接、商业试用、付费墙、访问防护或加密货币数据，立即放弃该资源。
 
 ## 工作流

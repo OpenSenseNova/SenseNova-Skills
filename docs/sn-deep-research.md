@@ -1,164 +1,58 @@
-# Deep Research & Search Skills
+# SenseNova Deep Research Skills
 
 English | [简体中文](sn-deep-research_cn.md)
 
-This document collects the sn-deep-research skills (`sn-deep-research`, `sn-research-planning`, `sn-dimension-research`, `sn-research-synthesis`, `sn-research-report`, `sn-report-format-discovery`) and the search skills (`sn-search-academic`, `sn-search-code`, `sn-search-social-cn`, `sn-search-social-en`).
+This document describes the current deep-research stack after the integrated `sn-deep-research` upgrade. The old split planning / dimension-research / synthesis pipeline has been retired: planning, evidence gathering, review, synthesis, writing, stitching, and citation rendering now live under the `sn-deep-research` controller and its `agents/*` contracts.
 
-Deep-research skills handle planning, synthesis, and final writing. Search skills are invoked by `sn-dimension-research` during per-dimension evidence gathering, covering academic papers, developer resources, and Chinese & English social platforms. Together they form an end-to-end pipeline.
+## Current Deep Research Pipeline
 
-## Prerequisites
+| Skill / component | Role |
+|---|---|
+| [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | Unified entry point. Chooses quick / normal / heavy mode, creates the report directory, dispatches specialist agents, runs validators, and renders the final report. |
+| `sn-deep-research/agents/scout.md` | Pre-research briefing and mode recommendation for normal / heavy runs. |
+| `sn-deep-research/agents/plan.md` | Report type, dimensions, waves, dependencies, and perspective lenses. |
+| `sn-deep-research/agents/research.md` | Per-dimension evidence gathering. Outputs schema-validated `sub_reports/dN.evidence.json`. |
+| `validate_evidence.py` / `validate_outline.py` | Hard gates for evidence and outline contracts. |
+| `review.md`, `perspective.md`, `supplement-planner.md` | Evidence review, coverage-gap checks, and targeted supplement plans. |
+| `report-planner.md`, `report-writer.md`, `report-stitcher.md` | Outline/subset planning, section writing, and heavy-mode stitching. |
+| [`sn-prepare-citations`](../skills/sn-prepare-citations/SKILL.md) | Converts `[^source_id]` footnotes into numbered citations and writes `report.md` + `citations.json`. |
+| [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | Optional report-format discovery used by the planning agent when the target report format is unknown. |
+| [`sn-research-report`](../skills/sn-research-report/SKILL.md) | Standalone report-structure reference/template skill; not part of the integrated pipeline control flow. |
 
-- **Python** 3.9 or later (3.10+ recommended).
-- **The current agent host's `web_search` must be configured and available** — the sn-deep-research orchestrator gates on it at startup; concrete configuration entry points vary by host.
-- To generate AI illustrations in the final `report.md`, install and configure `sn-image-base` / `sn-image-generate`.
-- Optional / required platform API keys depending on the dimensions you research (see [API Keys](#2-api-keys)).
+## Search Skills Used by Research Agents
 
-## Deep-Research Skills
+Research agents select search skills according to the dimension's source categories. Credentials are read from environment variables; the recommended convention is to keep them in the repository root `.env` (copy `.env.example`) and load them before running the skill.
 
-| Name | Role | Description |
-|------|------|-------------|
-| [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | **Deep-research entry** | End-to-end orchestrator: `request.md → plan.json → sub_reports/*.md → synthesis.md → report.md`; artifacts persisted to `report_dir`; supports resume. |
-| [`sn-research-planning`](../skills/sn-research-planning/SKILL.md) | Research planning | Produces `plan.json` from `request.md` in a single pass, covering scope, report shape, dimension breakdown (3–8), key questions, search strategies, dependencies, and completion criteria. |
-| [`sn-dimension-research`](../skills/sn-dimension-research/SKILL.md) | Per-dimension evidence | Calls [search skills](#search-skills) per the dimension's `search_strategy` for multi-round gathering and cross-validation; emits `sub_reports/{dimension_id}.md`. |
-| [`sn-research-synthesis`](../skills/sn-research-synthesis/SKILL.md) | Synthesis & judgment | Synthesizes multiple `sub_reports` into `synthesis.md`: main conclusions, evidence strength, cross-dimension consensus, key conflicts, and uncertainties. |
-| [`sn-research-report`](../skills/sn-research-report/SKILL.md) | Final writing / rewriting | Turns the judgment layer into final `report.md`; also supports targeted edits on existing reports (rewrite, polish, restructure, add tables, plan illustrations, and call `sn-image-base` for image generation). |
-| [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | Report-format discovery | Researches what such a report typically looks like, returning section structure, mandatory elements, and style constraints; usable standalone or as input for `sn-deep-research`'s `report_shape`. |
-
-## Search Skills
-
-| Name | Role | Description |
-|------|------|-------------|
-| [`sn-search-academic`](../skills/sn-search-academic/SKILL.md) | Academic search | ArXiv (with section-by-section HTML full-text reading) / Semantic Scholar (citation counts and forward/backward citation chains) / PubMed (with PMC open-access full text) / Wikipedia (multi-language). |
-| [`sn-search-code`](../skills/sn-search-code/SKILL.md) | Developer search | GitHub (repos / code / issues) / Stack Overflow (by tag / votes) / Hacker News / HuggingFace (models / datasets / Spaces). |
-| [`sn-search-social-cn`](../skills/sn-search-social-cn/SKILL.md) | Chinese social search | Bilibili / Zhihu / Douyin; Zhihu and Douyin require cookies, Bilibili cookie is optional. |
-| [`sn-search-social-en`](../skills/sn-search-social-en/SKILL.md) | English social search | Reddit (subreddit / sort / time range) / Twitter (X) (via TikHub) / YouTube (API key). |
-
-Each search skill ships its own copy of `search_utils.py` under its `scripts/` directory; it is a shared internal module, not user-facing.
+| Skill | Coverage |
+|---|---|
+| [`sn-search-academic`](../skills/sn-search-academic/SKILL.md) | Academic papers, scholarly metadata, citation chains, encyclopedic context. |
+| [`sn-search-code`](../skills/sn-search-code/SKILL.md) | GitHub, HuggingFace, StackOverflow, Hacker News developer sources. |
+| [`sn-search-finance`](../skills/sn-search-finance/SKILL.md) | Securities, market data, financial reports, filings, and finance news. |
+| [`sn-search-market-cn`](../skills/sn-search-market-cn/SKILL.md) | China market and industry data. |
+| [`sn-search-social-cn`](../skills/sn-search-social-cn/SKILL.md) | Zhihu, Xiaohongshu, Weibo, Douyin, Bilibili. |
+| [`sn-search-social-en`](../skills/sn-search-social-en/SKILL.md) | Reddit, Twitter/X via TikHub, YouTube. |
+| [`sn-search-social-media`](../skills/sn-search-social-media/SKILL.md) | Public social/media trend sources such as GitHub public search, Hacker News hotspots, StackExchange, Wikimedia pageviews. |
+| [`sn-search-year-report`](../skills/sn-search-year-report/SKILL.md) | Annual reports, SEC-style filings, and public company disclosures. |
 
 ## Quick Start
 
-Use these skills from [OpenClaw](https://openclaw.ai/), Hermes, or another Agent Skills compatible host. For skill registration steps, see [`sn-image-generate_en.md`](sn-image-generate_en.md#1-register-skills).
+Use the unified entry point for deep research requests:
 
-### 1. Hard precheck: `web_search`
-
-Before creating `report_dir`, writing `request.md`, or entering any research stage, `sn-deep-research` **must run one tiny generic `web_search` probe to confirm that search works in the current session**. Do not start research — and do not substitute memory/prior knowledge for online evidence — until this is confirmed.
-
-- Do not infer whether the agent is running in OpenClaw, Hermes, or another host; do not read or infer host-specific config paths.
-- Issue one low-cost, low-ambiguity `web_search` probe; the only goal is to confirm the tool returns normal search results.
-- Proceed only if the probe succeeds and returns non-empty results; stop on probe failure, missing tool, missing key, provider not ready, service unreachable, `search disabled`, permission errors, or empty results.
-
-### 2. API Keys
-
-Set as needed in `~/.openclaw/.env` (OpenClaw), `~/.hermes/.env` (Hermes), or the equivalent environment configuration supported by your host:
-
-| Platform | Required / Optional | Env var | Notes |
-|----------|--------|---------|-------|
-| GitHub repo/issue search | Optional (rate-limit boost) | `GITHUB_TOKEN` | Anonymous works for public search |
-| GitHub code search | **Required** | `GITHUB_TOKEN` | Mandatory for `--type code` |
-| Semantic Scholar | Optional | `S2_API_KEY` | Rate-limit boost |
-| PubMed | Optional | `NCBI_API_KEY` | Lifts cap from 3 req/s to 10 req/s |
-| HuggingFace | Optional | `HF_TOKEN` | Rate-limit boost |
-| Bilibili | Optional | `BILIBILI_COOKIE` | Improves result quality |
-| Zhihu | **Required** | `ZHIHU_COOKIE` | Search will not work without it |
-| Douyin | **Required** | `DOUYIN_COOKIE` | Search will not work without it |
-| Twitter/X | **Required** | `TIKHUB_TOKEN` | Routed via TikHub |
-| YouTube | **Required** | `YOUTUBE_API_KEY` | YouTube Data API v3 |
-| AI illustrations (`sn-image-base` / `sn-image-generate`) | **Required** when generating images | `SN_API_KEY` | Used for AI illustrations in `report.md`; `SN_IMAGE_GEN_API_KEY` is only needed when image generation uses a different key |
-| AI image model | Optional | `SN_IMAGE_GEN_MODEL` | Defaults are defined by `sn-image-base`; set this for a specific Token Plan or other supported image model |
-| AI image base URL | Optional | `SN_IMAGE_GEN_BASE_URL` | Defaults are defined by `sn-image-base`; set this for non-default providers |
-| AI image model type | Optional | `SN_IMAGE_GEN_MODEL_TYPE` | Examples: `sensenova`, `nano-banana`, `openai-image` |
-
-ArXiv, Stack Overflow, Hacker News, and Reddit public search require no key.
-
-Minimal `sn-image-generate` configuration example:
-
-```ini
-SN_API_KEY="sk-xxx"
-SN_BASE_URL="https://token.sensenova.cn/v1"
-SN_IMAGE_GEN_MODEL_TYPE="sensenova"
-SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
+```text
+/skill sn-deep-research "Home robotics supply chain"
 ```
 
-### 3. Python dependencies
+The controller chooses a mode and follows the corresponding pipeline:
 
-Search skills do not ship a per-skill `requirements.txt`; deps are typically present in the base execution image. If preparing a fresh environment:
+- **quick**: one skim evidence dimension → single writer → citation rendering.
+- **normal**: scout → plan → parallel evidence research + validation/review → report planner → single full-outline writer → final review → citation rendering.
+- **heavy**: normal plus multi-wave scheduling, perspectives, supplement planning, parallel section writers, stitcher, and full final review.
 
-```bash
-pip install requests httpx lxml beautifulsoup4
-```
+## Configuration
 
-If final reports need AI illustrations, also install the `sn-image-base` runtime dependencies and make sure the host can locate `sn-image-base`:
+1. Copy `.env.example` to `.env`.
+2. Fill only the keys needed for the sources you want to use.
+3. Load `.env` into the runtime environment before invoking skills.
+4. Do not pass secrets in skill payloads, prompts, reports, logs, or commits.
 
-```bash
-pip install -r skills/sn-image-base/requirements.txt
-```
-
-The deep-research orchestrator itself does not call HTTP directly — it relies on the host-provided `web_search` and the search scripts above. The final-report stage only calls `sn-image-base` when AI illustrations are needed.
-
-### 4. Invoke in Agent
-
-**Deep-research entry** — describe the topic to trigger:
-
-> "Deep research: home robotics supply chain and key players in 2025"
-
-Or call by name:
-
-> /skill sn-deep-research "Home robotics supply chain"
-
-**Standalone search** — describe the request:
-
-> "Find recent ArXiv papers on RAG, sorted by citation count"
-> "Search GitHub for Python implementations of in-context learning"
-
-Or call by name:
-
-> /skill sn-search-academic "retrieval-augmented generation"
-> /skill sn-search-code "in-context learning python"
-> /skill sn-search-social-cn "扩散模型 教程"
-> /skill sn-search-social-en "vision transformer explained"
-
-**Per-stage sn-deep-research invocation** (advanced):
-
-> /skill sn-research-planning  # produce plan.json from a written request.md
-> /skill sn-dimension-research # gather evidence for a specific dimension in plan.json
-> /skill sn-research-synthesis # synthesize existing sub_reports into synthesis.md
-> /skill sn-research-report    # write report.md from synthesis.md + sub_reports
-
-**Directly invoking search scripts as subprocesses**:
-
-```bash
-GITHUB_TOKEN=ghp_xxx python3 skills/sn-search-code/scripts/github_search.py "import asyncio" --type code --limit 5
-ZHIHU_COOKIE="..." python3 skills/sn-search-social-cn/scripts/zhihu_search.py "Python 异步编程" --limit 5
-```
-
-## Outputs
-
-### Deep Research
-
-Report artifacts are written to `{workspace}/reports/{YYYY-MM-DD}-{slug}-{hex4}/`:
-
-- `request.md` — original user request and scope
-- `plan.json` — dimension breakdown, key questions, search strategies, report shape
-- `sub_reports/d1.md` … `d8.md` — per-dimension evidence (with evidence table and confidence)
-- `synthesis.md` — synthesis (main lines, consensus, conflicts, uncertainty)
-- `report.md` — final report
-
-_See the "Sample Outputs" section in the top-level [`README.md`](../README.md#sample-outputs) for end-to-end examples._
-
-### Search
-
-All search scripts emit JSON to stdout in a unified shape:
-
-```json
-{
-  "success": true,
-  "query": "...",
-  "provider": "...",
-  "items": [
-    {"title": "...", "url": "...", "snippet": "..."}
-  ],
-  "error": null
-}
-```
-
-ArXiv and PMC full-text readers additionally return structured section content for incremental reading.
+Missing optional credentials degrade the relevant source family to public/general search rather than blocking the whole run. Tier-1 runtime capabilities (file I/O, shell execution, web search, web fetch) are still required for reliable deep research.

@@ -17,3 +17,8 @@ deep-research-reports/
 
 # Claude Code local config / skills
 .claude/
+
+# Local environment variables
+.env
+.env.*
+!.env.example
