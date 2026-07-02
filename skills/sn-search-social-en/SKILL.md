@@ -11,6 +11,20 @@ API key、token 与 cookie 统一建议写在仓库根目录 `.env`（参考 `.e
 
 搜索 Reddit、Twitter/X、YouTube 三个英文社交平台。
 
+## Hermes Tweet Companion
+
+When this skill is used inside Hermes Agent and the task needs native
+X/Twitter exploration, tweet reads, or confirmed gated actions, use Hermes Tweet
+as the companion route:
+
+```bash
+hermes plugins install Xquik-dev/hermes-tweet --enable
+```
+
+Set `XQUIK_API_KEY` for read and action tools. Set
+`HERMES_TWEET_ENABLE_ACTIONS=true` only when action workflows are intentional.
+Keep this SenseNova skill as the multi-platform social search workflow.
+
 ## 可用脚本
 
 | 脚本 | 平台 | 用途 | API 密钥 |
