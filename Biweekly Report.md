@@ -6,7 +6,35 @@
 
 > 💡 Note: Bi-weekly updates are listed in reverse chronological order.
 
-## 2026.06.08 – 06.21 
+## 2026.6.22 - 7.5
+
+### Deep Research 
+
+**Now supports three modes: `quick/normal/heavy`**
+
+Deep Research now supports three modes — `quick/normal/heavy`. You can specify a mode explicitly, or let the model recommend one based on the complexity of the question, the evidence required, and the goal of the report. The three modes differ as follows:
+
+| **Mode** | **Estimated time**  | **Best for**                                                                                                                              | **Output characteristics**                                                                                                                                                            | **Examples**                                                                                                                                                  |
+|----------|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| quick    | ~10 minutes         | Simple fact-checking, single questions, single-dimension lookups                                                                          | Delivers a reliable answer quickly; typically relies on a few authoritative sources without full multi-source cross-validation                                                        | When does a certain policy take effect? Who is the current CEO of a given company?                                                                            |
+| normal   | ~30 minutes         | Industry overviews, competitor comparisons, policy interpretation, trend analysis, and other questions that need fairly complete coverage | Breaks the topic into multiple research dimensions, performs multi-source evidence gathering, verification, and structured writing to produce a report with fairly complete coverage  | Analyze the current state of the home-robotics supply chain; compare the capabilities and positioning of three AI office products                             |
+| heavy    | ~60 minutes or more | Highly complex, high-stakes, or deep-dive questions such as strategic research, investment due diligence, and complex causal analysis     | Builds on normal with additional rounds of research, multi-perspective review, targeted follow-up research, and section-by-section writing to produce a more in-depth research report | Assess whether now is the right time to enter the embodied-intelligence space; conduct full market and competitive due diligence for a new business direction |
+
+> 👀 TIPS:
+- If you are unsure which mode to choose, simply describe your research goal and let the model recommend one;
+- Choose quick when you are short on time or only need to verify a single fact, normal when you need a complete report, and heavy when you need in-depth due diligence or strategic judgment.
+
+### PPT
+
+We are rolling out a more comprehensive update to PPT generation. Stay tuned.
+
+### Image Generation
+
+Related features are currently being updated.
+
+
+
+## 2026.6.8 – 6.21 
 
 ### Deep Research
 
