@@ -21,8 +21,8 @@ Deep Research now supports three modes — `quick/normal/heavy`. You can specify
 | heavy    | ~60 minutes or more | Highly complex, high-stakes, or deep-dive questions such as strategic research, investment due diligence, and complex causal analysis     | Builds on normal with additional rounds of research, multi-perspective review, targeted follow-up research, and section-by-section writing to produce a more in-depth research report | Assess whether now is the right time to enter the embodied-intelligence space; conduct full market and competitive due diligence for a new business direction |
 
 > 👀 TIPS:
-- If you are unsure which mode to choose, simply describe your research goal and let the model recommend one;
-- Choose quick when you are short on time or only need to verify a single fact, normal when you need a complete report, and heavy when you need in-depth due diligence or strategic judgment.
+> - If you are unsure which mode to choose, simply describe your research goal and let the model recommend one;
+> - Choose quick when you are short on time or only need to verify a single fact, normal when you need a complete report, and heavy when you need in-depth due diligence or strategic judgment.
 
 ### PPT
 
