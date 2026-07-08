@@ -9,7 +9,7 @@
 
 ## 2026.6.22 - 7.5
 
-### Deep Research 
+### 深度研究（Deep Research）
 
 支持 `quick/normal/heavy` 三种模式
 Deep Research 现已支持 `quick/normal/heavy` 三种模式。用户可以主动指定，模型也会根据问题复杂度、取证需求和报告目标进行推荐，三种模式的区分如下：
