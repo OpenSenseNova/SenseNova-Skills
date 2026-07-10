@@ -95,7 +95,7 @@ Run `sn-ppt-doctor` hard checks (`SN_API_KEY` or capability-specific API keys / 
    - Already-captioned images are **skipped silently**, so re-running is cheap and safe. Only newly added images incur a VLM call.
    - Failures don't abort: the script reports them in the JSON status; downstream stages fall back to filename / alt / digest hint when a caption is missing.
    Downstream (sn-ppt-standard `cmd_page_html`) reads these cached captions and **never** re-captions — that's the "single source of truth" rule. If you change image files in a deck, delete their `vlm_caption` (or `reference_image_captions[path]`) entry and re-run this script to refresh.
-10. Dispatch to `sn-ppt-creative` or `sn-ppt-standard` based on `task_pack.ppt_mode`.
+10. Dispatch to `sn-ppt-creative` or `sn-ppt-standard` based on `task_pack.ppt_mode`. For `sn-ppt-standard`, the downstream skill must produce both the editable PPTX (`<deck_id>.pptx`) and the image-based visual-fidelity PPTX (`<deck_id>.image.pptx`) through its own `run_stage.py` export commands.
 
 ## ask_user boundary conditions
 
@@ -198,7 +198,7 @@ Substitute `$PPT_STANDARD_DIR` with the `sn-ppt-standard` skill install dir.
 
 ## 🚫 Hard rules
 
-1. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** PPTX is produced by the downstream mode skills (sn-ppt-standard / sn-ppt-creative) through their designated scripts. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`.
+1. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** PPTX is produced by the downstream mode skills (sn-ppt-standard / sn-ppt-creative) through their designated scripts. For standard mode, expect both editable and image-based PPTX outputs. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`.
 2. **Wait for `ask_user` responses.** When you ask the user a question, do NOT proceed until they reply. Never continue with assumed or default values.
 3. **Validate paths before writing.** Always `ls` or `pwd` to verify the current working directory before creating files. The only valid output location is `$(pwd)/ppt_decks/<deck_dir>/`. Never write to `/workspace/`, `/tmp/`, `~/`, or any hallucinated path. If a path doesn't start with the verified `$(pwd)`, it's wrong.
 

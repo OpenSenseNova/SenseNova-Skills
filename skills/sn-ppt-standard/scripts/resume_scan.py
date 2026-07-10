@@ -22,17 +22,29 @@ def scan(deck: Path) -> dict:
     outline = (deck / "outline.json").exists()
     asset_plan = (deck / "asset_plan.json").exists()
     pptx = (deck / f"{deck_id}.pptx").exists()
+    image_pptx = (deck / f"{deck_id}.image.pptx").exists()
 
     pages = []
     for i in range(1, page_count + 1):
         html = (deck / "pages" / f"page_{i:03d}.html").exists()
+        screenshot = (deck / "screenshots" / f"page_{i:03d}.png").exists()
         pages.append(
-            {"page_no": i, "html_done": html, "action": "skip" if html else "full"}
+            {
+                "page_no": i,
+                "html_done": html,
+                "screenshot_done": screenshot,
+                "action": "skip" if html else "full",
+            }
         )
 
     # Deck-level next_action
     if all(p["html_done"] for p in pages) and asset_plan and outline and style:
-        next_action = "finished" if pptx else "export_pptx"
+        if not pptx:
+            next_action = "export_pptx"
+        elif not image_pptx or not all(p["screenshot_done"] for p in pages):
+            next_action = "export_image_pptx"
+        else:
+            next_action = "finished"
     elif style and outline and asset_plan:
         next_action = "per_page"
     elif style and outline:
@@ -47,6 +59,8 @@ def scan(deck: Path) -> dict:
         "outline_done": outline,
         "asset_plan_done": asset_plan,
         "pptx_done": pptx,
+        "image_pptx_done": image_pptx,
+        "screenshots_done": all(p["screenshot_done"] for p in pages),
         "pages": pages,
         "next_action": next_action,
     }

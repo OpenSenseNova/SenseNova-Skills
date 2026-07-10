@@ -17,7 +17,7 @@
 | [`sn-ppt-entry`](../skills/sn-ppt-entry/SKILL.md) | **PPT 入口** | 收集角色 / 受众 / 场景 / 页数 / 模式（创意 or 标准），解析 pdf / docx / md / txt 输入，产出 `task_pack.json` + `info_pack.json` 并分派到下游模式。 |
 | [`sn-ppt-doctor`](../skills/sn-ppt-doctor/SKILL.md) | PPT 环境诊断 | 验证 `sn-image-base` 可用性、API key、Node 运行时与可选依赖；按需写入 `.env`。 |
 | [`sn-ppt-creative`](../skills/sn-ppt-creative/SKILL.md) | PPT 创意模式 | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `sn-image-generate` 一次性出图后导出 PPTX。 |
-| [`sn-ppt-standard`](../skills/sn-ppt-standard/SKILL.md) | PPT 标准模式 | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出 PPTX。 |
+| [`sn-ppt-standard`](../skills/sn-ppt-standard/SKILL.md) | PPT 标准模式 | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出可编辑 PPTX + 图片版高保真 PPTX。 |
 
 `sn-ppt-creative` 依赖 `sn-image-base` 进行文生图；`sn-ppt-standard` 自带 LLM / VLM 调用脚本（`scripts/run_stage.py`），文生图阶段仍走 `sn-image-base`。
 
@@ -38,7 +38,7 @@ pip install -r skills/sn-ppt-creative/requirements.txt
 pip install -r skills/sn-image-base/requirements.txt
 ```
 
-`sn-ppt-doctor` 仅用 Python 标准库，无需额外依赖。`sn-ppt-standard` 在 `scripts/run_stage.py` 中包装模型调用，最终导出 PPTX 同样需要 `python-pptx`。
+`sn-ppt-doctor` 仅用 Python 标准库，无需额外依赖。`sn-ppt-standard` 在 `scripts/run_stage.py` 中包装模型调用，并使用 `scripts/export_pptx/` 下的 Node 导出工具生成可编辑 PPTX 与图片版 PPTX。
 
 ### 2. API Key 与环境变量
 
@@ -75,8 +75,10 @@ PPT 产物默认保存在 `$(pwd)/ppt_decks/<topic>_<timestamp>/`，目录内包
 
 - `task_pack.json` / `info_pack.json` —— `sn-ppt-entry` 解析后的任务参数
 - `style_spec.json`（标准模式）/ `style_spec.md`（创意模式）、`outline.json` —— 风格与大纲
-- `pages/page_*.png` —— 单页全图（创意模式）或 HTML 渲染图（标准模式）
+- `pages/page_*.png` —— 单页全图（创意模式）
+- `screenshots/page_*.png` —— 浏览器渲染后的幻灯片截图，用于图片版 PPTX（标准模式）
 - `review.md` —— 分页评审汇总（标准模式）
-- `<deck_id>.pptx` —— 最终 PPTX
+- `<deck_id>.pptx` —— 可编辑 PPTX
+- `<deck_id>.image.pptx` —— 图片版高保真 PPTX
 
 _更多端到端样例参见仓库根目录 [`README_CN.md`](../README_CN.md#输出样例) 中的「输出样例」章节。_

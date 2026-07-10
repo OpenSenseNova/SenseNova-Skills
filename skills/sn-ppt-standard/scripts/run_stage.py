@@ -13,6 +13,7 @@ Usage:
     python run_stage.py refine-page        --deck-dir <deck> --page N
     python run_stage.py batch-refine-page  --deck-dir <deck> [--concurrency 4]
     python run_stage.py export             --deck-dir <deck>
+    python run_stage.py export-image-pptx  --deck-dir <deck>
 
 The main agent (in OpenClaw) is expected to call this script **once per
 stage**, with page/slot iteration driven by the agent's own loop of tool_calls.
@@ -1101,6 +1102,47 @@ def cmd_export(deck: Path) -> int:
     return _ok(pages=pages, converted=converted, failed=failed)
 
 
+def cmd_export_image_pptx(deck: Path) -> int:
+    """Export a visual-fidelity PPTX by rasterizing each HTML page to PNG.
+
+    This is the sanctioned HTML -> Image -> PPTX path. It complements
+    `cmd_export`, which rebuilds editable PPTX objects from DOM/IR and may
+    diverge visually when CSS/charts are too complex. The output is intentionally
+    not editable at element level: each slide is a full-bleed screenshot image.
+    """
+    import subprocess
+
+    converter = SKILL_DIR / "scripts" / "export_pptx" / "html_to_image_pptx.mjs"
+    if not converter.exists():
+        return _fail("export_pptx/html_to_image_pptx.mjs missing")
+    cmd = ["node", str(converter), "--deck-dir", str(deck), "--force"]
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    if proc.returncode != 0:
+        return _fail(f"export-image-pptx failed: {proc.stderr.strip()[:500]}")
+
+    stdout = proc.stdout.strip()
+    try:
+        last = [line for line in stdout.splitlines() if line.strip().startswith("{")]
+        info = json.loads(last[-1]) if last else {}
+        if info.get("status") == "skipped":
+            return _ok(
+                skipped=True,
+                stage="export-image-pptx",
+                reason=info.get("reason"),
+                detail=info.get("detail"),
+            )
+        return _ok(
+            pages=info.get("pages"),
+            converted=info.get("converted"),
+            failed=info.get("failed"),
+            output=info.get("output"),
+            screenshots_dir=info.get("screenshotsDir"),
+            manifest=info.get("manifest"),
+        )
+    except Exception:
+        return _ok(raw_stdout=stdout[-1000:] if stdout else "")
+
+
 # ---------------------------------------------------------------------------
 # Refine pipeline (screenshot → critique → apply revisions)
 # ---------------------------------------------------------------------------
@@ -1417,7 +1459,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="run_stage")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    for name in ("preflight", "style", "outline", "asset-plan", "export"):
+    for name in ("preflight", "style", "outline", "asset-plan", "export", "export-image-pptx"):
         sp = sub.add_parser(name)
         sp.add_argument("--deck-dir", type=Path, required=True)
 
@@ -1477,6 +1519,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_refine_page(deck, args.page)
     if args.cmd == "export":
         return cmd_export(deck)
+    if args.cmd == "export-image-pptx":
+        return cmd_export_image_pptx(deck)
     if args.cmd == "batch-gen-image":
         return cmd_batch_gen_image(deck, args.concurrency)
     if args.cmd == "batch-page-html":

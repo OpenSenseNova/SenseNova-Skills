@@ -67,7 +67,7 @@ When `ppt_mode == "standard"`: **plan thoroughly first, then build.** Do thoroug
 3. **Do NOT construct LLM prompts yourself.** `run_stage.py` is the only place that builds payloads.
 4. **Do NOT add `timing` / logging / retry layers.** The skill is intentionally thin.
 5. **Do NOT go silent between execs.** Echo a one-line Chinese progress message after each exec before issuing the next.
-6. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** `run_stage.py export` is the ONLY way to produce a PPTX file. Never write Python scripts that import `pptx` or Node scripts that import `pptxgenjs`. If export fails or is skipped, the HTML pages are the final deliverable.
+6. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** `run_stage.py export` and `run_stage.py export-image-pptx` are the ONLY sanctioned ways to produce PPTX files. Never write Python scripts that import `pptx` or Node scripts that import `pptxgenjs`. If both export paths fail or are skipped, the HTML pages are the final deliverable.
 7. **Do NOT re-run a failing stage more than twice.** If the same `run_stage.py` subcommand fails with the same error on two consecutive attempts, treat it as a permanent failure. Echo the failure, record the skipped stage, and move on. Partial output is better than a stuck retry loop.
 8. **Language integrity.** All user-visible text MUST match the user's query language. If the query is Chinese, every title, bullet, caption, label, and footnote MUST be in Chinese — even if source documents are in English. A single English title in a Chinese deck is a regression.
 9. **Image integration.** All images used in slides MUST be saved under `<deck_dir>/images/` and referenced via relative paths from HTML (e.g., `../images/photo.jpg`). Never leave remote URLs in final HTML. Never use colored rectangles as image placeholders. If a searched/downloaded image exists on disk, it MUST appear in the corresponding page HTML.
@@ -137,7 +137,8 @@ $R batch-page-html  --deck-dir $D --concurrency N [--start-page S --end-page E]
 $R batch-page-html  --deck-dir $D --concurrency 4 --start-page 1 --end-page 8
 $R batch-page-html  --deck-dir $D --concurrency 4 --start-page 9 --end-page 16
 
-$R export        --deck-dir $D              # -> <deck_id>.pptx
+$R export             --deck-dir $D         # -> <deck_id>.pptx (editable DOM/IR-based PPTX)
+$R export-image-pptx  --deck-dir $D         # -> <deck_id>.image.pptx + screenshots/*.png
 ```
 
 ### Style preview checkpoint (standard mode only)
@@ -173,7 +174,7 @@ When a `run_stage.py` subcommand fails (exit code 1):
 - **Timeout, no-response, and gateway errors are transient** — treat them like the retry rules in rule #7 and move on.
 - **Never fall back to python-pptx or alternative tools** when a stage fails. The remedy is to re-run that stage, skip it and continue, or work around missing artifacts — not to switch to a different PPTX builder. `run_stage.py` is the only path to generate slides.
 - Stages after a failure use whichever artifacts exist from earlier stages. If `style_spec.json` is missing because the style stage failed, the remaining stages work around it — outline can use defaults, page-html can use a generic style.
-- After all stages complete (some succeeded, some failed), still run `export` — it produces whatever is available.
+- After all stages complete (some succeeded, some failed), still run `export` and then `export-image-pptx` — they produce whatever is available.
 
 Progress echo for failures:
 
@@ -208,6 +209,7 @@ For `gen-image` failures: **don't retry**, don't substitute — the HTML stage w
 | After all gen-image | `图片生成阶段完成：成功 12，失败 2` |
 | Per page-html | `[页 3/10] HTML ✓` |
 | After export | `PPTX ✓ (10/10 页)` or `PPTX 失败: ...` |
+| After export-image-pptx | `图片版 PPTX ✓ (10/10 页)` or `图片版 PPTX 失败: ...` |
 
 **Silence for more than ~30 seconds = a bug.**
 
@@ -220,6 +222,7 @@ The script is stateless — re-run a subcommand and it'll overwrite its output a
 - `asset_plan.json` exists → skip `asset-plan` (but any slot whose `local_path` is missing or `status != "ok"` still needs `gen-image`)
 - `pages/page_NNN.html` exists → skip `page-html` for that page
 - `<deck_id>.pptx` exists → skip `export`
+- `<deck_id>.image.pptx` exists and `screenshots/page_NNN.png` exist → skip `export-image-pptx`
 
 `scripts/resume_scan.py` emits a JSON manifest summarizing all this.
 
@@ -248,6 +251,30 @@ Before running `export`, verify that every `pages/page_NNN.html` has substantive
 If the headless browser (Playwright/Chromium) is unavailable, the export returns `status: "skipped"` with reason `"headless_browser_unavailable"`. The PPTX file is absent — this is an expected degraded ending state. The HTML pages are the final deliverable.
 
 🚫 **DO NOT fall back to python-pptx, libreoffice, or any other converter.** DO NOT attempt to install Chromium system dependencies manually. Simply report the skip and finish.
+
+## Image-based PPTX export
+
+After the normal editable export, always run:
+
+```bash
+$R export-image-pptx --deck-dir $D
+```
+
+This uses `scripts/export_pptx/html_to_image_pptx.mjs` to render each `pages/page_NNN.html` with Playwright, save full-slide PNG screenshots under `<deck_dir>/screenshots/`, and build `<deck_id>.image.pptx` with one full-bleed image per slide.
+
+Use cases:
+
+- The normal `<deck_id>.pptx` is the editable PPTX.
+- The image-based `<deck_id>.image.pptx` is the visual-fidelity PPTX. It should match the browser-rendered HTML more closely when CSS, gradients, SVG, or ECharts are too complex for DOM-to-PPTX reconstruction.
+- The screenshots in `<deck_dir>/screenshots/page_NNN.png` are also useful preview artifacts.
+
+Rules:
+
+- Treat `export-image-pptx` as part of the required final pipeline, not as an optional fallback.
+- If normal `export` succeeds but `export-image-pptx` fails, report the editable PPTX path and the failure reason.
+- If normal `export` fails but `export-image-pptx` succeeds, report the image-based PPTX path as the PPTX deliverable.
+- If both fail or are skipped because Playwright/Chromium is unavailable, report the HTML pages as the final deliverable.
+- Do not write your own screenshot loops or PPTX assembly code. Use `run_stage.py export-image-pptx` only.
 
 ## Does NOT
 

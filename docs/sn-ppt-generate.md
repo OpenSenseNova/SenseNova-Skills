@@ -17,7 +17,7 @@ This document collects the PPT generation skills (`sn-ppt-entry`, `sn-ppt-doctor
 | [`sn-ppt-entry`](../skills/sn-ppt-entry/SKILL.md) | **PPT entry** | Collects role / audience / scene / page count / mode (creative or standard), parses pdf / docx / md / txt inputs, emits `task_pack.json` + `info_pack.json`, and dispatches to a downstream mode. |
 | [`sn-ppt-doctor`](../skills/sn-ppt-doctor/SKILL.md) | PPT environment doctor | Validates `sn-image-base` availability, API keys, Node runtime, and optional deps; writes missing required vars into `.env`. |
 | [`sn-ppt-creative`](../skills/sn-ppt-creative/SKILL.md) | PPT creative mode | One full-page 16:9 PNG per slide, generated via `sn-image-generate` from a per-page composed prompt; exports PPTX. |
-| [`sn-ppt-standard`](../skills/sn-ppt-standard/SKILL.md) | PPT standard mode | `style_spec` → outline → asset plan + per-slot images + VLM QA → per-page HTML → per-page review (optional rewrite) → summary `review.md` → PPTX export. |
+| [`sn-ppt-standard`](../skills/sn-ppt-standard/SKILL.md) | PPT standard mode | `style_spec` → outline → asset plan + per-slot images + VLM QA → per-page HTML → per-page review (optional rewrite) → summary `review.md` → editable PPTX export + image-based visual-fidelity PPTX export. |
 
 `sn-ppt-creative` depends on `sn-image-base` for text-to-image; `sn-ppt-standard` ships its own LLM / VLM invocation scripts (`scripts/run_stage.py`) but still routes text-to-image through `sn-image-base`.
 
@@ -38,7 +38,7 @@ pip install -r skills/sn-ppt-creative/requirements.txt
 pip install -r skills/sn-image-base/requirements.txt
 ```
 
-`sn-ppt-doctor` uses only the Python stdlib. `sn-ppt-standard` wraps model calls in `scripts/run_stage.py` and also requires `python-pptx` for the final PPTX export.
+`sn-ppt-doctor` uses only the Python stdlib. `sn-ppt-standard` wraps model calls in `scripts/run_stage.py` and uses the Node export tools under `scripts/export_pptx/` for editable and image-based PPTX export.
 
 ### 2. API keys and environment variables
 
@@ -75,8 +75,10 @@ Decks are written to `$(pwd)/ppt_decks/<topic>_<timestamp>/`, containing:
 
 - `task_pack.json` / `info_pack.json` — parsed task parameters from `sn-ppt-entry`
 - `style_spec.json` (standard mode) / `style_spec.md` (creative mode), `outline.json` — style and outline
-- `pages/page_*.png` — full-page images (creative) or HTML-rendered slides (standard)
+- `pages/page_*.png` — full-page images (creative mode)
+- `screenshots/page_*.png` — browser-rendered slide screenshots used by the image-based PPTX (standard mode)
 - `review.md` — per-page review summary (standard mode)
-- `<deck_id>.pptx` — final PPTX
+- `<deck_id>.pptx` — editable PPTX
+- `<deck_id>.image.pptx` — image-based visual-fidelity PPTX
 
 _See the "Sample Outputs" section in the top-level [`README.md`](../README.md#sample-outputs) for end-to-end examples._

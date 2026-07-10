@@ -98,7 +98,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)       | **PPT 入口** | **PPT 生成功能的统一入口**，先请用户选择快速 / 标准 / 创意模式，再收集角色 / 受众 / 场景 / 页数。标准模式下进一步询问图像来源（AI 生成 / 网络搜索 / 纯文字）和图表渲染方式（U1 信息图 / ECharts）。解析 pdf / docx / md / txt 输入，产出 `task_pack.json` + `info_pack.json` 并分派到下游模式。快速模式跳过可选提问，直接进入构建。 |
 | [`sn-ppt-doctor`](skills/sn-ppt-doctor/SKILL.md)     | PPT 环境诊断   | PPT 流水线的环境检查，验证 `sn-image-base`、API key、Node 运行时与可选依赖；按需写入 `.env`。                                                         |
 | [`sn-ppt-creative`](skills/sn-ppt-creative/SKILL.md) | PPT 创意模式   | 每页一张 16:9 全图（PNG），按页面构图 prompt 走 `sn-image-generate` 一次性出图。T2I 生成失败时自动回退到网络图片搜索。                                                     |
-| [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md) | PPT 标准与快速  | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审 → 导出 PPTX。快速模式自主决策、即刻构建完整草稿，完成后提供结构化修改建议。标准模式包含风格预览确认环节。支持 U1 智能生成流程图与数据图表，支持 Serper 网络图片搜索。 |
+| [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md) | PPT 标准与快速  | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审 → 导出可编辑 PPTX + 图片版高保真 PPTX。快速模式自主决策、即刻构建完整草稿，完成后提供结构化修改建议。标准模式包含风格预览确认环节。支持 U1 智能生成流程图与数据图表，支持 Serper 网络图片搜索。 |
 
 
 ### 📈 数据分析（DA）
