@@ -38,6 +38,8 @@ Related features are currently being updated.
 
 ### Deep Research
 
+> Historical record: the following content preserves the status as of that reporting period. The current integrated version moved to the `quick/normal/heavy` mode structure in the 2026.6.22 - 7.5 period, and numbered citation rendering is now connected to the `sn-deep-research` main flow.
+
 **1. Deep Research**
 We have rebuilt Deep Research. It now runs each investigation through a complete five-step flow: understand the request → draft a research plan → gather evidence across multiple dimensions → synthesize → generate the report. Intermediate results from every step are saved along the way, so an interrupted run can resume instead of starting over.
 
@@ -64,4 +66,3 @@ Going forward, we will keep optimizing Deep Research generation speed to further
 - Combined standard mode with infographics: when a generated page involves flowcharts or infographics, the system calls the SenseNova U1 model to generate the image, yielding better results than the previous SVG-assembled infographics.
 
 We will add more templates and reference cases to further improve generation quality.
-

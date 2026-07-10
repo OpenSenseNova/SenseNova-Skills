@@ -84,7 +84,7 @@ description: 按指定维度搜集证据，输出结构化的 evidence.json
 |------------|----------|----------|
 | **sn-search-academic** | 按引用数/日期排序、引用图遍历、论文全文/章节阅读、开放获取检测 | sources 含 `academic`：论文、相关工作、引用链 |
 | **sn-search-code** | GitHub/Issue/代码搜索、HuggingFace 搜索、SO 按投票排序 | sources 含 `github` / `developer`：开源项目、模型/数据集、技术实现 |
-| **sn-search-social-cn** | 知乎、小红书、B站、微博、抖音平台内搜索 | sources 含 `social_media` / `review`（中文）：用户评价、舆情、社区讨论 |
+| **sn-search-social-cn** | 知乎、B站、抖音脚本搜索；小红书、微博通过 browser-use / 公开网页兜底 | sources 含 `social_media` / `review`（中文）：用户评价、舆情、社区讨论 |
 | **sn-search-social-en** | Reddit 定向搜索、Twitter/X 实时推文、YouTube 搜索 | sources 含 `social_media` / `forum`（英文）：海外社区、实时讨论、视频内容 |
 | **sn-search-social-media** | GitHub、HN、StackExchange、Wikimedia 热点与趋势 | sources 含 `community` / `trend`：开发者生态、热点趋势、百科热度 |
 | **sn-search-finance** | 行情、K 线、财务报表、SEC filings、财经新闻 | sources 含 `finance` / `securities`：上市公司、证券、市场数据 |
@@ -96,7 +96,7 @@ description: 按指定维度搜集证据，输出结构化的 evidence.json
 **硬规则：**
 - `sources` 命中的每个类别，**必须先用其映射 skill 检索**；不要先用通用网页搜索搜一遍再补 skill（重复且浅）。
 - 通用网页搜索**只在两种情况**使用：① 映射 skill 确实搜不到或无覆盖时的补充；② 某 `sources` 类别在上表无对应 skill。它**永不替代**已映射的 skill。
-- 专业 skill 若因**缺认证或环境依赖**而跑不通（如小红书 / 知乎 / 微博 / 抖音需 cookie，未配置即失败），等同该入口"无覆盖"：**单次尝试失败即转通用网页搜索兜底，不反复重试**，也**不据此返回 blocked**（blocked 只针对网页搜索 / 抓取 / 文件读写等核心能力整体缺失）。**记下被跳过的入口与所需配置**，在最终回复中提醒用户（见「文件输出」）。
+- 专业 skill 若因**缺认证或环境依赖**而跑不通（如知乎 / 抖音需 cookie，未配置即失败），等同该入口"无覆盖"：**单次尝试失败即转通用网页搜索兜底，不反复重试**，也**不据此返回 blocked**（blocked 只针对网页搜索 / 抓取 / 文件读写等核心能力整体缺失）。小红书 / 微博当前没有脚本入口，直接使用 browser-use / 公开网页兜底。**记下被跳过的入口与所需配置**，在最终回复中提醒用户（见「文件输出」）。
 - 同一轮可混用多个专业 skill：子问题落在哪个信息类型，就用哪个 skill。
 
 ### 时效感知搜索策略
@@ -331,7 +331,7 @@ python3 {plugin_skills_dir}/sn-deep-research/scripts/validate_evidence.py {repor
 1. ✓ `{report_dir}/sub_reports/{dimension_id}.evidence.json` 存在
 2. ✓ validator 输出 `{"ok": true}`
 3. 回复 controller：包含 file path + 简要统计（claim 数、source 数、key_findings 数、覆盖的 kq、kind 分布）
-4. **若有专业入口因缺认证 / 环境被跳过**：列出这些入口及所需配置（如 `XHS_COOKIE`、`ZHIHU_COOKIE`），说明本次该来源仅由通用搜索兜底，并提示用户配置后重跑可获得该平台更深、更高质量的专业检索
+4. **若有专业入口因缺认证 / 环境被跳过**：列出这些入口及所需配置（如 `ZHIHU_COOKIE`、`DOUYIN_COOKIE`），说明本次该来源仅由通用搜索兜底，并提示用户配置后重跑可获得该平台更深、更高质量的专业检索
 5. **不要在回复里粘贴 evidence.json 全文**
 
 ## 重要规则
