@@ -10,11 +10,12 @@
 |---|---|
 | [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | 统一入口。选择 quick / normal / heavy 档位，创建报告目录，调度专家 agent，运行 validator，并渲染最终报告。 |
 | `sn-deep-research/agents/scout.md` | normal / heavy 运行前的预研 briefing、档位建议，以及对格式发现 skill 的调用。 |
-| `sn-deep-research/agents/plan.md` | 只负责研究计划：把 briefing 和已确认呈现形式的证据需求转为研究维度、wave、依赖关系与 perspective lenses。 |
-| `sn-deep-research/agents/research.md` | 分维度取证，输出 schema 化的 `sub_reports/dN.evidence.json`。 |
-| `validate_evidence.py` / `validate_outline.py` | evidence 与 outline 契约的硬门禁。 |
+| `sn-deep-research/agents/plan.md` | 只负责研究计划：按覆盖义务拆分维度；仅当下游检索范围必须消费上游结果时建立依赖与 wave。 |
+| `sn-deep-research/agents/research.md` | 分维度取证，输出 schema 化的 `sub_reports/dN.evidence.json`，并把实际使用的完整正文固定到报告级 `source_cache/`。 |
+| `validate_plan.py` / `validate_evidence.py` / `validate_outline.py` | 计划拓扑、来源快照、格式偏好、outline 与 evidence subset 的硬门禁。 |
 | `review.md`、`perspective.md`、`supplement-planner.md` | evidence 审查、覆盖缺口检查与定向补研计划。 |
-| `report-planner.md`、`report-writer.md`、`report-stitcher.md` | 把用户已确认的呈现形式实现为 evidence-bound outline、正文与 heavy 模式成品；这些角色不重新选择格式。 |
+| `report-planner.md`、`report-writer.md`、`report-stitcher.md` | 把用户已确认的呈现形式实现为 evidence-bound content units，并为 normal / heavy 组装成品；结构件可以直接作为主体。 |
+| `source_snapshot.py` | 对 URL 正规化后的完整 UTF-8 正文做不可变、内容寻址缓存；research、review 与补研复用同一快照。 |
 | [`sn-prepare-citations`](../skills/sn-prepare-citations/SKILL.md) | 将 `[^source_id]` 脚注转换为编号引用，并写出 `report.md` + `citations.json`。 |
 | [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | 格式发现的唯一责任方；由 scout 传入预研上下文，比较研究报告、学术论文、表格优先报表、决策备忘录或自定义最终呈现形式。 |
 | [`sn-research-report`](../skills/sn-research-report/SKILL.md) | 独立的报告结构参考 / 模板技能；不参与集成流水线控制流。 |
@@ -54,11 +55,13 @@ research agent 会按维度的 source category 选择合适搜索技能。凭证
 
 controller 会选择档位并执行对应流水线：
 
-- **quick**：单个 skim evidence 维度 → 单 writer → 引用渲染。
-- **normal**：scout briefing + 调用格式发现 skill → 一次预研确认（档位 + 最终形式）→ research plan → 并行 evidence research + validation/review → report planner 实现已确认形式 → writer → 终稿 review → 引用渲染。
-- **heavy**：normal 基础上增加多 wave 调度、perspective、supplement planning、并行分节 writer、stitcher 与完整终稿 review。
+- **quick**：单个 skim evidence 维度 → 来源快照与 evidence 校验 → quick writer → 引用渲染。
+- **normal**：scout + 格式确认 → plan 校验 → 并行 evidence research / review → outline v2 content units → per-unit writer → stitcher → 终稿 review → 引用渲染。
+- **heavy**：在 normal 上增加覆盖维度、perspective、supplement planning 和完整 review。独立维度保持并行；只有真实信息依赖形成后续 wave，下游等上游最终 evidence 稳定后再检索。
 
-normal / heavy 运行中，scout 调用 `sn-report-format-discovery` 写出 `format_proposal.json`。这里确认的是 Markdown 内最终以研究报告、论文、表格优先报表等哪种形式呈现，不是文件后缀，也不是具体章节 blueprint。用户选定后，controller 写出只读 `format.json`；plan、report planner、writer、stitcher 与 review 都必须保持其中的 `selected_format` 和 `defining_features` 不变。
+normal / heavy 运行中，scout 调用 `sn-report-format-discovery` 写出 `format_proposal.json`。这里保留三层正交合同：`selected_format` 定义整体交付形态（报告、brief、board 等），内容 `paradigm` 定义论证如何推进，`structure_preference` 定义核心信息载体（narrative、matrix、timeline、checklist 等）的 `required / preferred / auto` 强度。研究完成后 report planner 才按真实 evidence 写出 `organization_decision + content_units`；不存在 comparison→matrix 或 investigation→timeline 的固定映射。
+
+每条 v1.2 evidence 都包含 `snapshot_ref`，指向本次报告 `source_cache/{url_hash}/{content_hash}.md`。review 按 ref 分组核验，补研在任何抓取前先 lookup；已有正文不重复抓取，新增正文立即写入不可变缓存。
 
 ## 配置
 
