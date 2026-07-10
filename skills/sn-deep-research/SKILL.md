@@ -85,7 +85,7 @@ echo "$report_dir"   # 记录为后续所有 payload 的 report_dir
 
 ```text
 {report_dir}/
-├── briefing.json / blueprint.json / plan.json   [N/H]
+├── briefing.json / format_proposal.json / format.json / plan.json   [N/H]
 ├── sub_reports/   每维度 dN：evidence.json · review.md[N/H] · perspectives/[H] · supplement_plan.json[H]
 ├── board/         perspective 协作区  [H]
 ├── outline.json   [N/H]
@@ -111,11 +111,11 @@ echo "$report_dir"   # 记录为后续所有 payload 的 report_dir
 
 任一不满足 → normal/heavy（两者都做拆分子任务 + 多源核实）。两者区别在**力度**：normal 轻量——维度较少、单 writer 出整篇、轻量 review；heavy 全力——维度更多，且加 perspective / supplement 补研 / stitcher / 完整 review。query 越复杂或越重要 → 越倾向 heavy。
 
-**确认纪律（不经确认直接开跑属于违规）**：档位须经用户一句话确认后再进入对应流水线。
+**确认纪律（不经确认直接开跑属于违规）**：quick 单独确认档位；normal/heavy 在预研结束后一次性确认档位与最终呈现形式。
 
 - 初判 quick：**不派 scout**，controller 先对原始 query 做一次轻量口径自检——只看「不澄清就会明显误配」的 blocking 级歧义（通常为零）；有则把这句反问折进档位确认里，无则直接向用户确认「建议 quick：单维度 skim 直出，不跑多源核实与报告论证」。确认即定 quick；用户要求升级则改派 scout。
-- 初判 normal/heavy：派 scout 产出 `briefing.json`，含 `recommended_mode ∈ {normal, heavy}` + `mode_rationale` 及 `user_confirmations_needed`（口径澄清）；controller 读后**先过澄清门再定档**（见 §4.1.1），可与档位确认合并为同一次询问；若用户已显式指定档位则用用户值，否则回报 scout 推荐请用户确认/覆盖。
-- 定档后：normal/heavy 由 plan 写回 `plan.json.mode`，作为后续所有分支的唯一依据；quick 无 plan.json，controller 直接持有 mode。
+- 初判 normal/heavy：派 scout 产出 `briefing.json`，并由 scout 调用 `sn-report-format-discovery` 产出 `format_proposal.json`。controller 先处理 blocking 澄清，再执行 §4.1.2 格式确认；若用户未显式指定档位，档位推荐与格式放在同一次询问中确认。
+- 用户确认后：controller 固化 `format.json`，normal/heavy 由 plan 写回 `plan.json.mode` + `format_id`，作为后续分支与格式一致性依据；quick 无 plan.json，controller 直接持有 mode。
 
 ### 4.1.1 澄清门（预研之后，定档/规划之前）
 
@@ -125,7 +125,16 @@ scout 在 briefing 里把**只有用户能定**的口径分歧抽成 `user_confi
 - **high_value[]**：有合理默认但确认后更好。展示问题并高亮 `default_if_unanswered.option_id` 对应 option（附 `rationale`）；用户可改可默许，不响应即用默认。
 - **optional[]**：静默采用 `default_if_unanswered.option_id`，不打断用户。
 
-用户答案以 `{qid: option_id}` 形式收集，**直接透传给 §5.2 plan 的 `user_clarification_answers` 字段**——不重跑 scout、不覆写 briefing.json。三个 list 均为 `[]` 时本门为空操作，直接进入定档/规划。
+用户答案以 `{qid: option_id}` 形式收集，**直接透传给 §5.2 plan 的 `user_clarification_answers` 字段**，不覆写 briefing.json。若 blocking 回答改变了用户目标、受众或使用场景，带这些答案重派 scout 的 format-revision 路径，由它重新调用 `sn-report-format-discovery`，只更新 `format_proposal.json` 后再进入 §4.1.2；否则不重跑。三个 list 均为 `[]` 时本门为空操作。
+
+### 4.1.2 最终呈现形式确认（预研之后，规划之前）
+
+normal/heavy 必须在 plan 和 research 之前确认最终结果的呈现形式。这里的格式是研究报告、学术论文、表格优先报表、决策备忘录或其他用户自定义形式；不是 Markdown 文件后缀，也不是具体章节目录。
+
+1. controller 读取 `format_proposal.json` 的 `recommended_format_id` 与 `candidates[]`，展示格式发现 skill 的推荐形式、理由、核心 `defining_features` 及最多两个替代项；同时展示 scout 推荐档位。不要粘贴格式调研来源全文。
+2. 用户确认推荐项或选择替代项后，controller 写出 `{report_dir}/format.json`：`container=markdown`、`selected_format=<所选 candidate 原样复制>`、`confirmed_by_user=true`。
+3. 用户提出新的自定义形式或修改 defining features 时，重派 scout 调用 `sn-report-format-discovery` 修订 `format_proposal.json`，再次确认；不要让 scout 或 plan 自己代做格式选择。
+4. `format.json` 一经确认即只读。plan、research、report-planner、writer、stitcher、review 不得更换 `selected_format`；只有用户明确改格式时才终止当前流程并从本门重启。
 
 ### 4.2 三档流水线
 
@@ -141,7 +150,8 @@ scout 在 briefing 里把**只有用户能定**的口径分歧抽成 `user_confi
 
 #### normal（单 wave）
 
-1. §5.1 scout → 2. §5.2 plan（轻量）。
+1. §5.1 scout → §4.1.1 澄清门 → §4.1.2 确认档位与最终呈现形式。
+2. §5.2 plan（轻量），读取只读 `format.json`。
 3. **每维度并行**：§5.3 research(`mode=initial`) → §5.4 evidence validator → §5.5 review（子报告）。无 perspective / supplement / 波间回顾；plan 已保证 `depends_on` 为空，故单 wave、无波间流水线。
 4. §5.8 report-planner（完整 outline + per-section evidence subsets）→ §5.9 outline validator。
 5. **单个** §5.10 report-writer，`write_mode=full_outline`，读 outline + 全部 `sections/s*.evidence_subset.json`（每节边界为该节 subset），整篇写入 `sections/s_full.md`（不并行、无 stitcher）。
@@ -164,6 +174,7 @@ scout 在 briefing 里把**只有用户能定**的口径分歧抽成 `user_confi
 
 | 阶段 | 失败判据 | 路由 | 上限 |
 |---|---|---|---|
+| scout format proposal | `format_proposal.json` 缺失/非法 | 回 scout 修复 proposal | 1 |
 | research | evidence validator `ok:false` | errors 回同维 research 修复 | 1 |
 | 子报告 review | revise verdict | 不重试，交 supplement-planner（heavy） | 0 |
 | supplement research | evidence validator `ok:false` | 回同维 research | 1 |
@@ -189,23 +200,26 @@ scout 在 briefing 里把**只有用户能定**的口径分歧抽成 `user_confi
 
 ### 5.1 scout
 
-**作用**：预检需求，产出 briefing，含档位推荐（`recommended_mode` + `mode_rationale`）供 §4.1 定档，及 `user_confirmations_needed`（口径澄清）供 §4.1.1 澄清门。
+**作用**：预检需求并产出领域 briefing，再调用 `sn-report-format-discovery` 生成最终呈现形式 proposal。scout 负责传递预研上下文，不实现格式发现规则。
 
 ```text
 先读取 {plugin_role_dir}/scout.md 并严格遵守。
 
 原始需求:{query}
 report_dir:{report_dir 绝对路径}
+plugin_skills_dir:{plugin_skills_dir}
+format_revision_request:{用户对上一版格式候选的修改；首次为空}
 
-请按 scout agent 契约产出 briefing，并写入：
-{report_dir}/briefing.json
+请按 scout agent 契约写入 briefing，并调用 `sn-report-format-discovery` 写入 format proposal：
+- {report_dir}/briefing.json
+- {report_dir}/format_proposal.json
 ```
 
-**门控**：读 `briefing.json` 做存在性与调度字段检查，并据 `user_confirmations_needed` 执行 §4.1.1 澄清门。
+**门控**：读 `briefing.json` 做存在性与调度字段检查，据 `user_confirmations_needed` 执行 §4.1.1；再读取 `format_proposal.json` 的小字段执行 §4.1.2。
 
 ### 5.2 plan
 
-**作用**：判定报告格式、拆解研究维度、规划 wave/depends_on 与 lenses，并写回 `plan.json.mode` 作为后续分支依据。
+**作用**：读取已确认的最终呈现形式，拆解研究维度、规划 wave/depends_on 与 lenses，并写回 `plan.json.mode` + `format_id`。不再做格式调研或格式选择。
 
 ```text
 先读取 {plugin_role_dir}/plan.md 并严格遵守。
@@ -214,16 +228,16 @@ report_dir:{report_dir 绝对路径}
 report_dir:{report_dir 绝对路径}
 plugin_skills_dir:{plugin_skills_dir}
 briefing_path:{report_dir}/briefing.json
+format_path:{report_dir}/format.json
+format_confirmed:true
 mode:{最终确定的 mode}
 user_clarification_answers:{qid: option_id, ...}   # §4.1.1 澄清门用户回答；无则留空
 
-请按 plan agent 契约完成报告格式判定、研究维度拆解、wave/depends_on 规划与 lenses 规划。
-输出：
-- {report_dir}/blueprint.json
+请按 plan agent 契约完成研究维度拆解、wave/depends_on 规划与 lenses 规划，只输出：
 - {report_dir}/plan.json
 ```
 
-**门控**：读 `blueprint.json` / `plan.json`，只取调度字段：mode、dimensions、key_questions、sources、depth、time_sensitivity、wave、depends_on、lenses。
+**门控**：确认 `plan.json.format_id == format.json.selected_format.id`；再只取调度字段：mode、dimensions、key_questions、sources、depth、time_sensitivity、wave、depends_on、lenses。
 
 ### 5.3 research
 
@@ -318,6 +332,7 @@ time_sensitivity:{time_sensitivity}
 report_dir:{report_dir 绝对路径}
 plugin_skills_dir:{plugin_skills_dir}
 stitched_path:{report_dir}/stitched.md          # heavy；normal 传 {report_dir}/sections/s_full.md
+format_path:{report_dir}/format.json
 outline_path:{report_dir}/outline.json
 evidence_paths:
 - {report_dir}/sub_reports/d1.evidence.json
@@ -376,7 +391,7 @@ output_path:{report_dir}/sub_reports/{dimension_id}.supplement_plan.json
 
 ### 5.8 report-planner
 
-**作用**：消费各维 evidence 边界，编排 outline 与 per-section evidence subsets。
+**作用**：消费已确认 `format.json` 与各维 evidence 边界，按 selected_format 编排 outline 与 per-section evidence subsets；不得重新选择呈现形式。
 
 ```text
 先读取 {plugin_role_dir}/report-planner.md 并严格遵守。
@@ -386,7 +401,7 @@ output_path:{report_dir}/sub_reports/{dimension_id}.supplement_plan.json
 report_dir:{report_dir 绝对路径}
 plugin_skills_dir:{plugin_skills_dir}
 briefing_path:{report_dir}/briefing.json
-blueprint_path:{report_dir}/blueprint.json
+format_path:{report_dir}/format.json
 plan_path:{report_dir}/plan.json
 evidence_paths:
 - {report_dir}/sub_reports/d1.evidence.json
@@ -430,6 +445,7 @@ section_id:{section_id}                          # 整篇模式（full_outline/s
 write_mode:{section|full_outline|synthesis}
 
 outline_path:{report_dir}/outline.json          # synthesis(quick) 省略（无 outline）
+format_path:{report_dir}/format.json            # synthesis(quick) 省略
 evidence_subset_path:{report_dir}/sections/{section_id}.evidence_subset.json   # 仅 section(heavy)；full_outline 读全部 s*.evidence_subset.json、synthesis 读 d*.evidence.json（writer 自读）
 output_path:{report_dir}/sections/{section_id}.md
 ```
@@ -448,6 +464,7 @@ output_path:{report_dir}/sections/{section_id}.md
 report_dir:{report_dir 绝对路径}
 plugin_skills_dir:{plugin_skills_dir}
 outline_path:{report_dir}/outline.json
+format_path:{report_dir}/format.json
 sections_dir:{report_dir}/sections/
 output_path:{report_dir}/stitched.md
 ```
@@ -463,6 +480,7 @@ python3 {plugin_skills_dir}/sn-prepare-citations/scripts/prepare_citations.py \
   --report {输入正文} \
   --evidence {report_dir}/sub_reports/d*.evidence.json \
   [--outline {report_dir}/outline.json] \
+  [--no-l0] [--no-toc] \
   --output {report_dir}/report.md
 ```
 
@@ -471,6 +489,16 @@ python3 {plugin_skills_dir}/sn-prepare-citations/scripts/prepare_citations.py \
 | heavy | `{report_dir}/stitched.md` | 带 |
 | normal | `{report_dir}/sections/s_full.md` | 带 |
 | quick | `{report_dir}/sections/s_full.md` | 省略（无 outline.json） |
+
+normal/heavy 的包装参数必须服从 `format.json.selected_format`：
+
+| selected_format | 额外参数 |
+|---|---|
+| `research_report` | 默认启用 L0 + TOC |
+| `academic_paper` | `--no-l0 --no-toc`（摘要/结构由 writer 按论文形式写入） |
+| `analytical_table` | `--no-l0 --no-toc` |
+| `decision_memo` | `--no-toc` |
+| `timeline` / `faq` / 其他自定义 | 按 defining_features 决定；不得套用默认报告包装 |
 
 **门控**（检查 stdout JSON）：
 
@@ -484,7 +512,8 @@ python3 {plugin_skills_dir}/sn-prepare-citations/scripts/prepare_citations.py \
 | 文件 | controller 是否读取 |
 |---|---|
 | `briefing.json` | 是：存在性和调度字段检查（quick 无） |
-| `blueprint.json` / `plan.json` | 是：调度依据（quick 无 plan.json，controller 直接持有 mode） |
+| `format_proposal.json` | 是：只读推荐形式、候选及 defining_features（quick 无） |
+| `format.json` / `plan.json` | 是：确认 format_id 与调度依据一致（quick 无 plan.json，controller 直接持有 mode） |
 | `outline.json` | 是（normal/heavy）：只取 `sections[].id` |
 | `sub_reports/d*.evidence.json` | 否 |
 | `sub_reports/d*.review.md` | 否 |
@@ -495,4 +524,4 @@ python3 {plugin_skills_dir}/sn-prepare-citations/scripts/prepare_citations.py \
 | `stitched.md` | 否 |
 | `report.md` | 否：完成时给用户路径 |
 
-quick 模式无 `briefing/blueprint/plan/outline` 与 `sections/*.evidence_subset.json`、无 `stitched`；quick/normal 的整篇产物为 `sections/s_full.md`（controller 不读取，只在渲染时作为 `--report` 输入路径）。
+quick 模式无 `briefing/format_proposal/format/plan/outline` 与 `sections/*.evidence_subset.json`、无 `stitched`；quick/normal 的整篇产物为 `sections/s_full.md`（controller 不读取，只在渲染时作为 `--report` 输入路径）。
