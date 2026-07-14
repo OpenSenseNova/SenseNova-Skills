@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import { test } from "node:test";
+import vm from "node:vm";
 
 const pagePath = new URL("../examples/deep-research-status-page/index.html", import.meta.url);
 
@@ -10,6 +11,69 @@ async function readPage() {
 
 function stripTags(value) {
   return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function createElementStub({ action = null } = {}) {
+  const listeners = {};
+  return {
+    addEventListener(type, handler) {
+      listeners[type] = handler;
+    },
+    click() {
+      listeners.click?.();
+    },
+    getAttribute(name) {
+      return name === "data-action" ? action : null;
+    },
+    setAttribute() {},
+  };
+}
+
+function runPageScript(html) {
+  const script = html.match(/<script>([\s\S]*)<\/script>/)?.[1];
+  assert.ok(script, "page should contain an inline script");
+
+  const app = { innerHTML: "" };
+  let actionButtons = [];
+  const context = {
+    console,
+    window: {
+      setInterval,
+      clearInterval,
+    },
+    document: {
+      readyState: "complete",
+      querySelector(selector) {
+        return selector === "#app" ? app : null;
+      },
+      querySelectorAll(selector) {
+        if (selector === ".theme-toggle") return [];
+        if (selector === "[data-action]") {
+          actionButtons = ["previous", "play", "next", "reset"].map((action) =>
+            createElementStub({ action }),
+          );
+          return actionButtons;
+        }
+        return [];
+      },
+      getElementById() {
+        return null;
+      },
+      addEventListener() {},
+    },
+  };
+
+  vm.createContext(context);
+  vm.runInContext(script, context);
+
+  return {
+    app,
+    clickAction(action) {
+      const button = actionButtons.find((item) => item.getAttribute("data-action") === action);
+      assert.ok(button, `expected ${action} button to be bound`);
+      button.click();
+    },
+  };
 }
 
 test("deep research status page has required static structure", async () => {
@@ -102,4 +166,29 @@ test("deep research status page simulates the full run lifecycle", async () => {
   assert.match(html, /const runSnapshots = \[/);
   assert.match(html, /data-action="play"/);
   assert.match(html, /aria-live="polite"/);
+});
+
+test("simulation controls render default, advance, and reset states", async () => {
+  const html = await readPage();
+  const page = runPageScript(html);
+
+  assert.match(page.app.innerHTML, /资料核验完成，准备组织报告/);
+  assert.match(page.app.innerHTML, /真实样例当前停在这里/);
+
+  page.clickAction("next");
+  assert.match(page.app.innerHTML, /正在撰写章节草稿/);
+  assert.match(page.app.innerHTML, /01_可比财务骨架\.md/);
+
+  page.clickAction("next");
+  assert.match(page.app.innerHTML, /正在整理引用和来源清单/);
+  assert.match(page.app.innerHTML, /citations\.json/);
+
+  page.clickAction("next");
+  assert.match(page.app.innerHTML, /最终报告已模拟生成/);
+  assert.match(page.app.innerHTML, /report\.md/);
+  assert.match(page.app.innerHTML, /report\.html/);
+
+  page.clickAction("reset");
+  assert.match(page.app.innerHTML, /资料核验完成，准备组织报告/);
+  assert.match(page.app.innerHTML, /真实样例当前停在这里/);
 });

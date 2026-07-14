@@ -687,7 +687,7 @@
             { name: "引用编号与来源清单", status: "待生成" },
             { name: "最终 Markdown / HTML 报告", status: "待生成" },
           ],
-          note: "模拟运行：用户只需看到核验价值，不需要看到 validator 或 agent 名称。",
+          note: "模拟运行：用户只需看到口径核验价值，不展示内部处理细节。",
         },
         {
           stageIndex: 4,
@@ -784,7 +784,8 @@
         },
       };
 
-      let currentSnapshotIndex = 4;
+      const defaultSnapshotIndex = 4;
+      let currentSnapshotIndex = defaultSnapshotIndex;
       let isPlaying = false;
       let playbackTimer = null;
 
@@ -1068,7 +1069,7 @@
             }
             if (action === "reset") {
               stopPlayback();
-              currentSnapshotIndex = 0;
+              currentSnapshotIndex = defaultSnapshotIndex;
               renderPage(runData);
               bindInteractions();
             }
