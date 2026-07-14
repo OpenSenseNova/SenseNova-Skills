@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deep Research Status Page</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --panel-soft: #f9fafc;
+        --text: #162033;
+        --muted: #637087;
+        --line: #dce2ea;
+        --green: #16794c;
+        --green-soft: #e7f5ee;
+        --blue: #1d5fbf;
+        --blue-soft: #e7f0ff;
+        --gray: #687383;
+        --gray-soft: #eef1f5;
+        --amber: #9b5d00;
+        --amber-soft: #fff3d8;
+        --shadow: 0 16px 40px rgba(28, 39, 59, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei",
+          "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+        line-height: 1.5;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      .page {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 36px;
+      }
+
+      .overview,
+      .panel,
+      .metric-card,
+      .theme-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .overview {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 260px;
+        gap: 24px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 8px;
+        font-size: clamp(28px, 4vw, 42px);
+        line-height: 1.12;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 14px;
+        font-size: 18px;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin-bottom: 4px;
+        font-size: 15px;
+        letter-spacing: 0;
+      }
+
+      .scope,
+      .summary,
+      .small,
+      .stage-description,
+      .theme-summary,
+      .pattern-copy {
+        color: var(--muted);
+      }
+
+      .scope {
+        margin-bottom: 18px;
+        font-size: 15px;
+      }
+
+      .state-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .state-pill,
+      .mode-badge,
+      .status-tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .state-pill {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .mode-badge {
+        background: var(--gray-soft);
+        color: var(--text);
+      }
+
+      .summary {
+        margin-bottom: 0;
+        max-width: 740px;
+      }
+
+      .progress-box {
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 12px;
+        padding: 18px;
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 10px;
+        overflow: hidden;
+        background: #e2e8f0;
+        border-radius: 999px;
+      }
+
+      .progress-fill {
+        width: 0;
+        height: 100%;
+        background: var(--blue);
+        border-radius: inherit;
+        transition: width 240ms ease;
+      }
+
+      .metric-grid,
+      .theme-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin: 18px 0;
+      }
+
+      .metric-card {
+        padding: 16px;
+      }
+
+      .metric-value {
+        margin-bottom: 3px;
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+
+      .metric-label {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .section-stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      .panel {
+        padding: 20px;
+      }
+
+      .timeline {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .stage {
+        min-height: 118px;
+        padding: 14px;
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .stage.complete {
+        border-color: #b9e3ce;
+      }
+
+      .stage.current {
+        border-color: #b8cdf5;
+        background: var(--blue-soft);
+      }
+
+      .stage.pending {
+        color: var(--gray);
+        background: var(--gray-soft);
+      }
+
+      .status-tag {
+        min-height: 24px;
+        margin-bottom: 12px;
+        padding: 3px 8px;
+        font-size: 12px;
+      }
+
+      .status-tag.complete {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .status-tag.current {
+        background: #dbe9ff;
+        color: var(--blue);
+      }
+
+      .status-tag.pending {
+        background: #e3e7ed;
+        color: var(--gray);
+      }
+
+      .theme-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .theme-card {
+        display: grid;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      .theme-card-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .theme-summary {
+        margin-bottom: 0;
+        font-size: 13px;
+      }
+
+      .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel-soft);
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .theme-toggle:hover {
+        border-color: #b6c1d0;
+        background: #eef4fb;
+      }
+
+      .theme-toggle:focus-visible {
+        outline: 3px solid rgba(29, 95, 191, 0.28);
+        outline-offset: 2px;
+      }
+
+      .chevron {
+        font-size: 18px;
+        line-height: 1;
+        transition: transform 160ms ease;
+      }
+
+      .theme-toggle[aria-expanded="true"] .chevron {
+        transform: rotate(180deg);
+      }
+
+      .theme-stats,
+      .deliverable-list,
+      .pattern-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .theme-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stat-box {
+        padding: 10px;
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .stat-value {
+        display: block;
+        font-weight: 800;
+      }
+
+      .stat-label {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .theme-detail {
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .deliverable-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .deliverable {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .deliverable:first-child {
+        border-top: 0;
+      }
+
+      .deliverable-name {
+        font-weight: 700;
+      }
+
+      .deliverable-status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 26px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .deliverable-status.next {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      .deliverable-status.pending {
+        background: var(--gray-soft);
+        color: var(--gray);
+      }
+
+      .pattern-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pattern {
+        min-height: 116px;
+        padding: 14px;
+        background: var(--panel-soft);
+        border: 1px dashed #c8d0dc;
+        border-radius: 8px;
+      }
+
+      .pattern-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .pattern-copy {
+        margin-bottom: 0;
+        font-size: 13px;
+      }
+
+      @media (max-width: 920px) {
+        .overview,
+        .metric-grid,
+        .timeline,
+        .theme-grid,
+        .pattern-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .overview {
+          gap: 18px;
+        }
+
+        .overview-main {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          width: min(100% - 24px, 1180px);
+          padding-top: 16px;
+        }
+
+        .overview,
+        .metric-grid,
+        .timeline,
+        .theme-grid,
+        .pattern-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .overview,
+        .panel {
+          padding: 16px;
+        }
+
+        .progress-box {
+          padding: 14px;
+        }
+
+        .deliverable {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page" id="app" aria-live="polite"></main>
+
+    <script>
+      const runData = {
+        title: "海外化妆品竞品研究",
+        scope: "欧莱雅 / 雅诗兰黛 / 资生堂，集团层为主，核心品牌为辅",
+        mode: "Heavy 深度模式",
+        currentState: "资料核验完成，准备组织报告",
+        statusSummary:
+          "已完成资料收集、口径核验和补充检查。接下来会把 6 个研究主题整理成报告大纲，并生成章节草稿、引用和最终 HTML 报告。",
+        progress: 72,
+        metrics: [
+          { value: "6/6", label: "研究主题完成" },
+          { value: "114", label: "证据点整理" },
+          { value: "120", label: "来源已归档" },
+          { value: "0", label: "待用户补充" },
+        ],
+        stages: [
+          { name: "需求确认", description: "确定对象与研究深度", status: "complete" },
+          { name: "研究规划", description: "拆成 6 个主题", status: "complete" },
+          { name: "资料核验", description: "证据与来源完成", status: "complete" },
+          { name: "报告组织", description: "下一步生成大纲", status: "current" },
+          { name: "最终交付", description: "Markdown / HTML / 引用", status: "pending" },
+        ],
+        themes: [
+          { name: "可比财务骨架", summary: "营收、利润率、份额口径", claims: 18, sources: 10 },
+          { name: "增长与盈利韧性", summary: "分化原因与恢复迹象", claims: 19, sources: 20 },
+          { name: "品牌与价格带", summary: "集团品牌矩阵与核心品类", claims: 22, sources: 35 },
+          { name: "中国/亚太市场", summary: "敞口、份额、旅游零售", claims: 20, sources: 21 },
+          { name: "数字渠道", summary: "电商、内容、DTC 能力", claims: 17, sources: 21 },
+          { name: "战略与竞争压力", summary: "转型计划与本土品牌冲击", claims: 18, sources: 13 },
+        ],
+        deliverables: [
+          { name: "报告大纲与章节安排", status: "next" },
+          { name: "章节草稿与核心判断", status: "pending" },
+          { name: "引用编号与来源清单", status: "pending" },
+          { name: "最终 Markdown / HTML 报告", status: "pending" },
+        ],
+        stateCopy: {
+          waitingForUser: "需要你确认一个口径选择后继续。",
+          researchRunning: "资料仍在检索和核验中，完成后会进入报告组织。",
+          missingData: "部分运行数据暂不可用，页面会以待生成显示而不是暴露内部错误。",
+        },
+      };
+
+      const statusText = {
+        complete: "complete",
+        current: "current",
+        pending: "pending",
+      };
+
+      function escapeHTML(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function renderMetricCards(metrics) {
+        return metrics
+          .map(
+            (metric) => `
+              <article class="metric-card">
+                <div class="metric-value">${escapeHTML(metric.value)}</div>
+                <div class="metric-label">${escapeHTML(metric.label)}</div>
+              </article>
+            `,
+          )
+          .join("");
+      }
+
+      function renderStages(stages) {
+        return stages
+          .map(
+            (stage) => `
+              <li class="stage ${escapeHTML(stage.status)}">
+                <span class="status-tag ${escapeHTML(stage.status)}">${escapeHTML(statusText[stage.status])}</span>
+                <h3>${escapeHTML(stage.name)}</h3>
+                <div class="stage-description">${escapeHTML(stage.description)}</div>
+              </li>
+            `,
+          )
+          .join("");
+      }
+
+      function renderThemes(themes) {
+        return themes
+          .map((theme, index) => {
+            const detailId = `theme-detail-${index}`;
+            return `
+              <article class="theme-card">
+                <div class="theme-card-header">
+                  <div>
+                    <h3>${escapeHTML(theme.name)}</h3>
+                    <p class="theme-summary">${escapeHTML(theme.summary)}</p>
+                  </div>
+                  <button class="theme-toggle" type="button" aria-expanded="false" aria-controls="${detailId}" aria-label="展开 ${escapeHTML(theme.name)} 详情">
+                    <span class="chevron" aria-hidden="true">⌄</span>
+                  </button>
+                </div>
+                <div class="theme-stats" aria-label="${escapeHTML(theme.name)} 资料统计">
+                  <div class="stat-box">
+                    <span class="stat-value">${escapeHTML(theme.claims)}</span>
+                    <span class="stat-label">证据点</span>
+                  </div>
+                  <div class="stat-box">
+                    <span class="stat-value">${escapeHTML(theme.sources)}</span>
+                    <span class="stat-label">来源</span>
+                  </div>
+                </div>
+                <div class="theme-detail" id="${detailId}" hidden>
+                  已完成本主题资料归档，可在报告组织阶段转为章节判断与来源注释。
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+      }
+
+      function renderDeliverables(deliverables) {
+        return deliverables
+          .map(
+            (item) => `
+              <li class="deliverable">
+                <span class="deliverable-name">${escapeHTML(item.name)}</span>
+                <span class="deliverable-status ${escapeHTML(item.status)}">${escapeHTML(item.status)}</span>
+              </li>
+            `,
+          )
+          .join("");
+      }
+
+      function renderStatePatterns(stateCopy) {
+        const patterns = [
+          ["waiting for user", stateCopy.waitingForUser],
+          ["research running", stateCopy.researchRunning],
+          ["missing data", stateCopy.missingData],
+        ];
+
+        return patterns
+          .map(
+            ([label, copy]) => `
+              <div class="pattern">
+                <span class="pattern-label">${escapeHTML(label)}</span>
+                <p class="pattern-copy">${escapeHTML(copy)}</p>
+              </div>
+            `,
+          )
+          .join("");
+      }
+
+      function renderPage(data) {
+        const app = document.querySelector("#app");
+        app.innerHTML = `
+          <section class="overview" aria-labelledby="page-title">
+            <div class="overview-main">
+              <p class="eyebrow">Deep Research Status</p>
+              <h1 id="page-title">${escapeHTML(data.title)}</h1>
+              <p class="scope">${escapeHTML(data.scope)}</p>
+              <div class="state-line">
+                <span class="state-pill">${escapeHTML(data.currentState)}</span>
+                <span class="mode-badge">${escapeHTML(data.mode)}</span>
+              </div>
+              <p class="summary">${escapeHTML(data.statusSummary)}</p>
+            </div>
+            <aside class="progress-box" aria-label="运行进度">
+              <div class="progress-label">
+                <span>整体进度</span>
+                <span>${escapeHTML(data.progress)}%</span>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" style="width: ${Number(data.progress)}%"></div>
+              </div>
+              <div class="small">已进入报告组织前的稳定状态</div>
+            </aside>
+          </section>
+
+          <section class="metric-grid" aria-label="关键指标">
+            ${renderMetricCards(data.metrics)}
+          </section>
+
+          <div class="section-stack">
+            <section class="panel" aria-labelledby="stage-heading">
+              <h2 id="stage-heading">Stage Timeline</h2>
+              <ol class="timeline">
+                ${renderStages(data.stages)}
+              </ol>
+            </section>
+
+            <section class="panel" aria-labelledby="themes-heading">
+              <h2 id="themes-heading">Research Materials</h2>
+              <div class="theme-grid">
+                ${renderThemes(data.themes)}
+              </div>
+            </section>
+
+            <section class="panel" aria-labelledby="deliverables-heading">
+              <h2 id="deliverables-heading">Next Deliverables</h2>
+              <ul class="deliverable-list">
+                ${renderDeliverables(data.deliverables)}
+              </ul>
+            </section>
+
+            <section class="panel" aria-labelledby="patterns-heading">
+              <h2 id="patterns-heading">Reusable State Copy</h2>
+              <div class="pattern-grid">
+                ${renderStatePatterns(data.stateCopy)}
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+      function bindThemeToggles() {
+        document.querySelectorAll(".theme-toggle").forEach((button) => {
+          button.addEventListener("click", () => {
+            const detail = document.getElementById(button.getAttribute("aria-controls"));
+            const isExpanded = button.getAttribute("aria-expanded") === "true";
+            button.setAttribute("aria-expanded", String(!isExpanded));
+            if (detail) {
+              detail.hidden = isExpanded;
+            }
+          });
+        });
+      }
+
+      function init() {
+        renderPage(runData);
+        bindThemeToggles();
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>
