@@ -172,6 +172,16 @@ test("simulation controls render default, advance, and reset states", async () =
   const html = await readPage();
   const page = runPageScript(html);
 
+  assert.match(page.app.innerHTML, /class="[^"]*dashboard-shell/);
+  assert.match(page.app.innerHTML, /class="[^"]*status-console/);
+  assert.match(page.app.innerHTML, /class="[^"]*work-area/);
+  assert.match(page.app.innerHTML, /当前阶段/);
+  assert.match(page.app.innerHTML, /阶段进度/);
+  assert.match(page.app.innerHTML, /当前阶段说明/);
+  assert.match(page.app.innerHTML, /已形成的研究材料/);
+  assert.doesNotMatch(page.app.innerHTML, />后续产出</);
+  assert.doesNotMatch(stripTags(page.app.innerHTML), /validator|agent|schema|sub_reports|sections\//i);
+
   assert.match(page.app.innerHTML, /资料核验完成，准备组织报告/);
   assert.match(page.app.innerHTML, /真实样例当前停在这里/);
 

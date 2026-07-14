@@ -51,13 +51,36 @@
         padding: 28px 0 36px;
       }
 
+      .dashboard-shell {
+        display: grid;
+        grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+
       .overview,
       .panel,
+      .status-console,
       .metric-card,
       .theme-card {
         background: var(--panel);
         border: 1px solid var(--line);
         border-radius: 8px;
+      }
+
+      .status-console {
+        position: sticky;
+        top: 20px;
+        display: grid;
+        gap: 18px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .work-area {
+        display: grid;
+        gap: 16px;
+        min-width: 0;
       }
 
       .overview {
@@ -116,6 +139,24 @@
         font-size: 15px;
       }
 
+      .console-title h1 {
+        margin-bottom: 10px;
+      }
+
+      .console-section {
+        display: grid;
+        gap: 10px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      .console-heading {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
       .state-line {
         display: flex;
         flex-wrap: wrap;
@@ -164,6 +205,11 @@
         border-radius: 8px;
       }
 
+      .console-progress {
+        display: grid;
+        gap: 10px;
+      }
+
       .progress-label {
         display: flex;
         justify-content: space-between;
@@ -195,6 +241,12 @@
         gap: 14px;
       }
 
+      .console-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
       .metric-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
         margin: 18px 0;
@@ -204,11 +256,19 @@
         padding: 16px;
       }
 
+      .console-metrics .metric-card {
+        padding: 12px;
+      }
+
       .metric-value {
         margin-bottom: 3px;
         font-size: 26px;
         font-weight: 800;
         line-height: 1.1;
+      }
+
+      .console-metrics .metric-value {
+        font-size: 22px;
       }
 
       .metric-label {
@@ -227,16 +287,17 @@
 
       .timeline {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(8, minmax(92px, 1fr));
+        gap: 8px;
         margin: 0;
         padding: 0;
         list-style: none;
+        overflow-x: auto;
       }
 
       .stage {
-        min-height: 118px;
-        padding: 14px;
+        min-height: 88px;
+        padding: 10px;
         background: var(--panel-soft);
         border: 1px solid var(--line);
         border-radius: 8px;
@@ -513,38 +574,68 @@
         font-size: 13px;
       }
 
-      @media (max-width: 920px) {
-        .overview,
-        .metric-grid,
-        .timeline,
-        .theme-grid,
-        .pattern-grid,
-        .simulation-panel {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .overview {
-          gap: 18px;
-        }
-
-        .overview-main {
-          grid-column: 1 / -1;
-        }
+      .stage-explanation {
+        display: grid;
+        gap: 14px;
       }
 
-      @media (max-width: 640px) {
+      .explanation-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .explanation-block {
+        padding: 14px;
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .explanation-block p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .simulated-marker {
+        display: inline-flex;
+        width: fit-content;
+        min-height: 26px;
+        align-items: center;
+        border-radius: 999px;
+        padding: 3px 9px;
+        background: var(--amber-soft);
+        color: var(--amber);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .stage-artifacts {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 760px) {
         .page {
           width: min(100% - 24px, 1180px);
           padding-top: 16px;
         }
 
+        .dashboard-shell,
         .overview,
         .metric-grid,
         .timeline,
         .theme-grid,
         .pattern-grid,
-        .simulation-panel {
+        .simulation-panel,
+        .explanation-grid {
           grid-template-columns: 1fr;
+        }
+
+        .status-console {
+          position: static;
         }
 
         .simulation-controls {
@@ -581,14 +672,46 @@
       ];
 
       const lifecycleStages = [
-        { name: "需求确认", description: "锁定对象、范围和输出目标" },
-        { name: "研究规划", description: "选择 heavy 模式并拆成 6 个主题" },
-        { name: "资料检索", description: "多来源收集财报、市场和渠道材料" },
-        { name: "资料核验", description: "检查口径、矛盾和补充证据" },
-        { name: "报告组织", description: "真实样例当前停在这里" },
-        { name: "章节撰写", description: "以下为模拟后续状态：生成章节草稿" },
-        { name: "引用整理", description: "以下为模拟后续状态：整理引用编号" },
-        { name: "最终交付", description: "以下为模拟后续状态：报告可交付" },
+        {
+          name: "需求确认",
+          description: "锁定对象、范围和输出目标",
+          value: "先统一研究对象和口径，避免后续材料围绕不同问题展开。",
+        },
+        {
+          name: "研究规划",
+          description: "选择 heavy 模式并拆成 6 个主题",
+          value: "把大问题拆成可核验主题，最终报告会更完整也更便于检查。",
+        },
+        {
+          name: "资料检索",
+          description: "多来源收集财报、市场和渠道材料",
+          value: "用多来源材料支撑判断，降低只依赖单一公开信息的偏差。",
+        },
+        {
+          name: "资料核验",
+          description: "检查口径、矛盾和补充证据",
+          value: "提前处理财年、区域和渠道口径差异，让后续结论更可比。",
+        },
+        {
+          name: "报告组织",
+          description: "真实样例当前停在这里",
+          value: "把已核验材料整理成章节结构，帮助读者按主题快速理解竞争格局。",
+        },
+        {
+          name: "章节撰写",
+          description: "以下为模拟后续状态：生成章节草稿",
+          value: "将研究材料转成可阅读判断，让证据开始服务于最终报告。",
+        },
+        {
+          name: "引用整理",
+          description: "以下为模拟后续状态：整理引用编号",
+          value: "把来源与判断对应起来，方便复核关键结论和数据出处。",
+        },
+        {
+          name: "最终交付",
+          description: "以下为模拟后续状态：报告可交付",
+          value: "形成可阅读、可分享的最终版本，保留核心材料和引用线索。",
+        },
       ];
 
       const simulatedSections = [
@@ -708,7 +831,7 @@
             { name: "引用编号与来源清单", status: "待生成" },
             { name: "最终 Markdown / HTML 报告", status: "待生成" },
           ],
-          note: "真实样例当前停在这里：原始目录中 sections/ 为空，尚未生成 outline、章节或最终报告。",
+          note: "真实样例当前停在这里：已完成材料核验，尚未进入章节草稿和最终报告生成。",
           isRealCurrent: true,
         },
         {
@@ -866,45 +989,47 @@
           .join("");
       }
 
-      function renderDeliverables(deliverables) {
-        return deliverables
-          .map((item) => {
-            const statusClass = item.status.includes("可用") || item.status.includes("生成") ? "ready" : item.status === "下一步" ? "next" : "pending";
-            const artifacts = item.artifacts || (item.artifact ? [item.artifact] : []);
-            return `
-              <li class="deliverable">
-                <div>
-                  <span class="deliverable-name">${escapeHTML(item.name)}</span>
-                  ${
-                    artifacts.length
-                      ? `<ul class="artifact-list">${artifacts.map((artifact) => `<li>${escapeHTML(artifact)}</li>`).join("")}</ul>`
-                      : ""
-                  }
-                </div>
-                <span class="deliverable-status ${escapeHTML(statusClass)}">${escapeHTML(item.status)}</span>
-              </li>
-            `;
-          })
-          .join("");
+      function getArtifactNames(snapshot) {
+        return (snapshot.deliverables || []).flatMap((item) => {
+          if (item.artifacts) return item.artifacts;
+          if (item.artifact) return [item.artifact];
+          return [];
+        });
       }
 
-      function renderStatePatterns(stateCopy) {
-        const patterns = [
-          ["waiting for user", stateCopy.waitingForUser],
-          ["research running", stateCopy.researchRunning],
-          ["missing data", stateCopy.missingData],
-        ];
+      function renderArtifactSummary(snapshot) {
+        const artifacts = getArtifactNames(snapshot);
+        if (!artifacts.length) return "";
 
-        return patterns
-          .map(
-            ([label, copy]) => `
-              <div class="pattern">
-                <span class="pattern-label">${escapeHTML(label)}</span>
-                <p class="pattern-copy">${escapeHTML(copy)}</p>
+        return `
+          <p class="stage-artifacts">
+            本阶段演示材料：${artifacts.map((artifact) => escapeHTML(artifact)).join("、")}
+          </p>
+        `;
+      }
+
+      function renderStageExplanation(snapshot) {
+        const stage = lifecycleStages[snapshot.stageIndex];
+        return `
+          <section class="panel stage-explanation" aria-labelledby="current-stage-heading">
+            <div>
+              <p class="eyebrow">当前阶段说明</p>
+              <h2 id="current-stage-heading">当前阶段：${escapeHTML(stage.name)}</h2>
+            </div>
+            ${snapshot.isRealCurrent ? "" : '<span class="simulated-marker">以下为模拟后续状态</span>'}
+            <div class="explanation-grid">
+              <div class="explanation-block">
+                <h3>正在发生什么</h3>
+                <p>${escapeHTML(snapshot.statusSummary)}</p>
               </div>
-            `,
-          )
-          .join("");
+              <div class="explanation-block">
+                <h3>为什么有价值</h3>
+                <p>${escapeHTML(stage.value)}</p>
+              </div>
+            </div>
+            ${renderArtifactSummary(snapshot)}
+          </section>
+        `;
       }
 
       function renderSimulationControls() {
@@ -930,70 +1055,73 @@
 
       function renderPage(data) {
         const snapshot = getSnapshot();
+        const activeStage = lifecycleStages[snapshot.stageIndex];
         const app = document.querySelector("#app");
         app.innerHTML = `
-          <section class="overview" aria-labelledby="page-title">
-            <div class="overview-main">
-              <p class="eyebrow">Deep Research 运行状态</p>
-              <h1 id="page-title">${escapeHTML(data.title)}</h1>
-              <p class="scope">${escapeHTML(data.scope)}</p>
-              <div class="state-line">
-                <span class="state-pill">${escapeHTML(snapshot.currentState)}</span>
-                <span class="mode-badge">${escapeHTML(data.mode)}</span>
+          <div class="dashboard-shell">
+            <aside class="status-console" aria-labelledby="page-title">
+              <div class="console-title">
+                <p class="eyebrow">研究状态</p>
+                <h1 id="page-title">${escapeHTML(data.title)}</h1>
+                <p class="scope">${escapeHTML(data.scope)}</p>
               </div>
-              <p class="summary">${escapeHTML(snapshot.statusSummary)}</p>
-              ${
-                snapshot.isRealCurrent
-                  ? `<span class="real-marker">真实样例当前停在这里</span>`
-                  : `<p class="snapshot-note">${escapeHTML(snapshot.note)}</p>`
-              }
-            </div>
-            <aside class="progress-box" aria-label="运行进度">
-              <div class="progress-label">
-                <span>整体进度</span>
-                <span>${escapeHTML(snapshot.progress)}%</span>
-              </div>
-              <div class="progress-track" aria-hidden="true">
-                <div class="progress-fill" style="width: ${Number(snapshot.progress)}%"></div>
-              </div>
-              <div class="small">${escapeHTML(snapshot.note)}</div>
+
+              <section class="console-section" aria-labelledby="state-heading">
+                <h2 class="console-heading" id="state-heading">当前阶段</h2>
+                <div class="state-line">
+                  <span class="state-pill">${escapeHTML(activeStage.name)}</span>
+                  <span class="mode-badge">${escapeHTML(data.mode)}</span>
+                </div>
+                <h3>${escapeHTML(snapshot.currentState)}</h3>
+                <p class="summary">${escapeHTML(snapshot.statusSummary)}</p>
+                ${
+                  snapshot.isRealCurrent
+                    ? `<span class="real-marker">真实样例当前停在这里</span>`
+                    : `<span class="simulated-marker">以下为模拟后续状态</span>`
+                }
+              </section>
+
+              <section class="console-section" aria-labelledby="progress-heading">
+                <h2 class="console-heading" id="progress-heading">阶段进度</h2>
+                <div class="console-progress">
+                  <div class="progress-label">
+                    <span>完成度</span>
+                    <span>${escapeHTML(snapshot.progress)}%</span>
+                  </div>
+                  <div class="progress-track" aria-hidden="true">
+                    <div class="progress-fill" style="width: ${Number(snapshot.progress)}%"></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="console-section" aria-label="当前指标">
+                <div class="console-metrics">
+                  ${renderMetricCards(snapshot.metrics)}
+                </div>
+              </section>
+
+              <p class="small">${escapeHTML(snapshot.note)}</p>
             </aside>
-          </section>
 
-          <section class="metric-grid" aria-label="关键指标">
-            ${renderMetricCards(snapshot.metrics)}
-          </section>
+            <div class="work-area">
+              ${renderSimulationControls()}
 
-          <div class="section-stack">
-            ${renderSimulationControls()}
+              <section class="panel lifecycle-panel" aria-labelledby="stage-heading">
+                <h2 id="stage-heading">生命周期</h2>
+                <ol class="timeline">
+                  ${renderStages(snapshot.stageIndex)}
+                </ol>
+              </section>
 
-            <section class="panel" aria-labelledby="stage-heading">
-              <h2 id="stage-heading">阶段时间线</h2>
-              <ol class="timeline">
-                ${renderStages(snapshot.stageIndex)}
-              </ol>
-            </section>
+              ${renderStageExplanation(snapshot)}
 
-            <section class="panel" aria-labelledby="themes-heading">
-              <h2 id="themes-heading">已形成的研究材料</h2>
-              <div class="theme-grid">
-                ${renderThemes(snapshot.themes)}
-              </div>
-            </section>
-
-            <section class="panel" aria-labelledby="deliverables-heading">
-              <h2 id="deliverables-heading">后续产出</h2>
-              <ul class="deliverable-list">
-                ${renderDeliverables(snapshot.deliverables)}
-              </ul>
-            </section>
-
-            <section class="panel" aria-labelledby="patterns-heading">
-              <h2 id="patterns-heading">可复用状态文案</h2>
-              <div class="pattern-grid">
-                ${renderStatePatterns(data.stateCopy)}
-              </div>
-            </section>
+              <section class="panel" aria-labelledby="themes-heading">
+                <h2 id="themes-heading">已形成的研究材料</h2>
+                <div class="theme-grid">
+                  ${renderThemes(snapshot.themes)}
+                </div>
+              </section>
+            </div>
           </div>
         `;
       }
