@@ -13,6 +13,10 @@ function stripTags(value) {
   return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function assertNoInternalTerms(renderedHtml) {
+  assert.doesNotMatch(stripTags(renderedHtml), /validator|agent|schema|sub_reports|sections\//i);
+}
+
 function createElementStub({ action = null } = {}) {
   const listeners = {};
   return {
@@ -180,25 +184,29 @@ test("simulation controls render default, advance, and reset states", async () =
   assert.match(page.app.innerHTML, /当前阶段说明/);
   assert.match(page.app.innerHTML, /已形成的研究材料/);
   assert.doesNotMatch(page.app.innerHTML, />后续产出</);
-  assert.doesNotMatch(stripTags(page.app.innerHTML), /validator|agent|schema|sub_reports|sections\//i);
+  assertNoInternalTerms(page.app.innerHTML);
 
   assert.match(page.app.innerHTML, /资料核验完成，准备组织报告/);
   assert.match(page.app.innerHTML, /真实样例当前停在这里/);
 
   page.clickAction("next");
+  assertNoInternalTerms(page.app.innerHTML);
   assert.match(page.app.innerHTML, /正在撰写章节草稿/);
   assert.match(page.app.innerHTML, /01_可比财务骨架\.md/);
 
   page.clickAction("next");
+  assertNoInternalTerms(page.app.innerHTML);
   assert.match(page.app.innerHTML, /正在整理引用和来源清单/);
   assert.match(page.app.innerHTML, /citations\.json/);
 
   page.clickAction("next");
+  assertNoInternalTerms(page.app.innerHTML);
   assert.match(page.app.innerHTML, /最终报告已模拟生成/);
   assert.match(page.app.innerHTML, /report\.md/);
   assert.match(page.app.innerHTML, /report\.html/);
 
   page.clickAction("reset");
+  assertNoInternalTerms(page.app.innerHTML);
   assert.match(page.app.innerHTML, /资料核验完成，准备组织报告/);
   assert.match(page.app.innerHTML, /真实样例当前停在这里/);
 });

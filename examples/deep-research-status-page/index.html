@@ -58,7 +58,6 @@
         align-items: start;
       }
 
-      .overview,
       .panel,
       .status-console,
       .metric-card,
@@ -81,14 +80,6 @@
         display: grid;
         gap: 16px;
         min-width: 0;
-      }
-
-      .overview {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 260px;
-        gap: 24px;
-        padding: 24px;
-        box-shadow: var(--shadow);
       }
 
       .eyebrow {
@@ -129,8 +120,7 @@
       .summary,
       .small,
       .stage-description,
-      .theme-summary,
-      .pattern-copy {
+      .theme-summary {
         color: var(--muted);
       }
 
@@ -193,18 +183,6 @@
         max-width: 740px;
       }
 
-      .progress-box {
-        align-self: stretch;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 12px;
-        padding: 18px;
-        background: var(--panel-soft);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-      }
-
       .console-progress {
         display: grid;
         gap: 10px;
@@ -235,7 +213,6 @@
         transition: width 240ms ease;
       }
 
-      .metric-grid,
       .theme-grid {
         display: grid;
         gap: 14px;
@@ -245,11 +222,6 @@
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
-      }
-
-      .metric-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        margin: 18px 0;
       }
 
       .metric-card {
@@ -274,11 +246,6 @@
       .metric-label {
         color: var(--muted);
         font-size: 13px;
-      }
-
-      .section-stack {
-        display: grid;
-        gap: 18px;
       }
 
       .panel {
@@ -394,10 +361,7 @@
         transform: rotate(180deg);
       }
 
-      .theme-stats,
-      .deliverable-list,
-      .pattern-grid,
-      .artifact-list {
+      .theme-stats {
         display: grid;
         gap: 10px;
       }
@@ -428,54 +392,6 @@
         border-top: 1px solid var(--line);
         color: var(--muted);
         font-size: 13px;
-      }
-
-      .deliverable-list {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .deliverable {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 12px;
-        align-items: center;
-        padding: 12px 0;
-        border-top: 1px solid var(--line);
-      }
-
-      .deliverable:first-child {
-        border-top: 0;
-      }
-
-      .deliverable-name {
-        font-weight: 700;
-      }
-
-      .deliverable-status {
-        display: inline-flex;
-        align-items: center;
-        min-height: 26px;
-        padding: 3px 9px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 800;
-      }
-
-      .deliverable-status.next {
-        background: var(--amber-soft);
-        color: var(--amber);
-      }
-
-      .deliverable-status.pending {
-        background: var(--gray-soft);
-        color: var(--gray);
-      }
-
-      .deliverable-status.ready {
-        background: var(--green-soft);
-        color: var(--green);
       }
 
       .simulation-panel {
@@ -533,47 +449,6 @@
         font-weight: 800;
       }
 
-      .artifact-list {
-        margin: 8px 0 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .artifact-list li {
-        padding: 8px 10px;
-        background: var(--panel-soft);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        color: var(--muted);
-        font-size: 13px;
-      }
-
-      .pattern-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .pattern {
-        min-height: 116px;
-        padding: 14px;
-        background: var(--panel-soft);
-        border: 1px dashed #c8d0dc;
-        border-radius: 8px;
-      }
-
-      .pattern-label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-      }
-
-      .pattern-copy {
-        margin-bottom: 0;
-        font-size: 13px;
-      }
-
       .stage-explanation {
         display: grid;
         gap: 14px;
@@ -615,6 +490,7 @@
         margin: 0;
         color: var(--muted);
         font-size: 13px;
+        overflow-wrap: anywhere;
       }
 
       @media (max-width: 760px) {
@@ -624,11 +500,8 @@
         }
 
         .dashboard-shell,
-        .overview,
-        .metric-grid,
         .timeline,
         .theme-grid,
-        .pattern-grid,
         .simulation-panel,
         .explanation-grid {
           grid-template-columns: 1fr;
@@ -642,18 +515,8 @@
           justify-content: flex-start;
         }
 
-        .overview,
         .panel {
           padding: 16px;
-        }
-
-        .progress-box {
-          padding: 14px;
-        }
-
-        .deliverable {
-          grid-template-columns: 1fr;
-          gap: 8px;
         }
       }
     </style>
@@ -900,11 +763,6 @@
         title: "海外化妆品竞品研究",
         scope: "欧莱雅 / 雅诗兰黛 / 资生堂，集团层为主，核心品牌为辅",
         mode: "Heavy 深度模式",
-        stateCopy: {
-          waitingForUser: "需要你确认一个口径选择后继续。",
-          researchRunning: "资料仍在检索和核验中，完成后会进入报告组织。",
-          missingData: "部分运行数据暂不可用，页面会以待生成显示而不是暴露内部错误。",
-        },
       };
 
       const defaultSnapshotIndex = 4;
