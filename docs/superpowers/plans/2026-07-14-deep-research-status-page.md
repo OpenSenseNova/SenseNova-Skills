@@ -16,8 +16,30 @@
 
 **Files:**
 - Create: `examples/deep-research-status-page/index.html`
+- Test: `tests/deep-research-status-page.test.mjs`
 
-- [ ] **Step 1: Create the page shell and static data**
+- [ ] **Step 1: Write the failing structure test**
+
+Create `tests/deep-research-status-page.test.mjs` using Node's built-in test runner. It should read `examples/deep-research-status-page/index.html` and assert:
+
+- The file exists.
+- The current state text is `资料核验完成，准备组织报告`.
+- The six theme names appear.
+- The metric values `6/6`, `114`, `120`, and `0` appear.
+- No final report, outline, citation, Markdown, or HTML deliverable is marked as an active link.
+- Expandable theme controls include `aria-expanded`.
+
+- [ ] **Step 2: Run the test to verify it fails**
+
+Run:
+
+```bash
+node --test tests/deep-research-status-page.test.mjs
+```
+
+Expected: FAIL because `examples/deep-research-status-page/index.html` does not exist yet.
+
+- [ ] **Step 3: Create the page shell and static data**
 
 Add a complete HTML document with:
 
@@ -64,7 +86,7 @@ const runData = {
 };
 ```
 
-- [ ] **Step 2: Implement the layout**
+- [ ] **Step 4: Implement the layout**
 
 Build sections in this order:
 
@@ -75,7 +97,7 @@ Build sections in this order:
 5. Next deliverables panel with `next`/`pending` wording only. Because the source run has empty `sections/` and no `outline.json`, do not render any active report, outline, citation, Markdown, or HTML links.
 6. A visually quiet copy-pattern area or hidden data block for inactive states: waiting for user input, research still running, and missing data. These patterns should be easy to reuse later but should not distract from the active demo state.
 
-- [ ] **Step 3: Add visual styling**
+- [ ] **Step 5: Add visual styling**
 
 Use inline CSS in the same file:
 
@@ -86,7 +108,7 @@ Use inline CSS in the same file:
 - No decorative blobs, oversized hero, or internal log styling.
 - Inactive state copy patterns should be subdued and clearly labeled as reusable states, not active alerts.
 
-- [ ] **Step 4: Add lightweight interaction**
+- [ ] **Step 6: Add lightweight interaction**
 
 Use vanilla JavaScript to:
 
@@ -94,10 +116,21 @@ Use vanilla JavaScript to:
 - Toggle a theme card's detail area with `aria-expanded`.
 - Keep the page usable if JavaScript runs after DOM load.
 
+- [ ] **Step 7: Run the structure test to verify it passes**
+
+Run:
+
+```bash
+node --test tests/deep-research-status-page.test.mjs
+```
+
+Expected: PASS.
+
 ### Task 2: Verify Locally
 
 **Files:**
 - Inspect: `examples/deep-research-status-page/index.html`
+- Test: `tests/deep-research-status-page.test.mjs`
 
 - [ ] **Step 1: Start a static server**
 
@@ -139,6 +172,6 @@ Capture screenshots for both viewports if Playwright or another local browser au
 Run:
 
 ```bash
-git add examples/deep-research-status-page/index.html
+git add examples/deep-research-status-page/index.html tests/deep-research-status-page.test.mjs
 git commit -m "feat: add deep research status page demo"
 ```
