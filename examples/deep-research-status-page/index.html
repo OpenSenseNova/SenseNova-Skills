@@ -335,7 +335,8 @@
 
       .theme-stats,
       .deliverable-list,
-      .pattern-grid {
+      .pattern-grid,
+      .artifact-list {
         display: grid;
         gap: 10px;
       }
@@ -411,6 +412,81 @@
         color: var(--gray);
       }
 
+      .deliverable-status.ready {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .simulation-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .simulation-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .control-button {
+        min-height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 12px;
+        background: var(--panel);
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .control-button.primary {
+        border-color: #b8cdf5;
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .control-button:hover {
+        border-color: #aeb9c8;
+        background: var(--panel-soft);
+      }
+
+      .snapshot-note {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .real-marker {
+        display: inline-flex;
+        align-items: center;
+        min-height: 26px;
+        margin-top: 10px;
+        border-radius: 999px;
+        padding: 3px 9px;
+        background: var(--amber-soft);
+        color: var(--amber);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .artifact-list {
+        margin: 8px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .artifact-list li {
+        padding: 8px 10px;
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
       .pattern-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
@@ -442,7 +518,8 @@
         .metric-grid,
         .timeline,
         .theme-grid,
-        .pattern-grid {
+        .pattern-grid,
+        .simulation-panel {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
@@ -465,8 +542,13 @@
         .metric-grid,
         .timeline,
         .theme-grid,
-        .pattern-grid {
+        .pattern-grid,
+        .simulation-panel {
           grid-template-columns: 1fr;
+        }
+
+        .simulation-controls {
+          justify-content: flex-start;
         }
 
         .overview,
@@ -489,41 +571,212 @@
     <main class="page" id="app" aria-live="polite"></main>
 
     <script>
+      const baseThemes = [
+        { name: "可比财务骨架", summary: "营收、利润率、份额口径", claims: 18, sources: 10 },
+        { name: "增长与盈利韧性", summary: "分化原因与恢复迹象", claims: 19, sources: 20 },
+        { name: "品牌与价格带", summary: "集团品牌矩阵与核心品类", claims: 22, sources: 35 },
+        { name: "中国/亚太市场", summary: "敞口、份额、旅游零售", claims: 20, sources: 21 },
+        { name: "数字渠道", summary: "电商、内容、DTC 能力", claims: 17, sources: 21 },
+        { name: "战略与竞争压力", summary: "转型计划与本土品牌冲击", claims: 18, sources: 13 },
+      ];
+
+      const lifecycleStages = [
+        { name: "需求确认", description: "锁定对象、范围和输出目标" },
+        { name: "研究规划", description: "选择 heavy 模式并拆成 6 个主题" },
+        { name: "资料检索", description: "多来源收集财报、市场和渠道材料" },
+        { name: "资料核验", description: "检查口径、矛盾和补充证据" },
+        { name: "报告组织", description: "真实样例当前停在这里" },
+        { name: "章节撰写", description: "以下为模拟后续状态：生成章节草稿" },
+        { name: "引用整理", description: "以下为模拟后续状态：整理引用编号" },
+        { name: "最终交付", description: "以下为模拟后续状态：报告可交付" },
+      ];
+
+      const simulatedSections = [
+        "01_可比财务骨架.md",
+        "02_增长与盈利韧性.md",
+        "03_品牌与价格带.md",
+        "04_中国亚太市场.md",
+        "05_数字渠道.md",
+        "06_战略与竞争压力.md",
+      ];
+
+      const runSnapshots = [
+        {
+          stageIndex: 0,
+          currentState: "需求已接收，等待确认范围",
+          statusSummary: "系统识别到这是三家海外化妆品集团的竞品研究，需要先确认对象、时间口径和报告深度。",
+          progress: 8,
+          metrics: [
+            { value: "0/6", label: "研究主题完成" },
+            { value: "0", label: "证据点整理" },
+            { value: "0", label: "来源已归档" },
+            { value: "1", label: "待用户补充" },
+          ],
+          themes: baseThemes.map((theme) => ({ ...theme, claims: 0, sources: 0 })),
+          deliverables: [
+            { name: "报告大纲与章节安排", status: "待生成" },
+            { name: "章节草稿与核心判断", status: "待生成" },
+            { name: "引用编号与来源清单", status: "待生成" },
+            { name: "最终 Markdown / HTML 报告", status: "待生成" },
+          ],
+          note: "模拟运行：用户此时主要需要知道是否还要补充口径。",
+        },
+        {
+          stageIndex: 1,
+          currentState: "已确定研究计划",
+          statusSummary: "任务已进入 Heavy 深度模式，并被拆解为财务、品牌、中国/亚太、数字渠道和战略竞争等 6 个主题。",
+          progress: 22,
+          metrics: [
+            { value: "0/6", label: "研究主题完成" },
+            { value: "0", label: "证据点整理" },
+            { value: "0", label: "来源已归档" },
+            { value: "0", label: "待用户补充" },
+          ],
+          themes: baseThemes.map((theme) => ({ ...theme, claims: 0, sources: 0 })),
+          deliverables: [
+            { name: "报告大纲与章节安排", status: "下一步" },
+            { name: "章节草稿与核心判断", status: "待生成" },
+            { name: "引用编号与来源清单", status: "待生成" },
+            { name: "最终 Markdown / HTML 报告", status: "待生成" },
+          ],
+          note: "模拟运行：用户看到研究不是直接写报告，而是先拆解主题。",
+        },
+        {
+          stageIndex: 2,
+          currentState: "正在检索和整理资料",
+          statusSummary: "资料正在从财报、市场研究、新闻和渠道数据中汇总，证据点与来源数量会逐步增长。",
+          progress: 46,
+          metrics: [
+            { value: "3/6", label: "研究主题完成" },
+            { value: "57", label: "证据点整理" },
+            { value: "62", label: "来源已归档" },
+            { value: "0", label: "待用户补充" },
+          ],
+          themes: baseThemes.map((theme, index) => ({
+            ...theme,
+            claims: index < 3 ? theme.claims : Math.round(theme.claims * 0.35),
+            sources: index < 3 ? theme.sources : Math.round(theme.sources * 0.35),
+          })),
+          deliverables: [
+            { name: "报告大纲与章节安排", status: "待生成" },
+            { name: "章节草稿与核心判断", status: "待生成" },
+            { name: "引用编号与来源清单", status: "待生成" },
+            { name: "最终 Markdown / HTML 报告", status: "待生成" },
+          ],
+          note: "模拟运行：这个阶段强调材料积累，而不是展示内部搜索日志。",
+        },
+        {
+          stageIndex: 3,
+          currentState: "正在核验关键口径",
+          statusSummary: "系统正在检查财年、币种、市场份额口径和渠道数据差异，避免把不可比数据直接写进报告。",
+          progress: 61,
+          metrics: [
+            { value: "6/6", label: "研究主题完成" },
+            { value: "104", label: "证据点整理" },
+            { value: "112", label: "来源已归档" },
+            { value: "0", label: "待用户补充" },
+          ],
+          themes: baseThemes.map((theme) => ({
+            ...theme,
+            claims: Math.max(theme.claims - 2, 0),
+            sources: Math.max(theme.sources - 2, 0),
+          })),
+          deliverables: [
+            { name: "报告大纲与章节安排", status: "下一步" },
+            { name: "章节草稿与核心判断", status: "待生成" },
+            { name: "引用编号与来源清单", status: "待生成" },
+            { name: "最终 Markdown / HTML 报告", status: "待生成" },
+          ],
+          note: "模拟运行：用户只需看到核验价值，不需要看到 validator 或 agent 名称。",
+        },
+        {
+          stageIndex: 4,
+          currentState: "资料核验完成，准备组织报告",
+          statusSummary:
+            "已完成资料收集、口径核验和补充检查。接下来会把 6 个研究主题整理成报告大纲，并生成章节草稿、引用和最终 HTML 报告。",
+          progress: 72,
+          metrics: [
+            { value: "6/6", label: "研究主题完成" },
+            { value: "114", label: "证据点整理" },
+            { value: "120", label: "来源已归档" },
+            { value: "0", label: "待用户补充" },
+          ],
+          themes: baseThemes,
+          deliverables: [
+            { name: "报告大纲与章节安排", status: "下一步" },
+            { name: "章节草稿与核心判断", status: "待生成" },
+            { name: "引用编号与来源清单", status: "待生成" },
+            { name: "最终 Markdown / HTML 报告", status: "待生成" },
+          ],
+          note: "真实样例当前停在这里：原始目录中 sections/ 为空，尚未生成 outline、章节或最终报告。",
+          isRealCurrent: true,
+        },
+        {
+          stageIndex: 5,
+          currentState: "正在撰写章节草稿",
+          statusSummary: "以下为模拟后续状态：系统把 6 个研究主题转成章节草稿，并开始形成核心判断。",
+          progress: 84,
+          metrics: [
+            { value: "6/6", label: "研究主题完成" },
+            { value: "6", label: "章节草稿生成" },
+            { value: "120", label: "来源已归档" },
+            { value: "0", label: "待用户补充" },
+          ],
+          themes: baseThemes,
+          deliverables: [
+            { name: "报告大纲与章节安排", status: "模拟生成", artifact: "outline.json" },
+            { name: "章节草稿与核心判断", status: "模拟生成", artifacts: simulatedSections },
+            { name: "引用编号与来源清单", status: "待生成" },
+            { name: "最终 Markdown / HTML 报告", status: "待生成" },
+          ],
+          note: "以下为模拟后续状态：section 文件名仅用于演示真实运行时的展示方式。",
+        },
+        {
+          stageIndex: 6,
+          currentState: "正在整理引用和来源清单",
+          statusSummary: "以下为模拟后续状态：章节草稿已形成，系统正在把来源映射成引用编号，并准备最终报告。",
+          progress: 92,
+          metrics: [
+            { value: "6/6", label: "章节草稿完成" },
+            { value: "120", label: "来源已归档" },
+            { value: "1", label: "引用清单生成" },
+            { value: "0", label: "待用户补充" },
+          ],
+          themes: baseThemes,
+          deliverables: [
+            { name: "报告大纲与章节安排", status: "模拟生成", artifact: "outline.json" },
+            { name: "章节草稿与核心判断", status: "模拟生成", artifacts: simulatedSections },
+            { name: "引用编号与来源清单", status: "模拟生成", artifact: "citations.json" },
+            { name: "最终 Markdown / HTML 报告", status: "待生成" },
+          ],
+          note: "以下为模拟后续状态：引用文件用于说明来源可追溯，不展示内部整理细节。",
+        },
+        {
+          stageIndex: 7,
+          currentState: "最终报告已模拟生成",
+          statusSummary: "以下为模拟后续状态：Markdown 报告、HTML 阅读版和引用清单均已生成，可进入交付查看。",
+          progress: 100,
+          metrics: [
+            { value: "6/6", label: "章节草稿完成" },
+            { value: "1", label: "Markdown 报告" },
+            { value: "1", label: "HTML 报告" },
+            { value: "0", label: "待用户补充" },
+          ],
+          themes: baseThemes,
+          deliverables: [
+            { name: "报告大纲与章节安排", status: "模拟可用", artifact: "outline.json" },
+            { name: "章节草稿与核心判断", status: "模拟可用", artifacts: simulatedSections },
+            { name: "引用编号与来源清单", status: "模拟可用", artifact: "citations.json" },
+            { name: "最终 Markdown / HTML 报告", status: "模拟可用", artifacts: ["report.md", "report.html"] },
+          ],
+          note: "以下为模拟后续状态：这些最终文件用于演示完整流程，并非来自当前原始目录。",
+        },
+      ];
+
       const runData = {
         title: "海外化妆品竞品研究",
         scope: "欧莱雅 / 雅诗兰黛 / 资生堂，集团层为主，核心品牌为辅",
         mode: "Heavy 深度模式",
-        currentState: "资料核验完成，准备组织报告",
-        statusSummary:
-          "已完成资料收集、口径核验和补充检查。接下来会把 6 个研究主题整理成报告大纲，并生成章节草稿、引用和最终 HTML 报告。",
-        progress: 72,
-        metrics: [
-          { value: "6/6", label: "研究主题完成" },
-          { value: "114", label: "证据点整理" },
-          { value: "120", label: "来源已归档" },
-          { value: "0", label: "待用户补充" },
-        ],
-        stages: [
-          { name: "需求确认", description: "确定对象与研究深度", status: "complete" },
-          { name: "研究规划", description: "拆成 6 个主题", status: "complete" },
-          { name: "资料核验", description: "证据与来源完成", status: "complete" },
-          { name: "报告组织", description: "下一步生成大纲", status: "current" },
-          { name: "最终交付", description: "Markdown / HTML / 引用", status: "pending" },
-        ],
-        themes: [
-          { name: "可比财务骨架", summary: "营收、利润率、份额口径", claims: 18, sources: 10 },
-          { name: "增长与盈利韧性", summary: "分化原因与恢复迹象", claims: 19, sources: 20 },
-          { name: "品牌与价格带", summary: "集团品牌矩阵与核心品类", claims: 22, sources: 35 },
-          { name: "中国/亚太市场", summary: "敞口、份额、旅游零售", claims: 20, sources: 21 },
-          { name: "数字渠道", summary: "电商、内容、DTC 能力", claims: 17, sources: 21 },
-          { name: "战略与竞争压力", summary: "转型计划与本土品牌冲击", claims: 18, sources: 13 },
-        ],
-        deliverables: [
-          { name: "报告大纲与章节安排", status: "next" },
-          { name: "章节草稿与核心判断", status: "pending" },
-          { name: "引用编号与来源清单", status: "pending" },
-          { name: "最终 Markdown / HTML 报告", status: "pending" },
-        ],
         stateCopy: {
           waitingForUser: "需要你确认一个口径选择后继续。",
           researchRunning: "资料仍在检索和核验中，完成后会进入报告组织。",
@@ -531,10 +784,14 @@
         },
       };
 
+      let currentSnapshotIndex = 4;
+      let isPlaying = false;
+      let playbackTimer = null;
+
       const statusText = {
-        complete: "complete",
-        current: "current",
-        pending: "pending",
+        complete: "完成",
+        current: "当前",
+        pending: "待开始",
       };
 
       function escapeHTML(value) {
@@ -559,17 +816,18 @@
           .join("");
       }
 
-      function renderStages(stages) {
-        return stages
-          .map(
-            (stage) => `
-              <li class="stage ${escapeHTML(stage.status)}">
-                <span class="status-tag ${escapeHTML(stage.status)}">${escapeHTML(statusText[stage.status])}</span>
+      function renderStages(activeIndex) {
+        return lifecycleStages
+          .map((stage, index) => {
+            const status = index < activeIndex ? "complete" : index === activeIndex ? "current" : "pending";
+            return `
+              <li class="stage ${escapeHTML(status)}">
+                <span class="status-tag ${escapeHTML(status)}">${escapeHTML(statusText[status])}</span>
                 <h3>${escapeHTML(stage.name)}</h3>
                 <div class="stage-description">${escapeHTML(stage.description)}</div>
               </li>
-            `,
-          )
+            `;
+          })
           .join("");
       }
 
@@ -609,14 +867,23 @@
 
       function renderDeliverables(deliverables) {
         return deliverables
-          .map(
-            (item) => `
+          .map((item) => {
+            const statusClass = item.status.includes("可用") || item.status.includes("生成") ? "ready" : item.status === "下一步" ? "next" : "pending";
+            const artifacts = item.artifacts || (item.artifact ? [item.artifact] : []);
+            return `
               <li class="deliverable">
-                <span class="deliverable-name">${escapeHTML(item.name)}</span>
-                <span class="deliverable-status ${escapeHTML(item.status)}">${escapeHTML(item.status)}</span>
+                <div>
+                  <span class="deliverable-name">${escapeHTML(item.name)}</span>
+                  ${
+                    artifacts.length
+                      ? `<ul class="artifact-list">${artifacts.map((artifact) => `<li>${escapeHTML(artifact)}</li>`).join("")}</ul>`
+                      : ""
+                  }
+                </div>
+                <span class="deliverable-status ${escapeHTML(statusClass)}">${escapeHTML(item.status)}</span>
               </li>
-            `,
-          )
+            `;
+          })
           .join("");
       }
 
@@ -639,60 +906,89 @@
           .join("");
       }
 
+      function renderSimulationControls() {
+        return `
+          <section class="panel simulation-panel" aria-labelledby="simulation-heading">
+            <div>
+              <h2 id="simulation-heading">模拟运行</h2>
+              <p class="snapshot-note">从真实当前状态开始，也可以播放完整过程，查看用户在每个阶段会看到什么。</p>
+            </div>
+            <div class="simulation-controls" role="group" aria-label="模拟运行控制">
+              <button class="control-button" type="button" data-action="previous">上一步</button>
+              <button class="control-button primary" type="button" data-action="play">${isPlaying ? "暂停" : "播放"}</button>
+              <button class="control-button" type="button" data-action="next">下一步</button>
+              <button class="control-button" type="button" data-action="reset">重置</button>
+            </div>
+          </section>
+        `;
+      }
+
+      function getSnapshot() {
+        return runSnapshots[currentSnapshotIndex];
+      }
+
       function renderPage(data) {
+        const snapshot = getSnapshot();
         const app = document.querySelector("#app");
         app.innerHTML = `
           <section class="overview" aria-labelledby="page-title">
             <div class="overview-main">
-              <p class="eyebrow">Deep Research Status</p>
+              <p class="eyebrow">Deep Research 运行状态</p>
               <h1 id="page-title">${escapeHTML(data.title)}</h1>
               <p class="scope">${escapeHTML(data.scope)}</p>
               <div class="state-line">
-                <span class="state-pill">${escapeHTML(data.currentState)}</span>
+                <span class="state-pill">${escapeHTML(snapshot.currentState)}</span>
                 <span class="mode-badge">${escapeHTML(data.mode)}</span>
               </div>
-              <p class="summary">${escapeHTML(data.statusSummary)}</p>
+              <p class="summary">${escapeHTML(snapshot.statusSummary)}</p>
+              ${
+                snapshot.isRealCurrent
+                  ? `<span class="real-marker">真实样例当前停在这里</span>`
+                  : `<p class="snapshot-note">${escapeHTML(snapshot.note)}</p>`
+              }
             </div>
             <aside class="progress-box" aria-label="运行进度">
               <div class="progress-label">
                 <span>整体进度</span>
-                <span>${escapeHTML(data.progress)}%</span>
+                <span>${escapeHTML(snapshot.progress)}%</span>
               </div>
               <div class="progress-track" aria-hidden="true">
-                <div class="progress-fill" style="width: ${Number(data.progress)}%"></div>
+                <div class="progress-fill" style="width: ${Number(snapshot.progress)}%"></div>
               </div>
-              <div class="small">已进入报告组织前的稳定状态</div>
+              <div class="small">${escapeHTML(snapshot.note)}</div>
             </aside>
           </section>
 
           <section class="metric-grid" aria-label="关键指标">
-            ${renderMetricCards(data.metrics)}
+            ${renderMetricCards(snapshot.metrics)}
           </section>
 
           <div class="section-stack">
+            ${renderSimulationControls()}
+
             <section class="panel" aria-labelledby="stage-heading">
-              <h2 id="stage-heading">Stage Timeline</h2>
+              <h2 id="stage-heading">阶段时间线</h2>
               <ol class="timeline">
-                ${renderStages(data.stages)}
+                ${renderStages(snapshot.stageIndex)}
               </ol>
             </section>
 
             <section class="panel" aria-labelledby="themes-heading">
-              <h2 id="themes-heading">Research Materials</h2>
+              <h2 id="themes-heading">已形成的研究材料</h2>
               <div class="theme-grid">
-                ${renderThemes(data.themes)}
+                ${renderThemes(snapshot.themes)}
               </div>
             </section>
 
             <section class="panel" aria-labelledby="deliverables-heading">
-              <h2 id="deliverables-heading">Next Deliverables</h2>
+              <h2 id="deliverables-heading">后续产出</h2>
               <ul class="deliverable-list">
-                ${renderDeliverables(data.deliverables)}
+                ${renderDeliverables(snapshot.deliverables)}
               </ul>
             </section>
 
             <section class="panel" aria-labelledby="patterns-heading">
-              <h2 id="patterns-heading">Reusable State Copy</h2>
+              <h2 id="patterns-heading">可复用状态文案</h2>
               <div class="pattern-grid">
                 ${renderStatePatterns(data.stateCopy)}
               </div>
@@ -714,9 +1010,83 @@
         });
       }
 
+      function stopPlayback() {
+        isPlaying = false;
+        if (playbackTimer) {
+          window.clearInterval(playbackTimer);
+          playbackTimer = null;
+        }
+      }
+
+      function moveSnapshot(direction) {
+        currentSnapshotIndex = Math.min(
+          Math.max(currentSnapshotIndex + direction, 0),
+          runSnapshots.length - 1,
+        );
+        if (currentSnapshotIndex === runSnapshots.length - 1) {
+          stopPlayback();
+        }
+        renderPage(runData);
+        bindInteractions();
+      }
+
+      function togglePlayback() {
+        if (isPlaying) {
+          stopPlayback();
+          renderPage(runData);
+          bindInteractions();
+          return;
+        }
+
+        isPlaying = true;
+        playbackTimer = window.setInterval(() => {
+          if (currentSnapshotIndex >= runSnapshots.length - 1) {
+            stopPlayback();
+            renderPage(runData);
+            bindInteractions();
+            return;
+          }
+          currentSnapshotIndex += 1;
+          renderPage(runData);
+          bindInteractions();
+        }, 1400);
+        renderPage(runData);
+        bindInteractions();
+      }
+
+      function bindSimulationControls() {
+        document.querySelectorAll("[data-action]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const action = button.getAttribute("data-action");
+            if (action === "previous") {
+              stopPlayback();
+              moveSnapshot(-1);
+            }
+            if (action === "next") {
+              stopPlayback();
+              moveSnapshot(1);
+            }
+            if (action === "reset") {
+              stopPlayback();
+              currentSnapshotIndex = 0;
+              renderPage(runData);
+              bindInteractions();
+            }
+            if (action === "play") {
+              togglePlayback();
+            }
+          });
+        });
+      }
+
+      function bindInteractions() {
+        bindThemeToggles();
+        bindSimulationControls();
+      }
+
       function init() {
         renderPage(runData);
-        bindThemeToggles();
+        bindInteractions();
       }
 
       if (document.readyState === "loading") {

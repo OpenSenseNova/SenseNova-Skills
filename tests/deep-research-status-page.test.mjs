@@ -61,3 +61,45 @@ test("deep research status page has required static structure", async () => {
 
   assert.match(html, /<button\b(?=[^>]*\baria-expanded\s*=)[^>]*>/i);
 });
+
+test("deep research status page simulates the full run lifecycle", async () => {
+  const html = await readPage();
+
+  for (const text of ["模拟运行", "播放", "上一步", "下一步", "重置"]) {
+    assert.match(html, new RegExp(text), `expected simulation control text: ${text}`);
+  }
+
+  for (const stageName of [
+    "需求确认",
+    "研究规划",
+    "资料检索",
+    "资料核验",
+    "报告组织",
+    "章节撰写",
+    "引用整理",
+    "最终交付",
+  ]) {
+    assert.match(html, new RegExp(stageName), `expected lifecycle stage: ${stageName}`);
+  }
+
+  assert.match(html, /真实样例当前停在这里/);
+  assert.match(html, /以下为模拟后续状态/);
+
+  for (const simulatedArtifact of [
+    "01_可比财务骨架.md",
+    "02_增长与盈利韧性.md",
+    "03_品牌与价格带.md",
+    "04_中国亚太市场.md",
+    "05_数字渠道.md",
+    "06_战略与竞争压力.md",
+    "report.md",
+    "citations.json",
+    "report.html",
+  ]) {
+    assert.match(html, new RegExp(simulatedArtifact.replace(".", "\\.")));
+  }
+
+  assert.match(html, /const runSnapshots = \[/);
+  assert.match(html, /data-action="play"/);
+  assert.match(html, /aria-live="polite"/);
+});
