@@ -17,7 +17,7 @@ function assertNoInternalTerms(renderedHtml) {
   assert.doesNotMatch(stripTags(renderedHtml), /validator|agent|schema|sub_reports|sections\//i);
 }
 
-function createElementStub({ action = null } = {}) {
+function createElementStub({ action = null, attributes = {} } = {}) {
   const listeners = {};
   return {
     addEventListener(type, handler) {
@@ -27,9 +27,12 @@ function createElementStub({ action = null } = {}) {
       listeners.click?.();
     },
     getAttribute(name) {
-      return name === "data-action" ? action : null;
+      if (name === "data-action") return action;
+      return attributes[name] ?? null;
     },
-    setAttribute() {},
+    setAttribute(name, value) {
+      attributes[name] = value;
+    },
   };
 }
 
@@ -39,6 +42,13 @@ function runPageScript(html) {
 
   const app = { innerHTML: "" };
   let actionButtons = [];
+  const themeDetail = { hidden: true };
+  const themeToggle = createElementStub({
+    attributes: {
+      "aria-expanded": "false",
+      "aria-controls": "theme-detail-0",
+    },
+  });
   const context = {
     console,
     window: {
@@ -51,7 +61,7 @@ function runPageScript(html) {
         return selector === "#app" ? app : null;
       },
       querySelectorAll(selector) {
-        if (selector === ".theme-toggle") return [];
+        if (selector === ".theme-toggle") return [themeToggle];
         if (selector === "[data-action]") {
           actionButtons = ["previous", "play", "next", "reset"].map((action) =>
             createElementStub({ action }),
@@ -60,7 +70,8 @@ function runPageScript(html) {
         }
         return [];
       },
-      getElementById() {
+      getElementById(id) {
+        if (id === "theme-detail-0") return themeDetail;
         return null;
       },
       addEventListener() {},
@@ -77,6 +88,11 @@ function runPageScript(html) {
       assert.ok(button, `expected ${action} button to be bound`);
       button.click();
     },
+    clickThemeToggle() {
+      themeToggle.click();
+    },
+    themeToggle,
+    themeDetail,
   };
 }
 
@@ -189,6 +205,17 @@ test("simulation controls render default, advance, and reset states", async () =
   assert.match(page.app.innerHTML, /资料核验完成，准备组织报告/);
   assert.match(page.app.innerHTML, /真实样例当前停在这里/);
 
+  for (let index = 0; index < 4; index += 1) {
+    page.clickAction("previous");
+    assertNoInternalTerms(page.app.innerHTML);
+  }
+
+  assert.match(page.app.innerHTML, /需求已接收，等待确认范围/);
+
+  page.clickAction("reset");
+  assertNoInternalTerms(page.app.innerHTML);
+  assert.match(page.app.innerHTML, /资料核验完成，准备组织报告/);
+
   page.clickAction("next");
   assertNoInternalTerms(page.app.innerHTML);
   assert.match(page.app.innerHTML, /正在撰写章节草稿/);
@@ -209,4 +236,20 @@ test("simulation controls render default, advance, and reset states", async () =
   assertNoInternalTerms(page.app.innerHTML);
   assert.match(page.app.innerHTML, /资料核验完成，准备组织报告/);
   assert.match(page.app.innerHTML, /真实样例当前停在这里/);
+});
+
+test("theme cards toggle expanded state and detail visibility", async () => {
+  const html = await readPage();
+  const page = runPageScript(html);
+
+  assert.equal(page.themeToggle.getAttribute("aria-expanded"), "false");
+  assert.equal(page.themeDetail.hidden, true);
+
+  page.clickThemeToggle();
+  assert.equal(page.themeToggle.getAttribute("aria-expanded"), "true");
+  assert.equal(page.themeDetail.hidden, false);
+
+  page.clickThemeToggle();
+  assert.equal(page.themeToggle.getAttribute("aria-expanded"), "false");
+  assert.equal(page.themeDetail.hidden, true);
 });
