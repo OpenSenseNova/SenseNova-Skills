@@ -5,57 +5,15 @@
 import { existsSync, statSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-/**
- * 首次运行时自动安装依赖（npm install + playwright chromium）。
- * 后续运行检测到 node_modules 和 chromium 已存在则跳过。
- */
-function ensureDependencies() {
-  const nodeModules = resolve(__dirname, 'node_modules');
-  const pptxgenMarker = resolve(nodeModules, 'pptxgenjs');
-  const playwrightMarker = resolve(nodeModules, 'playwright');
-
-  if (!existsSync(pptxgenMarker) || !existsSync(playwrightMarker)) {
-    console.error('[setup] 首次运行，正在安装 npm 依赖...');
-    try {
-      execSync('npm install --omit=dev', { cwd: __dirname, stdio: 'inherit' });
-    } catch (e) {
-      throw new Error(`npm install failed: ${e.message}. Headless browser environment unavailable.`);
-    }
-  }
-
-  // 检查 chromium 是否已安装（playwright 在 ~/.cache/ms-playwright/ 下）
-  try {
-    const out = execSync('npx playwright install --dry-run chromium 2>&1', {
-      cwd: __dirname, encoding: 'utf-8', timeout: 10000,
-    });
-    // dry-run 无输出或提示 already installed → 已安装
-    if (out.includes('is already installed')) return;
-  } catch { /* dry-run 失败或不支持，保守地尝试安装 */ }
-
-  // 如果 chromium 二进制不存在，安装之
-  try {
-    execSync('node -e "require(\'playwright\').chromium.executablePath()"', {
-      cwd: __dirname, encoding: 'utf-8', timeout: 5000,
-    });
-  } catch {
-    console.error('[setup] 正在安装 Playwright Chromium（仅首次）...');
-    try {
-      execSync('npx playwright install chromium', { cwd: __dirname, stdio: 'inherit' });
-    } catch (e) {
-      throw new Error(`Chromium installation failed: ${e.message}. Cannot install headless browser in this environment.`);
-    }
-  }
-}
 
 // ensureDependencies() 移到 main() 中调用，避免模块加载时崩溃。
 // missing browser → 优雅跳过，不抛异常。
 
 // 依赖就绪后再 import 业务模块
+const { ensureDependencies } = await import('./lib/browser_setup.mjs');
 const { ensureDeckPreconditions } = await import('./lib/cli_guards.mjs');
 const { downloadRemoteImages } = await import('./lib/image_downloader.mjs');
 
@@ -92,7 +50,7 @@ async function main() {
   // 确保依赖安装（npm + playwright chromium）。
   // missing browser → 输出 JSON skip 状态，优雅退出（不崩溃）。
   try {
-    ensureDependencies();
+    ensureDependencies(__dirname);
   } catch (e) {
     const result = {
       status: "skipped",

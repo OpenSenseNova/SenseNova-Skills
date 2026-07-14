@@ -36,6 +36,7 @@ import io
 import json
 import os
 import re
+import subprocess
 import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -54,6 +55,20 @@ from model_client import ModelClientError, llm, vlm  # noqa: E402
 # ---------------------------------------------------------------------------
 
 
+def _configure_stdio_encoding() -> None:
+    """Keep JSON/stdout stable when Windows uses a non-UTF-8 system codepage."""
+    for stream in (sys.stdout, sys.stderr):
+        if not hasattr(stream, "reconfigure"):
+            continue
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
+
+_configure_stdio_encoding()
+
+
 def _ok(**kw) -> int:
     print(json.dumps({"status": "ok", **kw}, ensure_ascii=False))
     return 0
@@ -62,6 +77,36 @@ def _ok(**kw) -> int:
 def _fail(msg: str, **kw) -> int:
     print(json.dumps({"status": "failed", "error": msg, **kw}, ensure_ascii=False))
     return 1
+
+
+def _background_process_kwargs() -> dict[str, int]:
+    if os.name != "nt":
+        return {}
+    return {"creationflags": subprocess.CREATE_NO_WINDOW}
+
+
+def _subprocess_env() -> dict[str, str]:
+    env = os.environ.copy()
+    env.setdefault("PYTHONIOENCODING", "utf-8")
+    env.setdefault("PYTHONUTF8", "1")
+    return env
+
+
+def _run_text_subprocess(
+    cmd: list[str],
+    *,
+    timeout: float | None = None,
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=timeout,
+        env=_subprocess_env(),
+        **_background_process_kwargs(),
+    )
 
 
 def _load_json(path: Path) -> dict:
@@ -280,6 +325,323 @@ def _excerpt_raw_docs(info_pack: dict, max_chars: int = 4000) -> str:
     return "\n\n".join(parts)
 
 
+def _normalize_style_sample(sample: dict, index: int, dims: dict | None) -> tuple[dict, list[str]]:
+    sample_ids = ("A", "B", "C")
+    sample_id = sample_ids[index] if index < len(sample_ids) else chr(ord("A") + index)
+    if not isinstance(sample, dict):
+        sample = {}
+    style_spec = sample.get("style_spec")
+    if not isinstance(style_spec, dict):
+        style_spec = {}
+    repair_notes: list[str] = []
+    if dims is not None:
+        style_spec, repair_notes = _repair_style_triple(style_spec, dims)
+    if repair_notes:
+        style_spec["_repairs"] = repair_notes
+    return {
+        "sample_id": sample_id,
+        "label": str(sample.get("label") or f"Style {sample_id}"),
+        "rationale": str(sample.get("rationale") or ""),
+        "style_spec": style_spec,
+    }, repair_notes
+
+
+def _preview_text_context(tp: dict, ip: dict) -> dict:
+    qn = ip.get("query_normalized") if isinstance(ip.get("query_normalized"), dict) else {}
+    params = tp.get("params") if isinstance(tp.get("params"), dict) else {}
+    topic = qn.get("topic") or ip.get("user_query") or tp.get("deck_id") or "Presentation"
+    key_points = qn.get("key_points") if isinstance(qn.get("key_points"), list) else []
+    if not key_points:
+        digest = ip.get("document_digest") if isinstance(ip.get("document_digest"), dict) else {}
+        key_points = digest.get("key_points") if isinstance(digest.get("key_points"), list) else []
+    key_points = [str(p) for p in key_points[:3] if p]
+    if len(key_points) < 3:
+        defaults = ["Core message", "Evidence and implications", "Recommended next steps"]
+        key_points.extend(defaults[len(key_points):3])
+    return {
+        "topic": str(topic),
+        "points": key_points[:3],
+        "audience": str(params.get("audience") or "Audience"),
+        "scene": str(params.get("scene") or "Presentation scenario"),
+        "role": str(params.get("role") or "Presenter"),
+        "output_format": str(params.get("output_format") or "pptx").upper(),
+    }
+
+
+def _wrap_svg_text(text: str, width: int) -> list[str]:
+    text = " ".join(str(text).split())
+    if not text:
+        return []
+    if any(ord(ch) > 127 for ch in text):
+        return [text[i:i + width] for i in range(0, len(text), width)]
+    words = text.split(" ")
+    lines: list[str] = []
+    cur = ""
+    for word in words:
+        candidate = word if not cur else f"{cur} {word}"
+        if len(candidate) <= width:
+            cur = candidate
+        else:
+            if cur:
+                lines.append(cur)
+            cur = word
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def _svg_text_block(text: str, x: int, y: int, *, width: int, size: int,
+                    fill: str, weight: str = "400", max_lines: int = 3) -> str:
+    import html
+    lines = _wrap_svg_text(text, width)[:max_lines]
+    spans = []
+    for i, line in enumerate(lines):
+        dy = 0 if i == 0 else int(size * 1.25)
+        spans.append(f'<tspan x="{x}" dy="{dy}">{html.escape(line)}</tspan>')
+    if not spans:
+        return ""
+    return (
+        f'<text x="{x}" y="{y}" fill="{html.escape(fill)}" '
+        f'font-size="{size}" font-weight="{html.escape(weight)}" '
+        f'font-family="Inter, Arial, sans-serif">{"".join(spans)}</text>'
+    )
+
+
+def _style_preview_palette(sample: dict) -> dict:
+    spec = sample.get("style_spec") if isinstance(sample.get("style_spec"), dict) else {}
+    palette = spec.get("palette") if isinstance(spec.get("palette"), dict) else {}
+    primary_color = spec.get("primary_color") if isinstance(spec.get("primary_color"), dict) else {}
+    return {
+        "primary": str(palette.get("primary") or primary_color.get("hex") or "#2D5BFF").upper(),
+        "accent": str(palette.get("accent") or "#FFB000").upper(),
+        "neutral": str(palette.get("neutral") or "#F6F7FB").upper(),
+        "ink": "#F8FAFC",
+        "muted": "#D8DEE9",
+        "surface": "#111827",
+    }
+
+
+def _render_sample_deck_svg(sample: dict, ctx: dict) -> str:
+    import html
+    sample_id = html.escape(str(sample.get("sample_id") or "A"))
+    label = html.escape(str(sample.get("label") or sample_id))
+    spec = sample.get("style_spec") if isinstance(sample.get("style_spec"), dict) else {}
+    design = spec.get("design_style") if isinstance(spec.get("design_style"), dict) else {}
+    tone = spec.get("color_tone") if isinstance(spec.get("color_tone"), dict) else {}
+    colors = _style_preview_palette(sample)
+    w, h, gap = 1280, 720, 34
+    total_h = h * 3 + gap * 2
+
+    def esc(value: object) -> str:
+        return html.escape(str(value))
+
+    def slide_bg(y: int, idx: int) -> str:
+        return f"""
+        <g transform="translate(0,{y})">
+          <rect width="{w}" height="{h}" fill="{esc(colors['surface'])}"/>
+          <rect width="{w}" height="{h}" fill="url(#grad{sample_id}{idx})"/>
+          <polygon points="{w - 430},0 {w},0 {w},{h} {w - 220},{h}" fill="{esc(colors['primary'])}" opacity="0.26"/>
+          <polygon points="0,{h - 210} 390,{h} 0,{h}" fill="{esc(colors['accent'])}" opacity="0.34"/>
+          <rect x="72" y="62" width="136" height="40" rx="20" fill="#FFFFFF" fill-opacity="0.16" stroke="#FFFFFF" stroke-opacity="0.25"/>
+          <text x="100" y="88" fill="{esc(colors['ink'])}" font-size="22" font-weight="700" font-family="Inter, Arial, sans-serif">{sample_id}</text>
+        """
+
+    title = _svg_text_block(ctx["topic"], 92, 260, width=34, size=58, fill=colors["ink"], weight="800", max_lines=2)
+    subtitle = _svg_text_block(label, 96, 355, width=44, size=26, fill=colors["muted"], weight="500", max_lines=2)
+    style_meta = (
+        esc(design.get("name_zh") or design.get("name_en") or "")
+        + " / "
+        + esc(tone.get("name_zh") or tone.get("name_en") or "")
+    )
+
+    bullets = []
+    for i, point in enumerate(ctx["points"], start=1):
+        y = 210 + (i - 1) * 118
+        bullets.append(f'<circle cx="118" cy="{y - 7}" r="24" fill="{esc(colors["accent"])}" opacity="0.9"/>')
+        bullets.append(f'<text x="110" y="{y + 2}" fill="{esc(colors["surface"])}" font-size="22" font-weight="800" font-family="Inter, Arial, sans-serif">{i}</text>')
+        bullets.append(_svg_text_block(point, 168, y, width=58, size=32, fill=colors["ink"], weight="650", max_lines=2))
+
+    chips = [
+        ("Role", ctx["role"]),
+        ("Audience", ctx["audience"]),
+        ("Scene", ctx["scene"]),
+        ("Format", ctx["output_format"]),
+    ]
+    chip_parts = []
+    for i, (key, value) in enumerate(chips):
+        x = 96 + (i % 2) * 520
+        y = 220 + (i // 2) * 155
+        chip_parts.append(f'<rect x="{x}" y="{y}" width="430" height="92" rx="16" fill="#FFFFFF" fill-opacity="0.13" stroke="#FFFFFF" stroke-opacity="0.20"/>')
+        chip_parts.append(f'<text x="{x + 28}" y="{y + 36}" fill="{esc(colors["accent"])}" font-size="20" font-weight="800" font-family="Inter, Arial, sans-serif">{esc(key)}</text>')
+        chip_parts.append(_svg_text_block(value, x + 28, y + 70, width=26, size=27, fill=colors["ink"], weight="650", max_lines=1))
+
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{total_h}" viewBox="0 0 {w} {total_h}">
+  <defs>
+    <linearGradient id="grad{sample_id}1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="{esc(colors['primary'])}" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="{esc(colors['surface'])}" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="grad{sample_id}2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="{esc(colors['surface'])}" stop-opacity="1"/>
+      <stop offset="100%" stop-color="{esc(colors['primary'])}" stop-opacity="0.65"/>
+    </linearGradient>
+    <linearGradient id="grad{sample_id}3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="{esc(colors['primary'])}" stop-opacity="0.72"/>
+      <stop offset="100%" stop-color="{esc(colors['surface'])}" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  {slide_bg(0, 1)}
+    <text x="96" y="156" fill="{esc(colors['accent'])}" font-size="24" font-weight="800" font-family="Inter, Arial, sans-serif">STYLE SAMPLE {sample_id}</text>
+    {title}
+    {subtitle}
+    <text x="96" y="614" fill="{esc(colors['muted'])}" font-size="22" font-family="Inter, Arial, sans-serif">{style_meta}</text>
+  </g>
+  {slide_bg(h + gap, 2)}
+    <text x="96" y="150" fill="{esc(colors['accent'])}" font-size="28" font-weight="800" font-family="Inter, Arial, sans-serif">Key messages</text>
+    {"".join(bullets)}
+  </g>
+  {slide_bg((h + gap) * 2, 3)}
+    <text x="96" y="150" fill="{esc(colors['accent'])}" font-size="28" font-weight="800" font-family="Inter, Arial, sans-serif">Delivery direction</text>
+    {"".join(chip_parts)}
+    <text x="96" y="614" fill="{esc(colors['muted'])}" font-size="24" font-family="Inter, Arial, sans-serif">{esc(sample.get("rationale") or "")}</text>
+  </g>
+</svg>
+"""
+
+
+def _render_style_samples_html(deck: Path, samples: list[dict], tp: dict, ip: dict) -> dict:
+    import html
+
+    def as_dict(value) -> dict:
+        return value if isinstance(value, dict) else {}
+
+    ctx = _preview_text_context(tp, ip)
+    out_dir = deck / "style_samples"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cards: list[str] = []
+    artifacts: list[dict] = []
+    for sample in samples:
+        spec = as_dict(sample.get("style_spec"))
+        palette = as_dict(spec.get("palette"))
+        primary_color = as_dict(spec.get("primary_color"))
+        primary = (palette.get("primary") or primary_color.get("hex") or "#2D5BFF").upper()
+        accent = (palette.get("accent") or "#FFB000").upper()
+        neutral = (palette.get("neutral") or "#F6F7FB").upper()
+        design = as_dict(spec.get("design_style"))
+        tone = as_dict(spec.get("color_tone"))
+        sample_id = sample.get("sample_id")
+        svg_name = f"sample_{sample_id}_deck.svg"
+        deck_name = f"sample_{sample_id}_deck.html"
+        svg_path = out_dir / svg_name
+        deck_path = out_dir / deck_name
+        _write_text(svg_path, _render_sample_deck_svg(sample, ctx))
+        _write_text(deck_path, f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Style Sample {html.escape(str(sample_id))}</title>
+  <style>
+    * {{ box-sizing: border-box; }}
+    body {{ margin: 0; background: #12151c; color: #f7f8fb; font-family: Inter, Arial, sans-serif; }}
+    main {{ width: min(100vw, 1280px); margin: 0 auto; }}
+    img {{ display: block; width: 100%; height: auto; }}
+  </style>
+</head>
+<body><main><img src="{html.escape(svg_name)}" alt="Style sample {html.escape(str(sample_id))} concatenated deck"></main></body>
+</html>
+""")
+        artifacts.append({
+            "sample_id": sample_id,
+            "image": str(svg_path.relative_to(deck)),
+            "image_url": svg_path.resolve().as_uri(),
+            "deck_html": str(deck_path.relative_to(deck)),
+            "deck_url": deck_path.resolve().as_uri(),
+        })
+        cards.append(f"""
+        <section class="sample-card" style="--primary:{html.escape(primary)};--accent:{html.escape(accent)};--neutral:{html.escape(neutral)}">
+          <a class="deck-image" href="{html.escape(deck_name)}"><img src="{html.escape(svg_name)}" alt="Style sample {html.escape(str(sample_id))} concatenated deck"></a>
+          <div class="sample-meta">
+            <h3>{html.escape(str(sample_id))}. {html.escape(str(sample.get("label") or sample_id))}</h3>
+            <div class="style-line">{html.escape(str(design.get("name_zh") or design.get("name_en") or ""))} / {html.escape(str(tone.get("name_zh") or tone.get("name_en") or ""))}</div>
+            <p>{html.escape(str(sample.get("rationale") or ""))}</p>
+            <div class="swatches"><i style="background:{html.escape(primary)}"></i><i style="background:{html.escape(accent)}"></i><i style="background:{html.escape(neutral)}"></i></div>
+            <strong>Select {html.escape(str(sample_id))}</strong>
+            <a class="open-deck" href="{html.escape(deck_name)}">Open preview deck</a>
+          </div>
+        </section>
+        """)
+
+    out = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Style Samples</title>
+  <style>
+    * {{ box-sizing: border-box; }}
+    body {{ margin: 0; padding: 28px; background: #101216; color: #f7f8fb; font-family: Inter, Arial, sans-serif; }}
+    .grid {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1440px; margin: 0 auto; }}
+    .sample-card {{ background: #191d24; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; overflow: hidden; box-shadow: 0 18px 42px rgba(0,0,0,.22); }}
+    .deck-image {{ display: block; height: 520px; overflow: auto; background: #0b0f16; border-bottom: 1px solid rgba(255,255,255,.12); }}
+    .deck-image img {{ display: block; width: 100%; height: auto; }}
+    .sample-meta {{ padding: 16px 16px 18px; min-height: 172px; }}
+    .sample-meta h3 {{ margin: 0 0 8px; font-size: 18px; line-height: 1.25; letter-spacing: 0; }}
+    .style-line {{ color: var(--accent); font-size: 12px; line-height: 1.35; margin-bottom: 8px; }}
+    .sample-meta p {{ min-height: 42px; margin: 0 0 12px; color: rgba(247,248,251,.72); font-size: 13px; line-height: 1.45; }}
+    .swatches {{ display: flex; gap: 8px; margin-bottom: 12px; }}
+    .swatches i {{ width: 30px; height: 18px; display: block; border-radius: 4px; border: 1px solid rgba(255,255,255,.2); }}
+    strong {{ color: var(--accent); font-size: 13px; }}
+    .open-deck {{ float: right; color: rgba(247,248,251,.78); font-size: 13px; text-decoration: none; }}
+    @media (max-width: 980px) {{ body {{ padding: 18px; }} .grid {{ grid-template-columns: 1fr; }} }}
+  </style>
+</head>
+<body><main class="grid">{''.join(cards)}</main></body>
+</html>
+"""
+    out_path = out_dir / "style_samples.html"
+    index_path = out_dir / "index.html"
+    _write_text(out_path, out)
+    _write_text(index_path, out)
+    return {
+        "html": out_path,
+        "index": index_path,
+        "url": out_path.resolve().as_uri(),
+        "artifacts": artifacts,
+    }
+
+
+def _select_style_sample(deck: Path, sample_id: str) -> int:
+    samples_path = deck / "style_samples.json"
+    if not samples_path.exists():
+        return _fail("style_samples.json missing; run style-samples first")
+    data = _load_json(samples_path)
+    wanted = sample_id.strip().upper()
+    selected = None
+    for sample in data.get("samples", []):
+        if str(sample.get("sample_id", "")).upper() == wanted:
+            selected = sample
+            break
+    if selected is None:
+        return _fail(f"style sample {sample_id!r} not found")
+    style_spec = selected.get("style_spec") or {}
+    style_spec["_selected_sample"] = {
+        "sample_id": selected.get("sample_id"),
+        "label": selected.get("label"),
+        "rationale": selected.get("rationale"),
+    }
+    _write_text(deck / "style_spec.json", json.dumps(style_spec, ensure_ascii=False, indent=2))
+    return _ok(
+        path="style_spec.json",
+        sample_id=selected.get("sample_id"),
+        label=selected.get("label"),
+        design_style=style_spec.get("design_style"),
+        color_tone=style_spec.get("color_tone"),
+        primary_color=style_spec.get("primary_color"),
+        palette=style_spec.get("palette"),
+    )
+
+
 # ---------------------------------------------------------------------------
 # Subcommands
 # ---------------------------------------------------------------------------
@@ -318,8 +680,15 @@ def cmd_preflight(deck: Path) -> int:
     )
 
 
-def cmd_style(deck: Path) -> int:
+def cmd_style(deck: Path, sample_id: str | None = None) -> int:
     tp = _load_json(deck / "task_pack.json")
+    if tp.get("ppt_mode") == "standard":
+        selected = sample_id or tp.get("params", {}).get("style_sample")
+        if selected:
+            return _select_style_sample(deck, str(selected))
+        if (deck / "style_samples.json").exists():
+            return _fail("style sample required; pass --sample A, B, or C")
+        return _fail("standard mode requires style-samples before style")
     ip = _load_json(deck / "info_pack.json")
     system_prompt = _load_prompt("style_spec.md")
     user_prompt = json.dumps({
@@ -349,6 +718,83 @@ def cmd_style(deck: Path) -> int:
         primary_color=data.get("primary_color"),
         palette=data.get("palette"),
         repairs=repair_notes or None,
+    )
+
+
+def cmd_style_samples(deck: Path) -> int:
+    tp = _load_json(deck / "task_pack.json")
+    if tp.get("ppt_mode") != "standard":
+        return _fail("style-samples is only valid when ppt_mode == 'standard'")
+    ip = _load_json(deck / "info_pack.json")
+    system_prompt = _load_prompt("style_samples.md")
+    user_prompt = json.dumps({
+        "task_pack_params": tp.get("params", {}),
+        "info_pack_query_normalized": ip.get("query_normalized"),
+        "info_pack_user_query": ip.get("user_query"),
+        "info_pack_document_digest": ip.get("document_digest"),
+    }, ensure_ascii=False, indent=2)
+    try:
+        raw = llm(system_prompt, user_prompt)
+        data = _parse_json_loose(raw)
+    except (ModelClientError, json.JSONDecodeError) as e:
+        return _fail(f"style-samples: {e}")
+
+    raw_samples = data.get("samples")
+    if not isinstance(raw_samples, list) or len(raw_samples) < 3:
+        return _fail("style-samples: expected at least three samples")
+
+    dims = _load_style_dimensions()
+    samples: list[dict] = []
+    all_repairs: list[str] = []
+    used_triples: set[tuple[int | None, int | None, int | None]] = set()
+    for i, sample in enumerate(raw_samples[:3]):
+        normalized, repair_notes = _normalize_style_sample(sample, i, dims)
+        spec = normalized.get("style_spec") or {}
+        triple = (
+            (spec.get("design_style") or {}).get("id"),
+            (spec.get("color_tone") or {}).get("id"),
+            (spec.get("primary_color") or {}).get("id"),
+        )
+        if triple in used_triples:
+            normalized.setdefault("style_spec", {})["_duplicate_warning"] = "LLM returned a repeated style triple; review before selection."
+        used_triples.add(triple)
+        all_repairs.extend([f"{normalized['sample_id']}: {note}" for note in repair_notes])
+        samples.append(normalized)
+
+    result = {"samples": samples}
+    if all_repairs:
+        result["_repairs"] = all_repairs
+    preview = _render_style_samples_html(deck, samples, tp, ip)
+    result["preview"] = {
+        "url": preview["url"],
+        "html": str(preview["html"].relative_to(deck)),
+        "index": str(preview["index"].relative_to(deck)),
+        "artifacts": preview["artifacts"],
+    }
+    _write_text(deck / "style_samples.json", json.dumps(result, ensure_ascii=False, indent=2))
+    return _ok(
+        path="style_samples.json",
+        preview_html=str(preview["html"].relative_to(deck)),
+        preview_url=preview["url"],
+        preview_images=[
+            {"sample_id": a["sample_id"], "path": a["image"], "url": a["image_url"]}
+            for a in preview["artifacts"]
+        ],
+        preview_decks=[
+            {"sample_id": a["sample_id"], "path": a["deck_html"], "url": a["deck_url"]}
+            for a in preview["artifacts"]
+        ],
+        samples=[
+            {
+                "sample_id": s.get("sample_id"),
+                "label": s.get("label"),
+                "design_style": (s.get("style_spec") or {}).get("design_style"),
+                "color_tone": (s.get("style_spec") or {}).get("color_tone"),
+                "primary_color": (s.get("style_spec") or {}).get("primary_color"),
+            }
+            for s in samples
+        ],
+        repairs=all_repairs or None,
     )
 
 
@@ -561,7 +1007,7 @@ def cmd_gen_image(deck: Path, page_no: int, slot_id: str) -> int:
                      page_no=page_no, slot_id=slot_id)
 
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        proc = _run_text_subprocess(cmd, timeout=600)
     except subprocess.TimeoutExpired:
         return _record_failure("sn_agent_runner sn-image-generate timed out after 600s")
     except FileNotFoundError as e:
@@ -1069,13 +1515,27 @@ def cmd_page_html(deck: Path, page_no: int) -> int:
     )
 
 
-def cmd_export(deck: Path) -> int:
-    import subprocess
-    converter = SKILL_DIR / "scripts" / "export_pptx" / "html_to_pptx.mjs"
+def _resolve_output_format(deck: Path, requested: str | None = None) -> str:
+    fmt = (requested or "").strip().lower()
+    if not fmt:
+        try:
+            tp = _load_json(deck / "task_pack.json")
+            fmt = str(tp.get("params", {}).get("output_format") or "").strip().lower()
+        except Exception:
+            fmt = ""
+    if fmt in {"pdf", "pptx"}:
+        return fmt
+    return "pptx"
+
+
+def cmd_export(deck: Path, output_format: str | None = None) -> int:
+    fmt = _resolve_output_format(deck, output_format)
+    converter_name = "html_to_pdf.mjs" if fmt == "pdf" else "html_to_pptx.mjs"
+    converter = SKILL_DIR / "scripts" / "export_pptx" / converter_name
     if not converter.exists():
-        return _fail("export_pptx/html_to_pptx.mjs missing — run npm install in scripts/export_pptx")
+        return _fail(f"export_pptx/{converter_name} missing — run npm install in scripts/export_pptx")
     cmd = ["node", str(converter), "--deck-dir", str(deck), "--force"]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    proc = _run_text_subprocess(cmd)
     if proc.returncode != 0:
         return _fail(f"export failed: {proc.stderr.strip()[:500]}")
     # Try to parse the converter's stdout json
@@ -1087,18 +1547,20 @@ def cmd_export(deck: Path) -> int:
             info = json.loads(last[-1])
             # Graceful skip: headless browser unavailable → not a failure
             if info.get("status") == "skipped":
-                return {
+                print(json.dumps({
                     "status": "skipped",
                     "stage": "export",
+                    "format": fmt,
                     "reason": info.get("reason"),
                     "detail": info.get("detail"),
-                }
+                }, ensure_ascii=False))
+                return 0
             converted = info.get("converted")
             pages = info.get("pages")
             failed = info.get("failed")
     except Exception:
         pass
-    return _ok(pages=pages, converted=converted, failed=failed)
+    return _ok(format=fmt, pages=pages, converted=converted, failed=failed)
 
 
 # ---------------------------------------------------------------------------
@@ -1133,7 +1595,6 @@ def _screenshot_page(deck: Path, page_no: int, *, viewport: str = "1600x900") ->
     boundingBox, so even if the rendered slide is smaller than the viewport,
     the PNG is cropped to the slide canvas.
     """
-    import subprocess
     if not _SCREENSHOT_MJS.exists():
         return None
     html_path = deck / "pages" / f"page_{page_no:03d}.html"
@@ -1142,13 +1603,15 @@ def _screenshot_page(deck: Path, page_no: int, *, viewport: str = "1600x900") ->
     out_path = deck / "screenshots" / f"page_{page_no:03d}.png"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     try:
-        proc = subprocess.run(
-            ["node", str(_SCREENSHOT_MJS),
-             "--html", str(html_path),
-             "--out", str(out_path),
-             "--viewport", viewport,
-             "--wait", "800"],  # extra slack for ECharts setOption
-            capture_output=True, text=True, timeout=60,
+        proc = _run_text_subprocess(
+            [
+                "node", str(_SCREENSHOT_MJS),
+                "--html", str(html_path),
+                "--out", str(out_path),
+                "--viewport", viewport,
+                "--wait", "800",
+            ],
+            timeout=60,
         )
     except (FileNotFoundError, subprocess.TimeoutExpired):
         return None
@@ -1417,9 +1880,19 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="run_stage")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    for name in ("preflight", "style", "outline", "asset-plan", "export"):
+    for name in ("preflight", "style-samples", "outline", "asset-plan"):
         sp = sub.add_parser(name)
         sp.add_argument("--deck-dir", type=Path, required=True)
+
+    sp = sub.add_parser("style")
+    sp.add_argument("--deck-dir", type=Path, required=True)
+    sp.add_argument("--sample", choices=("A", "B", "C", "a", "b", "c"), default=None,
+                    help="promote a selected standard-mode style sample")
+
+    sp = sub.add_parser("export")
+    sp.add_argument("--deck-dir", type=Path, required=True)
+    sp.add_argument("--format", choices=("pptx", "pdf"), default=None,
+                    help="override task_pack.params.output_format")
 
     sp = sub.add_parser("gen-image")
     sp.add_argument("--deck-dir", type=Path, required=True)
@@ -1464,7 +1937,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "preflight":
         return cmd_preflight(deck)
     if args.cmd == "style":
-        return cmd_style(deck)
+        return cmd_style(deck, getattr(args, "sample", None))
+    if args.cmd == "style-samples":
+        return cmd_style_samples(deck)
     if args.cmd == "outline":
         return cmd_outline(deck)
     if args.cmd == "asset-plan":
@@ -1476,7 +1951,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "refine-page":
         return cmd_refine_page(deck, args.page)
     if args.cmd == "export":
-        return cmd_export(deck)
+        return cmd_export(deck, getattr(args, "format", None))
     if args.cmd == "batch-gen-image":
         return cmd_batch_gen_image(deck, args.concurrency)
     if args.cmd == "batch-page-html":

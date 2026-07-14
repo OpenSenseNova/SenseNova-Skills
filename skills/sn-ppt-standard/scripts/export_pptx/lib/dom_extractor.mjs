@@ -4,8 +4,8 @@
  * 将 HTML 幻灯片页面解析为中间表示（IR），供 PPTX builder 使用。
  */
 
-import { chromium } from 'playwright';
 import path from 'node:path';
+import { hiddenChromiumLaunchOptions, installHiddenProcessHooks } from './browser_setup.mjs';
 
 // ---------------------------------------------------------------------------
 // 浏览器端执行的 DOM 提取脚本
@@ -829,7 +829,9 @@ function _attachSvgPngsToIR(_ir, _svgPngs) {
 export async function extractPages(htmlPaths) {
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    installHiddenProcessHooks();
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch(hiddenChromiumLaunchOptions());
   } catch (e) {
     // Browser unavailable — return null IR for every page.
     // pptx_builder handles null IR gracefully (blank slide + continue).

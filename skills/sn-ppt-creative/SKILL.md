@@ -47,6 +47,26 @@ Never mix — LLM / VLM through sn-image-base, or T2I through model_client — b
 
 Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
 
+## Generation progress WebUI
+
+`sn-ppt-entry` starts the generation progress WebUI after `task_pack.json` / `info_pack.json` are written. During creative-mode generation, publish progress with the shared writer from `sn-ppt-standard`:
+
+```bash
+P="python3 $PPT_STANDARD_DIR/scripts/progress_event.py"
+$P --deck-dir <deck_dir> --stage creative-style --status running
+$P --deck-dir <deck_dir> --stage creative-style --status ok --artifact style_spec.md
+$P --deck-dir <deck_dir> --stage creative-outline --status running
+$P --deck-dir <deck_dir> --stage creative-outline --status ok --artifact outline.json
+$P --deck-dir <deck_dir> --stage creative-prompt --page N --status running
+$P --deck-dir <deck_dir> --stage creative-prompt --page N --status ok
+$P --deck-dir <deck_dir> --stage creative-render --page N --status running
+$P --deck-dir <deck_dir> --stage creative-render --page N --status ok
+$P --deck-dir <deck_dir> --stage export --status running
+$P --deck-dir <deck_dir> --stage export --status ok
+```
+
+On failure, write the same stage with `--status failed --error "<short reason>"` before moving on or aborting. On native Windows, use `python` if `python3` is unavailable.
+
 ## Resume
 
 ```bash
@@ -251,6 +271,7 @@ Emit:
 | Stage | Example |
 |---|---|
 | After resume_scan | `已进入 sn-ppt-creative，共 N 页` |
+| After each progress write | `.workbench/progress.json 已更新：<stage> <status>` |
 | After Stage 2 | `[1] style_spec.md ✓` |
 | After Stage 3 | `[2] outline.json ✓（N 页）` |
 | Per page-prompt (4.1) | `[prompt 3/10] ✓` |
