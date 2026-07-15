@@ -138,15 +138,15 @@ Required controls:
 Behavior:
 
 - Initial state is paused at snapshot 1.
-- 播放 advances to the next snapshot every 8 seconds.
+- 播放 holds each snapshot for 8 seconds. Transitions occur at 8, 16, 24, 32, 40, and 48 seconds.
 - 播放 at snapshot 7 returns to snapshot 1 and starts playback.
 - 暂停 keeps the current snapshot.
 - 上一步 is disabled at snapshot 1; 下一步 is disabled at snapshot 7.
 - 上一步 and 下一步 move exactly one snapshot and pause playback.
 - Clicking a stage marker selects exactly that snapshot and pauses playback.
 - 重新播放 returns to snapshot 1 and immediately starts playback.
-- Snapshot 7 remains stable and does not loop automatically.
-- A complete presentation lasts 56 seconds.
+- Snapshot 7 holds from second 48 through second 56, then playback changes to paused and remains stable. It does not loop automatically.
+- A complete presentation, including the final 8-second leadership handoff, lasts 56 seconds.
 
 ## Page Structure
 
@@ -283,7 +283,7 @@ Automated tests verify:
 - Report actions remain disabled until snapshot 7 and become enabled only there.
 - Findings are unavailable before snapshot 4 and verified from snapshot 4 onward.
 - Dimension and report dialogs update ARIA state, trap/restore focus, and close with Escape.
-- Visible UI avoids raw internal terms, absolute paths, fabricated timestamps, and live-status wording.
+- Dashboard, replay controls, dialogs, and status copy avoid raw internal terms, absolute paths, fabricated timestamps, and live-status wording. This vocabulary check excludes the archive-exact final report body and citations, whose source titles are not rewritten.
 - The page contains no `report.html` artifact claim or link.
 - Report and citation Blob downloads use the specified filenames and MIME types.
 - The Markdown renderer escapes raw HTML.
