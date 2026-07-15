@@ -61,12 +61,14 @@ function encodePayload(value) {
 function createElement(overrides = {}) {
   const listeners = new Map();
   const attributes = new Map();
-  return {
+  const element = {
     innerHTML: "",
     textContent: "",
     disabled: false,
     focused: false,
     focusCount: 0,
+    open: false,
+    focusables: [],
     listeners,
     addEventListener(type, listener) {
       const entries = listeners.get(type) ?? [];
@@ -85,6 +87,12 @@ function createElement(overrides = {}) {
       this.focused = true;
       this.focusCount += 1;
     },
+    contains(candidate) {
+      return candidate === this || this.focusables.includes(candidate);
+    },
+    matches(selector) {
+      return !this.disabled && /button|\[href\]|input|select|textarea|\[tabindex\]/.test(selector);
+    },
     closest() {
       return null;
     },
@@ -97,14 +105,17 @@ function createElement(overrides = {}) {
     removeAttribute(name) {
       attributes.delete(name);
     },
-    querySelector() {
-      return null;
+    querySelector(selector) {
+      return this.querySelectorAll(selector)[0] ?? null;
     },
-    querySelectorAll() {
-      return [];
+    querySelectorAll(selector) {
+      return /button|\[href\]|input|select|textarea|\[tabindex\]/.test(selector)
+        ? this.focusables.filter((item) => !item.disabled)
+        : [];
     },
     ...overrides,
   };
+  return element;
 }
 
 function createRuntime(html, { data = null } = {}) {
@@ -112,6 +123,11 @@ function createRuntime(html, { data = null } = {}) {
   assert.ok(runtimeMatch, "inline demo runtime should exist");
 
   const focusEvents = [];
+  const documentListeners = new Map();
+  const blobs = [];
+  const objectUrls = [];
+  const revokedUrls = [];
+  const anchors = [];
   let renderedHtml = "";
   let elementGeneration = 0;
   let document;
@@ -179,6 +195,8 @@ function createRuntime(html, { data = null } = {}) {
   let heading = createHeading();
   let controls = createControls();
   const app = createElement();
+  let reportActions = {};
+  let dimensionTriggers = [];
   Object.defineProperty(app, "innerHTML", {
     configurable: true,
     get() {
@@ -192,6 +210,25 @@ function createRuntime(html, { data = null } = {}) {
       elementGeneration += 1;
       heading = createHeading();
       controls = createControls();
+      reportActions = Object.fromEntries(["read", "report", "citations"].map((action) => {
+        const disabled = new RegExp(`data-report-action="${action}"[^>]*disabled`).test(renderedHtml);
+        return [action, createElement({
+          disabled,
+          getAttribute(name) { return name === "data-report-action" ? action : null; },
+          focus() {
+            if (this.disabled) return;
+            this.focused = true;
+            this.focusCount += 1;
+            document.activeElement = this;
+          },
+        })];
+      }));
+      dimensionTriggers = [...renderedHtml.matchAll(/data-dimension-id="([^"]+)"/g)].map((match) =>
+        createElement({
+          getAttribute(name) { return name === "data-dimension-id" ? match[1] : null; },
+          focus() { this.focused = true; this.focusCount += 1; document.activeElement = this; },
+        }),
+      );
     },
   });
   const announcement = createElement();
@@ -201,18 +238,41 @@ function createRuntime(html, { data = null } = {}) {
   const clearCalls = [];
   let timerId = 0;
   const timers = new Map();
+  const dimensionContent = createElement();
+  const reportContent = createElement();
+  const dimensionClose = createElement();
+  const reportClose = createElement();
+  const makeDialog = (closeButton, content, native = true) => {
+    const dialog = createElement({ focusables: [closeButton, content] });
+    if (native) {
+      dialog.showModal = function () { this.open = true; this.setAttribute("open", ""); };
+      dialog.close = function () { this.open = false; this.removeAttribute("open"); };
+    }
+    return dialog;
+  };
+  const dimensionDialog = makeDialog(dimensionClose, dimensionContent);
+  const reportDialog = makeDialog(reportClose, reportContent);
   const byId = {
     app,
     announcement,
     "archive-data": archive,
-    "dimension-dialog": createElement(),
-    "report-dialog": createElement(),
+    "dimension-dialog": dimensionDialog,
+    "dimension-dialog-content": dimensionContent,
+    "report-dialog": reportDialog,
+    "report-dialog-content": reportContent,
   };
   const bySelector = { "[data-reload]": createElement() };
   document = {
     readyState: "loading",
     activeElement: null,
-    addEventListener() {},
+    addEventListener(type, listener) {
+      const entries = documentListeners.get(type) ?? [];
+      entries.push(listener);
+      documentListeners.set(type, entries);
+    },
+    dispatchEvent(event) {
+      for (const listener of documentListeners.get(event.type) ?? []) listener(event);
+    },
     getElementById(id) {
       return byId[id] ?? null;
     },
@@ -222,10 +282,24 @@ function createRuntime(html, { data = null } = {}) {
       if (action) return controls[action];
       const stage = selector.match(/^\[data-stage-index="([0-6])"\]$/)?.[1];
       if (stage !== undefined) return controls.stages[Number(stage)];
+      const reportAction = selector.match(/^\[data-report-action="(read|report|citations)"\]$/)?.[1];
+      if (reportAction) return reportActions[reportAction] ?? null;
+      if (selector === "#dimension-dialog [data-dialog-close]") return dimensionClose;
+      if (selector === "#report-dialog [data-dialog-close]") return reportClose;
       return bySelector[selector] ?? null;
     },
     querySelectorAll(selector) {
-      return selector === "[data-stage-index]" ? controls.stages : [];
+      if (selector === "[data-stage-index]") return controls.stages;
+      if (selector === "[data-dimension-id]") return dimensionTriggers;
+      return [];
+    },
+    createElement(tagName) {
+      const element = createElement({ tagName: String(tagName).toUpperCase() });
+      if (tagName === "a") {
+        element.click = function () { this.clicked = true; };
+        anchors.push(element);
+      }
+      return element;
     },
   };
   const window = {
@@ -247,12 +321,22 @@ function createRuntime(html, { data = null } = {}) {
       timers.delete(id);
     },
   };
+  class FakeBlob {
+    constructor(parts, options = {}) {
+      this.parts = parts;
+      this.type = options.type ?? "";
+      blobs.push(this);
+    }
+  }
   const context = vm.createContext({
     atob: (value) => Buffer.from(value, "base64").toString("binary"),
     TextDecoder,
     Uint8Array,
-    Blob: class Blob {},
-    URL: { createObjectURL() {}, revokeObjectURL() {} },
+    Blob: FakeBlob,
+    URL: {
+      createObjectURL(blob) { const url = `blob:test-${objectUrls.length + 1}`; objectUrls.push({ blob, url }); return url; },
+      revokeObjectURL(url) { revokedUrls.push(url); },
+    },
     window,
     document,
     console,
@@ -276,6 +360,14 @@ function createRuntime(html, { data = null } = {}) {
     timerCalls,
     clearCalls,
     bySelector,
+    byId,
+    blobs,
+    objectUrls,
+    revokedUrls,
+    anchors,
+    documentListeners,
+    get reportActions() { return reportActions; },
+    get dimensionTriggers() { return dimensionTriggers; },
   };
 }
 
@@ -1002,4 +1094,181 @@ test("dashboard escapes archive strings in work cards and milestone copy", () =>
   assert.match(planned, /&lt;script&gt;alert\(&quot;explanation&quot;\)&lt;\/script&gt;/);
   assert.match(planned, /&lt;svg onload=&quot;alert\(2\)&quot;&gt;/);
   assert.match(organized, /&lt;img src=x onerror=&quot;alert\(1\)&quot;&gt;/);
+});
+
+test("dimension findings stay gated, then render every archive-backed finding on demand", () => {
+  const { context } = createRuntime(freshHtml);
+  for (let index = 0; index < 3; index++) {
+    assert.equal(context.renderDimensionDialog(payload, "d1", index), "<p>该维度尚未形成可展示发现</p>");
+  }
+
+  for (let index = 3; index < 7; index++) {
+    for (const dimension of payload.dimensions) {
+      const html = context.renderDimensionDialog(payload, dimension.id, index);
+      assert.match(html, new RegExp(dimension.name));
+      assert.match(html, new RegExp(dimension.headline.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+      assert.match(html, new RegExp(`${dimension.claimCount} 条研究要点`));
+      assert.match(html, new RegExp(`${dimension.sourceCount} 条来源`));
+      assert.match(html, /已核验/);
+      for (const finding of dimension.findings) {
+        assert.match(html, new RegExp(finding.text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+        assert.match(html, new RegExp(`关联 ${finding.claimCount} 条证据主张`));
+      }
+    }
+    const dashboard = context.renderDashboard({
+      ...context.selectSnapshot(payload, index),
+      playback: { index, playing: false, finalHold: false },
+    });
+    assert.equal((dashboard.match(/data-dimension-id=/g) ?? []).length, 7);
+    assert.doesNotMatch(dashboard, new RegExp(payload.dimensions[0].findings[0].text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+});
+
+test("markdown renderer supports the safe report subset and escapes raw HTML first", () => {
+  const { renderMarkdown } = createRuntime(freshHtml).context;
+  const synthetic = [
+    "# 一级标题",
+    "## 二级标题",
+    "### 三级标题",
+    "",
+    "普通 **加粗** 与 *斜体*，引用 [12]，脚注 [^safe]。<script>alert(1)</script>",
+    "",
+    "- 条目一",
+    "- 条目二",
+    "",
+    "| 左列 | 右列 |",
+    "|---|---:|",
+    "| 甲 | 12 |",
+    "",
+    "[^safe]: 脚注定义",
+  ].join("\n");
+  const html = renderMarkdown(synthetic);
+  for (const pattern of [/<h1>一级标题<\/h1>/, /<h2>二级标题<\/h2>/, /<h3>三级标题<\/h3>/, /<p>普通/, /<strong>加粗<\/strong>/, /<em>斜体<\/em>/, /<ul>/, /<li>条目一<\/li>/, /class="table-scroll"/, /<table>/, /text-align:right/, /class="citation-token"/, /href="#footnote-safe"/, /id="footnote-safe"/]) {
+    assert.match(html, pattern);
+  }
+  assert.doesNotMatch(html, /<script\b/i);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+
+  const report = renderMarkdown(payload.reportMarkdown);
+  assert.match(report, /^<h1>中国九阶层实际收入与财务状况：中产人数、特征与财力<\/h1>/);
+  assert.match(report, /<ul>[\s\S]*全国官方可直接观测的是调查户收入五等份/);
+  assert.match(report, /<div class="table-scroll"[\s\S]*<table>[\s\S]*<th/);
+  assert.match(report, /<strong>中国中产没有脱离口径的单一人数答案<\/strong>/);
+  assert.match(report, /class="citation-token"[^>]*>\[1\]<\/sup>/);
+});
+
+test("dialog shells and controllers provide native and fallback modal accessibility", () => {
+  assert.match(freshHtml, /<dialog id="dimension-dialog"[^>]*aria-labelledby="dimension-dialog-title"[^>]*aria-describedby="dimension-dialog-description"/);
+  assert.match(freshHtml, /id="dimension-dialog-title"/);
+  assert.match(freshHtml, /id="dimension-dialog-description"/);
+  assert.match(freshHtml, /<dialog id="report-dialog"[^>]*aria-labelledby="report-dialog-title"[^>]*aria-describedby="report-dialog-description"/);
+  assert.match(freshHtml, /id="report-dialog-title"/);
+  assert.match(freshHtml, /id="report-dialog-description"/);
+
+  const runtime = createRuntime(freshHtml);
+  runtime.context.bootstrap();
+  runtime.controls.stages[6].click();
+  const reportTrigger = runtime.reportActions.read;
+  reportTrigger.focus();
+  reportTrigger.click();
+  const reportDialog = runtime.byId["report-dialog"];
+  assert.equal(reportDialog.open, true);
+  assert.equal(reportDialog.getAttribute("aria-hidden"), "false");
+  assert.match(runtime.byId["report-dialog-content"].innerHTML, /^<h1>/);
+  assert.ok(runtime.byId["report-dialog-content"].focusCount > 0, "report viewer receives focus");
+
+  const reportFocusables = reportDialog.focusables;
+  runtime.document.activeElement = reportFocusables.at(-1);
+  runtime.document.dispatchEvent({ type: "keydown", key: "Tab", shiftKey: false, preventDefault() { this.prevented = true; } });
+  assert.ok(reportFocusables[0].focusCount > 0, "Tab wraps to first focusable");
+  runtime.document.activeElement = reportFocusables[0];
+  runtime.document.dispatchEvent({ type: "keydown", key: "Tab", shiftKey: true, preventDefault() { this.prevented = true; } });
+  assert.ok(reportFocusables.at(-1).focusCount > 0, "Shift+Tab wraps to last focusable");
+
+  runtime.document.dispatchEvent({ type: "keydown", key: "Escape", preventDefault() {} });
+  assert.equal(reportDialog.open, false);
+  assert.equal(reportTrigger.focused, true, "report Escape restores its trigger");
+  reportTrigger.click();
+  runtime.dimensionTriggers[0].click();
+  assert.equal(runtime.byId["dimension-dialog"].open, true);
+  assert.equal(reportDialog.open, false, "opening one dialog closes the other");
+  const dimensionTrigger = runtime.dimensionTriggers[0];
+  runtime.document.dispatchEvent({ type: "keydown", key: "Escape", preventDefault() {} });
+  assert.equal(runtime.byId["dimension-dialog"].open, false);
+  assert.equal(dimensionTrigger.focused, true, "Escape restores trigger focus");
+  reportTrigger.click();
+  reportDialog.dispatchEvent({ type: "click", target: reportDialog });
+  assert.equal(reportDialog.open, false, "backdrop closes the report dialog");
+  assert.equal(reportTrigger.focused, true);
+
+  const fallback = createRuntime(freshHtml);
+  const fallbackDialog = fallback.byId["dimension-dialog"];
+  delete fallbackDialog.showModal;
+  delete fallbackDialog.close;
+  const fallbackTrigger = createElement({ focus() { this.focused = true; } });
+  const controller = fallback.context.createDialogController(fallbackDialog, { initialFocus: () => fallbackDialog.focusables[0] });
+  controller.open(fallbackTrigger);
+  assert.equal(fallbackDialog.getAttribute("role"), "dialog");
+  assert.equal(fallbackDialog.getAttribute("aria-modal"), "true");
+  assert.equal(fallbackDialog.getAttribute("aria-hidden"), "false");
+  assert.notEqual(fallbackDialog.getAttribute("open"), null);
+  fallbackDialog.dispatchEvent({ type: "click", target: fallbackDialog });
+  assert.equal(fallbackDialog.getAttribute("aria-hidden"), "true");
+  assert.equal(fallbackTrigger.focused, true);
+});
+
+test("delivery actions are inert before stage seven and download exact archive bytes", () => {
+  const runtime = createRuntime(freshHtml);
+  runtime.context.bootstrap();
+  for (let index = 0; index < 6; index++) {
+    runtime.controls.stages[index].click();
+    for (const action of Object.values(runtime.reportActions)) action.click();
+  }
+  assert.equal(runtime.blobs.length, 0);
+  assert.equal(runtime.byId["report-dialog"].open, false);
+
+  runtime.controls.stages[6].click();
+  runtime.reportActions.report.click();
+  runtime.reportActions.citations.click();
+  assert.equal(runtime.blobs.length, 2);
+  assert.deepEqual(plain(runtime.blobs.map((blob) => blob.parts)), [[payload.reportMarkdown], [payload.citationsJson]]);
+  assert.deepEqual(runtime.blobs.map((blob) => blob.type), ["text/markdown;charset=utf-8", "application/json;charset=utf-8"]);
+  assert.deepEqual(runtime.anchors.map((anchor) => anchor.download), ["report.md", "citations.json"]);
+  assert.ok(runtime.anchors.every((anchor) => anchor.clicked));
+  assert.deepEqual(runtime.anchors.map((anchor) => anchor.href), runtime.objectUrls.map((entry) => entry.url));
+  assert.deepEqual(runtime.revokedUrls, runtime.objectUrls.map((entry) => entry.url));
+});
+
+test("generated dashboard and dialogs expose safe visible copy and responsive accessibility CSS", () => {
+  const { context } = createRuntime(freshHtml);
+  const visible = [];
+  for (let index = 0; index < 7; index++) {
+    visible.push(context.renderDashboard({
+      ...context.selectSnapshot(payload, index),
+      playback: { index, playing: false, finalHold: false },
+    }));
+    for (const dimension of payload.dimensions) visible.push(context.renderDimensionDialog(payload, dimension.id, index));
+  }
+  const visibleCopy = visible.join(" ").replace(/<[^>]+>/g, " ");
+  assert.doesNotMatch(visibleCopy, /实时同步|刚刚|当前更新时间|validator|review|perspective|supplement|stitcher|render|agent|schema|dispatch/i);
+  assert.doesNotMatch(visibleCopy, /report\.html/i);
+
+  const css = freshHtml.match(/<style>([\s\S]*?)<\/style>/i)?.[1] ?? "";
+  assert.match(freshHtml, /role="progressbar"[^>]*aria-valuemin="0"[^>]*aria-valuemax="100"[^>]*aria-valuenow=/);
+  assert.match(freshHtml, /id="announcement"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(css, /(?:html|body|\.page-shell)[^{]*\{[^}]*overflow-x:\s*(?:hidden|clip)/s);
+  assert.match(css, /\.dimension-dialog[^}]*position:\s*fixed[^}]*right:\s*0/s);
+  assert.match(css, /dialog\[role="dialog"\][^}]*width:\s*100vw[^}]*height:\s*100dvh[^}]*background:/s);
+  assert.match(css, /\.dimension-dialog\[role="dialog"\][\s\S]*?\.dialog-surface[^}]*width:\s*min\(580px,\s*100%\)[^}]*margin-left:\s*auto/s);
+  assert.match(css, /\.table-scroll[^}]*overflow-x:\s*auto/s);
+  assert.match(css, /@media\s*\(max-width:\s*780px\)[\s\S]*\.dialog-surface[^}]*width:\s*100%[^}]*height:\s*100%/s);
+  assert.match(css, /@media\s*\(max-width:\s*780px\)[\s\S]*\.lifecycle[^}]*grid-template-columns:\s*1fr/s);
+  assert.match(css, /@media\s*\(max-width:\s*780px\)[\s\S]*\.work-layout[^}]*grid-template-columns:\s*1fr/s);
+  assert.match(css, /@media\s*\(max-width:\s*780px\)[\s\S]*\.metrics[^}]*grid-template-columns:\s*1fr/s);
+  assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*animation(?:-duration)?:/s);
+  const staticVisibleCopy = freshHtml
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ");
+  assert.doesNotMatch(staticVisibleCopy, /实时同步|刚刚|当前更新时间|validator|review|perspective|supplement|stitcher|render|agent|schema|dispatch|report\.html/i);
 });

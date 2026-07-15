@@ -33,6 +33,7 @@
       color: var(--ink);
       font: 15px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-size: 15px;
+      overflow-x: hidden;
     }
 
     button { font: inherit; }
@@ -42,6 +43,7 @@
       width: min(1500px, 100%);
       margin: 0 auto;
       padding: 28px clamp(18px, 3vw, 48px) 48px;
+      overflow-x: clip;
     }
 
     .topbar,
@@ -124,6 +126,17 @@
     .scope-card p { margin: 7px 0 0; }
     .card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .dimension-card, .unit-card { padding: 16px; }
+    .dimension-card.has-findings { padding: 0; }
+    .dimension-trigger {
+      width: 100%;
+      min-height: 100%;
+      padding: 16px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+    }
     .dimension-card h3, .unit-card h3 { margin: 0; font-size: 16px; }
     .card-state { display: inline-flex; margin-top: 10px; color: var(--blue); font-size: 13px; font-weight: 750; }
     .matrix { margin: 10px 0 0; color: var(--green); font-size: 18px; font-weight: 800; }
@@ -145,7 +158,83 @@
     .fallback { max-width: 680px; margin: 80px auto; padding: 32px; text-align: center; }
     .fallback h1 { margin-top: 0; }
     #announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
-    dialog { border: 0; border-radius: 10px; }
+    dialog {
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--ink);
+    }
+    dialog::backdrop { background: rgb(23 33 43 / .42); }
+    dialog:not([open]) { display: none; }
+    dialog[open] { display: block; }
+    .dimension-dialog {
+      position: fixed;
+      inset: 0 0 0 auto;
+      right: 0;
+      width: min(580px, 100vw);
+      height: 100dvh;
+      border-radius: 10px 0 0 10px;
+    }
+    .report-dialog {
+      position: fixed;
+      inset: 5vh auto auto 50%;
+      width: min(1120px, calc(100vw - 64px));
+      height: 90dvh;
+      transform: translateX(-50%);
+    }
+    .dialog-surface {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: inherit;
+      background: var(--surface);
+      box-shadow: 0 18px 48px rgb(23 33 43 / .22);
+    }
+    .dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 20px 22px; border-bottom: 1px solid var(--line); }
+    .dialog-header h2 { margin: 0; font-size: 23px; }
+    .dialog-description { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .dialog-close { flex: 0 0 auto; }
+    .dialog-body { min-height: 0; padding: 22px; overflow: auto; overscroll-behavior: contain; }
+    .dimension-summary { padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+    .dimension-summary h3 { margin: 0 0 8px; font-size: 21px; }
+    .dimension-summary p { margin: 0; }
+    .dimension-totals { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; color: var(--green); font-weight: 750; }
+    .finding-list { display: grid; gap: 12px; margin: 18px 0 0; padding: 0; list-style: none; }
+    .finding-item { padding: 16px; border: 1px solid var(--line); border-radius: 8px; }
+    .finding-item p { margin: 0; }
+    .finding-meta { display: block; margin-top: 9px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .report-viewer { max-width: 88ch; margin: 0 auto; line-height: 1.72; }
+    .report-viewer h1 { margin: 0 0 24px; font-size: clamp(27px, 3vw, 36px); line-height: 1.25; }
+    .report-viewer h2 { margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); font-size: 24px; line-height: 1.35; }
+    .report-viewer h3 { margin: 28px 0 10px; font-size: 19px; }
+    .report-viewer p, .report-viewer ul { margin: 12px 0; }
+    .report-viewer li + li { margin-top: 8px; }
+    .citation-token { margin: 0 .12em; color: var(--blue); font-size: .78em; }
+    .footnote-ref a { color: var(--blue); }
+    .footnotes { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .table-scroll { max-width: 100%; margin: 18px 0; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+    .report-viewer table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 13px; }
+    .report-viewer th, .report-viewer td { padding: 10px 12px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .report-viewer th { background: var(--pending-soft); font-weight: 800; }
+    .report-viewer tr:last-child td { border-bottom: 0; }
+    .report-viewer th:last-child, .report-viewer td:last-child { border-right: 0; }
+    dialog[role="dialog"] {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      transform: none;
+      background: rgb(23 33 43 / .42);
+    }
+    .dimension-dialog[role="dialog"] .dialog-surface { width: min(580px, 100%); margin-left: auto; }
+    .report-dialog[role="dialog"] .dialog-surface { width: min(1120px, calc(100% - 64px)); height: 90%; margin: 5vh auto; }
 
     @media (max-width: 900px) {
       .progress-hero, .work-layout { grid-template-columns: 1fr; }
@@ -153,24 +242,52 @@
       .lifecycle { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 560px) {
+    @media (max-width: 780px) {
       .page-shell { padding: 14px 12px 30px; }
       .topbar, .progress-hero, .work-panel { padding: 18px; }
-      .lifecycle, .card-grid, .metrics { grid-template-columns: 1fr; }
+      .progress-hero, .work-layout, .lifecycle, .card-grid, .metrics { grid-template-columns: 1fr; }
       .stage-button { min-height: 72px; }
       .control { flex: 1 1 42%; }
+      .dimension-dialog, .report-dialog {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100dvh;
+        transform: none;
+        border-radius: 0;
+      }
+      .dialog-surface { width: 100%; height: 100%; border-radius: 0; }
+      .dimension-dialog[role="dialog"] .dialog-surface,
+      .report-dialog[role="dialog"] .dialog-surface { width: 100%; height: 100%; margin: 0; }
+      .dialog-header, .dialog-body { padding: 16px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
     }
   </style>
 </head>
 <body>
   <main id="app" aria-label="研究进展回放"></main>
   <div id="announcement" role="status" aria-live="polite" aria-atomic="true"></div>
-  <dialog id="dimension-dialog" aria-label="研究维度详情"></dialog>
-  <dialog id="report-dialog" aria-label="最终报告"></dialog>
+  <dialog id="dimension-dialog" class="dimension-dialog" aria-labelledby="dimension-dialog-title" aria-describedby="dimension-dialog-description" aria-hidden="true">
+    <div class="dialog-surface">
+      <header class="dialog-header">
+        <div><h2 id="dimension-dialog-title">研究维度发现</h2><p class="dialog-description" id="dimension-dialog-description">查看该维度已经核验的完整发现与证据主张关联。</p></div>
+        <button class="control dialog-close" type="button" data-dialog-close>关闭</button>
+      </header>
+      <div class="dialog-body" id="dimension-dialog-content" tabindex="-1"></div>
+    </div>
+  </dialog>
+  <dialog id="report-dialog" class="report-dialog" aria-labelledby="report-dialog-title" aria-describedby="report-dialog-description" aria-hidden="true">
+    <div class="dialog-surface">
+      <header class="dialog-header">
+        <div><h2 id="report-dialog-title">最终研究报告</h2><p class="dialog-description" id="report-dialog-description">完整报告内容，包含研究结论、数据表格与引用标记。</p></div>
+        <button class="control dialog-close" type="button" data-dialog-close>关闭</button>
+      </header>
+      <div class="dialog-body report-viewer" id="report-dialog-content" tabindex="0"></div>
+    </div>
+  </dialog>
   <script id="archive-data" type="application/octet-stream">__ARCHIVE_DATA_BASE64__</script>
   <script data-demo-runtime>
     "use strict";
@@ -218,6 +335,9 @@
     let replayState = { index: 0, playing: false, finalHold: false };
     let playbackTimer = null;
     const boundElements = new WeakSet();
+    let activeDialogController = null;
+    let dimensionDialogController = null;
+    let reportDialogController = null;
 
     function invariant(condition, message) {
       if (!condition) throw new Error(message);
@@ -420,7 +540,10 @@
         const matrix = dimension.state === "verified"
           ? '<p class="matrix">' + [dimension.claimCount, dimension.sourceCount, dimension.findingCount].map(escapeHTML).join(' / ') + '</p><p class="matrix-label">研究要点 / 来源条目 / 核验发现</p>'
           : "";
-        return '<article class="dimension-card"><h3>' + escapeHTML(dimension.name) + '</h3><span class="card-state">' + states[dimension.state] + '</span>' + matrix + '</article>';
+        const contents = '<h3>' + escapeHTML(dimension.name) + '</h3><span class="card-state">' + states[dimension.state] + '</span>' + matrix;
+        return view.snapshot.findingsAvailable
+          ? '<article class="dimension-card has-findings"><button class="dimension-trigger" type="button" data-dimension-id="' + escapeHTML(dimension.id) + '" aria-haspopup="dialog" aria-controls="dimension-dialog">' + contents + '</button></article>'
+          : '<article class="dimension-card">' + contents + '</article>';
       }).join("") + '</div>';
     }
 
@@ -435,8 +558,8 @@
       const disabled = actions.report ? "" : " disabled";
       return '<div class="delivery-card"><strong>最终交付成果</strong><div class="delivery-actions">' +
         '<button class="control primary" type="button" data-report-action="read"' + disabled + '>阅读最终报告</button>' +
-        '<button class="control" type="button" data-report-action="report"' + disabled + '>下载报告</button>' +
-        '<button class="control" type="button" data-report-action="citations"' + disabled + '>下载引用清单</button>' +
+        '<button class="control" type="button" data-report-action="report"' + disabled + '>下载 report.md</button>' +
+        '<button class="control" type="button" data-report-action="citations"' + disabled + '>下载 citations.json</button>' +
       '</div></div>';
     }
 
@@ -444,7 +567,9 @@
       const state = view.playback || { index: view.snapshot.index - 1, playing: false, finalHold: false };
       const isUnitWork = view.units.length > 0;
       const workTitle = isUnitWork ? "报告内容单元" : view.dimensions.length ? "研究维度进展" : "本阶段工作";
-      const primaryWork = isUnitWork ? renderUnits(view) : renderDimensionCards(view);
+      const primaryWork = isUnitWork
+        ? renderUnits(view) + '<h3 class="subsection-heading">已核验研究维度</h3>' + renderDimensionCards(view)
+        : renderDimensionCards(view);
       const reviewPass = view.snapshot.reviewPassed ? '<p class="review-pass">✓ 终审通过</p>' : "";
       return '<div class="page-shell">' +
         '<header class="topbar"><p class="eyebrow">真实研究记录动态回放</p><h1 class="report-title">' + escapeHTML(view.metadata.reportTitle) + '</h1>' +
@@ -461,16 +586,163 @@
         '<aside class="work-panel explanation-panel"><h2 class="work-heading">里程碑说明</h2><p>' + escapeHTML(view.snapshot.explanation) + '</p><ul class="statement-list">' + view.snapshot.statements.map(function (statement) { return '<li>' + escapeHTML(statement) + '</li>'; }).join("") + '</ul></aside></div></div>';
     }
 
-    function renderDimensionDialog() {
-      return '<p>该维度尚未形成可展示发现</p>';
+    function renderDimensionDialog(data, dimensionId, snapshotIndex) {
+      const safeIndex = clampIndex(snapshotIndex);
+      const snapshot = data && data.snapshots && data.snapshots[safeIndex];
+      const dimension = data && data.dimensions && data.dimensions.find(function (item) { return item.id === dimensionId; });
+      if (!snapshot || !snapshot.findingsAvailable || !dimension) return '<p>该维度尚未形成可展示发现</p>';
+      return '<section class="dimension-summary"><h3>' + escapeHTML(dimension.name) + '</h3><p>' + escapeHTML(dimension.headline) + '</p>' +
+        '<div class="dimension-totals"><span>已核验</span><span>' + escapeHTML(dimension.claimCount) + ' 条研究要点</span><span>' + escapeHTML(dimension.sourceCount) + ' 条来源</span><span>' + escapeHTML(dimension.findings.length) + ' 条发现</span></div></section>' +
+        '<ol class="finding-list">' + dimension.findings.map(function (finding) {
+          return '<li class="finding-item"><p>' + escapeHTML(finding.text) + '</p><span class="finding-meta">关联 ' + escapeHTML(finding.claimCount) + ' 条证据主张</span></li>';
+        }).join("") + '</ol>';
     }
 
-    function renderReportViewer() {
-      return '<p>最终报告将在交付阶段开放。</p>';
+    function renderInlineMarkdown(value) {
+      return value
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        .replace(/\[\^([A-Za-z0-9_-]+)\]/g, '<sup class="footnote-ref"><a href="#footnote-$1" aria-label="脚注 $1">[$1]</a></sup>')
+        .replace(/\[(\d+)\]/g, '<sup class="citation-token" aria-label="引用 $1">[$1]</sup>');
     }
 
-    function createDialogController() {
-      return { open: function () {}, close: function () {} };
+    function splitTableRow(line) {
+      return line.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map(function (cell) { return cell.trim(); });
+    }
+
+    function isTableSeparator(line) {
+      const cells = splitTableRow(line);
+      return cells.length > 0 && cells.every(function (cell) { return /^:?-{3,}:?$/.test(cell); });
+    }
+
+    function renderMarkdown(markdown) {
+      const lines = escapeHTML(markdown == null ? "" : markdown).replace(/\r\n?/g, "\n").split("\n");
+      const definitions = [];
+      const output = [];
+      function startsBlock(index) {
+        const line = lines[index] || "";
+        return /^#{1,3}\s+/.test(line) || /^[-+*]\s+/.test(line) || /^\[\^[A-Za-z0-9_-]+\]:\s*/.test(line) || (line.includes("|") && isTableSeparator(lines[index + 1] || ""));
+      }
+      for (let index = 0; index < lines.length;) {
+        const line = lines[index];
+        if (!line.trim()) { index += 1; continue; }
+        const definition = line.match(/^\[\^([A-Za-z0-9_-]+)\]:\s*(.*)$/);
+        if (definition) { definitions.push([definition[1], definition[2]]); index += 1; continue; }
+        const heading = line.match(/^(#{1,3})\s+(.+)$/);
+        if (heading) {
+          const level = heading[1].length;
+          output.push('<h' + level + '>' + renderInlineMarkdown(heading[2]) + '</h' + level + '>');
+          index += 1;
+          continue;
+        }
+        if (/^[-+*]\s+/.test(line)) {
+          const items = [];
+          while (index < lines.length && /^[-+*]\s+/.test(lines[index])) {
+            items.push('<li>' + renderInlineMarkdown(lines[index].replace(/^[-+*]\s+/, "")) + '</li>');
+            index += 1;
+            while (index < lines.length && !lines[index].trim()) index += 1;
+          }
+          output.push('<ul>' + items.join("") + '</ul>');
+          continue;
+        }
+        if (line.includes("|") && isTableSeparator(lines[index + 1] || "")) {
+          const headers = splitTableRow(line);
+          const separators = splitTableRow(lines[index + 1]);
+          const alignments = separators.map(function (cell) { return /:$/.test(cell) ? (/^:/.test(cell) ? "center" : "right") : (/^:/.test(cell) ? "left" : "left"); });
+          index += 2;
+          const rows = [];
+          while (index < lines.length && lines[index].includes("|") && lines[index].trim()) {
+            rows.push(splitTableRow(lines[index]));
+            index += 1;
+          }
+          output.push('<div class="table-scroll" tabindex="0" role="region" aria-label="报告数据表"><table><thead><tr>' + headers.map(function (cell, cellIndex) {
+            return '<th style="text-align:' + alignments[cellIndex] + '">' + renderInlineMarkdown(cell) + '</th>';
+          }).join("") + '</tr></thead><tbody>' + rows.map(function (row) {
+            return '<tr>' + headers.map(function (_header, cellIndex) { return '<td style="text-align:' + alignments[cellIndex] + '">' + renderInlineMarkdown(row[cellIndex] || "") + '</td>'; }).join("") + '</tr>';
+          }).join("") + '</tbody></table></div>');
+          continue;
+        }
+        const paragraph = [line.trim()];
+        index += 1;
+        while (index < lines.length && lines[index].trim() && !startsBlock(index)) {
+          paragraph.push(lines[index].trim());
+          index += 1;
+        }
+        output.push('<p>' + renderInlineMarkdown(paragraph.join(" ")) + '</p>');
+      }
+      if (definitions.length) {
+        output.push('<section class="footnotes" aria-label="脚注"><ol>' + definitions.map(function (item) {
+          return '<li id="footnote-' + item[0] + '">' + renderInlineMarkdown(item[1]) + '</li>';
+        }).join("") + '</ol></section>');
+      }
+      return output.join("");
+    }
+
+    function renderReportViewer(data, snapshotIndex) {
+      const safeIndex = clampIndex(snapshotIndex);
+      if (!data || !data.snapshots || !data.snapshots[safeIndex] || !data.snapshots[safeIndex].reportAvailable) {
+        return '<p>最终报告将在交付阶段开放。</p>';
+      }
+      return renderMarkdown(data.reportMarkdown);
+    }
+
+    function createDialogController(dialog, options) {
+      const settings = options || {};
+      let trigger = null;
+      let opened = false;
+      const focusableSelector = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      const controller = {
+        open: function (opener) {
+          if (!dialog) return;
+          if (activeDialogController && activeDialogController !== controller) activeDialogController.close(false);
+          trigger = opener || document.activeElement;
+          opened = true;
+          activeDialogController = controller;
+          dialog.setAttribute("aria-hidden", "false");
+          if (typeof dialog.showModal === "function") {
+            if (!dialog.open) dialog.showModal();
+          } else {
+            dialog.setAttribute("role", "dialog");
+            dialog.setAttribute("aria-modal", "true");
+            dialog.setAttribute("open", "");
+          }
+          const initial = typeof settings.initialFocus === "function" ? settings.initialFocus() : null;
+          const first = initial || Array.from(dialog.querySelectorAll(focusableSelector))[0];
+          if (first && typeof first.focus === "function") first.focus();
+        },
+        close: function (restoreFocus) {
+          if (!dialog || !opened) return;
+          opened = false;
+          if (activeDialogController === controller) activeDialogController = null;
+          if (typeof dialog.close === "function" && dialog.open) dialog.close();
+          else dialog.removeAttribute("open");
+          dialog.setAttribute("aria-hidden", "true");
+          if (restoreFocus !== false && trigger && typeof trigger.focus === "function") trigger.focus();
+        },
+        isOpen: function () { return opened; }
+      };
+      dialog.addEventListener("click", function (event) { if (event.target === dialog) controller.close(); });
+      document.addEventListener("keydown", function (event) {
+        if (!opened) return;
+        if (event.key === "Escape") {
+          if (typeof event.preventDefault === "function") event.preventDefault();
+          controller.close();
+          return;
+        }
+        if (event.key !== "Tab") return;
+        const focusables = Array.from(dialog.querySelectorAll(focusableSelector));
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          if (typeof event.preventDefault === "function") event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          if (typeof event.preventDefault === "function") event.preventDefault();
+          first.focus();
+        }
+      });
+      return controller;
     }
 
     function clearPlaybackTimer() {
@@ -542,6 +814,76 @@
       element.addEventListener("click", function () { dispatchReplay(action()); });
     }
 
+    function bindClick(element, callback) {
+      if (!element || element.disabled || boundElements.has(element)) return;
+      boundElements.add(element);
+      element.addEventListener("click", callback);
+    }
+
+    function ensureDialogControllers() {
+      if (!dimensionDialogController) {
+        const dialog = document.getElementById("dimension-dialog");
+        dimensionDialogController = createDialogController(dialog);
+        bindClick(document.querySelector("#dimension-dialog [data-dialog-close]"), function () { dimensionDialogController.close(); });
+      }
+      if (!reportDialogController) {
+        const dialog = document.getElementById("report-dialog");
+        reportDialogController = createDialogController(dialog, {
+          initialFocus: function () { return document.getElementById("report-dialog-content"); }
+        });
+        bindClick(document.querySelector("#report-dialog [data-dialog-close]"), function () { reportDialogController.close(); });
+      }
+    }
+
+    function openDimensionDialog(dimensionId, trigger) {
+      if (!archiveData || !archiveData.snapshots[replayState.index].findingsAvailable) return;
+      ensureDialogControllers();
+      const content = document.getElementById("dimension-dialog-content");
+      if (content) content.innerHTML = renderDimensionDialog(archiveData, dimensionId, replayState.index);
+      dimensionDialogController.open(trigger);
+    }
+
+    function openReportDialog(trigger) {
+      if (!archiveData || !archiveData.snapshots[replayState.index].reportAvailable) return;
+      ensureDialogControllers();
+      const content = document.getElementById("report-dialog-content");
+      if (content) content.innerHTML = renderReportViewer(archiveData, replayState.index);
+      reportDialogController.open(trigger);
+    }
+
+    function downloadText(content, filename, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      try {
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        anchor.click();
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    function bindFindingAndDeliveryActions() {
+      Array.from(document.querySelectorAll("[data-dimension-id]")).forEach(function (element) {
+        bindClick(element, function () { openDimensionDialog(element.getAttribute("data-dimension-id"), element); });
+      });
+      const read = document.querySelector('[data-report-action="read"]');
+      bindClick(read, function () { openReportDialog(read); });
+      const report = document.querySelector('[data-report-action="report"]');
+      bindClick(report, function () {
+        if (archiveData && archiveData.snapshots[replayState.index].reportAvailable) {
+          downloadText(archiveData.reportMarkdown, "report.md", "text/markdown;charset=utf-8");
+        }
+      });
+      const citations = document.querySelector('[data-report-action="citations"]');
+      bindClick(citations, function () {
+        if (archiveData && archiveData.snapshots[replayState.index].reportAvailable) {
+          downloadText(archiveData.citationsJson, "citations.json", "application/json;charset=utf-8");
+        }
+      });
+    }
+
     function bindControls() {
       bindElement(document.querySelector('[data-action="play"]'), function () { return { type: "PLAY" }; });
       bindElement(document.querySelector('[data-action="pause"]'), function () { return { type: "PAUSE" }; });
@@ -551,6 +893,7 @@
       Array.from(document.querySelectorAll("[data-stage-index]")).forEach(function (element) {
         bindElement(element, function () { return { type: "SELECT", index: Number(element.getAttribute("data-stage-index")) }; });
       });
+      bindFindingAndDeliveryActions();
     }
 
     function renderFallback() {
@@ -569,6 +912,7 @@
         archiveData = decoded;
         replayState = { index: 0, playing: false, finalHold: false };
         clearPlaybackTimer();
+        ensureDialogControllers();
         renderCurrent();
       } catch (_error) {
         archiveData = null;
