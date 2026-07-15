@@ -1428,6 +1428,8 @@ test("generated dashboard and dialogs expose safe visible copy and responsive ac
   assert.match(css, /(?:html|body|\.page-shell)[^{]*\{[^}]*overflow-x:\s*(?:hidden|clip)/s);
   assert.match(css, /\.dimension-dialog[^}]*position:\s*fixed[^}]*right:\s*0/s);
   assert.match(css, /\.topbar-layout[^}]*display:\s*flex[^}]*justify-content:\s*space-between/s);
+  assert.match(css, /\.dialog-body[^}]*min-width:\s*0/s);
+  assert.match(css, /\.report-viewer[^}]*width:\s*100%/s);
   assert.match(css, /dialog\[role="dialog"\][^}]*width:\s*100vw[^}]*height:\s*100dvh[^}]*background:/s);
   assert.match(css, /\.dimension-dialog\[role="dialog"\][\s\S]*?\.dialog-surface[^}]*width:\s*min\(580px,\s*100%\)[^}]*margin-left:\s*auto/s);
   assert.match(css, /\.table-scroll[^}]*overflow-x:\s*auto/s);
