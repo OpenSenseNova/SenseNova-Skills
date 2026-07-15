@@ -485,6 +485,10 @@
       if (!app || !archiveData) return;
       const active = document.activeElement;
       const shouldRestoreHeading = Boolean(active && typeof active.closest === "function" && active.closest(".work-area"));
+      if (shouldRestoreHeading) {
+        const currentHeading = document.querySelector("[data-current-heading]");
+        if (currentHeading && typeof currentHeading.focus === "function") currentHeading.focus();
+      }
       app.innerHTML = renderDashboard({ ...selectSnapshot(archiveData, replayState.index), playback: replayState });
       const announcement = document.getElementById("announcement");
       if (announcement) announcement.textContent = "历史回放里程碑 " + (replayState.index + 1) + " / 7：" + archiveData.snapshots[replayState.index].stage;

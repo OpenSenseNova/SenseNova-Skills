@@ -111,7 +111,33 @@ function createRuntime(html, { data = null } = {}) {
   const runtimeMatch = html.match(/<script\s+data-demo-runtime>([\s\S]*?)<\/script>/i);
   assert.ok(runtimeMatch, "inline demo runtime should exist");
 
+  const focusEvents = [];
+  let renderedHtml = "";
+  let headingGeneration = 0;
+  const createHeading = () => {
+    const generation = headingGeneration;
+    const element = createElement();
+    element.focus = function () {
+      this.focused = true;
+      this.focusCount += 1;
+      focusEvents.push(`heading.focus:${generation}`);
+    };
+    return element;
+  };
+  let heading = createHeading();
   const app = createElement();
+  Object.defineProperty(app, "innerHTML", {
+    configurable: true,
+    get() {
+      return renderedHtml;
+    },
+    set(value) {
+      focusEvents.push("app.innerHTML");
+      renderedHtml = value;
+      headingGeneration += 1;
+      heading = createHeading();
+    },
+  });
   const announcement = createElement();
   const archive = createElement({ textContent: data ? encodePayload(data) : encodePayload(decodePayload(html)) });
   const reload = { count: 0 };
@@ -136,14 +162,12 @@ function createRuntime(html, { data = null } = {}) {
     "dimension-dialog": createElement(),
     "report-dialog": createElement(),
   };
-  const heading = createElement();
   const bySelector = {
     '[data-action="play"]': controls.play,
     '[data-action="pause"]': controls.pause,
     '[data-action="previous"]': controls.previous,
     '[data-action="next"]': controls.next,
     '[data-action="restart"]': controls.restart,
-    "[data-current-heading]": heading,
     "[data-reload]": createElement(),
   };
   const document = {
@@ -154,6 +178,7 @@ function createRuntime(html, { data = null } = {}) {
       return byId[id] ?? null;
     },
     querySelector(selector) {
+      if (selector === "[data-current-heading]") return heading;
       return bySelector[selector] ?? null;
     },
     querySelectorAll(selector) {
@@ -192,7 +217,10 @@ function createRuntime(html, { data = null } = {}) {
     archive,
     reload,
     controls,
-    heading,
+    get heading() {
+      return heading;
+    },
+    focusEvents,
     timers,
     timerCalls,
     clearCalls,
@@ -719,29 +747,36 @@ test("rerender moves focus only when replacing focused work content", () => {
   const workFocused = createRuntime(freshHtml);
   workFocused.context.bootstrap();
   workFocused.controls.play.click();
-  workFocused.heading.focusCount = 0;
+  workFocused.focusEvents.length = 0;
   workFocused.document.activeElement = createElement({
     closest(selector) {
       return selector === ".work-area" ? this : null;
     },
   });
   workFocused.timerCalls[0].callback();
-  assert.equal(workFocused.heading.focusCount, 1);
+  assert.deepEqual(workFocused.focusEvents, [
+    "heading.focus:2",
+    "app.innerHTML",
+    "heading.focus:3",
+  ]);
 
   const controlFocused = createRuntime(freshHtml);
   controlFocused.context.bootstrap();
+  controlFocused.focusEvents.length = 0;
   controlFocused.document.activeElement = controlFocused.controls.next;
   controlFocused.controls.next.click();
-  assert.equal(controlFocused.heading.focusCount, 0, "manual controls keep focus");
+  assert.deepEqual(controlFocused.focusEvents, ["app.innerHTML"], "manual controls keep focus");
 
+  controlFocused.focusEvents.length = 0;
   controlFocused.document.activeElement = controlFocused.controls.stages[4];
   controlFocused.controls.stages[4].click();
-  assert.equal(controlFocused.heading.focusCount, 0, "lifecycle buttons keep focus");
+  assert.deepEqual(controlFocused.focusEvents, ["app.innerHTML"], "lifecycle buttons keep focus");
 
   controlFocused.controls.play.click();
+  controlFocused.focusEvents.length = 0;
   controlFocused.document.activeElement = controlFocused.controls.pause;
   controlFocused.timerCalls.at(-1).callback();
-  assert.equal(controlFocused.heading.focusCount, 0, "automatic ticks do not steal control focus");
+  assert.deepEqual(controlFocused.focusEvents, ["app.innerHTML"], "automatic ticks do not steal control focus");
 });
 
 test("leadership replay CSS keeps progress prominent and layout responsive", () => {
