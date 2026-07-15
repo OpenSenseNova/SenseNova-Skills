@@ -2,13 +2,13 @@
 
 ## Goal
 
-Create a new standalone HTML demo that replays the real Deep Research run in:
+Create a new standalone HTML demo that replays the completed Deep Research run in:
 
 `/mnt/d/code/SenseNova-Skills/2026-07-14-china-9-strata-9185.zip`
 
-The demo is for leadership presentation. It should make a long-running research task easy to understand at a glance, then show the value accumulated during the run: research dimensions, verified findings, and the final report.
+The demo is for leadership presentation. It must make the long research process understandable at a glance, then expose the value accumulated by the run: research dimensions, verified findings, and the final report.
 
-This is a truthful dynamic replay of an already completed run. It is not a live production status service and must not imply that it is connected to a currently running controller.
+This is a historical milestone replay, not a live production status service. The page must say `真实研究记录动态回放` and `流程顺序回放，非逐秒运行日志`, and must never use live-status wording such as `实时同步`, `刚刚`, or `当前更新时间`.
 
 Create the demo at:
 
@@ -18,17 +18,17 @@ Do not reuse the existing status-page HTML, simulation data, layout structure, o
 
 ## Approved Experience
 
-Use the approved progress-first visual direction:
+Use the approved progress-first direction:
 
 - Large typography and generous spacing.
 - A dominant current-stage statement.
-- Stage number and overall progress visible without scrolling.
+- Stage number and stage-ordinal progress visible without scrolling.
 - A clear seven-stage lifecycle for this Heavy run.
-- Only active research dimensions shown prominently during replay; completed and waiting dimensions are summarized.
-- Dimension findings remain closed until requested, so they do not compete with progress.
+- During replay, prominent cards show only the work relevant to the selected milestone.
+- Findings stay closed until requested, so they do not compete with progress.
 - At completion, the final report becomes the primary action.
 
-Use business-facing stage names:
+Use these business-facing stages:
 
 1. 需求确认
 2. 研究规划
@@ -38,11 +38,11 @@ Use business-facing stage names:
 6. 写作审校
 7. 最终交付
 
-Internal phases such as validator, review, perspective, supplement, stitcher, and render may appear only in secondary detail text.
+Do not show raw internal phase or role names such as validator, review, perspective, supplement, stitcher, render, agent, schema, or dispatch. Translate all visible status into the seven stages above.
 
 ## Source Of Truth
 
-All displayed research facts and metrics must come from the supplied archive. The demo must use these verified totals:
+All research facts and metrics come from the supplied archive. Use these verified totals:
 
 - Mode: Heavy
 - Start: 2026-07-14 06:03
@@ -57,7 +57,6 @@ All displayed research facts and metrics must come from the supplied archive. Th
 - Final citations: 58
 - Final review verdict: pass
 - Final artifacts present: `report.md`, `citations.json`
-- `report.html` is not present and must not be claimed as an archive artifact.
 
 Dimension data:
 
@@ -71,31 +70,62 @@ Dimension data:
 | d6 | 消费结构、住房与社会保障负担 | 13 | 8 | 5 |
 | d7 | 财务韧性、冲击暴露与阶层流动 | 18 | 8 | 6 |
 
-The page must embed the real `headline` and `key_findings` values from all seven `sub_reports/d*.evidence.json` files. Findings may be editorially shortened for the compact card headline, but expanding a dimension must expose the complete archived finding text and associated claim count.
+Embed the real `headline` and `key_findings` values from all seven `sub_reports/d*.evidence.json` files. A compact card may shorten a finding, but the dimension detail must expose the complete archived finding text. Its `associated claim count` is exactly `key_findings[].claim_ids.length`, not the dimension's total claim count.
 
-The final-report card must use the real title from `report.md`:
+Use the real report title from `report.md`:
 
 `中国九阶层实际收入与财务状况：中产人数、特征与财力`
 
-It must list the five real content-unit titles from `outline.json`.
+List the five real content-unit titles from `outline.json`.
 
-## Replay Model
+Archive provenance:
 
-The page uses a fixed replay model derived from the run artifacts and `.pipeline_state.json`. Keep replay snapshots grouped into the seven user-facing stages instead of exposing dozens of internal pipeline events.
+| Displayed data | Archive source |
+|---|---|
+| Mode and seven dimension names | `plan.json` |
+| Dimension headline, claim counts, source-entry counts, findings, and finding claim IDs | `sub_reports/d*.evidence.json` |
+| Five content-unit titles | `outline.json` |
+| Final report title and body | `report.md` |
+| Final citation count and payload | `citations.json` |
+| Final pass verdict | `final_review.md` |
+| Internal ordering grouped into seven business stages | `.pipeline_state.json` |
+| Start and completion labels | archive timestamps for `briefing.json`, `report.md`, and `citations.json` |
 
-Each snapshot contains:
+The archive does not contain incremental evidence snapshots or an exact timestamp for every grouped business stage. Do not fabricate either.
 
-- Stage index and stage name.
-- Progress percentage.
-- User-facing current-state headline and explanation.
-- Display clock based on the real run timeline.
-- Completed, active, and waiting dimension IDs.
-- Accumulated claim, source, and finding counts.
-- Up to three recent activity entries based on real phase ordering.
-- Whether findings are provisional or verified at that snapshot.
-- Whether final report actions are available.
+The page must contain no visible, disabled, pending, or active `report.html` artifact claim and no `report.html` link.
 
-The replay must start at requirement confirmation, play forward automatically, and end at the real completed state. Use a presentation-friendly total replay duration of roughly 45 to 60 seconds; show the real run clock in the UI so time compression is explicit.
+## Deterministic Replay Model
+
+Use exactly seven replay snapshots, one per business stage. They are milestone illustrations in the real stage order, not reconstructed wall-clock states.
+
+| Index | Stage | Stage progress | Supported display state |
+|---:|---|---:|---|
+| 1 | 需求确认 | 14% | Scope confirmed; no dimensions or research metrics yet |
+| 2 | 研究规划 | 29% | Seven planned dimension names; no evidence totals yet |
+| 3 | 多主题研究 | 43% | Seven dimensions marked research-in-progress; no incremental totals or findings |
+| 4 | 质量核验 | 57% | All seven final dimension metrics and 36 verified findings become available |
+| 5 | 报告组织 | 71% | Five real content-unit titles become available |
+| 6 | 写作审校 | 86% | Five units shown as written and final review shown as pass; final artifact actions remain disabled |
+| 7 | 最终交付 | 100% | `report.md` and `citations.json` actions become available |
+
+The percentages are exactly rounded ordinal completion of seven stages. Label them `流程阶段进度`; they are not workload, confidence, quality, time, or ETA estimates.
+
+Every snapshot contains:
+
+- Stage index and name.
+- The exact ordinal progress from the table.
+- User-facing headline and explanation.
+- Replay label `历史回放 · 里程碑 N / 7`.
+- Work items appropriate to the milestone.
+- Metrics only when supported by the artifacts represented at that milestone.
+- Up to three untimed milestone statements, with no invented timestamps.
+- Whether verified findings are available.
+- Whether final artifact actions are available.
+
+The page always shows the fixed overall run span `真实运行跨度 06:03–09:37`.
+
+### Replay Controls
 
 Required controls:
 
@@ -103,123 +133,170 @@ Required controls:
 - 上一步
 - 下一步
 - 重新播放
-- A timeline scrubber or seven clickable stage markers
+- Seven clickable stage markers
 
 Behavior:
 
-- Initial load starts in a paused state at stage 1 so a presenter controls the opening.
-- Pressing 播放 advances automatically.
-- Manual stage selection pauses playback.
-- 重新播放 returns to stage 1 and starts playback.
-- The final snapshot remains stable and does not loop automatically.
-- Controls remain keyboard accessible and expose pressed/disabled state through ARIA.
+- Initial state is paused at snapshot 1.
+- 播放 advances to the next snapshot every 8 seconds.
+- 播放 at snapshot 7 returns to snapshot 1 and starts playback.
+- 暂停 keeps the current snapshot.
+- 上一步 is disabled at snapshot 1; 下一步 is disabled at snapshot 7.
+- 上一步 and 下一步 move exactly one snapshot and pause playback.
+- Clicking a stage marker selects exactly that snapshot and pauses playback.
+- 重新播放 returns to snapshot 1 and immediately starts playback.
+- Snapshot 7 remains stable and does not loop automatically.
+- A complete presentation lasts 56 seconds.
 
 ## Page Structure
 
 ### Header
 
 - Real report title and run identifier.
-- `Heavy 深度模式` label.
-- Explicit `真实研究记录动态回放` label.
-- Real replay clock and current snapshot update time.
-- Final report action disabled until the final stage.
+- `Heavy 深度模式`.
+- `真实研究记录动态回放`.
+- `真实运行跨度 06:03–09:37`.
+- `历史回放 · 里程碑 N / 7`.
+- Final report action disabled until snapshot 7.
 
 ### Progress Hero
 
 - Large `阶段 N / 7` label.
-- Large current-state headline.
+- Large milestone headline.
 - One-sentence user explanation.
-- Overall progress percentage and bar.
-- Real-time-compressed playback note, so viewers do not confuse replay time with live execution.
+- `流程阶段进度` percentage and bar.
+- `流程顺序回放，非逐秒运行日志`.
 
 ### Lifecycle
 
-- Seven large, readable stages.
-- Complete, current, and pending states must use both icons/text and color.
-- Stage markers are clickable replay navigation.
+- Seven large, readable, clickable stage buttons.
+- Complete, current, and pending states use icon/text and color.
+- The selected stage exposes `aria-current="step"`.
 
 ### Current Work
 
-- During research and quality stages, show only currently active dimensions as large cards.
-- Each card shows name, current user-facing status, accumulated claim/source counts, and whether findings are provisional or verified.
-- Completed and waiting dimensions appear as compact grouped summaries.
-- During report stages, replace the active-dimension cards with the five real content units and their writing/review status.
+- Snapshot 1 shows the confirmed research scope.
+- Snapshot 2 shows seven planned dimension names and no evidence totals.
+- Snapshot 3 shows seven research-in-progress dimensions and no findings or accumulated totals.
+- Snapshot 4 shows the real final per-dimension claim/source/finding counts and verified findings.
+- Snapshot 5 replaces research work with the five real content-unit titles in an organized state.
+- Snapshot 6 shows the five units as written and the final review as pass, but keeps artifact actions disabled.
+- Snapshot 7 shows final totals, report, citations, and completion.
 
 ### Findings Detail
 
-- Clicking a dimension opens a large right-side drawer on desktop and a full-screen bottom sheet on mobile.
-- The drawer shows the dimension headline, archived findings, claim counts, claim/source totals, and verification state.
-- Before quality completion, findings display `暂定发现，仍可能调整`.
-- At or after the dimension quality gate, findings display `已核验`.
-- Closing the drawer restores the progress-first view.
-- Escape closes the drawer; focus is trapped while open and restored to the trigger afterward.
+- Clicking a dimension opens a right-side drawer on desktop and full-screen bottom sheet on mobile.
+- Before snapshot 4, it says `该维度尚未形成可展示发现`.
+- From snapshot 4 onward, it shows the archived headline, full findings, each finding's `claim_ids.length`, dimension claim/source totals, and `已核验`.
+- Closing returns to the progress-first view.
+- Escape closes the dialog; focus is trapped while open and restored to its trigger.
 
 ### Completion And Report
 
-At the final stage:
+At snapshot 7:
 
-- Show 100% completion and final-review pass.
-- Show the verified totals listed above.
+- Show 100%, final-review pass, and all verified totals.
 - Show the five real report units.
-- Enable `阅读最终报告`.
-- Provide demo-safe secondary actions for `report.md` and `citations.json` using embedded archive-derived content or Blob URLs. Do not link to nonexistent local paths.
-- The in-page report viewer may render the known Markdown subset used by this report: headings, paragraphs, unordered lists, tables, emphasis, inline numeric citations, and footnote-style content. Raw HTML must be escaped before rendering.
+- `阅读最终报告` opens an accessible modal containing archive-exact `report.md` rendered with the supported Markdown subset.
+- `下载 report.md` creates a Blob with MIME `text/markdown;charset=utf-8` and filename `report.md`.
+- `下载 citations.json` creates a Blob with MIME `application/json;charset=utf-8` and filename `citations.json`.
+- All three actions are disabled before snapshot 7.
+- The report viewer supports headings, paragraphs, unordered lists, tables, emphasis, inline numeric citations, and footnote-style content.
+- Escape raw HTML before applying Markdown transformations.
+- Escape closes the viewer; focus is trapped while open and restored to the report trigger.
 
 ## Visual Direction
 
 - Calm executive operations view, not a developer console or marketing landing page.
-- Minimum 15px body text in main content and 12px only for secondary metadata.
+- Minimum 15px body text in main content; 12px is reserved for metadata.
 - Current-state headline around 28–32px on desktop.
 - Progress percentage around 44–52px.
-- Neutral base, dark green completion state, blue active state, amber caution or provisional state.
+- Neutral base, dark green completion, blue active, amber caution.
 - Cards use 8–12px radius.
-- Avoid dense tiny labels, decorative blobs, gradients, and permanent findings panels.
-- Desktop should use the available width; mobile must be a single readable column with no page-level horizontal scrolling.
+- Avoid tiny labels, decorative blobs, gradients, and permanent findings panels.
+- Desktop uses available width; mobile is one readable column with no page-level horizontal scrolling.
 
 ## Data And Safety Boundaries
 
-- No network requests and no external dependencies.
-- No backend or local server required for the demo.
-- No arbitrary file reads from the browser.
-- No internal absolute paths, agent prompts, validator error dumps, schema names, or dispatch payloads in visible UI.
-- Do not invent ETA, confidence scores, evidence quality percentages, or report artifacts.
-- Make replay status explicit in the header and progress hero.
+- No network requests or external dependencies.
+- No backend or local server.
+- No arbitrary browser file reads.
+- No internal absolute paths, prompts, error dumps, schema names, dispatch payloads, or raw internal phase names in visible UI.
+- Do not invent ETA, confidence scores, evidence quality percentages, timestamps, incremental metrics, or artifacts.
+- Make historical replay status explicit in the header and hero.
 
-## Empty And Error States
+## Validation And Error State
 
-The embedded replay data is expected to be valid. Still render a user-facing fallback if initialization fails:
+Before first render, `validateArchiveData(data)` verifies:
+
+- Exactly seven replay snapshots indexed 1 through 7.
+- Progress values exactly `[14, 29, 43, 57, 71, 86, 100]`.
+- Exactly seven dimensions with unique IDs `d1` through `d7`.
+- Dimension totals sum to 108 claims, 73 source entries, and 36 findings.
+- Final aggregate contains 70 unique source IDs, five content units, 58 citations, and verdict `pass`.
+- Embedded `report.md` and `citations.json` payloads are non-empty.
+
+If validation fails, render:
 
 - Title: `演示数据暂时无法加载`
 - Explanation: the local demo data is incomplete or invalid.
-- A `重新加载` action.
-- Do not expose JavaScript stack traces or internal filenames.
+- `重新加载`, which calls `window.location.reload()`.
+- No stack trace or internal filename.
 
-If a dimension has no findings at a snapshot, the drawer says `该维度尚未形成可展示发现` rather than rendering an empty list.
+## Implementation Boundaries
+
+Keep the single HTML file internally separated into testable units:
+
+- `archiveData`: immutable archive-derived values.
+- `validateArchiveData(data)`: pure bootstrap validation.
+- `replayReducer(state, action)`: pure stage/playback transitions.
+- `selectSnapshot(data, index)`: pure derived-view selection.
+- `renderDashboard(view)`, `renderDimensionDialog(view)`, and `renderReportViewer(markdown)`: escaped string renderers.
+- `createDialogController(...)`: focus, Escape, open, and close with injected DOM elements.
+- `bindControls(...)`: event binding separate from reducers and renderers.
+
+Tests may evaluate the inline script in a Node VM with lightweight DOM and timer stubs, following the existing repository pattern. Responsive automated checks assert CSS rules; a manual narrow-viewport check covers actual layout.
+
+## Accessibility
+
+- Replay updates are announced through a polite live region.
+- The progress bar exposes `role="progressbar"`, `aria-valuemin`, `aria-valuemax`, and current `aria-valuenow`.
+- Stage buttons expose `aria-current="step"` for the selected milestone.
+- Play/pause exposes pressed state; unavailable previous/next/report actions expose disabled state.
+- Dimension and report dialogs expose accessible names/descriptions, trap focus, close with Escape, and restore focus.
+- If work cards change while focus is inside them, move focus to the current-stage heading before rerendering.
+- Under `prefers-reduced-motion: reduce`, remove decorative transitions. Explicit playback still changes snapshots without animated movement.
 
 ## Testing
 
 Use Node's built-in test runner and no new dependencies.
 
-Tests must verify:
+Automated tests verify:
 
-- The new demo is independent and does not import or copy the existing status-page runtime.
-- All verified real totals are present and internally consistent.
-- All seven dimension names, headlines, and finding counts are present.
+- The new demo is independent and does not import the existing status-page runtime.
+- All verified totals are present and internally consistent.
+- All seven dimension names, headlines, full finding texts, and finding claim counts are present.
 - The five real content-unit titles are present.
-- Default state is paused at stage 1.
-- Play, pause, previous, next, restart, and stage selection work.
-- Final report action remains disabled until stage 7 and becomes enabled at completion.
-- Opening and closing a dimension detail updates ARIA state and visibility.
-- Provisional and verified finding states change with replay stage.
-- Visible UI avoids internal implementation terms and absolute paths.
-- No active `report.html` claim or link exists.
-- A narrow viewport has no designed page-level horizontal overflow.
+- Invalid data renders the specified fallback and reload action.
+- Default state is paused at snapshot 1.
+- Play, pause, previous, next, restart, stage selection, automatic timing, and boundary behavior are deterministic.
+- Report actions remain disabled until snapshot 7 and become enabled only there.
+- Findings are unavailable before snapshot 4 and verified from snapshot 4 onward.
+- Dimension and report dialogs update ARIA state, trap/restore focus, and close with Escape.
+- Visible UI avoids raw internal terms, absolute paths, fabricated timestamps, and live-status wording.
+- The page contains no `report.html` artifact claim or link.
+- Report and citation Blob downloads use the specified filenames and MIME types.
+- The Markdown renderer escapes raw HTML.
+- Replay progress and lifecycle navigation expose the required ARIA attributes.
+- Responsive CSS declares a one-column layout and no page-level horizontal scrolling at the mobile breakpoint.
+
+Manual verification checks desktop and narrow mobile widths, readable type size, no overlap, no page-level horizontal overflow, keyboard navigation, and a full 56-second presentation.
 
 ## Acceptance Criteria
 
 - Opening the HTML locally produces a polished leadership-ready page.
-- A presenter can replay the completed run in under one minute.
-- The current stage, overall progress, and active work are readable at normal viewing distance.
-- Every displayed research number and finding is traceable to the supplied archive.
-- The final snapshot accurately exposes the completed report, citations, dimensions, and findings without inventing missing artifacts.
-- The page works offline as a single self-contained HTML file.
+- A presenter can replay the real stage order in 56 seconds.
+- The current milestone, ordinal progress, and represented work are readable at normal viewing distance.
+- Every displayed research number and finding is traceable to the archive.
+- The final snapshot exposes the completed report, citations, dimensions, and findings without inventing missing artifacts or historical intermediate data.
+- The page works offline as one self-contained HTML file.
