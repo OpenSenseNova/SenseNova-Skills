@@ -4,16 +4,549 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Deep Research 领导层回放</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17212b;
+      --muted: #5d6975;
+      --line: #d7dee5;
+      --surface: #ffffff;
+      --canvas: #f4f6f8;
+      --blue: #175cd3;
+      --blue-soft: #edf4ff;
+      --green: #176b45;
+      --green-soft: #eaf6ef;
+      --amber: #9a6700;
+      --amber-soft: #fff4d6;
+      --pending: #697586;
+      --pending-soft: #eef1f4;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { overflow-x: hidden; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--canvas);
+      color: var(--ink);
+      font: 15px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+    }
+
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid #8ab4ff; outline-offset: 2px; }
+
+    .page-shell {
+      width: min(1500px, 100%);
+      margin: 0 auto;
+      padding: 28px clamp(18px, 3vw, 48px) 48px;
+    }
+
+    .topbar,
+    .progress-hero,
+    .lifecycle-panel,
+    .work-panel,
+    .fallback {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .topbar { padding: 22px 24px; }
+    .eyebrow { margin: 0 0 8px; color: var(--blue); font-weight: 750; letter-spacing: .04em; }
+    .report-title { margin: 0; font-size: clamp(22px, 2.2vw, 30px); line-height: 1.25; }
+    .metadata { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+    .metadata span { display: inline-flex; align-items: center; gap: 6px; }
+
+    .progress-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, .38fr);
+      gap: 28px;
+      margin-top: 18px;
+      padding: clamp(24px, 3vw, 38px);
+      border-left: 5px solid var(--blue);
+    }
+
+    .milestone-label { margin: 0 0 8px; color: var(--blue); font-weight: 750; }
+    .stage-ordinal { margin: 0; font-size: 18px; font-weight: 750; }
+    .stage-headline { margin: 8px 0 10px; font-size: clamp(28px, 3vw, 34px); line-height: 1.2; }
+    .stage-explanation { max-width: 72ch; margin: 0; color: var(--muted); font-size: 17px; }
+    .progress-block { align-self: center; padding-left: 24px; border-left: 1px solid var(--line); }
+    .progress-label { margin: 0; color: var(--muted); font-weight: 700; }
+    .progress-value { margin: 2px 0 8px; color: var(--blue); font-size: clamp(46px, 5vw, 56px); font-weight: 800; line-height: 1; }
+    .progress-track { height: 12px; overflow: hidden; background: var(--pending-soft); border-radius: 6px; }
+    .progress-fill { height: 100%; background: var(--blue); }
+    .replay-note { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .control {
+      min-height: 44px;
+      padding: 9px 16px;
+      border: 1px solid #aeb8c2;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .control.primary { border-color: var(--blue); background: var(--blue); color: #fff; }
+    .control:disabled { cursor: not-allowed; opacity: .48; }
+
+    .lifecycle-panel { margin-top: 18px; padding: 18px; }
+    .section-title { margin: 0 0 14px; font-size: 18px; }
+    .lifecycle { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 9px; }
+    .stage-button {
+      min-height: 96px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--pending-soft);
+      color: var(--pending);
+      cursor: pointer;
+      text-align: left;
+    }
+    .stage-button strong, .stage-button span { display: block; }
+    .stage-button .stage-status { margin-top: 9px; font-size: 12px; font-weight: 750; }
+    .stage-button.complete { border-color: #8ec7aa; background: var(--green-soft); color: var(--green); }
+    .stage-button.current { border: 2px solid var(--blue); background: var(--blue-soft); color: var(--blue); }
+
+    .work-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, .7fr); gap: 18px; margin-top: 18px; }
+    .work-panel { padding: 22px; }
+    .work-heading { margin: 0 0 16px; font-size: 21px; }
+    .scope-card, .dimension-card, .unit-card, .metric-card, .delivery-card, .statement-list {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .scope-card { padding: 20px; border-left: 4px solid var(--amber); background: var(--amber-soft); }
+    .scope-card p { margin: 7px 0 0; }
+    .card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .dimension-card, .unit-card { padding: 16px; }
+    .dimension-card h3, .unit-card h3 { margin: 0; font-size: 16px; }
+    .card-state { display: inline-flex; margin-top: 10px; color: var(--blue); font-size: 13px; font-weight: 750; }
+    .matrix { margin: 10px 0 0; color: var(--green); font-size: 18px; font-weight: 800; }
+    .matrix-label { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+    .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .metric-card { padding: 14px; }
+    .metric-card strong { display: block; color: var(--green); font-size: 25px; }
+    .metric-card span { color: var(--muted); font-size: 13px; }
+    .unit-card.organized { border-left: 4px solid var(--blue); }
+    .unit-card.written, .unit-card.delivered { border-left: 4px solid var(--green); }
+    .review-pass { margin: 16px 0 0; padding: 13px 15px; border: 1px solid #8ec7aa; border-radius: 8px; background: var(--green-soft); color: var(--green); font-weight: 800; }
+    .delivery-card { margin-top: 16px; padding: 18px; background: var(--green-soft); }
+    .delivery-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .statement-list { margin: 0; padding: 18px 18px 18px 38px; }
+    .statement-list li + li { margin-top: 10px; }
+    .explanation-panel { align-self: start; }
+    .explanation-panel p { margin: 0; color: var(--muted); }
+
+    .fallback { max-width: 680px; margin: 80px auto; padding: 32px; text-align: center; }
+    .fallback h1 { margin-top: 0; }
+    #announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+    dialog { border: 0; border-radius: 10px; }
+
+    @media (max-width: 900px) {
+      .progress-hero, .work-layout { grid-template-columns: 1fr; }
+      .progress-block { padding: 18px 0 0; border-top: 1px solid var(--line); border-left: 0; }
+      .lifecycle { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .page-shell { padding: 14px 12px 30px; }
+      .topbar, .progress-hero, .work-panel { padding: 18px; }
+      .lifecycle, .card-grid, .metrics { grid-template-columns: 1fr; }
+      .stage-button { min-height: 72px; }
+      .control { flex: 1 1 42%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <p>真实研究记录动态回放</p>
-    <h1>Deep Research 领导层回放</h1>
-  </header>
   <main id="app" aria-label="研究进展回放"></main>
   <div id="announcement" role="status" aria-live="polite" aria-atomic="true"></div>
   <dialog id="dimension-dialog" aria-label="研究维度详情"></dialog>
   <dialog id="report-dialog" aria-label="最终报告"></dialog>
   <script id="archive-data" type="application/octet-stream">__ARCHIVE_DATA_BASE64__</script>
+  <script data-demo-runtime>
+    "use strict";
+
+    const EXPECTED_DIMENSIONS = {
+      d1: [18, 12, 4], d2: [14, 10, 6], d3: [18, 11, 5], d4: [17, 9, 5],
+      d5: [10, 15, 5], d6: [13, 8, 5], d7: [18, 8, 6]
+    };
+    const EXPECTED_TOTALS = {
+      dimensionCount: 7, claimCount: 108, sourceEntryCount: 73, uniqueSourceCount: 70,
+      findingCount: 36, contentUnitCount: 5, citationCount: 58
+    };
+    const EXPECTED_METADATA = {
+      mode: "heavy",
+      runId: "2026-07-14-china-9-strata-9185",
+      reportTitle: "中国九阶层实际收入与财务状况：中产人数、特征与财力",
+      startLabel: "2026-07-14 06:03",
+      completionLabel: "2026-07-14 09:37",
+      runSpanLabel: "真实运行跨度 06:03–09:37",
+      elapsedLabel: "约 3 小时 34 分"
+    };
+    const EXPECTED_STAGES = ["需求确认", "研究规划", "多主题研究", "质量核验", "报告组织", "写作审校", "最终交付"];
+    const EXPECTED_PROGRESS = [14, 29, 43, 57, 71, 86, 100];
+    const EXPECTED_MODES = ["scope", "plan", "research", "quality", "outline", "review", "delivery"];
+    const EXPECTED_GATES = [
+      ["hidden", "hidden", false, false, false, false],
+      ["planned", "hidden", false, false, false, false],
+      ["researching", "hidden", false, false, false, false],
+      ["verified", "hidden", true, true, false, false],
+      ["verified", "organized", true, true, false, false],
+      ["verified", "written", true, true, true, false],
+      ["verified", "delivered", true, true, true, true]
+    ];
+
+    let archiveData = null;
+    let replayState = { index: 0, playing: false, finalHold: false };
+    let playbackTimer = null;
+    const boundElements = new WeakSet();
+
+    function invariant(condition, message) {
+      if (!condition) throw new Error(message);
+    }
+
+    function canonicalize(value) {
+      if (Array.isArray(value)) return value.map(canonicalize);
+      if (value && typeof value === "object") {
+        return Object.keys(value).sort().reduce(function (result, key) {
+          result[key] = canonicalize(value[key]);
+          return result;
+        }, {});
+      }
+      return value;
+    }
+
+    function sameJSON(left, right) {
+      return JSON.stringify(canonicalize(left)) === JSON.stringify(canonicalize(right));
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, function (character) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character];
+      });
+    }
+
+    function decodeArchiveData() {
+      const element = document.getElementById("archive-data");
+      invariant(element && element.textContent, "missing demo data");
+      const binary = atob(element.textContent.trim());
+      const bytes = new Uint8Array(binary.length);
+      for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+      return JSON.parse(new TextDecoder("utf-8").decode(bytes));
+    }
+
+    function validateArchiveData(data) {
+      invariant(data && typeof data === "object", "invalid demo data");
+      invariant(sameJSON(data.metadata, EXPECTED_METADATA), "unexpected metadata");
+      invariant(sameJSON(data.totals, EXPECTED_TOTALS), "unexpected totals");
+      invariant(Array.isArray(data.dimensions) && data.dimensions.length === 7, "expected seven dimensions");
+      invariant(sameJSON(data.dimensions.map(function (item) { return item.id; }), Object.keys(EXPECTED_DIMENSIONS)), "unexpected dimension IDs");
+
+      const sourceIds = new Set();
+      let claimCount = 0;
+      let sourceEntryCount = 0;
+      let findingCount = 0;
+      data.dimensions.forEach(function (dimension) {
+        const expected = EXPECTED_DIMENSIONS[dimension.id];
+        invariant(expected && Boolean(dimension.name) && Boolean(dimension.headline), "invalid dimension");
+        invariant(Array.isArray(dimension.sourceIds) && dimension.sourceIds.length === dimension.sourceCount, "invalid sources");
+        invariant(dimension.sourceIds.every(Boolean), "empty source ID");
+        invariant(Array.isArray(dimension.findings), "invalid findings");
+        invariant(sameJSON([dimension.claimCount, dimension.sourceCount, dimension.findings.length], expected), "dimension matrix mismatch");
+        dimension.sourceIds.forEach(function (id) { sourceIds.add(id); });
+        dimension.findings.forEach(function (finding) {
+          invariant(Boolean(finding.text), "empty finding");
+          invariant(Array.isArray(finding.claimIds) && finding.claimIds.length > 0, "finding lacks claims");
+          invariant(finding.claimCount === finding.claimIds.length, "finding claims mismatch");
+        });
+        claimCount += dimension.claimCount;
+        sourceEntryCount += dimension.sourceCount;
+        findingCount += dimension.findings.length;
+      });
+      invariant(claimCount === 108 && sourceEntryCount === 73 && findingCount === 36 && sourceIds.size === 70, "aggregate mismatch");
+
+      invariant(Array.isArray(data.contentUnits) && data.contentUnits.length === 5, "expected five units");
+      invariant(new Set(data.contentUnits.map(function (unit) { return unit.id; })).size === 5, "duplicate unit ID");
+      invariant(data.contentUnits.every(function (unit) { return Boolean(unit.id) && Boolean(unit.title); }), "invalid unit");
+      invariant(Array.isArray(data.citations) && data.citations.length === 58, "expected citations");
+      invariant(typeof data.citationsJson === "string" && data.citationsJson.trim(), "empty citations JSON");
+      const citationPayload = JSON.parse(data.citationsJson);
+      invariant(citationPayload.total_citations === 58, "citation total mismatch");
+      invariant(Array.isArray(citationPayload.citations) && citationPayload.citations.length === 58, "citation payload mismatch");
+      invariant(sameJSON(citationPayload.citations, data.citations), "citation records mismatch");
+      invariant(data.verdict === "pass", "unexpected verdict");
+      invariant(typeof data.reportMarkdown === "string" && data.reportMarkdown.trim(), "empty report");
+
+      invariant(Array.isArray(data.snapshots) && data.snapshots.length === 7, "expected snapshots");
+      data.snapshots.forEach(function (snapshot, index) {
+        invariant(snapshot.index === index + 1, "snapshot index mismatch");
+        invariant(snapshot.stage === EXPECTED_STAGES[index], "snapshot stage mismatch");
+        invariant(snapshot.progress === EXPECTED_PROGRESS[index], "snapshot progress mismatch");
+        invariant(snapshot.workMode === EXPECTED_MODES[index], "snapshot mode mismatch");
+        invariant(Boolean(snapshot.headline) && Boolean(snapshot.explanation), "snapshot copy missing");
+        invariant(Array.isArray(snapshot.statements) && snapshot.statements.length >= 1 && snapshot.statements.length <= 3 && snapshot.statements.every(Boolean), "snapshot statements mismatch");
+        invariant(sameJSON([
+          snapshot.dimensionState, snapshot.unitState, snapshot.metricsVisible,
+          snapshot.findingsAvailable, snapshot.reviewPassed, snapshot.reportAvailable
+        ], EXPECTED_GATES[index]), "snapshot gate mismatch");
+      });
+      return true;
+    }
+
+    function clampIndex(value) {
+      const numeric = Number.isFinite(Number(value)) ? Math.trunc(Number(value)) : 0;
+      return Math.max(0, Math.min(6, numeric));
+    }
+
+    function replayReducer(state, action) {
+      const current = {
+        index: clampIndex(state && state.index),
+        playing: Boolean(state && state.playing),
+        finalHold: Boolean(state && state.finalHold)
+      };
+      switch (action && action.type) {
+        case "PLAY":
+          return current.index === 6
+            ? { index: 0, playing: true, finalHold: false }
+            : { index: current.index, playing: true, finalHold: false };
+        case "TICK":
+          if (!current.playing) return current;
+          if (current.index < 5) return { index: current.index + 1, playing: true, finalHold: false };
+          if (current.index === 5) return { index: 6, playing: true, finalHold: true };
+          return { index: 6, playing: false, finalHold: false };
+        case "PAUSE":
+          return { index: current.index, playing: false, finalHold: false };
+        case "PREVIOUS":
+          return { index: clampIndex(current.index - 1), playing: false, finalHold: false };
+        case "NEXT":
+          return { index: clampIndex(current.index + 1), playing: false, finalHold: false };
+        case "SELECT":
+          return { index: clampIndex(action.index), playing: false, finalHold: false };
+        case "RESTART":
+          return { index: 0, playing: true, finalHold: false };
+        default:
+          return current;
+      }
+    }
+
+    function selectSnapshot(data, index) {
+      const safeIndex = clampIndex(index);
+      const snapshot = { ...data.snapshots[safeIndex], statements: [...data.snapshots[safeIndex].statements] };
+      const lifecycle = data.snapshots.map(function (item, itemIndex) {
+        return {
+          index: itemIndex,
+          name: item.stage,
+          state: itemIndex < safeIndex ? "complete" : itemIndex === safeIndex ? "current" : "pending"
+        };
+      });
+      const dimensions = snapshot.dimensionState === "hidden" ? [] : data.dimensions.map(function (dimension) {
+        return {
+          id: dimension.id,
+          name: dimension.name,
+          claimCount: dimension.claimCount,
+          sourceCount: dimension.sourceCount,
+          findingCount: dimension.findings.length,
+          state: snapshot.dimensionState
+        };
+      });
+      const units = snapshot.unitState === "hidden" ? [] : data.contentUnits.map(function (unit) {
+        return { id: unit.id, title: unit.title, state: snapshot.unitState };
+      });
+      const metrics = snapshot.metricsVisible ? { ...data.totals } : null;
+      return {
+        metadata: { ...data.metadata }, snapshot, lifecycle, dimensions, units, metrics,
+        actions: { report: snapshot.reportAvailable, reportDownload: snapshot.reportAvailable, citationsDownload: snapshot.reportAvailable }
+      };
+    }
+
+    function renderControls(state) {
+      return '<div class="controls" aria-label="回放控制">' +
+        '<button class="control primary" type="button" data-action="play" aria-pressed="' + (state.playing ? "true" : "false") + '">播放</button>' +
+        '<button class="control" type="button" data-action="pause"' + (!state.playing ? " disabled" : "") + '>暂停</button>' +
+        '<button class="control" type="button" data-action="previous"' + (state.index === 0 ? " disabled" : "") + '>上一步</button>' +
+        '<button class="control" type="button" data-action="next"' + (state.index === 6 ? " disabled" : "") + '>下一步</button>' +
+        '<button class="control" type="button" data-action="restart">重新播放</button>' +
+      '</div>';
+    }
+
+    function renderLifecycle(items) {
+      const labels = { complete: ["✓", "已完成"], current: ["●", "当前"], pending: ["○", "待进行"] };
+      return items.map(function (item) {
+        const label = labels[item.state];
+        return '<button type="button" class="stage-button ' + item.state + '" data-stage-index="' + item.index + '"' +
+          (item.state === "current" ? ' aria-current="step"' : "") + '>' +
+          '<strong>' + escapeHTML(String(item.index + 1) + ". " + item.name) + '</strong>' +
+          '<span class="stage-status" aria-label="状态：' + label[1] + '">' + label[0] + ' 状态：' + label[1] + '</span></button>';
+      }).join("");
+    }
+
+    function renderMetrics(metrics, includeUniqueAndCitations) {
+      if (!metrics) return "";
+      const items = [
+        [metrics.claimCount, "研究要点"], [metrics.sourceEntryCount, "来源条目"], [metrics.findingCount, "核验发现"]
+      ];
+      if (includeUniqueAndCitations) items.splice(2, 0, [metrics.uniqueSourceCount, "独立来源"]);
+      if (includeUniqueAndCitations) items.push([metrics.citationCount, "报告引用"]);
+      return '<div class="metrics" aria-label="研究成果汇总">' + items.map(function (item) {
+        return '<div class="metric-card"><strong>' + escapeHTML(item[0]) + '</strong><span>' + escapeHTML(item[1]) + '</span></div>';
+      }).join("") + '</div>';
+    }
+
+    function renderDimensionCards(view) {
+      if (!view.dimensions.length) {
+        return '<div class="scope-card"><strong>研究范围已锁定</strong><p>' + escapeHTML(view.snapshot.explanation) + '</p></div>';
+      }
+      const states = { planned: "已规划", researching: "研究中", verified: "已核验" };
+      return '<div class="card-grid">' + view.dimensions.map(function (dimension) {
+        const matrix = dimension.state === "verified"
+          ? '<p class="matrix">' + [dimension.claimCount, dimension.sourceCount, dimension.findingCount].map(escapeHTML).join(' / ') + '</p><p class="matrix-label">研究要点 / 来源条目 / 核验发现</p>'
+          : "";
+        return '<article class="dimension-card"><h3>' + escapeHTML(dimension.name) + '</h3><span class="card-state">' + states[dimension.state] + '</span>' + matrix + '</article>';
+      }).join("") + '</div>';
+    }
+
+    function renderUnits(view) {
+      const stateLabels = { organized: "已组织", written: "已写作", delivered: "已交付" };
+      return '<div class="card-grid report-unit-grid">' + view.units.map(function (unit) {
+        return '<article class="unit-card ' + unit.state + '"><h3>' + escapeHTML(unit.title) + '</h3><span class="card-state">' + stateLabels[unit.state] + '</span></article>';
+      }).join("") + '</div>';
+    }
+
+    function renderActions(actions) {
+      const disabled = actions.report ? "" : " disabled";
+      return '<div class="delivery-card"><strong>最终交付成果</strong><div class="delivery-actions">' +
+        '<button class="control primary" type="button" data-report-action="read"' + disabled + '>阅读最终报告</button>' +
+        '<button class="control" type="button" data-report-action="report"' + disabled + '>下载报告</button>' +
+        '<button class="control" type="button" data-report-action="citations"' + disabled + '>下载引用清单</button>' +
+      '</div></div>';
+    }
+
+    function renderDashboard(view) {
+      const state = view.playback || { index: view.snapshot.index - 1, playing: false, finalHold: false };
+      const isUnitWork = view.units.length > 0;
+      const workTitle = isUnitWork ? "报告内容单元" : view.dimensions.length ? "研究维度进展" : "本阶段工作";
+      const primaryWork = isUnitWork ? renderUnits(view) : renderDimensionCards(view);
+      const reviewPass = view.snapshot.reviewPassed ? '<p class="review-pass">✓ 终审通过</p>' : "";
+      return '<div class="page-shell">' +
+        '<header class="topbar"><p class="eyebrow">真实研究记录动态回放</p><h1 class="report-title">' + escapeHTML(view.metadata.reportTitle) + '</h1>' +
+        '<p class="metadata"><span>运行编号 ' + escapeHTML(view.metadata.runId) + '</span><span>Heavy 深度模式</span><span>' + escapeHTML(view.metadata.runSpanLabel) + '</span><span>' + escapeHTML(view.metadata.elapsedLabel) + '</span></p></header>' +
+        '<section class="progress-hero" aria-labelledby="current-stage-heading"><div><p class="milestone-label">历史回放 · 里程碑 ' + view.snapshot.index + ' / 7</p>' +
+        '<p class="stage-ordinal">阶段 ' + view.snapshot.index + ' / 7</p><h2 class="stage-headline" id="current-stage-heading" data-current-heading tabindex="-1">' + escapeHTML(view.snapshot.headline) + '</h2>' +
+        '<p class="stage-explanation">' + escapeHTML(view.snapshot.explanation) + '</p>' + renderControls(state) + '</div>' +
+        '<div class="progress-block"><p class="progress-label">流程阶段进度</p><p class="progress-value">' + view.snapshot.progress + '%</p>' +
+        '<div class="progress-track" role="progressbar" aria-label="流程阶段进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + view.snapshot.progress + '"><div class="progress-fill" style="width:' + view.snapshot.progress + '%"></div></div>' +
+        '<p class="replay-note">流程顺序回放，非逐秒运行日志</p></div></section>' +
+        '<section class="lifecycle-panel" aria-labelledby="lifecycle-title"><h2 class="section-title" id="lifecycle-title">七阶段历程</h2><nav class="lifecycle" aria-label="研究阶段">' + renderLifecycle(view.lifecycle) + '</nav></section>' +
+        '<div class="work-layout"><section class="work-panel work-area" aria-labelledby="work-title"><h2 class="work-heading" id="work-title">' + workTitle + '</h2>' +
+        renderMetrics(view.metrics, view.snapshot.index === 7) + primaryWork + reviewPass + renderActions(view.actions) + '</section>' +
+        '<aside class="work-panel explanation-panel"><h2 class="work-heading">里程碑说明</h2><p>' + escapeHTML(view.snapshot.explanation) + '</p><ul class="statement-list">' + view.snapshot.statements.map(function (statement) { return '<li>' + escapeHTML(statement) + '</li>'; }).join("") + '</ul></aside></div></div>';
+    }
+
+    function renderDimensionDialog() {
+      return '<p>该维度尚未形成可展示发现</p>';
+    }
+
+    function renderReportViewer() {
+      return '<p>最终报告将在交付阶段开放。</p>';
+    }
+
+    function createDialogController() {
+      return { open: function () {}, close: function () {} };
+    }
+
+    function clearPlaybackTimer() {
+      if (playbackTimer !== null) {
+        window.clearInterval(playbackTimer);
+        playbackTimer = null;
+      }
+    }
+
+    function renderCurrent(options) {
+      const app = document.getElementById("app");
+      if (!app || !archiveData) return;
+      const active = document.activeElement;
+      const shouldRestoreHeading = Boolean(options && options.focusHeading) || Boolean(active && typeof active.closest === "function" && active.closest(".work-area"));
+      if (shouldRestoreHeading) {
+        const currentHeading = document.querySelector("[data-current-heading]");
+        if (currentHeading && typeof currentHeading.focus === "function") currentHeading.focus();
+      }
+      app.innerHTML = renderDashboard({ ...selectSnapshot(archiveData, replayState.index), playback: replayState });
+      const announcement = document.getElementById("announcement");
+      if (announcement) announcement.textContent = "历史回放里程碑 " + (replayState.index + 1) + " / 7：" + archiveData.snapshots[replayState.index].stage;
+      bindControls();
+      if (shouldRestoreHeading) {
+        const heading = document.querySelector("[data-current-heading]");
+        if (heading && typeof heading.focus === "function") heading.focus();
+      }
+    }
+
+    function startPlaybackTimer() {
+      if (playbackTimer !== null || !replayState.playing) return;
+      playbackTimer = window.setInterval(function () {
+        replayState = replayReducer(replayState, { type: "TICK" });
+        renderCurrent({ focusHeading: true });
+        if (!replayState.playing) clearPlaybackTimer();
+      }, 8000);
+    }
+
+    function dispatchReplay(action) {
+      if (["PAUSE", "PREVIOUS", "NEXT", "SELECT", "RESTART"].includes(action.type)) clearPlaybackTimer();
+      replayState = replayReducer(replayState, action);
+      renderCurrent({ focusHeading: action.type !== "PLAY" && action.type !== "PAUSE" });
+      if (replayState.playing) startPlaybackTimer();
+    }
+
+    function bindElement(element, action) {
+      if (!element || boundElements.has(element)) return;
+      boundElements.add(element);
+      element.addEventListener("click", function () { dispatchReplay(action()); });
+    }
+
+    function bindControls() {
+      bindElement(document.querySelector('[data-action="play"]'), function () { return { type: "PLAY" }; });
+      bindElement(document.querySelector('[data-action="pause"]'), function () { return { type: "PAUSE" }; });
+      bindElement(document.querySelector('[data-action="previous"]'), function () { return { type: "PREVIOUS" }; });
+      bindElement(document.querySelector('[data-action="next"]'), function () { return { type: "NEXT" }; });
+      bindElement(document.querySelector('[data-action="restart"]'), function () { return { type: "RESTART" }; });
+      Array.from(document.querySelectorAll("[data-stage-index]")).forEach(function (element) {
+        bindElement(element, function () { return { type: "SELECT", index: Number(element.getAttribute("data-stage-index")) }; });
+      });
+    }
+
+    function renderFallback() {
+      clearPlaybackTimer();
+      const app = document.getElementById("app");
+      if (!app) return;
+      app.innerHTML = '<section class="fallback"><h1>演示数据暂时无法加载</h1><p>本地演示数据不完整或无效，请重新加载后再试。</p><button class="control primary" type="button" data-reload>重新加载</button></section>';
+      const reload = document.querySelector("[data-reload]");
+      if (reload) reload.addEventListener("click", function () { window.location.reload(); });
+    }
+
+    function bootstrap() {
+      try {
+        const decoded = decodeArchiveData();
+        validateArchiveData(decoded);
+        archiveData = decoded;
+        replayState = { index: 0, playing: false, finalHold: false };
+        clearPlaybackTimer();
+        renderCurrent();
+      } catch (_error) {
+        archiveData = null;
+        renderFallback();
+      }
+    }
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootstrap);
+    else bootstrap();
+  </script>
 </body>
 </html>

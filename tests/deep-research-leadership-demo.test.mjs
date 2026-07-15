@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
 const archivePath = new URL(
@@ -51,6 +52,148 @@ function decodePayload(html) {
   );
   assert.ok(match, "embedded archive payload should exist");
   return JSON.parse(Buffer.from(match[1], "base64").toString("utf8"));
+}
+
+function encodePayload(value) {
+  return Buffer.from(JSON.stringify(value), "utf8").toString("base64");
+}
+
+function createElement(overrides = {}) {
+  const listeners = new Map();
+  const attributes = new Map();
+  return {
+    innerHTML: "",
+    textContent: "",
+    disabled: false,
+    focused: false,
+    listeners,
+    addEventListener(type, listener) {
+      const entries = listeners.get(type) ?? [];
+      entries.push(listener);
+      listeners.set(type, entries);
+    },
+    dispatchEvent(event) {
+      event.currentTarget ??= this;
+      event.target ??= this;
+      for (const listener of listeners.get(event.type) ?? []) listener(event);
+    },
+    click() {
+      this.dispatchEvent({ type: "click", preventDefault() {} });
+    },
+    focus() {
+      this.focused = true;
+    },
+    setAttribute(name, value) {
+      attributes.set(name, String(value));
+    },
+    getAttribute(name) {
+      return attributes.get(name) ?? null;
+    },
+    removeAttribute(name) {
+      attributes.delete(name);
+    },
+    querySelector() {
+      return null;
+    },
+    querySelectorAll() {
+      return [];
+    },
+    ...overrides,
+  };
+}
+
+function createRuntime(html, { data = null } = {}) {
+  const runtimeMatch = html.match(/<script\s+data-demo-runtime>([\s\S]*?)<\/script>/i);
+  assert.ok(runtimeMatch, "inline demo runtime should exist");
+
+  const app = createElement();
+  const announcement = createElement();
+  const archive = createElement({ textContent: data ? encodePayload(data) : encodePayload(decodePayload(html)) });
+  const reload = { count: 0 };
+  const timerCalls = [];
+  const clearCalls = [];
+  let timerId = 0;
+  const timers = new Map();
+  const controls = {
+    play: createElement(),
+    pause: createElement(),
+    previous: createElement(),
+    next: createElement(),
+    restart: createElement(),
+    stages: Array.from({ length: 7 }, (_, index) =>
+      createElement({ getAttribute: (name) => (name === "data-stage-index" ? String(index) : null) }),
+    ),
+  };
+  const byId = {
+    app,
+    announcement,
+    "archive-data": archive,
+    "dimension-dialog": createElement(),
+    "report-dialog": createElement(),
+  };
+  const bySelector = {
+    '[data-action="play"]': controls.play,
+    '[data-action="pause"]': controls.pause,
+    '[data-action="previous"]': controls.previous,
+    '[data-action="next"]': controls.next,
+    '[data-action="restart"]': controls.restart,
+    "[data-current-heading]": createElement(),
+    "[data-reload]": createElement(),
+  };
+  const document = {
+    readyState: "loading",
+    activeElement: null,
+    addEventListener() {},
+    getElementById(id) {
+      return byId[id] ?? null;
+    },
+    querySelector(selector) {
+      return bySelector[selector] ?? null;
+    },
+    querySelectorAll(selector) {
+      return selector === "[data-stage-index]" ? controls.stages : [];
+    },
+  };
+  const window = {
+    location: { reload: () => reload.count++ },
+    setInterval(callback, delay) {
+      const id = ++timerId;
+      timerCalls.push({ id, callback, delay });
+      timers.set(id, callback);
+      return id;
+    },
+    clearInterval(id) {
+      clearCalls.push(id);
+      timers.delete(id);
+    },
+  };
+  const context = vm.createContext({
+    atob: (value) => Buffer.from(value, "base64").toString("binary"),
+    TextDecoder,
+    Uint8Array,
+    Blob: class Blob {},
+    URL: { createObjectURL() {}, revokeObjectURL() {} },
+    window,
+    document,
+    console,
+  });
+  vm.runInContext(runtimeMatch[1], context);
+  return {
+    context,
+    app,
+    announcement,
+    archive,
+    reload,
+    controls,
+    timers,
+    timerCalls,
+    clearCalls,
+    bySelector,
+  };
+}
+
+function plain(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
 function canonicalize(value) {
@@ -344,4 +487,226 @@ test("archive totals, dimension matrices, metadata, and snapshot gates stay exac
       expectedGates[index],
     );
   });
+});
+
+test("replay reducer preserves deterministic playback and final-hold boundaries", () => {
+  const { replayReducer } = createRuntime(freshHtml).context;
+  const paused = { index: 0, playing: false, finalHold: false };
+
+  assert.deepEqual(plain(replayReducer(paused, { type: "PLAY" })), {
+    index: 0,
+    playing: true,
+    finalHold: false,
+  });
+  assert.deepEqual(plain(replayReducer(paused, { type: "TICK" })), paused);
+  assert.deepEqual(
+    plain(replayReducer({ index: 6, playing: false, finalHold: false }, { type: "PLAY" })),
+    { index: 0, playing: true, finalHold: false },
+  );
+
+  let state = replayReducer(paused, { type: "PLAY" });
+  for (let index = 1; index <= 5; index++) {
+    state = replayReducer(state, { type: "TICK" });
+    assert.deepEqual(plain(state), { index, playing: true, finalHold: false });
+  }
+  state = replayReducer(state, { type: "TICK" });
+  assert.deepEqual(plain(state), { index: 6, playing: true, finalHold: true });
+  state = replayReducer(state, { type: "TICK" });
+  assert.deepEqual(plain(state), { index: 6, playing: false, finalHold: false });
+
+  for (const [action, expected] of [
+    [{ type: "PAUSE" }, { index: 6, playing: false, finalHold: false }],
+    [{ type: "PREVIOUS" }, { index: 5, playing: false, finalHold: false }],
+    [{ type: "NEXT" }, { index: 6, playing: false, finalHold: false }],
+    [{ type: "SELECT", index: -20 }, { index: 0, playing: false, finalHold: false }],
+    [{ type: "SELECT", index: 99 }, { index: 6, playing: false, finalHold: false }],
+    [{ type: "RESTART" }, { index: 0, playing: true, finalHold: false }],
+  ]) {
+    assert.deepEqual(
+      plain(replayReducer({ index: 6, playing: true, finalHold: true }, action)),
+      expected,
+    );
+  }
+  assert.deepEqual(
+    plain(replayReducer({ index: 0, playing: true, finalHold: false }, { type: "PREVIOUS" })),
+    { index: 0, playing: false, finalHold: false },
+  );
+  assert.deepEqual(
+    plain(replayReducer({ index: 6, playing: true, finalHold: true }, { type: "NEXT" })),
+    { index: 6, playing: false, finalHold: false },
+  );
+});
+
+test("snapshot selector and dashboard renderer enforce every milestone gate", () => {
+  const { context } = createRuntime(freshHtml);
+  const render = (index, playing = false) =>
+    context.renderDashboard({
+      ...context.selectSnapshot(payload, index),
+      playback: { index, playing, finalHold: false },
+    });
+  const alwaysVisible = [
+    payload.metadata.reportTitle,
+    payload.metadata.runId,
+    "Heavy 深度模式",
+    payload.metadata.runSpanLabel,
+  ];
+
+  for (let index = 0; index < 7; index++) {
+    const html = render(index);
+    for (const label of alwaysVisible) assert.match(html, new RegExp(label));
+    assert.match(html, new RegExp(`历史回放 · 里程碑 ${index + 1} / 7`));
+    assert.equal((html.match(/data-stage-index=/g) ?? []).length, 7);
+    assert.match(html, /状态：(已完成|当前|待进行)/);
+    assert.match(html, /aria-current="step"/);
+  }
+
+  const first = render(0);
+  assert.match(first, /阶段 1 \/ 7/);
+  assert.match(first, /14%/);
+  assert.match(first, /流程阶段进度/);
+  for (const forbidden of [...expectedDimensionNames, "108", "73", "36", ...payload.contentUnits.map((u) => u.title)]) {
+    assert.doesNotMatch(first, new RegExp(forbidden));
+  }
+
+  const second = render(1);
+  for (const name of expectedDimensionNames) assert.match(second, new RegExp(name));
+  for (const forbidden of ["108", "73", "36", payload.dimensions[0].findings[0].text]) {
+    assert.doesNotMatch(second, new RegExp(forbidden));
+  }
+
+  const third = render(2);
+  assert.equal((third.match(/研究中/g) ?? []).length, 7);
+  assert.doesNotMatch(third, /class="matrix"|研究要点 \/ 来源条目 \/ 核验发现/);
+
+  const fourth = render(3);
+  for (const row of ["18 / 12 / 4", "14 / 10 / 6", "18 / 11 / 5", "17 / 9 / 5", "10 / 15 / 5", "13 / 8 / 5", "18 / 8 / 6"]) {
+    assert.match(fourth, new RegExp(row.replaceAll("/", "\\/")));
+  }
+  for (const expected of ["108", "73", "36", "已核验"]) assert.match(fourth, new RegExp(expected));
+
+  const fifth = render(4);
+  for (const unit of payload.contentUnits) assert.match(fifth, new RegExp(unit.title));
+  assert.doesNotMatch(fifth, /research-card|维度研究矩阵/);
+
+  const sixth = render(5);
+  assert.equal((sixth.match(/已写作/g) ?? []).length, 5);
+  assert.match(sixth, /终审通过/);
+  assert.equal((sixth.match(/data-report-action[^>]+disabled/g) ?? []).length, 3);
+
+  const seventh = render(6);
+  for (const expected of ["100%", "108", "73", "70", "36", "58"]) {
+    assert.match(seventh, new RegExp(expected));
+  }
+  for (const unit of payload.contentUnits) assert.match(seventh, new RegExp(unit.title));
+  assert.equal((seventh.match(/data-report-action/g) ?? []).length, 3);
+  assert.equal((seventh.match(/data-report-action[^>]+disabled/g) ?? []).length, 0);
+
+  const dashboardCopy = render(6).replace(/<[^>]+>/g, " ");
+  assert.match(dashboardCopy, /真实研究记录动态回放/);
+  assert.match(dashboardCopy, /流程顺序回放，非逐秒运行日志/);
+  assert.doesNotMatch(
+    dashboardCopy,
+    /实时同步|刚刚|当前更新时间|validator|review|perspective|supplement|stitcher|render|agent|schema|dispatch/i,
+  );
+});
+
+test("archive decoder validates exact invariants and bootstrap offers reload fallback", () => {
+  const valid = createRuntime(freshHtml);
+  assert.equal(valid.context.validateArchiveData(payload), true);
+  assert.deepEqual(plain(valid.context.decodeArchiveData()), payload);
+
+  const invalidPayloads = [];
+  const wrongProgress = structuredClone(payload);
+  wrongProgress.snapshots[0].progress = 15;
+  invalidPayloads.push(wrongProgress);
+  const missingDimension = structuredClone(payload);
+  missingDimension.dimensions.pop();
+  invalidPayloads.push(missingDimension);
+  const wrongTotals = structuredClone(payload);
+  wrongTotals.totals.claimCount = 109;
+  invalidPayloads.push(wrongTotals);
+  const emptyReport = structuredClone(payload);
+  emptyReport.reportMarkdown = "";
+  invalidPayloads.push(emptyReport);
+  const wrongVerdict = structuredClone(payload);
+  wrongVerdict.verdict = "fail";
+  invalidPayloads.push(wrongVerdict);
+
+  for (const invalid of invalidPayloads) {
+    assert.throws(() => valid.context.validateArchiveData(invalid));
+  }
+
+  const fallback = createRuntime(freshHtml, { data: wrongProgress });
+  fallback.context.bootstrap();
+  assert.match(fallback.app.innerHTML, /演示数据暂时无法加载/);
+  assert.match(fallback.app.innerHTML, /重新加载/);
+  fallback.bySelector["[data-reload]"].click();
+  assert.equal(fallback.reload.count, 1);
+});
+
+test("bound controls maintain one eight-second timer and deterministic final hold", () => {
+  const runtime = createRuntime(freshHtml);
+  runtime.context.bootstrap();
+  assert.match(runtime.app.innerHTML, /阶段 1 \/ 7/);
+  assert.match(runtime.app.innerHTML, /data-action="previous"[^>]*disabled/);
+
+  runtime.controls.play.click();
+  assert.equal(runtime.timerCalls.length, 1);
+  assert.equal(runtime.timerCalls[0].delay, 8000);
+  runtime.controls.play.click();
+  assert.equal(runtime.timerCalls.length, 1, "repeated play must reuse the active interval");
+
+  const tick = runtime.timerCalls[0].callback;
+  for (let milestone = 2; milestone <= 7; milestone++) {
+    tick();
+    assert.match(runtime.app.innerHTML, new RegExp(`阶段 ${milestone} \\/ 7`));
+  }
+  assert.equal(runtime.clearCalls.length, 0, "snapshot 7 holds for one complete interval");
+  tick();
+  assert.match(runtime.app.innerHTML, /阶段 7 \/ 7/);
+  assert.match(runtime.app.innerHTML, /data-action="next"[^>]*disabled/);
+  assert.equal(runtime.clearCalls.length, 1);
+
+  runtime.controls.play.click();
+  assert.equal(runtime.timerCalls.length, 2);
+  runtime.controls.previous.click();
+  assert.equal(runtime.clearCalls.length, 2);
+
+  runtime.controls.play.click();
+  const clearsBeforePause = runtime.clearCalls.length;
+  runtime.controls.pause.click();
+  assert.equal(runtime.clearCalls.length, clearsBeforePause + 1);
+
+  runtime.controls.play.click();
+  const clearsBeforeNext = runtime.clearCalls.length;
+  runtime.controls.next.click();
+  assert.equal(runtime.clearCalls.length, clearsBeforeNext + 1);
+
+  runtime.controls.play.click();
+  const clearsBeforeSelect = runtime.clearCalls.length;
+  runtime.controls.stages[4].click();
+  assert.equal(runtime.clearCalls.length, clearsBeforeSelect + 1);
+  assert.match(runtime.app.innerHTML, /阶段 5 \/ 7/);
+  assert.match(runtime.announcement.textContent, /里程碑 5 \/ 7/);
+
+  runtime.controls.play.click();
+  const callsBeforeRestart = runtime.timerCalls.length;
+  const clearsBeforeRestart = runtime.clearCalls.length;
+  runtime.controls.restart.click();
+  assert.equal(runtime.clearCalls.length, clearsBeforeRestart + 1);
+  assert.equal(runtime.timerCalls.length, callsBeforeRestart + 1);
+  assert.match(runtime.app.innerHTML, /阶段 1 \/ 7/);
+  runtime.controls.pause.click();
+  assert.ok(runtime.clearCalls.length > clearsBeforeRestart + 1);
+});
+
+test("leadership replay CSS keeps progress prominent and layout responsive", () => {
+  const css = freshHtml.match(/<style>([\s\S]*?)<\/style>/i)?.[1] ?? "";
+  assert.match(css, /body\s*\{[^}]*font-size:\s*15px/s);
+  assert.match(css, /\.metadata[^}]*font-size:\s*12px/s);
+  assert.match(css, /\.stage-headline[^}]*font-size:\s*clamp\(28px,\s*3vw,\s*34px\)/s);
+  assert.match(css, /\.progress-value[^}]*font-size:\s*clamp\(46px,\s*5vw,\s*56px\)/s);
+  assert.match(css, /\.lifecycle[^}]*grid-template-columns:\s*repeat\(7,\s*minmax\(0,\s*1fr\)\)/s);
+  assert.match(css, /\.work-layout[^}]*grid-template-columns:/s);
+  assert.doesNotMatch(css, /linear-gradient|radial-gradient|border-radius:\s*(?:1[3-9]|[2-9]\d)px/i);
 });
