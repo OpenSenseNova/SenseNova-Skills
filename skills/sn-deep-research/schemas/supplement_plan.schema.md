@@ -4,6 +4,8 @@
 
 It is a controller-facing audit and execution artifact, not formal evidence. It must not introduce new facts into the final report. Any factual lead listed here must be re-checked by a research agent and incorporated into `d{N}.evidence.json` before it can support report claims.
 
+The supplement planner is file-only. It derives this artifact from the target dimension's `plan.json` fields, `evidence.json`, optional `review.md`, optional `perspectives/*.md`, and exact source snapshots already referenced by that evidence. It does not search the web or open source URLs.
+
 ## Top-level object
 
 ```json
@@ -21,7 +23,7 @@ It is a controller-facing audit and execution artifact, not formal evidence. It 
 | field | type | required | description |
 | --- | --- | --- | --- |
 | `task` | string | yes | Usually `补研计划` |
-| `generated_from` | string | yes | Current dimension evidence/review/perspective markdown |
+| `generated_from` | string | yes | Current dimension evidence/review/perspective files and, when needed, their pinned source snapshots |
 | `target_report` | string | yes | Report topic or empty string |
 | `date` | string | yes | Generation date, `YYYY-MM-DD` |
 | `principle` | string | yes | One-sentence decision principle |
@@ -45,12 +47,14 @@ It is a controller-facing audit and execution artifact, not formal evidence. It 
 | `question` | string | yes | Specific question for research agent to answer |
 | `rationale` | string | yes | Why this supplement matters |
 | `suggested_sources` | array[string] | yes | Source categories or concrete source types |
-| `candidate_leads` | array[string] | yes | Candidate URLs, source names, or search leads; may be empty |
+| `candidate_leads` | array[string] | yes | Candidate URLs, source names, or search leads already present in input files; may be empty. Planner must not add external leads |
 | `source_refs` | array[string] | yes | Review/perspective locations that raised this item |
 | `review_refs` | array[string] | yes | Claim ids or review bullets involved; may be empty for pure coverage items |
 | `impact_if_skipped` | string | yes | How final report should be constrained if skipped |
 | `status` | enum | yes | Initial value `pending`; research later updates to `resolved` / `partial` / `no_data` / `out_of_scope` |
 | `resolution_note` | string | yes | Empty initially; research fills after execution |
+
+For `partial`, `no_data`, and `out_of_scope`, `resolution_note` is not the downstream boundary. Research must also write a schema-valid `writing_context` object into the target evidence: `unresolved_gap`, `availability_gap`, or `scope_boundary` respectively. Report planning consumes only evidence, not this audit file.
 
 ## `deferred_items[]`
 
@@ -72,7 +76,7 @@ If no supplement is needed, write a valid empty plan:
 {
   "meta": {
     "task": "补研计划",
-    "generated_from": "当前维度 evidence/review/perspective markdown",
+    "generated_from": "当前维度 evidence/review/perspective 文件",
     "target_report": "",
     "date": "YYYY-MM-DD",
     "principle": "无必要补研"
@@ -90,3 +94,4 @@ If no supplement is needed, write a valid empty plan:
 - Supplement research executes only `supplement_items[]`; it does not process `deferred_items[]`.
 - Report-stage agents do not consume this file as evidence.
 - `deferred_items[]` can only inform writing-context boundaries, limitations, or audit notes.
+- Planner may copy and deduplicate `candidate_leads[]` from its input files, but it must not perform validation searches or introduce a new URL/source/search lead.

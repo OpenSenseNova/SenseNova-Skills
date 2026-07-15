@@ -120,9 +120,9 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 | 名称                                                                   | 标签        | 描述                                                                                      |
 | -------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
-| [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **深度研究入口** | **深度研究功能的统一入口**，规划 → 分维度取证 → 综合 → 成稿（`report.md`）的全流程编排器，产物落盘到 `report_dir`，支持断点续跑。 |
+| [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **深度研究入口** | **深度研究功能的统一入口**，支持真实依赖 DAG、来源快照复用和 evidence-informed content units，最终产出 `report.md`。 |
 | [`sn-research-report`](skills/sn-research-report/SKILL.md)                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
-| [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | 报告形态发现    | 研究"这类报告应该长什么样"，给出章节结构、必备元素与风格约束；可独立使用，也可为 sn-deep-research 的 `report_shape` 提供依据。          |
+| [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | 最终呈现形式发现 | 比较研究报告、学术论文、表格优先报表、决策备忘录或自定义 Markdown 形式；由 scout 在研究前调用并交给用户确认。 |
 | [`sn-prepare-citations`](skills/sn-prepare-citations/SKILL.md)                 | 引用渲染      | 将 `[^source_id]` 脚注后处理为编号引用，并基于 evidence sources 追加参考文献。 |
 | [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)             | Markdown → HTML 报告 | 把研究产出的 `report.md`（或任意 Markdown 文档）转换成单文件、可离线打开的 HTML 阅读视图——内嵌图片、侧栏目录、自适应表格，并自动修复表格分隔符。 |
 
@@ -162,7 +162,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 🔬 具身智能行业调研 — 深度调研
 
-[`examples/embodied-ai-deep-research`](examples/embodied-ai-deep-research/)。给定一个行业关键词后，智能体先列出研究维度（市场规模、玩家份额、融资、成本结构、发展路线），而不是直接撒网搜索。每个维度按计划做定向检索、抓取并阅读原始页面，提取数值与定性证据；不同来源之间出现冲突的数字会先做 reconcile 再落到报告里。综合阶段把各维度证据串成一条连贯的行业叙事，而不是一堆互不连接的要点。最终产出是一份图文并茂的报告（Markdown + 可视化 HTML），含 5 张分维度的配图。这个样例展示了 `sn-deep-research` 如何把一句「调研 X」变成「先规划再执行、证据可追溯」的结构化闭环。
+[`examples/embodied-ai-deep-research`](examples/embodied-ai-deep-research/)。给定一个行业关键词后，智能体先列出研究维度（市场规模、玩家份额、融资、成本结构、发展路线），而不是直接撒网搜索。每个维度按计划做定向检索、抓取并阅读原始页面，提取数值与定性证据；不同来源之间出现冲突的数字会先做 reconcile 再落到报告里。综合阶段按读者任务把各维度证据组织成可追溯的信息结构，而不是一堆互不连接的要点。最终产出是一份图文并茂的报告（Markdown + 可视化 HTML），含 5 张分维度的配图。这个样例展示了 `sn-deep-research` 如何把一句「调研 X」变成「先规划再执行、证据可追溯」的结构化闭环。
 
 - 依赖技能：[`sn-deep-research`](skills/sn-deep-research/SKILL.md)
 
