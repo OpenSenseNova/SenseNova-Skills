@@ -4,5 +4,6 @@
 *.jpeg binary
 
 *.zip filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/deep-research-leadership-demo-source.zip -filter -diff -merge -text
 *.pptx filter=lfs diff=lfs merge=lfs -text
 *.docx filter=lfs diff=lfs merge=lfs -text
