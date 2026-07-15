@@ -113,18 +113,59 @@ function createRuntime(html, { data = null } = {}) {
 
   const focusEvents = [];
   let renderedHtml = "";
-  let headingGeneration = 0;
+  let elementGeneration = 0;
+  let document;
   const createHeading = () => {
-    const generation = headingGeneration;
+    const generation = elementGeneration;
     const element = createElement();
     element.focus = function () {
       this.focused = true;
       this.focusCount += 1;
       focusEvents.push(`heading.focus:${generation}`);
+      document.activeElement = this;
     };
     return element;
   };
+  const createAction = (action) => {
+    const generation = elementGeneration;
+    const element = createElement({
+      getAttribute(name) {
+        return name === "data-action" ? action : null;
+      },
+    });
+    element.focus = function () {
+      this.focused = true;
+      this.focusCount += 1;
+      focusEvents.push(`action.focus:${action}:${generation}`);
+      document.activeElement = this;
+    };
+    return element;
+  };
+  const createStage = (index) => {
+    const generation = elementGeneration;
+    const element = createElement({
+      getAttribute(name) {
+        return name === "data-stage-index" ? String(index) : null;
+      },
+    });
+    element.focus = function () {
+      this.focused = true;
+      this.focusCount += 1;
+      focusEvents.push(`stage.focus:${index}:${generation}`);
+      document.activeElement = this;
+    };
+    return element;
+  };
+  const createControls = () => ({
+    play: createAction("play"),
+    pause: createAction("pause"),
+    previous: createAction("previous"),
+    next: createAction("next"),
+    restart: createAction("restart"),
+    stages: Array.from({ length: 7 }, (_, index) => createStage(index)),
+  });
   let heading = createHeading();
+  let controls = createControls();
   const app = createElement();
   Object.defineProperty(app, "innerHTML", {
     configurable: true,
@@ -133,9 +174,12 @@ function createRuntime(html, { data = null } = {}) {
     },
     set(value) {
       focusEvents.push("app.innerHTML");
+      if (document?.activeElement) document.activeElement.detached = true;
+      if (document) document.activeElement = null;
       renderedHtml = value;
-      headingGeneration += 1;
+      elementGeneration += 1;
       heading = createHeading();
+      controls = createControls();
     },
   });
   const announcement = createElement();
@@ -145,16 +189,6 @@ function createRuntime(html, { data = null } = {}) {
   const clearCalls = [];
   let timerId = 0;
   const timers = new Map();
-  const controls = {
-    play: createElement(),
-    pause: createElement(),
-    previous: createElement(),
-    next: createElement(),
-    restart: createElement(),
-    stages: Array.from({ length: 7 }, (_, index) =>
-      createElement({ getAttribute: (name) => (name === "data-stage-index" ? String(index) : null) }),
-    ),
-  };
   const byId = {
     app,
     announcement,
@@ -162,15 +196,8 @@ function createRuntime(html, { data = null } = {}) {
     "dimension-dialog": createElement(),
     "report-dialog": createElement(),
   };
-  const bySelector = {
-    '[data-action="play"]': controls.play,
-    '[data-action="pause"]': controls.pause,
-    '[data-action="previous"]': controls.previous,
-    '[data-action="next"]': controls.next,
-    '[data-action="restart"]': controls.restart,
-    "[data-reload]": createElement(),
-  };
-  const document = {
+  const bySelector = { "[data-reload]": createElement() };
+  document = {
     readyState: "loading",
     activeElement: null,
     addEventListener() {},
@@ -179,6 +206,10 @@ function createRuntime(html, { data = null } = {}) {
     },
     querySelector(selector) {
       if (selector === "[data-current-heading]") return heading;
+      const action = selector.match(/^\[data-action="(play|pause|previous|next|restart)"\]$/)?.[1];
+      if (action) return controls[action];
+      const stage = selector.match(/^\[data-stage-index="([0-6])"\]$/)?.[1];
+      if (stage !== undefined) return controls.stages[Number(stage)];
       return bySelector[selector] ?? null;
     },
     querySelectorAll(selector) {
@@ -189,8 +220,14 @@ function createRuntime(html, { data = null } = {}) {
     location: { reload: () => reload.count++ },
     setInterval(callback, delay) {
       const id = ++timerId;
-      timerCalls.push({ id, callback, delay });
       timers.set(id, callback);
+      timerCalls.push({
+        id,
+        delay,
+        callback() {
+          if (timers.has(id)) callback();
+        },
+      });
       return id;
     },
     clearInterval(id) {
@@ -216,7 +253,9 @@ function createRuntime(html, { data = null } = {}) {
     announcement,
     archive,
     reload,
-    controls,
+    get controls() {
+      return controls;
+    },
     get heading() {
       return heading;
     },
@@ -743,6 +782,31 @@ test("bound controls maintain one eight-second timer and deterministic final hol
   assert.ok(runtime.clearCalls.length > clearsBeforeRestart + 1);
 });
 
+test("play during the final hold replaces the timer and gives stage one a full interval", () => {
+  const runtime = createRuntime(freshHtml);
+  runtime.context.bootstrap();
+  runtime.controls.play.click();
+  const oldTimer = runtime.timerCalls[0];
+  for (let tick = 0; tick < 6; tick++) oldTimer.callback();
+  assert.match(runtime.app.innerHTML, /阶段 7 \/ 7/);
+  assert.equal(runtime.clearCalls.length, 0);
+
+  runtime.controls.play.click();
+  assert.deepEqual(runtime.clearCalls, [oldTimer.id]);
+  assert.equal(runtime.timerCalls.length, 2);
+  const replacementTimer = runtime.timerCalls[1];
+  assert.notEqual(replacementTimer.id, oldTimer.id);
+  assert.equal(replacementTimer.delay, 8000);
+  assert.match(runtime.app.innerHTML, /阶段 1 \/ 7/);
+  assert.equal(runtime.timers.has(oldTimer.id), false);
+  assert.equal(runtime.timers.has(replacementTimer.id), true);
+
+  oldTimer.callback();
+  assert.match(runtime.app.innerHTML, /阶段 1 \/ 7/, "cleared callback is inert");
+  replacementTimer.callback();
+  assert.match(runtime.app.innerHTML, /阶段 2 \/ 7/);
+});
+
 test("rerender moves focus only when replacing focused work content", () => {
   const workFocused = createRuntime(freshHtml);
   workFocused.context.bootstrap();
@@ -762,21 +826,51 @@ test("rerender moves focus only when replacing focused work content", () => {
 
   const controlFocused = createRuntime(freshHtml);
   controlFocused.context.bootstrap();
+  const oldNext = controlFocused.controls.next;
+  oldNext.focus();
   controlFocused.focusEvents.length = 0;
-  controlFocused.document.activeElement = controlFocused.controls.next;
-  controlFocused.controls.next.click();
-  assert.deepEqual(controlFocused.focusEvents, ["app.innerHTML"], "manual controls keep focus");
+  oldNext.click();
+  assert.deepEqual(controlFocused.focusEvents, [
+    "app.innerHTML",
+    "action.focus:next:2",
+  ]);
+  assert.equal(controlFocused.document.activeElement, controlFocused.controls.next);
+  assert.notEqual(controlFocused.document.activeElement, oldNext);
+  assert.equal(oldNext.detached, true);
 
+  const oldStage = controlFocused.controls.stages[4];
+  oldStage.focus();
   controlFocused.focusEvents.length = 0;
-  controlFocused.document.activeElement = controlFocused.controls.stages[4];
-  controlFocused.controls.stages[4].click();
-  assert.deepEqual(controlFocused.focusEvents, ["app.innerHTML"], "lifecycle buttons keep focus");
+  oldStage.click();
+  assert.deepEqual(controlFocused.focusEvents, [
+    "app.innerHTML",
+    "stage.focus:4:3",
+  ]);
+  assert.equal(controlFocused.document.activeElement, controlFocused.controls.stages[4]);
+  assert.notEqual(controlFocused.document.activeElement, oldStage);
 
-  controlFocused.controls.play.click();
-  controlFocused.focusEvents.length = 0;
-  controlFocused.document.activeElement = controlFocused.controls.pause;
-  controlFocused.timerCalls.at(-1).callback();
-  assert.deepEqual(controlFocused.focusEvents, ["app.innerHTML"], "automatic ticks do not steal control focus");
+  const tickFocused = createRuntime(freshHtml);
+  tickFocused.context.bootstrap();
+  tickFocused.controls.play.click();
+  const oldPause = tickFocused.controls.pause;
+  oldPause.focus();
+  tickFocused.focusEvents.length = 0;
+  tickFocused.timerCalls[0].callback();
+  assert.deepEqual(tickFocused.focusEvents, [
+    "app.innerHTML",
+    "action.focus:pause:3",
+  ]);
+  assert.equal(tickFocused.document.activeElement, tickFocused.controls.pause);
+  assert.notEqual(tickFocused.document.activeElement, oldPause);
+
+  const unsupportedFocused = createRuntime(freshHtml);
+  unsupportedFocused.context.bootstrap();
+  unsupportedFocused.controls.play.click();
+  unsupportedFocused.document.activeElement = createElement();
+  unsupportedFocused.focusEvents.length = 0;
+  unsupportedFocused.timerCalls[0].callback();
+  assert.deepEqual(unsupportedFocused.focusEvents, ["app.innerHTML"]);
+  assert.equal(unsupportedFocused.document.activeElement, null);
 });
 
 test("leadership replay CSS keeps progress prominent and layout responsive", () => {
@@ -787,5 +881,37 @@ test("leadership replay CSS keeps progress prominent and layout responsive", () 
   assert.match(css, /\.progress-value[^}]*font-size:\s*clamp\(46px,\s*5vw,\s*56px\)/s);
   assert.match(css, /\.lifecycle[^}]*grid-template-columns:\s*repeat\(7,\s*minmax\(0,\s*1fr\)\)/s);
   assert.match(css, /\.work-layout[^}]*grid-template-columns:/s);
+  assert.match(css, /--pending:\s*#5d6975/);
   assert.doesNotMatch(css, /linear-gradient|radial-gradient|border-radius:\s*(?:1[3-9]|[2-9]\d)px/i);
+  const { context } = createRuntime(freshHtml);
+  const html = context.renderDashboard({
+    ...context.selectSnapshot(payload, 0),
+    playback: { index: 0, playing: false, finalHold: false },
+  });
+  assert.match(html, /<div class="controls" role="group" aria-label="回放控制">/);
+});
+
+test("dashboard escapes archive strings in work cards and milestone copy", () => {
+  const malicious = structuredClone(payload);
+  malicious.dimensions[0].name = '<script>alert("dimension")</script>';
+  malicious.contentUnits[0].title = '<img src=x onerror="alert(1)">';
+  malicious.snapshots[1].explanation = '<script>alert("explanation")</script>';
+  malicious.snapshots[1].statements = ['<svg onload="alert(2)">'];
+  const { context } = createRuntime(freshHtml);
+  const planned = context.renderDashboard({
+    ...context.selectSnapshot(malicious, 1),
+    playback: { index: 1, playing: false, finalHold: false },
+  });
+  const organized = context.renderDashboard({
+    ...context.selectSnapshot(malicious, 4),
+    playback: { index: 4, playing: false, finalHold: false },
+  });
+
+  for (const html of [planned, organized]) {
+    assert.doesNotMatch(html, /<script\b|<img\b|<svg\b/i);
+  }
+  assert.match(planned, /&lt;script&gt;alert\(&quot;dimension&quot;\)&lt;\/script&gt;/);
+  assert.match(planned, /&lt;script&gt;alert\(&quot;explanation&quot;\)&lt;\/script&gt;/);
+  assert.match(planned, /&lt;svg onload=&quot;alert\(2\)&quot;&gt;/);
+  assert.match(organized, /&lt;img src=x onerror=&quot;alert\(1\)&quot;&gt;/);
 });

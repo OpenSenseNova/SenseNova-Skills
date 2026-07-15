@@ -18,7 +18,7 @@
       --green-soft: #eaf6ef;
       --amber: #9a6700;
       --amber-soft: #fff4d6;
-      --pending: #697586;
+      --pending: #5d6975;
       --pending-soft: #eef1f4;
     }
 
@@ -379,7 +379,7 @@
     }
 
     function renderControls(state) {
-      return '<div class="controls" aria-label="回放控制">' +
+      return '<div class="controls" role="group" aria-label="回放控制">' +
         '<button class="control primary" type="button" data-action="play" aria-pressed="' + (state.playing ? "true" : "false") + '">播放</button>' +
         '<button class="control" type="button" data-action="pause"' + (!state.playing ? " disabled" : "") + '>暂停</button>' +
         '<button class="control" type="button" data-action="previous"' + (state.index === 0 ? " disabled" : "") + '>上一步</button>' +
@@ -480,11 +480,23 @@
       }
     }
 
+    function getReplayFocusSelector(element) {
+      if (!element || typeof element.getAttribute !== "function") return null;
+      const action = element.getAttribute("data-action");
+      if (["play", "pause", "previous", "next", "restart"].includes(action)) {
+        return '[data-action="' + action + '"]';
+      }
+      const stageIndex = element.getAttribute("data-stage-index");
+      if (/^[0-6]$/.test(stageIndex || "")) return '[data-stage-index="' + stageIndex + '"]';
+      return null;
+    }
+
     function renderCurrent() {
       const app = document.getElementById("app");
       if (!app || !archiveData) return;
       const active = document.activeElement;
       const shouldRestoreHeading = Boolean(active && typeof active.closest === "function" && active.closest(".work-area"));
+      const controlFocusSelector = shouldRestoreHeading ? null : getReplayFocusSelector(active);
       if (shouldRestoreHeading) {
         const currentHeading = document.querySelector("[data-current-heading]");
         if (currentHeading && typeof currentHeading.focus === "function") currentHeading.focus();
@@ -496,6 +508,9 @@
       if (shouldRestoreHeading) {
         const heading = document.querySelector("[data-current-heading]");
         if (heading && typeof heading.focus === "function") heading.focus();
+      } else if (controlFocusSelector) {
+        const control = document.querySelector(controlFocusSelector);
+        if (control && typeof control.focus === "function") control.focus();
       }
     }
 
@@ -509,7 +524,8 @@
     }
 
     function dispatchReplay(action) {
-      if (["PAUSE", "PREVIOUS", "NEXT", "SELECT", "RESTART"].includes(action.type)) clearPlaybackTimer();
+      const restartingFinalStage = action.type === "PLAY" && replayState.index === 6;
+      if (restartingFinalStage || ["PAUSE", "PREVIOUS", "NEXT", "SELECT", "RESTART"].includes(action.type)) clearPlaybackTimer();
       replayState = replayReducer(replayState, action);
       renderCurrent();
       if (replayState.playing) startPlaybackTimer();
