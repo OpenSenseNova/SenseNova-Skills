@@ -195,6 +195,15 @@
     const EXPECTED_STAGES = ["需求确认", "研究规划", "多主题研究", "质量核验", "报告组织", "写作审校", "最终交付"];
     const EXPECTED_PROGRESS = [14, 29, 43, 57, 71, 86, 100];
     const EXPECTED_MODES = ["scope", "plan", "research", "quality", "outline", "review", "delivery"];
+    const EXPECTED_HEADLINES = [
+      "研究范围与关键口径已经确认",
+      "7 个研究维度已经规划完成",
+      "多主题研究正在推进",
+      "研究材料已经完成质量核验",
+      "最终报告结构已经组织完成",
+      "报告写作与终审已经完成",
+      "最终报告与引用清单已经生成"
+    ];
     const EXPECTED_GATES = [
       ["hidden", "hidden", false, false, false, false],
       ["planned", "hidden", false, false, false, false],
@@ -292,7 +301,8 @@
         invariant(snapshot.stage === EXPECTED_STAGES[index], "snapshot stage mismatch");
         invariant(snapshot.progress === EXPECTED_PROGRESS[index], "snapshot progress mismatch");
         invariant(snapshot.workMode === EXPECTED_MODES[index], "snapshot mode mismatch");
-        invariant(Boolean(snapshot.headline) && Boolean(snapshot.explanation), "snapshot copy missing");
+        invariant(snapshot.headline === EXPECTED_HEADLINES[index], "snapshot headline mismatch");
+        invariant(Boolean(snapshot.explanation), "snapshot explanation missing");
         invariant(Array.isArray(snapshot.statements) && snapshot.statements.length >= 1 && snapshot.statements.length <= 3 && snapshot.statements.every(Boolean), "snapshot statements mismatch");
         invariant(sameJSON([
           snapshot.dimensionState, snapshot.unitState, snapshot.metricsVisible,
@@ -470,15 +480,11 @@
       }
     }
 
-    function renderCurrent(options) {
+    function renderCurrent() {
       const app = document.getElementById("app");
       if (!app || !archiveData) return;
       const active = document.activeElement;
-      const shouldRestoreHeading = Boolean(options && options.focusHeading) || Boolean(active && typeof active.closest === "function" && active.closest(".work-area"));
-      if (shouldRestoreHeading) {
-        const currentHeading = document.querySelector("[data-current-heading]");
-        if (currentHeading && typeof currentHeading.focus === "function") currentHeading.focus();
-      }
+      const shouldRestoreHeading = Boolean(active && typeof active.closest === "function" && active.closest(".work-area"));
       app.innerHTML = renderDashboard({ ...selectSnapshot(archiveData, replayState.index), playback: replayState });
       const announcement = document.getElementById("announcement");
       if (announcement) announcement.textContent = "历史回放里程碑 " + (replayState.index + 1) + " / 7：" + archiveData.snapshots[replayState.index].stage;
@@ -493,7 +499,7 @@
       if (playbackTimer !== null || !replayState.playing) return;
       playbackTimer = window.setInterval(function () {
         replayState = replayReducer(replayState, { type: "TICK" });
-        renderCurrent({ focusHeading: true });
+        renderCurrent();
         if (!replayState.playing) clearPlaybackTimer();
       }, 8000);
     }
@@ -501,7 +507,7 @@
     function dispatchReplay(action) {
       if (["PAUSE", "PREVIOUS", "NEXT", "SELECT", "RESTART"].includes(action.type)) clearPlaybackTimer();
       replayState = replayReducer(replayState, action);
-      renderCurrent({ focusHeading: action.type !== "PLAY" && action.type !== "PAUSE" });
+      renderCurrent();
       if (replayState.playing) startPlaybackTimer();
     }
 

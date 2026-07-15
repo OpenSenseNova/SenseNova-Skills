@@ -66,6 +66,7 @@ function createElement(overrides = {}) {
     textContent: "",
     disabled: false,
     focused: false,
+    focusCount: 0,
     listeners,
     addEventListener(type, listener) {
       const entries = listeners.get(type) ?? [];
@@ -82,6 +83,10 @@ function createElement(overrides = {}) {
     },
     focus() {
       this.focused = true;
+      this.focusCount += 1;
+    },
+    closest() {
+      return null;
     },
     setAttribute(name, value) {
       attributes.set(name, String(value));
@@ -131,13 +136,14 @@ function createRuntime(html, { data = null } = {}) {
     "dimension-dialog": createElement(),
     "report-dialog": createElement(),
   };
+  const heading = createElement();
   const bySelector = {
     '[data-action="play"]': controls.play,
     '[data-action="pause"]': controls.pause,
     '[data-action="previous"]': controls.previous,
     '[data-action="next"]': controls.next,
     '[data-action="restart"]': controls.restart,
-    "[data-current-heading]": createElement(),
+    "[data-current-heading]": heading,
     "[data-reload]": createElement(),
   };
   const document = {
@@ -180,11 +186,13 @@ function createRuntime(html, { data = null } = {}) {
   vm.runInContext(runtimeMatch[1], context);
   return {
     context,
+    document,
     app,
     announcement,
     archive,
     reload,
     controls,
+    heading,
     timers,
     timerCalls,
     clearCalls,
@@ -631,6 +639,9 @@ test("archive decoder validates exact invariants and bootstrap offers reload fal
   const wrongVerdict = structuredClone(payload);
   wrongVerdict.verdict = "fail";
   invalidPayloads.push(wrongVerdict);
+  const wrongHeadline = structuredClone(payload);
+  wrongHeadline.snapshots[3].headline = "被篡改的里程碑标题";
+  invalidPayloads.push(wrongHeadline);
 
   for (const invalid of invalidPayloads) {
     assert.throws(() => valid.context.validateArchiveData(invalid));
@@ -642,6 +653,10 @@ test("archive decoder validates exact invariants and bootstrap offers reload fal
   assert.match(fallback.app.innerHTML, /重新加载/);
   fallback.bySelector["[data-reload]"].click();
   assert.equal(fallback.reload.count, 1);
+
+  const headlineFallback = createRuntime(freshHtml, { data: wrongHeadline });
+  headlineFallback.context.bootstrap();
+  assert.match(headlineFallback.app.innerHTML, /演示数据暂时无法加载/);
 });
 
 test("bound controls maintain one eight-second timer and deterministic final hold", () => {
@@ -698,6 +713,35 @@ test("bound controls maintain one eight-second timer and deterministic final hol
   assert.match(runtime.app.innerHTML, /阶段 1 \/ 7/);
   runtime.controls.pause.click();
   assert.ok(runtime.clearCalls.length > clearsBeforeRestart + 1);
+});
+
+test("rerender moves focus only when replacing focused work content", () => {
+  const workFocused = createRuntime(freshHtml);
+  workFocused.context.bootstrap();
+  workFocused.controls.play.click();
+  workFocused.heading.focusCount = 0;
+  workFocused.document.activeElement = createElement({
+    closest(selector) {
+      return selector === ".work-area" ? this : null;
+    },
+  });
+  workFocused.timerCalls[0].callback();
+  assert.equal(workFocused.heading.focusCount, 1);
+
+  const controlFocused = createRuntime(freshHtml);
+  controlFocused.context.bootstrap();
+  controlFocused.document.activeElement = controlFocused.controls.next;
+  controlFocused.controls.next.click();
+  assert.equal(controlFocused.heading.focusCount, 0, "manual controls keep focus");
+
+  controlFocused.document.activeElement = controlFocused.controls.stages[4];
+  controlFocused.controls.stages[4].click();
+  assert.equal(controlFocused.heading.focusCount, 0, "lifecycle buttons keep focus");
+
+  controlFocused.controls.play.click();
+  controlFocused.document.activeElement = controlFocused.controls.pause;
+  controlFocused.timerCalls.at(-1).callback();
+  assert.equal(controlFocused.heading.focusCount, 0, "automatic ticks do not steal control focus");
 });
 
 test("leadership replay CSS keeps progress prominent and layout responsive", () => {
