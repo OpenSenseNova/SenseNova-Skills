@@ -11,6 +11,7 @@ Usage:
     # validate outline + subsets + cross-check with evidence.json files
     python3 validate_outline.py outline.json \\
         --format format.json \\
+        --language zh-Hans \\
         --subsets content_units/ \\
         --evidence sub_reports/d1.evidence.json sub_reports/d2.evidence.json
 
@@ -956,6 +957,9 @@ def validate_outline_v2(data) -> tuple[list, list]:
     if not isinstance(style, dict):
         errors.append(err("U030", "style_contract must be an object"))
     else:
+        language = style.get("language")
+        if not (isinstance(language, str) and language.strip()):
+            errors.append(err("U034", "style_contract.language must be a non-empty BCP 47 label", got=language))
         if style.get("register") not in REGISTER_VALUES:
             errors.append(err("U030", f"style_contract.register must be one of {sorted(REGISTER_VALUES)}", got=style.get("register")))
         if style.get("voice") not in VOICE_VALUES:
@@ -1344,6 +1348,27 @@ def validate_format_contract(outline_data, format_data) -> list:
             "required format structure must equal organization_decision.primary_unit_type",
             required_type=format_requested,
             primary_unit_type=primary_unit_type,
+        ))
+    return errors
+
+
+def validate_language_contract(outline_data, language) -> list:
+    """Cross-check a v2 outline against the request-scoped language parameter."""
+    if not isinstance(outline_data, dict) or outline_data.get("schema_version") != CONTENT_UNIT_SCHEMA_VERSION:
+        return []
+
+    errors: list = []
+    if not (isinstance(language, str) and language.strip()):
+        return [err("U114", "language must be a non-empty BCP 47 label", got=language)]
+
+    style = outline_data.get("style_contract")
+    outline_language = style.get("language") if isinstance(style, dict) else None
+    if outline_language != language:
+        errors.append(err(
+            "U115",
+            "style_contract.language must equal request language",
+            outline_value=outline_language,
+            language_value=language,
         ))
     return errors
 
@@ -1849,6 +1874,8 @@ def main():
     )
     ap.add_argument("--format", dest="format_path",
                     help="confirmed format.json used to cross-check the v2 organization preference")
+    ap.add_argument("--language", dest="language",
+                    help="request language (BCP 47) used to cross-check the v2 style language")
     ap.add_argument("--subsets", metavar="DIR_OR_GLOB",
                     help="directory containing evidence_subset.json files (e.g. content_units/ or sections/)")
     ap.add_argument("--evidence", nargs="*", default=[],
@@ -1895,6 +1922,9 @@ def main():
                 ))
             else:
                 all_errors.extend(validate_format_contract(outline_data, format_data))
+
+    if args.language:
+        all_errors.extend(validate_language_contract(outline_data, args.language))
 
     # Subsets check (optional)
     if args.subsets:

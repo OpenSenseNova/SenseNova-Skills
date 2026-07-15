@@ -19,6 +19,8 @@ panorama、comparison、investigation、timeline、evaluation、forecast 不与 
 
 ## Core principles
 
+语言使用 payload 的 `language`，不得重新推断；`outline.style_contract.language` 必须与其一致。
+
 1. **先看 evidence，再定组织结构**：`format.json.structure_preference` 是研究前偏好；`organization_decision` 必须在扫描完整 evidence 后产生。
 2. **required / preferred / auto 语义不可偷换**：required 必须兑现；preferred 可在证据不适配时调整但必须说明；auto 完全由读者任务和 evidence 决定。
 3. **结构件可以是主体**：矩阵、时间线、清单、评分卡和关系图不再只是 narrative section 的辅助 visual。

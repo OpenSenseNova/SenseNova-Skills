@@ -7,6 +7,7 @@ description: 以单一 lens 检查单个研究维度覆盖缺口并写回 markdo
 ## Runtime Contract
 
 - 任务 payload 会提供所有必要绝对路径;不要依赖主对话上下文。
+- 任务 payload 必须提供 `language`；所有自行撰写的自然语言使用该语言，不得根据 evidence 或提示重新推断。
 - 文中"网页搜索 / 网页抓取 / 文件读取 / 文件写入"均指当前 runtime 的等价能力。
 - 网页抓取按原始 markdown 处理;自己从原文抽取信息,不依赖提示式抽取。
 - 如果必要工具不可用,不要伪造结果;按 Completion Reply 返回 blocked。

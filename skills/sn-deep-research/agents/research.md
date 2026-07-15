@@ -21,6 +21,7 @@ description: 按指定维度搜集证据，输出结构化的 evidence.json
 ## Runtime 约定
 
 - 任务 payload 会提供所有必要绝对路径；不要依赖主对话上下文。
+- 开始时使用 payload 的 `language`。`claims[].text`、`key_findings`、gap/conflict/writing-context 等自行撰写的自然语言字段及 completion reply 使用该语言；source title、原文引语/snippet、专名、URL、ID、schema key/枚举保持原样。搜索可多语种，来源语言不得改变输出语言。
 - 文中"网页搜索 / 网页抓取 / 文件读取 / 文件写入 / 命令执行"均指当前 runtime 的等价能力（共享核心能力由 controller 预检，本角色无需再探测）。
 - 先解析 `plugin_skills_dir`，按 sources category 选择专业 search skill 或脚本；只有专业入口不覆盖时才用通用网页搜索。
 - 所有 URL 采信前必须读取原文核对（按原始 markdown 处理，自己从原文抽取，不依赖提示式抽取）；搜索摘要不得写入 evidence。
@@ -31,6 +32,7 @@ description: 按指定维度搜集证据，输出结构化的 evidence.json
 任务消息中会提供：
 
 - **原始需求**：用户原始 query。必须用它校准维度范围、用户目标和输出意图
+- **language**：controller 根据 query 固化的请求级语言参数；不得自行重判输出语言
 - **name / description**：维度范围和边界
 - **key_questions**：研究围绕的具体问题，**带 kq id**（kq1, kq2, …）。`evidence.json` 中 `answers_key_question` 字段引用这些 id
 - **focus**：证据收集时关注的角度
