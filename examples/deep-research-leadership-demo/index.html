@@ -57,6 +57,9 @@
     }
 
     .topbar { padding: 22px 24px; }
+    .topbar-layout { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .topbar-copy { min-width: 0; }
+    .topbar-report-action { flex: 0 0 auto; min-width: 168px; }
     .eyebrow { margin: 0 0 8px; color: var(--blue); font-weight: 750; letter-spacing: .04em; }
     .report-title { margin: 0; font-size: clamp(22px, 2.2vw, 30px); line-height: 1.25; }
     .metadata { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 12px 0 0; color: var(--muted); font-size: 12px; }
@@ -260,6 +263,8 @@
       .dimension-dialog[role="dialog"] .dialog-surface,
       .report-dialog[role="dialog"] .dialog-surface { width: 100%; height: 100%; margin: 0; }
       .dialog-header, .dialog-body { padding: 16px; }
+      .topbar-layout { align-items: stretch; flex-direction: column; }
+      .topbar-report-action { width: 100%; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -557,10 +562,13 @@
     function renderActions(actions) {
       const disabled = actions.report ? "" : " disabled";
       return '<div class="delivery-card"><strong>最终交付成果</strong><div class="delivery-actions">' +
-        '<button class="control primary" type="button" data-report-action="read"' + disabled + '>阅读最终报告</button>' +
         '<button class="control" type="button" data-report-action="report"' + disabled + '>下载 report.md</button>' +
         '<button class="control" type="button" data-report-action="citations"' + disabled + '>下载 citations.json</button>' +
       '</div></div>';
+    }
+
+    function renderReportReadAction(actions) {
+      return '<button class="control primary topbar-report-action" type="button" data-report-action="read"' + (actions.report ? "" : " disabled") + '>阅读最终报告</button>';
     }
 
     function renderDashboard(view) {
@@ -572,7 +580,7 @@
         : renderDimensionCards(view);
       const reviewPass = view.snapshot.reviewPassed ? '<p class="review-pass">✓ 终审通过</p>' : "";
       return '<div class="page-shell">' +
-        '<header class="topbar"><p class="eyebrow">真实研究记录动态回放</p><h1 class="report-title">' + escapeHTML(view.metadata.reportTitle) + '</h1>' +
+        '<header class="topbar"><div class="topbar-layout"><div class="topbar-copy"><p class="eyebrow">真实研究记录动态回放</p><h1 class="report-title">' + escapeHTML(view.metadata.reportTitle) + '</h1></div>' + renderReportReadAction(view.actions) + '</div>' +
         '<p class="metadata"><span>运行编号 ' + escapeHTML(view.metadata.runId) + '</span><span>Heavy 深度模式</span><span>' + escapeHTML(view.metadata.runSpanLabel) + '</span><span>' + escapeHTML(view.metadata.elapsedLabel) + '</span></p></header>' +
         '<section class="progress-hero" aria-labelledby="current-stage-heading"><div><p class="milestone-label">历史回放 · 里程碑 ' + view.snapshot.index + ' / 7</p>' +
         '<p class="stage-ordinal">阶段 ' + view.snapshot.index + ' / 7</p><h2 class="stage-headline" id="current-stage-heading" data-current-heading tabindex="-1">' + escapeHTML(view.snapshot.headline) + '</h2>' +
@@ -602,8 +610,8 @@
       return value
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-        .replace(/\[\^([A-Za-z0-9_-]+)\]/g, '<sup class="footnote-ref"><a href="#footnote-$1" aria-label="脚注 $1">[$1]</a></sup>')
-        .replace(/\[(\d+)\]/g, '<sup class="citation-token" aria-label="引用 $1">[$1]</sup>');
+        .replace(/\[(\d+)\]/g, '<sup class="citation-token" aria-label="引用 $1">[$1]</sup>')
+        .replace(/\[\^([A-Za-z0-9_-]+)\]/g, '<sup class="footnote-ref"><a href="#footnote-$1" aria-label="脚注 $1">[$1]</a></sup>');
     }
 
     function splitTableRow(line) {
@@ -615,13 +623,25 @@
       return cells.length > 0 && cells.every(function (cell) { return /^:?-{3,}:?$/.test(cell); });
     }
 
+    function isValidTableAt(lines, index) {
+      const line = lines[index] || "";
+      const separator = lines[index + 1] || "";
+      if (!line.includes("|") || !isTableSeparator(separator)) return false;
+      const columnCount = splitTableRow(line).length;
+      if (splitTableRow(separator).length !== columnCount) return false;
+      for (let rowIndex = index + 2; rowIndex < lines.length && lines[rowIndex].includes("|") && lines[rowIndex].trim(); rowIndex += 1) {
+        if (splitTableRow(lines[rowIndex]).length !== columnCount) return false;
+      }
+      return true;
+    }
+
     function renderMarkdown(markdown) {
       const lines = escapeHTML(markdown == null ? "" : markdown).replace(/\r\n?/g, "\n").split("\n");
       const definitions = [];
       const output = [];
       function startsBlock(index) {
         const line = lines[index] || "";
-        return /^#{1,3}\s+/.test(line) || /^[-+*]\s+/.test(line) || /^\[\^[A-Za-z0-9_-]+\]:\s*/.test(line) || (line.includes("|") && isTableSeparator(lines[index + 1] || ""));
+        return /^#{1,3}\s+/.test(line) || /^[-+*]\s+/.test(line) || /^\[\^[A-Za-z0-9_-]+\]:\s*/.test(line) || isValidTableAt(lines, index);
       }
       for (let index = 0; index < lines.length;) {
         const line = lines[index];
@@ -645,7 +665,7 @@
           output.push('<ul>' + items.join("") + '</ul>');
           continue;
         }
-        if (line.includes("|") && isTableSeparator(lines[index + 1] || "")) {
+        if (isValidTableAt(lines, index)) {
           const headers = splitTableRow(line);
           const separators = splitTableRow(lines[index + 1]);
           const alignments = separators.map(function (cell) { return /:$/.test(cell) ? (/^:/.test(cell) ? "center" : "right") : (/^:/.test(cell) ? "left" : "left"); });

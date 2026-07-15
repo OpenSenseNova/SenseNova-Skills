@@ -119,7 +119,7 @@ function createElement(overrides = {}) {
   return element;
 }
 
-function createRuntime(html, { data = null } = {}) {
+function createRuntime(html, { data = null, anchorClickError = null } = {}) {
   const runtimeMatch = html.match(/<script\s+data-demo-runtime>([\s\S]*?)<\/script>/i);
   assert.ok(runtimeMatch, "inline demo runtime should exist");
 
@@ -314,7 +314,10 @@ function createRuntime(html, { data = null } = {}) {
     createElement(tagName) {
       const element = createElement({ tagName: String(tagName).toUpperCase() });
       if (tagName === "a") {
-        element.click = function () { this.clicked = true; };
+        element.click = function () {
+          this.clicked = true;
+          if (anchorClickError) throw anchorClickError;
+        };
         anchors.push(element);
       }
       return element;
@@ -1142,6 +1145,31 @@ test("dimension findings stay gated, then render every archive-backed finding on
   }
 });
 
+test("the single report reader is promoted into the topbar and follows delivery gating", () => {
+  const { context } = createRuntime(freshHtml);
+  const render = (index) => context.renderDashboard({
+    ...context.selectSnapshot(payload, index),
+    playback: { index, playing: false, finalHold: false },
+  });
+
+  for (let index = 0; index < 6; index++) {
+    const html = render(index);
+    const topbar = html.match(/<header class="topbar">([\s\S]*?)<\/header>/)?.[1] ?? "";
+    assert.match(topbar, /data-report-action="read"[^>]*disabled/);
+    assert.equal((html.match(/data-report-action="read"/g) ?? []).length, 1);
+  }
+
+  const delivered = render(6);
+  const topbar = delivered.match(/<header class="topbar">([\s\S]*?)<\/header>/)?.[1] ?? "";
+  const delivery = delivered.match(/<div class="delivery-card">([\s\S]*?)<\/div><\/div>/)?.[1] ?? "";
+  assert.match(topbar, /class="control primary[^>]*data-report-action="read"/);
+  assert.doesNotMatch(topbar, /data-report-action="read"[^>]*disabled/);
+  assert.doesNotMatch(delivery, /data-report-action="read"/);
+  assert.match(delivery, /data-report-action="report"/);
+  assert.match(delivery, /data-report-action="citations"/);
+  assert.ok(delivered.indexOf('data-report-action="read"') < delivered.indexOf('class="lifecycle-panel"'));
+});
+
 test("markdown renderer supports the safe report subset and escapes raw HTML first", () => {
   const { renderMarkdown } = createRuntime(freshHtml).context;
   const synthetic = [
@@ -1149,7 +1177,7 @@ test("markdown renderer supports the safe report subset and escapes raw HTML fir
     "## 二级标题",
     "### 三级标题",
     "",
-    "普通 **加粗** 与 *斜体*，引用 [12]，脚注 [^safe]。<script>alert(1)</script>",
+    "普通 **加粗** 与 *斜体*，引用 [12]，脚注 [^safe] 和数字脚注 [^12]。<script>alert(1)</script>",
     "",
     "- 条目一",
     "- 条目二",
@@ -1159,6 +1187,7 @@ test("markdown renderer supports the safe report subset and escapes raw HTML fir
     "| 甲 | 12 |",
     "",
     "[^safe]: 脚注定义",
+    "[^12]: 数字脚注定义",
   ].join("\n");
   const html = renderMarkdown(synthetic);
   for (const pattern of [/<h1>一级标题<\/h1>/, /<h2>二级标题<\/h2>/, /<h3>三级标题<\/h3>/, /<p>普通/, /<strong>加粗<\/strong>/, /<em>斜体<\/em>/, /<ul>/, /<li>条目一<\/li>/, /class="table-scroll"/, /<table>/, /text-align:right/, /class="citation-token"/, /href="#footnote-safe"/, /id="footnote-safe"/]) {
@@ -1166,6 +1195,11 @@ test("markdown renderer supports the safe report subset and escapes raw HTML fir
   }
   assert.doesNotMatch(html, /<script\b/i);
   assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  const numericFootnote = html.match(/<sup class="footnote-ref"><a href="#footnote-12"[\s\S]*?<\/sup>/)?.[0] ?? "";
+  assert.match(numericFootnote, /数字脚注|\[12\]/);
+  assert.doesNotMatch(numericFootnote, /citation-token/);
+  assert.equal((html.match(/class="citation-token"[^>]*aria-label="引用 12"/g) ?? []).length, 1);
+  assert.match(html, /id="footnote-12">数字脚注定义<\/li>/);
 
   const report = renderMarkdown(payload.reportMarkdown);
   assert.match(report, /^<h1>中国九阶层实际收入与财务状况：中产人数、特征与财力<\/h1>/);
@@ -1173,6 +1207,21 @@ test("markdown renderer supports the safe report subset and escapes raw HTML fir
   assert.match(report, /<div class="table-scroll"[\s\S]*<table>[\s\S]*<th/);
   assert.match(report, /<strong>中国中产没有脱离口径的单一人数答案<\/strong>/);
   assert.match(report, /class="citation-token"[^>]*>\[1\]<\/sup>/);
+});
+
+test("malformed pipe tables preserve escaped content without partial table rendering", () => {
+  const { renderMarkdown } = createRuntime(freshHtml).context;
+  for (const [markdown, preserved] of [
+    ["| A | B | C |\n|---|---|\n| one | two | three |", "three"],
+    ["| A | B |\n|---|---|\n| one | two | <script>EXTRA</script> |", "&lt;script&gt;EXTRA&lt;/script&gt;"],
+  ]) {
+    const html = renderMarkdown(markdown);
+    assert.doesNotMatch(html, /<table\b|class="table-scroll"/);
+    assert.doesNotMatch(html, /text-align:undefined/);
+    assert.doesNotMatch(html, /<script\b/);
+    assert.match(html, new RegExp(preserved));
+    assert.match(html, /\|/);
+  }
 });
 
 test("dialog shells and controllers provide native and fallback modal accessibility", () => {
@@ -1346,6 +1395,19 @@ test("delivery actions are inert before stage seven and download exact archive b
   assert.deepEqual(runtime.revokedUrls, runtime.objectUrls.map((entry) => entry.url));
 });
 
+test("download click failures propagate after revoking the created object URL", () => {
+  const failure = new Error("download click failed");
+  const runtime = createRuntime(freshHtml, { anchorClickError: failure });
+  runtime.context.bootstrap();
+  runtime.controls.stages[6].click();
+
+  assert.throws(() => runtime.reportActions.report.click(), /download click failed/);
+  assert.equal(runtime.objectUrls.length, 1);
+  assert.deepEqual(runtime.revokedUrls, [runtime.objectUrls[0].url]);
+  assert.equal(runtime.anchors[0].download, "report.md");
+  assert.equal(runtime.anchors[0].clicked, true);
+});
+
 test("generated dashboard and dialogs expose safe visible copy and responsive accessibility CSS", () => {
   const { context } = createRuntime(freshHtml);
   const visible = [];
@@ -1365,6 +1427,7 @@ test("generated dashboard and dialogs expose safe visible copy and responsive ac
   assert.match(freshHtml, /id="announcement"[^>]*role="status"[^>]*aria-live="polite"/);
   assert.match(css, /(?:html|body|\.page-shell)[^{]*\{[^}]*overflow-x:\s*(?:hidden|clip)/s);
   assert.match(css, /\.dimension-dialog[^}]*position:\s*fixed[^}]*right:\s*0/s);
+  assert.match(css, /\.topbar-layout[^}]*display:\s*flex[^}]*justify-content:\s*space-between/s);
   assert.match(css, /dialog\[role="dialog"\][^}]*width:\s*100vw[^}]*height:\s*100dvh[^}]*background:/s);
   assert.match(css, /\.dimension-dialog\[role="dialog"\][\s\S]*?\.dialog-surface[^}]*width:\s*min\(580px,\s*100%\)[^}]*margin-left:\s*auto/s);
   assert.match(css, /\.table-scroll[^}]*overflow-x:\s*auto/s);
@@ -1372,6 +1435,7 @@ test("generated dashboard and dialogs expose safe visible copy and responsive ac
   assert.match(css, /@media\s*\(max-width:\s*780px\)[\s\S]*\.lifecycle[^}]*grid-template-columns:\s*1fr/s);
   assert.match(css, /@media\s*\(max-width:\s*780px\)[\s\S]*\.work-layout[^}]*grid-template-columns:\s*1fr/s);
   assert.match(css, /@media\s*\(max-width:\s*780px\)[\s\S]*\.metrics[^}]*grid-template-columns:\s*1fr/s);
+  assert.match(css, /@media\s*\(max-width:\s*780px\)[\s\S]*\.topbar-layout[^}]*flex-direction:\s*column/s);
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*animation(?:-duration)?:/s);
   const staticVisibleCopy = freshHtml
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
