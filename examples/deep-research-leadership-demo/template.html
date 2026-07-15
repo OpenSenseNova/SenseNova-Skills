@@ -510,7 +510,12 @@
         if (heading && typeof heading.focus === "function") heading.focus();
       } else if (controlFocusSelector) {
         const control = document.querySelector(controlFocusSelector);
-        if (control && typeof control.focus === "function") control.focus();
+        if (control && !control.disabled && typeof control.focus === "function") {
+          control.focus();
+        } else if (control) {
+          const heading = document.querySelector("[data-current-heading]");
+          if (heading && typeof heading.focus === "function") heading.focus();
+        }
       }
     }
 

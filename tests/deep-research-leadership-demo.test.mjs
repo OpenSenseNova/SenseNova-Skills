@@ -128,12 +128,18 @@ function createRuntime(html, { data = null } = {}) {
   };
   const createAction = (action) => {
     const generation = elementGeneration;
+    const disabled = new RegExp(`data-action="${action}"[^>]*disabled`).test(renderedHtml);
     const element = createElement({
+      disabled,
       getAttribute(name) {
         return name === "data-action" ? action : null;
       },
     });
     element.focus = function () {
+      if (this.disabled) {
+        focusEvents.push(`action.focus-disabled:${action}:${generation}`);
+        return;
+      }
       this.focused = true;
       this.focusCount += 1;
       focusEvents.push(`action.focus:${action}:${generation}`);
@@ -143,12 +149,18 @@ function createRuntime(html, { data = null } = {}) {
   };
   const createStage = (index) => {
     const generation = elementGeneration;
+    const disabled = new RegExp(`data-stage-index="${index}"[^>]*disabled`).test(renderedHtml);
     const element = createElement({
+      disabled,
       getAttribute(name) {
         return name === "data-stage-index" ? String(index) : null;
       },
     });
     element.focus = function () {
+      if (this.disabled) {
+        focusEvents.push(`stage.focus-disabled:${index}:${generation}`);
+        return;
+      }
       this.focused = true;
       this.focusCount += 1;
       focusEvents.push(`stage.focus:${index}:${generation}`);
@@ -871,6 +883,82 @@ test("rerender moves focus only when replacing focused work content", () => {
   unsupportedFocused.timerCalls[0].callback();
   assert.deepEqual(unsupportedFocused.focusEvents, ["app.innerHTML"]);
   assert.equal(unsupportedFocused.document.activeElement, null);
+});
+
+test("disabled replay targets fall back to the new stage heading", () => {
+  const paused = createRuntime(freshHtml);
+  paused.context.bootstrap();
+  paused.controls.play.click();
+  const oldPause = paused.controls.pause;
+  oldPause.focus();
+  paused.focusEvents.length = 0;
+  oldPause.click();
+  assert.deepEqual(paused.focusEvents, ["app.innerHTML", "heading.focus:3"]);
+  assert.equal(paused.document.activeElement, paused.heading);
+  assert.equal(paused.controls.pause.disabled, true);
+
+  const previous = createRuntime(freshHtml);
+  previous.context.bootstrap();
+  previous.controls.next.click();
+  const oldPrevious = previous.controls.previous;
+  oldPrevious.focus();
+  previous.focusEvents.length = 0;
+  oldPrevious.click();
+  assert.deepEqual(previous.focusEvents, ["app.innerHTML", "heading.focus:3"]);
+  assert.equal(previous.document.activeElement, previous.heading);
+  assert.equal(previous.controls.previous.disabled, true);
+
+  const next = createRuntime(freshHtml);
+  next.context.bootstrap();
+  next.controls.stages[5].click();
+  const oldNext = next.controls.next;
+  oldNext.focus();
+  next.focusEvents.length = 0;
+  oldNext.click();
+  assert.deepEqual(next.focusEvents, ["app.innerHTML", "heading.focus:3"]);
+  assert.equal(next.document.activeElement, next.heading);
+  assert.equal(next.controls.next.disabled, true);
+
+  const finalTick = createRuntime(freshHtml);
+  finalTick.context.bootstrap();
+  finalTick.controls.play.click();
+  const timer = finalTick.timerCalls[0];
+  for (let tick = 0; tick < 6; tick++) timer.callback();
+  const finalPause = finalTick.controls.pause;
+  finalPause.focus();
+  finalTick.focusEvents.length = 0;
+  timer.callback();
+  assert.deepEqual(finalTick.focusEvents, ["app.innerHTML", "heading.focus:9"]);
+  assert.equal(finalTick.document.activeElement, finalTick.heading);
+  assert.equal(finalTick.controls.pause.disabled, true);
+});
+
+test("enabled replay targets retain focus on their new equivalent", () => {
+  for (const action of ["play", "restart"]) {
+    const runtime = createRuntime(freshHtml);
+    runtime.context.bootstrap();
+    const oldControl = runtime.controls[action];
+    oldControl.focus();
+    runtime.focusEvents.length = 0;
+    oldControl.click();
+    assert.deepEqual(runtime.focusEvents, [
+      "app.innerHTML",
+      `action.focus:${action}:2`,
+    ]);
+    assert.equal(runtime.document.activeElement, runtime.controls[action]);
+    assert.notEqual(runtime.document.activeElement, oldControl);
+    assert.equal(runtime.controls[action].disabled, false);
+  }
+
+  const stage = createRuntime(freshHtml);
+  stage.context.bootstrap();
+  const oldStage = stage.controls.stages[3];
+  oldStage.focus();
+  stage.focusEvents.length = 0;
+  oldStage.click();
+  assert.deepEqual(stage.focusEvents, ["app.innerHTML", "stage.focus:3:2"]);
+  assert.equal(stage.document.activeElement, stage.controls.stages[3]);
+  assert.equal(stage.controls.stages[3].disabled, false);
 });
 
 test("leadership replay CSS keeps progress prominent and layout responsive", () => {
