@@ -686,9 +686,34 @@
       return renderMarkdown(data.reportMarkdown);
     }
 
+    function getDialogTriggerSelector(element) {
+      if (!element || typeof element.getAttribute !== "function") return null;
+      const dimensionId = element.getAttribute("data-dimension-id");
+      if (/^d[1-7]$/.test(dimensionId || "")) return '[data-dimension-id="' + dimensionId + '"]';
+      return element.getAttribute("data-report-action") === "read" ? '[data-report-action="read"]' : null;
+    }
+
+    function isAvailableDialogFocusTarget(element) {
+      if (!element || element.disabled) return false;
+      if (typeof element.getAttribute === "function" && element.getAttribute("aria-disabled") === "true") return false;
+      if (typeof element.isConnected === "boolean") return element.isConnected;
+      return typeof document.contains !== "function" || document.contains(element);
+    }
+
+    function restoreDialogFocus(trigger, triggerSelector) {
+      let target = triggerSelector && isAvailableDialogFocusTarget(trigger) ? trigger : null;
+      if (!target && triggerSelector) {
+        const equivalent = document.querySelector(triggerSelector);
+        if (isAvailableDialogFocusTarget(equivalent)) target = equivalent;
+      }
+      if (!target) target = document.querySelector("[data-current-heading]");
+      if (target && typeof target.focus === "function") target.focus();
+    }
+
     function createDialogController(dialog, options) {
       const settings = options || {};
       let trigger = null;
+      let triggerSelector = null;
       let opened = false;
       const focusableSelector = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
       const controller = {
@@ -696,6 +721,7 @@
           if (!dialog) return;
           if (activeDialogController && activeDialogController !== controller) activeDialogController.close(false);
           trigger = opener || document.activeElement;
+          triggerSelector = getDialogTriggerSelector(trigger);
           opened = true;
           activeDialogController = controller;
           dialog.setAttribute("aria-hidden", "false");
@@ -717,7 +743,7 @@
           if (typeof dialog.close === "function" && dialog.open) dialog.close();
           else dialog.removeAttribute("open");
           dialog.setAttribute("aria-hidden", "true");
-          if (restoreFocus !== false && trigger && typeof trigger.focus === "function") trigger.focus();
+          if (restoreFocus !== false) restoreDialogFocus(trigger, triggerSelector);
         },
         isOpen: function () { return opened; }
       };

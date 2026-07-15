@@ -68,6 +68,7 @@ function createElement(overrides = {}) {
     focused: false,
     focusCount: 0,
     open: false,
+    isConnected: true,
     focusables: [],
     listeners,
     addEventListener(type, listener) {
@@ -205,6 +206,18 @@ function createRuntime(html, { data = null } = {}) {
     set(value) {
       focusEvents.push("app.innerHTML");
       if (document?.activeElement) document.activeElement.detached = true;
+      const previousElements = [
+        heading,
+        ...Object.values(controls).flatMap((item) => Array.isArray(item) ? item : [item]),
+        ...Object.values(reportActions),
+        ...dimensionTriggers,
+      ];
+      previousElements.forEach((element) => {
+        if (element) {
+          element.detached = true;
+          element.isConnected = false;
+        }
+      });
       if (document) document.activeElement = null;
       renderedHtml = value;
       elementGeneration += 1;
@@ -273,6 +286,9 @@ function createRuntime(html, { data = null } = {}) {
     dispatchEvent(event) {
       for (const listener of documentListeners.get(event.type) ?? []) listener(event);
     },
+    contains(element) {
+      return Boolean(element && element.isConnected !== false);
+    },
     getElementById(id) {
       return byId[id] ?? null;
     },
@@ -284,6 +300,8 @@ function createRuntime(html, { data = null } = {}) {
       if (stage !== undefined) return controls.stages[Number(stage)];
       const reportAction = selector.match(/^\[data-report-action="(read|report|citations)"\]$/)?.[1];
       if (reportAction) return reportActions[reportAction] ?? null;
+      const dimensionId = selector.match(/^\[data-dimension-id="(d[1-7])"\]$/)?.[1];
+      if (dimensionId) return dimensionTriggers.find((element) => element.getAttribute("data-dimension-id") === dimensionId) ?? null;
       if (selector === "#dimension-dialog [data-dialog-close]") return dimensionClose;
       if (selector === "#report-dialog [data-dialog-close]") return reportClose;
       return bySelector[selector] ?? null;
@@ -1205,7 +1223,10 @@ test("dialog shells and controllers provide native and fallback modal accessibil
   const fallbackDialog = fallback.byId["dimension-dialog"];
   delete fallbackDialog.showModal;
   delete fallbackDialog.close;
-  const fallbackTrigger = createElement({ focus() { this.focused = true; } });
+  const fallbackTrigger = createElement({
+    getAttribute(name) { return name === "data-dimension-id" ? "d1" : null; },
+    focus() { this.focused = true; },
+  });
   const controller = fallback.context.createDialogController(fallbackDialog, { initialFocus: () => fallbackDialog.focusables[0] });
   controller.open(fallbackTrigger);
   assert.equal(fallbackDialog.getAttribute("role"), "dialog");
@@ -1215,6 +1236,92 @@ test("dialog shells and controllers provide native and fallback modal accessibil
   fallbackDialog.dispatchEvent({ type: "click", target: fallbackDialog });
   assert.equal(fallbackDialog.getAttribute("aria-hidden"), "true");
   assert.equal(fallbackTrigger.focused, true);
+});
+
+test("dimension dialog restores focus to the new trigger generation after a playback tick", () => {
+  const runtime = createRuntime(freshHtml);
+  runtime.context.bootstrap();
+  runtime.controls.stages[3].click();
+  runtime.controls.play.click();
+  const timer = runtime.timerCalls.at(-1);
+  const oldTrigger = runtime.dimensionTriggers[0];
+  oldTrigger.focus();
+  oldTrigger.click();
+  assert.equal(runtime.byId["dimension-dialog"].open, true);
+  const oldFocusCount = oldTrigger.focusCount;
+
+  timer.callback();
+  const replacement = runtime.dimensionTriggers[0];
+  assert.notEqual(replacement, oldTrigger);
+  assert.equal(oldTrigger.isConnected, false);
+  assert.equal(runtime.byId["dimension-dialog"].open, true, "tick keeps the drawer open");
+  runtime.document.dispatchEvent({ type: "keydown", key: "Escape", preventDefault() {} });
+
+  assert.equal(runtime.document.activeElement, replacement);
+  assert.equal(replacement.focusCount, 1);
+  assert.equal(oldTrigger.focusCount, oldFocusCount, "detached opener is never refocused");
+});
+
+test("report dialog restores focus to the new read trigger after the final-hold tick", () => {
+  const runtime = createRuntime(freshHtml);
+  runtime.context.bootstrap();
+  runtime.controls.play.click();
+  const timer = runtime.timerCalls[0];
+  for (let tick = 0; tick < 6; tick++) timer.callback();
+  const oldTrigger = runtime.reportActions.read;
+  oldTrigger.focus();
+  oldTrigger.click();
+  const oldFocusCount = oldTrigger.focusCount;
+
+  timer.callback();
+  const replacement = runtime.reportActions.read;
+  assert.notEqual(replacement, oldTrigger);
+  assert.equal(oldTrigger.isConnected, false);
+  assert.equal(runtime.byId["report-dialog"].open, true, "final tick keeps the viewer open");
+  runtime.document.dispatchEvent({ type: "keydown", key: "Escape", preventDefault() {} });
+
+  assert.equal(runtime.document.activeElement, replacement);
+  assert.equal(replacement.focusCount, 1);
+  assert.equal(oldTrigger.focusCount, oldFocusCount, "detached read trigger is never refocused");
+});
+
+test("dialog focus restoration falls back to the current heading for unavailable or unsafe triggers", () => {
+  const disabled = createRuntime(freshHtml);
+  disabled.context.bootstrap();
+  disabled.controls.play.click();
+  const timer = disabled.timerCalls[0];
+  for (let tick = 0; tick < 6; tick++) timer.callback();
+  const oldRead = disabled.reportActions.read;
+  oldRead.focus();
+  oldRead.click();
+  timer.callback();
+  disabled.reportActions.read.disabled = true;
+  disabled.document.dispatchEvent({ type: "keydown", key: "Escape", preventDefault() {} });
+  assert.equal(disabled.document.activeElement, disabled.heading);
+
+  const absent = createRuntime(freshHtml);
+  absent.context.bootstrap();
+  absent.controls.play.click();
+  const absentTimer = absent.timerCalls[0];
+  for (let tick = 0; tick < 6; tick++) absentTimer.callback();
+  absent.reportActions.read.focus();
+  absent.reportActions.read.click();
+  absentTimer.callback();
+  delete absent.reportActions.read;
+  absent.document.dispatchEvent({ type: "keydown", key: "Escape", preventDefault() {} });
+  assert.equal(absent.document.activeElement, absent.heading);
+
+  for (const unsafeTrigger of [
+    createElement({ getAttribute(name) { return name === "data-report-action" ? "report" : null; } }),
+    createElement({ getAttribute(name) { return name === "data-dimension-id" ? 'd1\"] *' : null; } }),
+  ]) {
+    const runtime = createRuntime(freshHtml);
+    const controller = runtime.context.createDialogController(runtime.byId["dimension-dialog"]);
+    controller.open(unsafeTrigger);
+    controller.close();
+    assert.equal(unsafeTrigger.focused, false, "unsafe selector source is not restored");
+    assert.equal(runtime.document.activeElement, runtime.heading);
+  }
 });
 
 test("delivery actions are inert before stage seven and download exact archive bytes", () => {
