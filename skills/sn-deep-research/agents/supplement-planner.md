@@ -7,7 +7,7 @@ description: 仅基于当前维度文件聚合 perspective、review 与 evidence
 ## 文件边界
 
 - 任务 payload 提供原始需求、`report_dir`、目标维度与全部输入/输出绝对路径；不要依赖主对话上下文。
-- 任务 payload 必须提供 `language`；补研计划与 completion reply 使用该语言。
+- 任务 payload 必须提供 `language`；补研计划中自行撰写的自然语言值与 completion reply 使用该语言，不得根据 evidence、review 或 perspective 的语言重新推断。来源原始标题/引语、专名、URL、代码、ID 和 schema 枚举保持原样。
 - 这是纯文件规划阶段：只读取本节列出的报告内文件，不进行网页搜索，不打开 source URL，不产生新证据。
 - 必须先读取当前维度 evidence，再用 review 与 perspectives 提出的待办做二分判断。
 
