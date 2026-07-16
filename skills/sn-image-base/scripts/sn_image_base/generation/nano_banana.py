@@ -23,6 +23,12 @@ DEFAULT_ASPECT_RATIO = "16:9"
 DEFAULT_POLL_INTERVAL = 5.0
 OUTPUT_DIR = Path("/tmp/openclaw-sn-image")
 
+# Gemini finishReason values that indicate content was blocked by safety/policy filters.
+# See: https://ai.google.dev/api/generate-content#FinishReason
+SAFETY_BLOCK_FINISH_REASONS = frozenset(
+    {"SAFETY", "IMAGE_SAFETY", "PROHIBITED_CONTENT", "BLOCKLIST", "SPII", "RECITATION"}
+)
+
 
 class NanoBananaText2ImageClient(T2IBaseClient):
     """Async client for Google Nano Banana API."""
@@ -157,10 +163,17 @@ class NanoBananaText2ImageClient(T2IBaseClient):
         try:
             images = data["images"]
             if not images:
+                reasons = data.get("finish_reasons") or []
+                if any(r in SAFETY_BLOCK_FINISH_REASONS for r in reasons):
+                    error_msg = f"Image blocked by safety filter (finishReason={reasons})"
+                elif reasons:
+                    error_msg = f"No image generated from the model (finishReason={reasons})"
+                else:
+                    error_msg = "No image generated from the model"
                 return {
                     "status": "failed",
                     "error_type": "EmptyResponse",
-                    "error": "No image generated from the model",
+                    "error": error_msg,
                 }
             image, mime_type = images[-1]
             image_bytes = base64.b64decode(image)
@@ -275,7 +288,7 @@ class NanoBananaText2ImageClient(T2IBaseClient):
         for c in candidates:
             content: dict[str, Any] = c.get("content") or {}
             parts: list[dict[str, Any]] = content.get("parts") or []
-            if f_reason := content.get("finishReason"):
+            if f_reason := c.get("finishReason"):
                 finish_reasons.append(f_reason)
             for p in parts:
                 inline_data: dict[str, Any] = p.get("inlineData", {})
