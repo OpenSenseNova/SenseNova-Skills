@@ -1,0 +1,19 @@
+{
+  "name": "sensenova-ppt-workbench-workbench-core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "sensenova-ppt-workbench": "./bin/sensenova-ppt-workbench.mjs"
+  },
+  "scripts": {
+    "start": "node ./bin/sensenova-ppt-workbench.mjs start"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "workbenchRuntime": {
+    "variant": "workbench-core",
+    "builtAt": "2026-07-10T17:46:35.904Z"
+  }
+}

@@ -17,10 +17,13 @@
  * Stdout on failure:  {"status":"failed","error":...} (also exit code 1)
  */
 
-import { chromium } from 'playwright';
 import { resolve } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
+import { hiddenChromiumLaunchOptions, installHiddenProcessHooks } from './lib/browser_setup.mjs';
+
+installHiddenProcessHooks();
+const { chromium } = await import('playwright');
 
 function getArg(name, def = null) {
   const i = process.argv.indexOf(name);
@@ -54,7 +57,7 @@ const SELECTORS = ['.wrapper', '.slide.canvas', '.slide', 'body'];
 
 let browser;
 try {
-  browser = await chromium.launch();
+  browser = await chromium.launch(hiddenChromiumLaunchOptions());
   const ctx = await browser.newContext({
     viewport: { width: vw, height: vh },
     deviceScaleFactor: 1,
