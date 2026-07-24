@@ -312,6 +312,20 @@ mkdir -p ~/.hermes/skills
 cp -r skills/* ~/.hermes/skills/
 ```
 
+Autohand Code:
+
+```bash
+# Global install
+mkdir -p ~/.autohand/skills
+cp -r skills/* ~/.autohand/skills/
+
+# Project-level install
+mkdir -p .autohand/skills
+cp -r skills/* .autohand/skills/
+```
+
+Autohand Code also supports `autohand --skill-install` for cataloged skills, with `--project` for workspace-level installs. Until this repository is listed there, use the direct copy or symlink paths above.
+
 > Want skills to track this repo? Use symlinks instead of `cp -r`:
 > ```bash
 > ln -s "$PWD"/skills/* ~/.openclaw/skills/
@@ -324,7 +338,7 @@ Once your agent is up, send it the message below. It will use its own shell tool
 
 > Copy every subdirectory under `SenseNova-Skills/skills/` (in the current directory) into OpenClaw's skill directory (`~/.openclaw/skills/`). When you're done, list the installed skills.
 
-Swap "OpenClaw" and the path for `hermes-agent` / `~/.hermes/skills/` to use this with hermes.
+Swap "OpenClaw" and the path for `hermes-agent` / `~/.hermes/skills/`, Autohand Code global / `~/.autohand/skills/`, or Autohand Code project / `.autohand/skills/` as needed.
 
 > This option works well for picking and choosing — e.g., "only copy `sn-image-*` and `sn-deep-research`."
 

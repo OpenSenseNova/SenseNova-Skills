@@ -312,6 +312,20 @@ mkdir -p ~/.hermes/skills
 cp -r skills/* ~/.hermes/skills/
 ```
 
+Autohand Code：
+
+```bash
+# 全局安装
+mkdir -p ~/.autohand/skills
+cp -r skills/* ~/.autohand/skills/
+
+# 项目级安装
+mkdir -p .autohand/skills
+cp -r skills/* .autohand/skills/
+```
+
+Autohand Code 也支持通过 `autohand --skill-install` 安装已收录在 Autohand catalog 中的 skill，并可通过 `--project` 安装到当前项目。在本仓库收录前，请使用上面的复制或软链接方式。
+
 > 想保持与仓库同步可以用软链接代替 `cp -r`，例如：
 > ```bash
 > ln -s "$PWD"/skills/* ~/.openclaw/skills/
@@ -324,7 +338,7 @@ cp -r skills/* ~/.hermes/skills/
 
 > 把当前目录 `SenseNova-Skills/skills/` 下所有子目录复制到 OpenClaw 的 skill 目录（`~/.openclaw/skills/`）。完成后列出已安装的 skill 名称。
 
-把"OpenClaw"和路径换成 `hermes-agent` / `~/.hermes/skills/` 即可用于 hermes。Agent 会通过自己的 shell 工具完成 `mkdir` + `cp` + 列目录的动作，并把结果回报给你。
+把"OpenClaw"和路径按需换成 `hermes-agent` / `~/.hermes/skills/`、Autohand Code 全局 / `~/.autohand/skills/`，或 Autohand Code 项目级 / `.autohand/skills/`。Agent 会通过自己的 shell 工具完成 `mkdir` + `cp` + 列目录的动作，并把结果回报给你。
 
 > 这种方式适合按需挑选 skill，例如："只把 `sn-image-*` 和 `sn-deep-research` 这几个 skill 复制过去"。
 

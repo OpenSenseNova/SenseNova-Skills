@@ -53,6 +53,7 @@ After it finishes, **you may need to manually restart the agent service** before
 |-------|------------------|
 | [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
 | [hermes-agent](https://github.com/NousResearch/hermes-agent) | `~/.hermes/skills/` |
+| [Autohand Code](https://github.com/autohandai/code-cli) | `~/.autohand/skills/` globally, or `<project>/.autohand/skills/` for one workspace |
 
 <details>
 <summary>Prefer to install manually?</summary>
@@ -65,7 +66,18 @@ mkdir -p ~/.openclaw/skills
 cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
 
-For Hermes, swap the target to `~/.hermes/skills/`.
+For Hermes, swap the target to `~/.hermes/skills/`. For Autohand Code, use `~/.autohand/skills/` globally or `<project>/.autohand/skills/` in a workspace:
+
+```bash
+mkdir -p ~/.autohand/skills
+cp -r SenseNova-Skills/skills/* ~/.autohand/skills/
+
+# Or install into the current project only
+mkdir -p .autohand/skills
+cp -r SenseNova-Skills/skills/* .autohand/skills/
+```
+
+Autohand Code also supports `autohand --skill-install` for cataloged skills, with `--project` for workspace-level installs. Until this repository is listed there, use the direct copy or symlink paths above.
 
 </details>
 

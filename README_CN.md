@@ -54,6 +54,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 |--------|---------|
 | [OpenClaw](https://openclaw.ai/) | `~/.openclaw/skills/` |
 | [hermes-agent](https://github.com/NousResearch/hermes-agent) | `~/.hermes/skills/` |
+| [Autohand Code](https://github.com/autohandai/code-cli) | 全局 `~/.autohand/skills/`，或当前项目 `<project>/.autohand/skills/` |
 
 <details>
 <summary>想手动安装？</summary>
@@ -66,7 +67,18 @@ mkdir -p ~/.openclaw/skills
 cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
 
-Hermes 把目录换成 `~/.hermes/skills/` 即可。
+Hermes 把目录换成 `~/.hermes/skills/` 即可。Autohand Code 可复制到全局 `~/.autohand/skills/`，或复制到当前项目的 `<project>/.autohand/skills/`：
+
+```bash
+mkdir -p ~/.autohand/skills
+cp -r SenseNova-Skills/skills/* ~/.autohand/skills/
+
+# 或只安装到当前项目
+mkdir -p .autohand/skills
+cp -r SenseNova-Skills/skills/* .autohand/skills/
+```
+
+Autohand Code 也支持通过 `autohand --skill-install` 安装已收录在 Autohand catalog 中的 skill，并可通过 `--project` 安装到当前项目。在本仓库收录前，请使用上面的复制或软链接方式。
 
 </details>
 
