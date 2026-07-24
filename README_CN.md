@@ -44,9 +44,9 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 - **推荐 LLM**：配合使用 **[SenseNova 平台 API](https://platform.sensenova.cn/token-plan)**（提供免费 token 套餐）。
 - **安装与配置**：完整流程请参考 **[`INSTALL_CN.md`](INSTALL_CN.md)**。
 
-**推荐做法：直接让 agent 帮你装好这些 skill。** 把仓库地址交给它，让它自己克隆并把内容拷贝到目标目录，例如：
+**推荐做法：直接让 agent 帮你装好这些 skill。** 把仓库地址交给它，让它自己克隆并把内容拷贝到目标目录，同时不要覆盖已有文件，例如：
 
-> *"请帮我把 https://github.com/OpenSenseNova/SenseNova-Skills 安装到你的 skills 目录。"*
+> *"请帮我把 https://github.com/OpenSenseNova/SenseNova-Skills 安装到你的 skills 目录，不要覆盖已有文件。"*
 
 安装完成后，**可能需要手动重启 agent 服务**，新 skill 才会被加载。
 
@@ -58,15 +58,22 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 <details>
 <summary>想手动安装？</summary>
 
-克隆本仓库，然后把 `skills/` 下的子目录自行复制（或软链接）到目标目录：
+克隆本仓库，然后把 `skills/` 下的子目录复制到目标目录，同时避免替换已经安装的文件：
 
 ```bash
 git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 mkdir -p ~/.openclaw/skills
-cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
+cp -R -n SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
 
-Hermes 把目录换成 `~/.hermes/skills/` 即可。
+Hermes 使用它自己的 skill 目录：
+
+```bash
+mkdir -p ~/.hermes/skills
+cp -R -n SenseNova-Skills/skills/* ~/.hermes/skills/
+```
+
+`-n` 会保留已有文件，避免覆盖本地自定义内容。如需逐个确认冲突文件，可将 `-n` 替换为 `-i`。
 
 </details>
 

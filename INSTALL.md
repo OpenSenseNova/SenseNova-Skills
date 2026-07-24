@@ -302,17 +302,19 @@ OpenClaw:
 
 ```bash
 mkdir -p ~/.openclaw/skills
-cp -r skills/* ~/.openclaw/skills/
+cp -R -n skills/* ~/.openclaw/skills/
 ```
 
 hermes-agent:
 
 ```bash
 mkdir -p ~/.hermes/skills
-cp -r skills/* ~/.hermes/skills/
+cp -R -n skills/* ~/.hermes/skills/
 ```
 
-> Want skills to track this repo? Use symlinks instead of `cp -r`:
+`-n` keeps existing files in place, so local customizations are not overwritten silently. If you want to review each conflict interactively, replace `-n` with `-i`.
+
+> Want skills to track this repo? Use symlinks instead of copying the directories:
 > ```bash
 > ln -s "$PWD"/skills/* ~/.openclaw/skills/
 > ```
@@ -320,9 +322,9 @@ cp -r skills/* ~/.hermes/skills/
 
 ### 3.3 Option 2: ask the agent to install them
 
-Once your agent is up, send it the message below. It will use its own shell tool to do the `mkdir` + `cp` + listing for you.
+Once your agent is up, send it the message below. It will use its own shell tool to create the target directory, copy without overwriting existing files, and list the result for you.
 
-> Copy every subdirectory under `SenseNova-Skills/skills/` (in the current directory) into OpenClaw's skill directory (`~/.openclaw/skills/`). When you're done, list the installed skills.
+> Copy every subdirectory under `SenseNova-Skills/skills/` (in the current directory) into OpenClaw's skill directory (`~/.openclaw/skills/`) without overwriting existing files. When you're done, list the installed skills.
 
 Swap "OpenClaw" and the path for `hermes-agent` / `~/.hermes/skills/` to use this with hermes.
 
