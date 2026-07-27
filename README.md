@@ -192,7 +192,7 @@ Join our growing community to share feedback, get support, and stay updated on t
 <table>
   <tr>
     <td align="center"><b><a href="https://discord.com/invite/BuTXPHmQub">Discord</a></b></td>
-    <td align="center"><b>WeChat Group</b></td>
+    <td align="center"><b>Lark Group</b></td>
   </tr>
   <tr>
     <td align="center"><a href="https://discord.com/invite/BuTXPHmQub"><img src="assets/discord_qr.webp" width="160"/></a></td>

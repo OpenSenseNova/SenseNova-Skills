@@ -193,7 +193,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 <table>
   <tr>
     <td align="center"><b><a href="https://discord.gg/cxkwXWjp">Discord</a></b></td>
-    <td align="center"><b>微信交流群</b></td>
+    <td align="center"><b>飞书群组</b></td>
   </tr>
   <tr>
     <td align="center"><a href="https://discord.gg/cxkwXWjp"><img src="assets/discord_qr.webp" width="160"/></a></td>
