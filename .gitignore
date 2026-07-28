@@ -11,6 +11,7 @@ tmp/
 
 # Node
 node_modules/
+skills/*/workbench-runtime/data/
 
 # Local research outputs
 deep-research-reports/

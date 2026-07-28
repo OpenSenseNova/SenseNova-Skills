@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Start the SenseNova generation progress WebUI for a generated deck.
+"""Start the SenseNova Workbench for PPT generation or Deep Research.
 
-The PPT pipeline remains responsible for generation. This helper only starts
-the local WebUI so users can watch JSON artifacts and pages appear in real
-time. It is intentionally best-effort: missing workbench code must not block
-PPT generation.
+The generation pipeline remains responsible for producing artifacts. This
+helper starts the matching local WebUI so users can follow progress in real
+time. Callers can require the WebUI or retain best-effort behavior.
 """
 
 from __future__ import annotations
@@ -22,8 +21,10 @@ from typing import Iterable
 
 EDITOR_ROUTE = "/editor"
 PROGRESS_ROUTE = "/progress"
+RESEARCH_PROGRESS_ROUTE = "/"
 LEGACY_EDITOR_ROUTE = "/ppt-editor"
 LEGACY_PROGRESS_ROUTE = "/ppt-progress"
+LEGACY_DR_PROGRESS_ROUTE = "/dr-progress"
 
 
 def _background_process_kwargs() -> dict[str, int]:
@@ -32,16 +33,21 @@ def _background_process_kwargs() -> dict[str, int]:
     return {"creationflags": subprocess.CREATE_NO_WINDOW}
 
 
-def _repo_candidates() -> Iterable[Path]:
-    binary_name = "sensenova-ppt-workbench.mjs"
-    env_cli = os.environ.get("SENSENOVA_PPT_WORKBENCH_CLI") or os.environ.get("PPT_WORKBENCH_CLI")
+def _repo_candidates(product: str = "ppt") -> Iterable[Path]:
+    binary_name = "sensenova-research-workbench.mjs" if product == "research" else "sensenova-ppt-workbench.mjs"
+    env_cli = (
+        os.environ.get("SENSENOVA_RESEARCH_WORKBENCH_CLI") if product == "research" else None
+    ) or os.environ.get("SENSENOVA_PPT_WORKBENCH_CLI") or os.environ.get("PPT_WORKBENCH_CLI")
     if env_cli:
         yield Path(env_cli).expanduser()
 
     here = Path(__file__).resolve()
     skill_dir = here.parents[1]
     skills_root = skill_dir.parent
-    yield skills_root / "sn-ppt-workbench" / "workbench-runtime" / "bin" / binary_name
+    if product == "research":
+        yield skills_root / "sn-deep-research" / "workbench-runtime" / "bin" / binary_name
+    else:
+        yield skills_root / "sn-ppt-workbench" / "workbench-runtime" / "bin" / binary_name
     yield skill_dir / "workbench-runtime" / "bin" / binary_name
 
     home = Path.home()
@@ -59,8 +65,8 @@ def _repo_candidates() -> Iterable[Path]:
         yield parent.parent / "ppt-editor" / "bin" / binary_name
 
 
-def _find_cli() -> Path | None:
-    for candidate in _repo_candidates():
+def _find_cli(product: str = "ppt") -> Path | None:
+    for candidate in _repo_candidates(product):
         if candidate.is_file():
             return candidate.resolve()
     return None
@@ -116,12 +122,15 @@ def _with_workbench_route(url: str, route: str) -> str:
 
     parts = urllib.parse.urlsplit(url)
     path = parts.path.rstrip("/")
-    for known_route in (EDITOR_ROUTE, PROGRESS_ROUTE, LEGACY_EDITOR_ROUTE, LEGACY_PROGRESS_ROUTE):
+    for known_route in (EDITOR_ROUTE, PROGRESS_ROUTE, LEGACY_EDITOR_ROUTE, LEGACY_PROGRESS_ROUTE, LEGACY_DR_PROGRESS_ROUTE):
         if path.endswith(known_route):
             path = path[: -len(known_route)].rstrip("/")
             break
 
-    path = f"{path}{route}" if path else route
+    if route == RESEARCH_PROGRESS_ROUTE:
+        path = path or RESEARCH_PROGRESS_ROUTE
+    else:
+        path = f"{path}{route}" if path else route
     query = parts.query
     if route == PROGRESS_ROUTE and query:
         query = urllib.parse.urlencode([
@@ -137,9 +146,16 @@ def _normalize_progress_route(value: str) -> str:
     route = (value or PROGRESS_ROUTE).strip().replace("\\", "/")
     if route in {PROGRESS_ROUTE, LEGACY_PROGRESS_ROUTE}:
         return PROGRESS_ROUTE
+    if route in {RESEARCH_PROGRESS_ROUTE, LEGACY_DR_PROGRESS_ROUTE}:
+        return RESEARCH_PROGRESS_ROUTE
+    # Git Bash/MSYS on Windows can rewrite POSIX-looking route arguments such
+    # as /dr-progress into absolute Windows paths. Keep launch idempotent by
+    # recovering the intended route from the final path segment.
+    if route.rstrip("/").endswith(LEGACY_DR_PROGRESS_ROUTE):
+        return RESEARCH_PROGRESS_ROUTE
     if route.rstrip("/").endswith(PROGRESS_ROUTE) or route.rstrip("/").endswith(LEGACY_PROGRESS_ROUTE):
         return PROGRESS_ROUTE
-    raise ValueError(f"--progress-route must be {PROGRESS_ROUTE}")
+    raise ValueError(f"--progress-route must be {PROGRESS_ROUTE} or {RESEARCH_PROGRESS_ROUTE}")
 
 
 def _env_file_candidates() -> Iterable[Path]:
@@ -350,7 +366,7 @@ def _ensure_built(cli: Path, timeout: int) -> tuple[bool, str]:
 
 def main() -> int:
     _hydrate_hermes_env()
-    parser = argparse.ArgumentParser(description="Start SenseNova PPT workbench.")
+    parser = argparse.ArgumentParser(description="Start a SenseNova workbench.")
     parser.add_argument("--deck-dir", required=True)
     parser.add_argument("--source-session-id", default=os.environ.get("WORKBENCH_AGENT_SOURCE_SESSION_ID", os.environ.get("HERMES_SESSION_KEY", "")))
     parser.add_argument("--agent-session-id", default="")
@@ -367,6 +383,7 @@ def main() -> int:
     parser.add_argument("--public-url", default="")
     parser.add_argument("--host", default="")
     parser.add_argument("--port", default="0")
+    parser.add_argument("--product", choices=("ppt", "research"), default=os.environ.get("WORKBENCH_PRODUCT", "ppt"))
     parser.add_argument("--progress-route", default=os.environ.get("WORKBENCH_PROGRESS_ROUTE", PROGRESS_ROUTE))
     parser.add_argument("--no-build", action="store_true")
     parser.add_argument("--require-webui", action="store_true")
@@ -385,10 +402,18 @@ def main() -> int:
             "reason": f"deck dir not found: {deck_dir}",
         })
 
-    cli = _find_cli()
+    product = "research" if args.product == "research" or args.progress_route.strip() in {RESEARCH_PROGRESS_ROUTE, LEGACY_DR_PROGRESS_ROUTE} else "ppt"
+    if product == "research":
+        args.progress_route = RESEARCH_PROGRESS_ROUTE
+
+    cli = _find_cli(product)
     if not cli:
         return unavailable({
-            "reason": "sensenova-ppt-workbench launcher not found; set SENSENOVA_PPT_WORKBENCH_CLI",
+            "reason": (
+                "sensenova-research-workbench launcher not found; set SENSENOVA_RESEARCH_WORKBENCH_CLI"
+                if product == "research"
+                else "sensenova-ppt-workbench launcher not found; set SENSENOVA_PPT_WORKBENCH_CLI"
+            ),
         })
 
     node_ok, node_detail = _probe_command(_node_command())
@@ -396,7 +421,7 @@ def main() -> int:
         return unavailable({
             "reason": "nodejs_missing",
             "detail": node_detail,
-            "install_hint": "NodeJS is required for the generation progress WebUI. Ask the user whether to install NodeJS/dependencies; if they decline, continue PPT generation without the WebUI.",
+            "install_hint": "NodeJS is required for the workbench. Install NodeJS or provide a runnable workbench environment.",
             "cli": str(cli),
         })
 
@@ -430,7 +455,7 @@ def main() -> int:
         "--host",
         host,
         "--product",
-        "ppt",
+        product,
         "--progress-route",
         progress_route,
         "--agent-provider",
@@ -478,14 +503,15 @@ def main() -> int:
     print(json.dumps({
         "status": "ok",
         "cli": str(cli),
-        "product": "ppt",
+        "product": product,
         "deck_dir": str(deck_dir),
         "bind_host": host,
         "agent_managed": _is_agent_managed(args),
         "public_url": workbench_url,
         "progress_route": progress_route,
         "generation_url": generation_url,
-        "editor_url": payload.get("editorUrl") or workbench_url,
+        "research_progress_url": generation_url if product == "research" else "",
+        "editor_url": (payload.get("editorUrl") or workbench_url) if product == "ppt" else "",
         "workbench": payload,
     }, ensure_ascii=False))
     return 0
