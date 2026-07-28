@@ -1,0 +1,19 @@
+{
+  "name": "sensenova-research-workbench-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "sensenova-research-workbench": "./bin/sensenova-research-workbench.mjs"
+  },
+  "scripts": {
+    "start": "node ./bin/sensenova-research-workbench.mjs start"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "workbenchRuntime": {
+    "product": "research",
+    "source": "src/ppt-editor"
+  }
+}
