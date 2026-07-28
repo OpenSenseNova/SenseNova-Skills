@@ -5,6 +5,42 @@
 ⏰ The SenseNova Skills Bi-weekly regularly recaps the latest project iterations and community updates, keeping developers and users fully up-to-speed with our technical roadmap.
 
 > 💡 Note: Bi-weekly updates are listed in reverse chronological order.
+---
+
+## 2026.7.6 - 7.26
+
+### Deep Research
+
+#### Real-Time Task-Flow Tracking on the Web
+
+Task progress can now be tracked live in the browser across both Normal and Heavy modes, with every execution stage and intermediate artifact surfaced end to end.
+
+#### Rebuilt Task Execution Pipeline
+
+The pipeline is now more flexible: previously fetched material can be reused (all cached under source_cache/), and the report's output format can be chosen dynamically to fit the task at hand.
+
+#### Multilingual Consistency Fix
+
+Skill invocation logic has been refined so that the working language stays aligned with the user's system settings or input language, eliminating mixed-language output.
+
+### PPT
+
+#### PPT Workbench
+
+The new Workbench delivers a one-stop, closed loop from generation to editing:
+
+- **Live generation and preview**: A new task-progress page lets you view slides and JSON artifacts as they are generated. It intelligently follows the latest progress by default and, once finished, transitions seamlessly into the editor.
+- **Precise visual editing**: An upgraded three-pane layout supports free drag-and-drop and modification of elements, and lets you select a specific on-slide element to submit to the AI for targeted revision, preventing accidental edits to the rest of the page.
+- **Presenting, exporting, and troubleshooting**: Supports full-screen immersive playback and PPTX / PDF / image export, with a built-in file panel for directly diagnosing missing images or path errors.
+- **Experience and performance optimizations**: Fixed rendering-size and image-display anomalies, provided a prebuilt Runtime (ready out of the box, no dependency configuration required), and optimized the portrait-mode layout and input-box experience.
+
+### Image Generation
+
+#### [Issue #109](https://github.com/OpenSenseNova/SenseNova-Skills/issues/109) fixed: Enhanced Error Messaging for Image-Generation Failures
+
+For Gemini / Nano Banana image-generation failures, precise error-cause messages were added to speed up troubleshooting.
+
+---
 
 ## 2026.6.22 - 7.5
 
