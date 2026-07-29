@@ -4,11 +4,18 @@
 import sys
 import xml.etree.ElementTree as ET
 
-
 from search_utils import build_parser, get_client, make_item, make_result, print_json
 
 ESEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 EFETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+
+
+def normalize_pmc_id(value: str) -> str:
+    """仅移除真正的 PMC 前缀。"""
+    normalized = value.strip()
+    if normalized[:3].casefold() == "pmc":
+        return normalized[3:]
+    return normalized
 
 
 def search(query: str, limit: int, api_key: str | None = None) -> list[dict]:
@@ -116,7 +123,7 @@ def search(query: str, limit: int, api_key: str | None = None) -> list[dict]:
                 doi = id_elem.text
             elif id_type == "pmc" and id_elem.text:
                 # 规范化：去掉 "PMC" 前缀，只保留数字
-                pmc_id = id_elem.text.lstrip("PMCpmc").strip() or id_elem.text
+                pmc_id = normalize_pmc_id(id_elem.text)
 
         # MeSH 关键词
         keywords = [kw.text for kw in medline.findall(".//Keyword") if kw.text]

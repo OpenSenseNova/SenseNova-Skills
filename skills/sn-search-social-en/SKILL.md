@@ -1,6 +1,6 @@
 ---
 name: sn-search-social-en
-description: 用于搜索英文社交平台，包括 Reddit 帖子、Twitter/X 推文和 YouTube 视频。
+description: 用于搜索英文社交平台，包括 Reddit 帖子、Twitter/X 推文和 YouTube 视频；在 OpenClaw 或 Hermes Agent 中也可路由至 Xquik 原生插件。
 ---
 
 # sn-search-social-en - 英文社交平台搜索
@@ -10,6 +10,60 @@ description: 用于搜索英文社交平台，包括 Reddit 帖子、Twitter/X �
 API key、token 与 cookie 统一建议写在仓库根目录 `.env`（参考 `.env.example`），并由 runtime 或用户在执行前加载为同名环境变量。脚本仍只从环境变量或显式 CLI 参数读取凭证；不要把真实密钥写入 skill payload、报告、日志或提交。
 
 搜索 Reddit、Twitter/X、YouTube 三个英文社交平台。
+
+## 可选 Xquik 原生路由
+
+本 Skill 继续负责 Reddit、Twitter/X 与 YouTube 的多平台搜索。任务只涉及 X 时，可按当前 runtime 选用 Xquik 原生插件：
+
+- OpenClaw 使用 [TweetClaw](https://docs.xquik.com/guides/tweetclaw)。
+- Hermes Agent 使用 [Hermes Tweet](https://docs.xquik.com/guides/hermes-tweet)。
+- 未安装插件时，继续使用下方脚本。
+
+先检查插件来源。插件会在本地 runtime 中执行代码。
+
+### OpenClaw
+
+安装并配置 TweetClaw：
+
+```bash
+export XQUIK_API_KEY="<your_api_key>"
+openclaw plugins install @xquik/tweetclaw
+openclaw config set plugins.entries.tweetclaw.config.apiKey "$XQUIK_API_KEY"
+openclaw config set tools.alsoAllow '["explore", "tweetclaw"]'
+```
+
+验证 runtime：
+
+```bash
+openclaw plugins inspect tweetclaw --runtime
+openclaw skills info tweetclaw
+```
+
+先用 `explore` 查找端点。只调用所需的 `tweetclaw` 路径。执行发布、回复、点赞、转推、关注、私信或其他写操作前，先展示完整请求并获得明确批准。
+
+### Hermes Agent
+
+安装并启用 Hermes Tweet：
+
+```bash
+hermes plugins install Xquik-dev/hermes-tweet --enable
+hermes plugins enable hermes-tweet
+hermes tools list
+```
+
+`tweet_explore` 无需 API key。配置 `XQUIK_API_KEY` 后可使用 `tweet_read`：
+
+```bash
+export XQUIK_API_KEY="<your_api_key>"
+export HERMES_TWEET_ENABLE_ACTIONS=false
+hermes -z "Use tweet_explore to find X trends, then use tweet_read to return current trends." --toolsets hermes-tweet
+```
+
+修改 Hermes 环境后，在交互式 CLI 中运行 `/reload`。Gateway 与 cron 会话需要重启。
+
+默认保持 `HERMES_TWEET_ENABLE_ACTIONS=false`。只有用户批准具体写操作后，才设为 `true` 并调用 `tweet_action`。
+
+Xquik is an independent third-party service. Not affiliated with X Corp. "Twitter" and "X" are trademarks of X Corp.
 
 ## 可用脚本
 
