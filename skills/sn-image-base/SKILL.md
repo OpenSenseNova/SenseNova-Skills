@@ -59,6 +59,11 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--insecure` | flag | `False` | Disable TLS verification |
 | `--save-path` | Path | Auto-generated | Save path |
 
+Set `SN_IMAGE_GEN_MODEL_TYPE=atlas-cloud` to use Atlas Cloud's task-based image
+generation API. Configure `SN_IMAGE_GEN_BASE_URL=https://api.atlascloud.ai/api/v1`,
+`SN_IMAGE_GEN_MODEL=bytedance/seedream-v5.0-lite`, and provide the key through
+`SN_IMAGE_GEN_API_KEY` (or `SN_API_KEY`). The default `sensenova` backend is unchanged.
+
 ### sn-image-recognize
 
 Image recognition tool that uses VLM (Vision Language Model) to analyze image content. Supports multiple image inputs.
