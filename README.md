@@ -196,7 +196,7 @@ Join our growing community to share feedback, get support, and stay updated on t
   </tr>
   <tr>
     <td align="center"><a href="https://discord.com/invite/BuTXPHmQub"><img src="assets/discord_qr.webp" width="160"/></a></td>
-    <td align="center"><img src="assets/sensenova-skills-chatgroup.jpg" width="160"/></td>
+    <td align="center"><img src="assets/sensenova-skills-chatgroup.png" width="160"/></td>
   </tr>
 </table>
 </div>
