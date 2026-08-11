@@ -7,6 +7,31 @@
 > 💡 Note: Bi-weekly updates are listed in reverse chronological order.
 ---
 
+## 2026.7.27 - 8.9
+
+### Deep Research
+
+Actively in development 🧑‍💻👩‍💻
+
+### PPT
+
+#### PPT Skill v2: Rebuilt Unified Generation Pipeline
+
+Over the past two weeks we shipped a milestone release of PPT Skill v2. Rather than bolting another mode onto the existing flow, we rebuilt the pipeline end to end — from understanding the request and parsing materials, through research and narrative structuring, to page generation and delivery — and got both core routes, Static HTML and Dynamic HTML, working end to end. It's now open for anyone to use: 
+
+- **Unified entry point**: Every request enters through `sn-ppt-entry` and flows through `material understanding → optional research (targeted search for Standard, full Deep Research for Deep) → a shared Story (outline.md, readable and editable) → Static or Dynamic HTML generation`. Depth, output format, and design richness are three independent choices — the system can recommend defaults, or you can override any of them. 
+- **Static HTML**: Keeps the effect baseline we've tuned across a large set of samples — per-page generation with visual self-checks and full review passes — and now ships both a full-fidelity HTML deck and a PPTX-compatible export by default. The HTML-to-PPTX converter got stronger at handling tables, charts, and complex backgrounds; a failed conversion never affects the HTML deck that's already generated. 
+- **Dynamic HTML**: Now handled by `sn-ppt-dazzle`, building on the shared Story to produce a single-file presentation with navigation, transitions, animated backgrounds, and interactive effects — still backed by `CSS, SVG, Canvas, ECharts, Shader, and Three.js`.
+- **Task handling and tooling**: Task artifacts now land in a fixed, predictable directory, and interrupted runs resume from where they left off instead of starting over. Search and image generation prefer the native tools of the Agent you're running, falling back to the bundled tools only when those aren't available. 
+- **Workbench**: Added full editing support for Dynamic HTML decks, plus fixes for a batch of rough edges — drag-and-drop editing, in-place text editing, and page-flip flicker. The progress page now reflects real task state instead of marking partial completion as done. 
+Going forward, we'll keep collecting real-world generations to sharpen visual quality, long-task feedback, Dynamic HTML compatibility, and HTML-to-PPTX fidelity, and to fully connect Workbench with the new generation pipeline.
+
+### Image Generation
+
+Actively in development 🧑‍💻👩‍💻
+
+---
+
 ## 2026.7.6 - 7.26
 
 ### Deep Research
