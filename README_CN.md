@@ -122,9 +122,9 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 | 名称                                                                   | 标签        | 描述                                                                                      |
 | -------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
-| [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **深度研究入口** | **深度研究功能的统一入口**，支持真实依赖 DAG、来源快照复用和 evidence-informed content units，最终产出 `report.md`。 |
+| [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **深度研究入口** | **按档位编排的深度研究统一入口**，支持并行研究工作包、quick / normal 一次综合，以及可审计的 heavy 完整流程，最终产出 `report.md`。 |
 | [`sn-research-report`](skills/sn-research-report/SKILL.md)                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
-| [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | 最终呈现形式发现 | 比较研究报告、学术论文、表格优先报表、决策备忘录或自定义 Markdown 形式；由 scout 在研究前调用并交给用户确认。 |
+| [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | 报告最终呈现形式发现 | 比较研究报告、学术论文、表格优先报表、决策备忘录或自定义 Markdown 形式。 |
 | [`sn-prepare-citations`](skills/sn-prepare-citations/SKILL.md)                 | 引用渲染      | 将 `[^source_id]` 脚注后处理为编号引用，并基于 evidence sources 追加参考文献。 |
 | [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)             | Markdown → HTML 报告 | 把研究产出的 `report.md`（或任意 Markdown 文档）转换成单文件、可离线打开的 HTML 阅读视图——内嵌图片、侧栏目录、自适应表格，并自动修复表格分隔符。 |
 

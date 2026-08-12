@@ -8,16 +8,15 @@ This document describes the current deep-research stack after the integrated `sn
 
 | Skill / component | Role |
 |---|---|
-| [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | Unified entry point. Chooses quick / normal / heavy mode, creates the report directory, dispatches specialist agents, runs validators, and renders the final report. |
-| `sn-deep-research/agents/scout.md` | Pre-research briefing, mode recommendation, and invocation of the format-discovery skill for normal / heavy runs. |
-| `sn-deep-research/agents/plan.md` | Research planner only: splits dimensions by coverage obligations and creates a dependency/wave only when downstream search scope truly needs upstream findings. |
-| `sn-deep-research/agents/research.md` | Per-dimension evidence gathering. Outputs `sub_reports/dN.evidence.json` and pins every used full text in the report-scoped `source_cache/`. |
-| `validate_plan.py` / `validate_evidence.py` / `validate_outline.py` | Hard gates for topology, source snapshots, format preference, outlines, and evidence subsets. |
+| [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | Unified entry point. Chooses quick / normal / heavy mode, starts the Research Workbench progress page, dispatches specialist agents, runs validators, and renders the final report. |
+| `sn-deep-research/agents/scout.md` | Heavy-mode pre-research briefing. It consumes the request-level `format` string but does not discover or persist format state. |
+| `sn-deep-research/agents/plan.md` | Research planner only: divides the request into independently executable work packages with explicit scope ownership and minimal duplicate search. |
+| `sn-deep-research/agents/research.md` | Per-dimension evidence gathering. Reads its work package from `plan.json`, verifies original pages, and outputs validated `sub_reports/dN.evidence.json`. |
+| `validate_briefing.py` / `validate_plan.py` / `validate_evidence.py` / `validate_supplement_plan.py` / `validate_outline.py` | Hard gates for briefing structure, independent plan work packages, evidence integrity, supplement-plan generation, outlines, and evidence subsets. |
 | `review.md`, `perspective.md`, `supplement-planner.md` | Evidence review, coverage-gap checks, and targeted supplement plans. |
-| `report-planner.md`, `report-writer.md`, `report-stitcher.md` | Implements the confirmed form as evidence-bound content units, then assembles normal/heavy output without forcing article sections. |
-| `source_snapshot.py` | Stores normalized-URL, content-addressed, immutable UTF-8 source snapshots reused by research, review, and supplements. |
+| `report-writer.md` | Writes quick and normal reports in one pass from all routed evidence; in heavy mode it writes evidence-bound content units. |
+| `report-planner.md`, `report-stitcher.md` | Heavy-only report organization and assembly without forcing article sections. |
 | [`sn-prepare-citations`](../skills/sn-prepare-citations/SKILL.md) | Converts `[^source_id]` footnotes into numbered citations and writes `report.md` + `citations.json`. |
-| [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | The sole owner of format discovery; scout supplies briefing context so it can compare a research report, academic paper, table-first analytical output, decision memo, or a custom form. |
 | [`sn-research-report`](../skills/sn-research-report/SKILL.md) | Standalone report-structure reference/template skill; not part of the integrated pipeline control flow. |
 
 ## Search Skills Used by Research Agents
@@ -41,6 +40,7 @@ These skills remain in the repository, but they are not automatic steps in the c
 
 | Skill | Current status |
 |---|---|
+| [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | Optional standalone format recommendation; `sn-deep-research` itself uses one request-level `format` string and does not create format artifacts. |
 | [`sn-md-to-html-report`](../skills/sn-md-to-html-report/SKILL.md) | Reworks an existing Markdown report into a self-contained HTML feature page; not called automatically by `sn-deep-research`. |
 | [`sn-search-image`](../skills/sn-search-image/SKILL.md) | Image search skill; the current research-agent source categories do not map it as a mandatory entry point. |
 | [`sn-update`](../skills/sn-update/SKILL.md) | Maintenance skill for refreshing/updating the `sn-*` bundle; not part of research execution. |
@@ -55,13 +55,13 @@ Use the unified entry point for deep research requests:
 
 The controller chooses a mode and follows the corresponding pipeline:
 
-- **quick**: one skim evidence dimension → source snapshot and evidence validation → quick writer → citation rendering.
-- **normal**: scout + format confirmation → validated plan → parallel evidence research/review → v2 content units → per-unit writers → stitcher → final review → citation rendering.
-- **heavy**: normal plus broader coverage, perspectives, supplement planning, and full review. Independent dimensions stay parallel; only true information dependencies create later waves, and downstream search waits for finalized upstream evidence.
+- **quick**: one self-contained research agent → validated evidence → one-pass writer → citation rendering.
+- **normal**: validated plan → parallel evidence research → one `quick_synthesis` writer over all evidence → citation rendering.
+- **heavy**: briefing → validated plan → parallel evidence research → review, perspectives, and targeted supplements → evidence-bound content units → stitching and full review.
 
-For normal and heavy runs, scout invokes `sn-report-format-discovery` to write `format_proposal.json`. Three orthogonal contracts remain separate: `selected_format` is the overall deliverable form (report, brief, board, and so on), the content `paradigm` controls how reasoning advances, and `structure_preference` records whether the primary information carrier (narrative, matrix, timeline, checklist, and so on) is required, preferred, or automatic. Report planning chooses `organization_decision + content_units` only after evidence exists; there is no fixed comparison-to-matrix or investigation-to-timeline mapping.
+The controller resolves one request-level `format` string before dispatch, for example `report`, `paper`, `table`, or `memo`, and passes it alongside `language`. It creates no `format.json`, proposal, or format schema. Quick and normal write the complete report directly; only heavy uses report planning and content units.
 
-Every v1.2 evidence item has a `snapshot_ref` into `source_cache/{url_hash}/{content_hash}.md`. Review groups checks by ref, and supplement work performs cache lookup before any fetch; existing bodies are reused and newly fetched bodies are stored immediately.
+Each evidence file keeps verifiable source URLs, snippets, quote types, claims, and writing-context boundaries. Research must read the original page before admitting evidence; heavy-mode review deduplicates URLs and fetches each page once per review pass. Supplement research updates the same dimension evidence file and records unresolved boundaries in `writing_context`.
 
 ## Configuration
 

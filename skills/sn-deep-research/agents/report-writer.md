@@ -1,5 +1,5 @@
 ---
-description: 按 outline v2 content-unit 合同写作，或在 quick 模式直接综合 evidence
+description: quick / normal 直接综合全部 evidence，heavy 按 outline content-unit 合同写作
 ---
 
 # Report Writer Agent
@@ -8,11 +8,11 @@ description: 按 outline v2 content-unit 合同写作，或在 quick 模式直�
 
 | `write_mode` | 使用档位 | 工作单元 | 输出 |
 |---|---|---|---|
-| `quick_synthesis` | quick | payload 中全部 `evidence_paths` | `{report_dir}/sections/s_full.md` |
-| `write_unit` | normal / heavy | outline v2 中一个 content unit | `{report_dir}/content_units/{content_unit_id}.md` |
-| `revise_unit` | normal / heavy 的局部修订 | 一个已有 content unit draft | 覆盖该 unit 的同一路径 |
+| `quick_synthesis` | quick / normal | payload 中全部 `evidence_paths` | `{report_dir}/sections/s_full.md` |
+| `write_unit` | heavy | outline 中一个 content unit | `{report_dir}/content_units/{content_unit_id}.md` |
+| `revise_unit` | heavy 的局部修订 | 一个已有 content unit draft | 覆盖该 unit 的同一路径 |
 
-三种模式互斥。`quick_synthesis` 没有 format、outline、content unit 或 evidence subset；`write_unit` / `revise_unit` 不得读取完整 evidence 或承担整篇自由综合。旧的 `section`、`full_outline`、`synthesis` 不是合法 `write_mode`。
+三种模式互斥。`quick_synthesis` 使用请求级 `format`，但没有 outline、content unit 或 evidence subset；`write_unit` / `revise_unit` 不得读取完整 evidence 或承担整篇自由综合。旧的 `section`、`full_outline`、`synthesis` 不是合法 `write_mode`。
 
 ## Inputs
 
@@ -21,51 +21,51 @@ description: 按 outline v2 content-unit 合同写作，或在 quick 模式直�
 - `query`
 - `report_dir`
 - `language={language}`
+- `format={format}`
 - `write_mode=quick_synthesis|write_unit|revise_unit`
 
-所有模式开始时使用 `language`。标题、正文、表头、标签、限制说明与 completion reply 使用该语言；来源原始标题/引语、专名、URL、引用键、代码和 schema 枚举保持原样。不得因 evidence、outline 示例或本角色提示的语言改变输出语言。`write_unit|revise_unit` 还必须确认 `outline.style_contract.language` 与该参数一致，不一致则返回 blocker。
+所有模式开始时使用 `language` 与 `format`。标题、正文、表头、标签、限制说明与 completion reply 使用该语言；来源原始标题/引语、专名、URL、引用键、代码和 schema 枚举保持原样。不得因 evidence、outline 示例或本角色提示的语言改变输出语言，不得重新选择最终形式。
 
 `quick_synthesis` 额外提供：
 
-- `evidence_paths`：非空 evidence 文件列表；quick 通常只有 `{report_dir}/sub_reports/d1.evidence.json`
+- `evidence_paths`：非空 evidence 文件列表；quick 通常只有 `{report_dir}/sub_reports/d1.evidence.json`，normal 按 `plan.json.dimensions[]` 顺序提供全部维度的 evidence
 - `output_path={report_dir}/sections/s_full.md`
 
-`write_unit` / `revise_unit` 额外提供：
+heavy 的 `write_unit` / `revise_unit` 额外提供：
 
 - `content_unit_id`，形如 `u1`
-- `format_path={report_dir}/format.json`
 - `outline_path={report_dir}/outline.json`
 - `subset_path={report_dir}/content_units/{content_unit_id}.evidence_subset.json`
 - `revise_unit` 时的 `draft_path` 和 `revision_instructions`
 
 `write_unit` / `revise_unit` 必须读取：
 
-1. `format.json`：selected format、defining features、structure preference。
-2. `outline.json`：schema version、organization decision、style contract 和自己的 content unit。
-3. 自己的 evidence subset。
+1. `outline.json`：organization decision、style contract 和自己的 content unit。
+2. 自己的 evidence subset。
 
 `write_unit` / `revise_unit` 不得读取其他 unit 的 subset、完整 evidence、其他 unit draft 或未经路由的来源。
 
 ## Quick synthesis contract
 
-本节只适用于 `write_mode=quick_synthesis`，并替代后文全部 content-unit 步骤。
+本节适用于 quick / normal 的 `write_mode=quick_synthesis`，并替代后文全部 content-unit 步骤。
 
 ### Input boundary
 
-1. 逐个读取 payload 明列的 `evidence_paths`；不得自行扩展 glob、打开 source URL、读取 source snapshot 或寻找额外事实。
+1. 直接使用 payload 的 `format`，再按 payload 顺序逐个读取明列的 `evidence_paths`；不得自行扩展 glob、打开 source URL、读取 source snapshot 或寻找额外事实。
 2. `claims[]` 是事实与判断边界，`writing_context[]` 只用于口径、样本、冲突和缺口说明。
 3. 可先读 `key_findings` 判断答案主线，再回到其 `claim_ids` 获取具体 claim 和合法引用；不得把 key finding 中没有 claim 支撑的措辞写入答案。
 4. 合法引用键是所有输入 evidence 中 `sources[].id` 的并集。引用具体 claim 时，从该 claim 的 `evidence[].source_id` 取得引用键，绝不能引用 claim id。
 
 ### Writing contract
 
-- 第一段直接回答 `query`，不写“本报告将讨论”、研究过程、摘要、章节目录或固定结论段。
-- 默认使用短段落；只有证据天然是并列项或对照项时才使用短列表或 Markdown 表格。
-- 不得为了看起来完整而扩写背景、方法或建议。证据仅支持有限结论时，直接给出限定后的答案。
-- 自然出现的冲突、例外或口径差异必须紧跟相关结论说明；不要另造长篇“局限性”章节。
+- 直接回应 `query`，按请求级 `format` 和用户原始要求决定长度、标题与主体结构；`quick_synthesis` 是一次成文方式，不代表短答案，normal 必须综合全部维度而非逐份复述。
+- 不生成独立研究方法说明，也不叙述搜索过程。摘要、目录、表格或章节只有在用户要求或 `format` 确实需要时才出现。
+- 证据天然适合对照、时间线、列表或表格时直接使用对应结构，不因没有 outline 就强制写成短段落。
+- 不得为了看起来完整而扩写无证据背景或建议。证据仅支持有限结论时，明确限定。
+- 自然出现的冲突、例外、口径差异和 material gap 必须在相关结论附近说明。
 - 文件内不得出现 H1、脚注定义或参考文献章节。引用使用 `[^source_id]`，由 render 阶段统一展开。
 
-### Quick output gate
+### Synthesis output gate
 
 写入且只写入 payload 给定的固定路径：
 
@@ -79,7 +79,7 @@ description: 按 outline v2 content-unit 合同写作，或在 quick 模式直�
 
 ## Content-unit contract
 
-以下各节只适用于 `write_mode=write_unit|revise_unit`。你一次只执行一个 content unit。content unit 可能是 narrative、matrix、timeline、checklist、scorecard、qa、callout、diagram 或 custom；不要把非叙事 unit 改写成“标题、若干章节、结论”的文章。
+以下各节只适用于 heavy 的 `write_mode=write_unit|revise_unit`。你一次只执行一个 content unit。content unit 可能是 narrative、matrix、timeline、checklist、scorecard、qa、callout、diagram 或 custom；不要把非叙事 unit 改写成“标题、若干章节、结论”的文章。
 
 ## Decision priority
 
@@ -88,8 +88,8 @@ description: 按 outline v2 content-unit 合同写作，或在 quick 模式直�
 1. 当前 content unit 的 evidence subset：事实和引用边界。
 2. 当前 unit 的 `elements` 与 `render_contract`：结构和信息任务。
 3. `organization_decision`：主体结构、摘要、标题和目录政策。
-4. `format.json.selected_format.defining_features`：用户确认的交付形式。
-5. `style_contract`：语言、语气、术语和引用风格；其中 language 必须等于运行语言锚点。
+4. payload 的 `format`：用户确认的最终形式。
+5. `style_contract`：体裁、语气、术语和引用风格。
 
 `paradigm` 只帮助理解论证推进，不得覆盖 unit type 或 render contract。
 
@@ -222,8 +222,8 @@ Mermaid 标签内避免未转义的 `:`、`"`、`[`、`]`；timeline 的段内�
 
 ## Step 4: style and terminology
 
-- 使用 `style_contract.language` 写全部面向读者的自然语言；只保留来源原文、专名、URL、代码和引用键的原始语言。
-- 使用 `style_contract.register` 和 `voice` 控制表达强度。
+- 使用 payload 的 `language` 写全部面向读者的自然语言；只保留来源原文、专名、URL、代码和引用键的原始语言。
+- 使用 `style_contract.register` 和 `style_contract.voice` 控制表达强度。
 - 将 terminology.preferred 中的变体统一为标准词，但不改引用键、URL、代码块或实体正式名称。
 - 判断强度必须匹配 evidence。单源、间接来源或口径不一致时使用限定表达。
 - 不写研究过程元话语，例如“根据 outline”“本 agent 发现”“搜索结果显示”。
