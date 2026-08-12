@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-  <a href="https://platform.sensenova.cn"><img src="https://img.shields.io/badge/Website-Platform-1f6feb?style=flat-square&logo=googlechrome&logoColor=white" alt="Website"></a>
+  <a href="https://sensenova.ai"><img src="https://img.shields.io/badge/Website-Platform-1f6feb?style=flat-square&logo=googlechrome&logoColor=white" alt="Website"></a>
   <a href="https://office.xiaohuanxiong.com/home"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_Raccoon-Try%20it%20free-f29415?style=flat-square" alt="Raccoon"></a>
-  <a href="https://platform.sensenova.cn/token-plan"><img src="https://img.shields.io/badge/Token_Plan-Free-2ea44f?style=flat-square&logo=opensea&logoColor=white" alt="Token Plan"></a>
+  <a href="https://platform.sensenova.ai/docs"><img src="https://img.shields.io/badge/API_Docs-Global-2ea44f?style=flat-square&logo=readthedocs&logoColor=white" alt="API Docs"></a>
   <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square&logo=github&logoColor=white" alt="SenseNova U1"></a>
   <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square&logo=github&logoColor=white" alt="SenseNova 6.7"></a>
 </p>
@@ -40,8 +40,10 @@ Raccoon now ships a full upgrade across product capability and client experience
 These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent.
 
 - **Recommended runtime**: pair them with **[OpenClaw](https://openclaw.ai/)** or **[hermes-agent](https://github.com/NousResearch/hermes-agent)**.
-- **Recommended LLM**: pair them with the **[SenseNova Platform API](https://platform.sensenova.cn/token-plan)** — a free token plan is available.
+- **Recommended LLM**: pair them with the **[SenseNova international API docs](https://platform.sensenova.ai/docs)** and use the global endpoint `https://token.sensenova.ai/v1`.
 - **Install & configure**: follow the full walkthrough in **[`INSTALL.md`](INSTALL.md)**.
+
+> The English docs in this repo target the international SenseNova API. The Chinese docs keep the mainland China token-plan flow.
 
 **Recommended: let the agent install the skills for you.** Hand it the repo URL and ask it to clone and drop the skills into the right directory — for example:
 

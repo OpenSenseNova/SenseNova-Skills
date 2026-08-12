@@ -67,34 +67,40 @@ When `max_rounds=1`, VLM review is skipped. Setting `max_rounds` to `2` or highe
 
 Image generation quality issues (garbled text/typos, unappealing layout, incorrect human anatomy, etc.) require waiting for the new model release, which will focus on improving image generation quality.
 
+## Q: Which SenseNova API should international users use?
+
+If you are following the English docs in this repo, use the official international SenseNova API docs at [platform.sensenova.ai/docs](https://platform.sensenova.ai/docs) and set your OpenAI-compatible base URL to:
+
+```text
+https://token.sensenova.ai/v1
+```
+
+Do not reuse the mainland China `.cn` endpoint from older screenshots or Chinese-only setup guides when configuring the English flow.
+
 ## Q: How do I deal with reasoning/coding ability and stability issues?
 
 SenseNova 6.7 Flash-Lite has a relatively small parameter count, so its ability is limited on complex reasoning, large-scale coding tasks, and long-context scenarios — you may see degraded quality, infinite loops, repeated output, or the model cutting corners on tasks. Try switching to `deepseek-v4-pro`, which is more stable in these scenarios.
 
 ## Q: How do I deal with rate limiting and quota issues?
 
-The SenseNova Token Plan is currently in a free trial phase. Limited by the free quota and overall load, you may see the following during peak hours:
+The official international docs currently list a request quota of 1,500 requests per 5 hours for both `sensenova-6.8-flash-lite` and `sensenova-u1-fast`. Around the limit or during peak hours, you may see:
 
-- **429 rate limiting:** the free quota is 1,500 calls / 5 hours (sliding window); once exceeded you are throttled automatically and recover after 5 hours.
-- **FREE_QUOTA_EXHAUSTED:** once the free quota is used up, the endpoint becomes temporarily inactive and recovers after the window resets.
+- **429 rate limiting:** once the quota window is exceeded you are throttled automatically and recover after 5 hours.
+- **FREE_QUOTA_EXHAUSTED:** once the current quota window is used up, the endpoint becomes temporarily inactive and recovers after the window resets.
 - **High latency / no response:** queuing may occur when concurrency is high during peak hours.
-
-**What's coming:** a paid Token Plan is in preparation and, once live, will offer higher concurrency quotas, larger call volumes, and more stable service quality.
-
-## Q: When will the paid Token Plan be available?
-
-The paid Token Plan is in preparation and is expected to launch later. Please watch the official announcements for the exact timing.
 
 ## Q: What if the Anthropic format isn't supported?
 
-SenseNova supports both the Anthropic Messages format (via `https://token.sensenova.cn`) and the OpenAI-compatible format (via `https://token.sensenova.cn/v1`). Claude Code can connect using the Anthropic format directly, with no protocol conversion required. For the exact configuration, see the Provider configuration section of the [SenseNova-Skills Agent access tutorial](https://sensetime.feishu.cn/wiki/LYuWwvwABiRtvgkce6DcwCw8nec).
+For the international API, SenseNova supports both the Anthropic Messages format (via `https://token.sensenova.ai`) and the OpenAI-compatible format (via `https://token.sensenova.ai/v1`). Claude Code can connect using the Anthropic format directly, with no protocol conversion required.
 
 ## Q: What if the model name isn't recognized?
 
-If you hit an error like `The supported API model names are ... but you passed ...`, first confirm the model name is spelled correctly. The currently supported model names are:
+If you hit an error like `The supported API model names are ... but you passed ...`, first confirm the model name is spelled correctly. The current international docs list:
 
-- `sensenova-6.7-flash-lite` — SenseNova 6.7 Flash-Lite, lightweight and fast
+- `sensenova-6.8-flash-lite` — SenseNova 6.8 Flash Lite, lightweight multimodal chat model
 - `sensenova-u1-fast` — SenseNova U1 Fast, reasoning-enhanced
+
+As of August 12, 2026, the official international docs also state that calls made with `sensenova-6.7-flash-lite` are compatibility-routed to `sensenova-6.8-flash-lite` through August 31, 2026.
 
 Note: model names are case-sensitive, so make sure they match the names above exactly.
 
@@ -107,11 +113,13 @@ Note: model names are case-sensitive, so make sure they match the names above ex
 A 401 means the API key is invalid or not set correctly. Please check:
 
 - The API key was copied correctly (no extra spaces or line breaks)
-- You have obtained a valid key from the [SenseNova platform](https://www.sensenova.cn/token-plan)
+- You created the key through the international flow described in [platform.sensenova.ai/docs](https://platform.sensenova.ai/docs)
+- Your account completed the email verification step required before creating API keys
+- Your client is using the correct international base URL: `https://token.sensenova.ai/v1`
 - The Authorization header is in the format `Bearer sk-xxx`
 
 If you've confirmed the key is correct but still get a 401, regenerate the key and try again.
 
 ---
 
-> **Provider configuration reference:** For how to configure providers for SenseNova models (cc-switch, Claude Code, Codex, etc.), see the [SenseNova-Skills Agent access tutorial](https://sensetime.feishu.cn/wiki/LYuWwvwABiRtvgkce6DcwCw8nec).
+> **Provider configuration reference:** For the latest international provider examples, see [platform.sensenova.ai/docs](https://platform.sensenova.ai/docs).
