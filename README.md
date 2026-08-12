@@ -43,9 +43,9 @@ These skills are designed to run inside an [Agent Skills](https://agentskills.io
 - **Recommended LLM**: pair them with the **[SenseNova Platform API](https://platform.sensenova.cn/token-plan)** — a free token plan is available.
 - **Install & configure**: follow the full walkthrough in **[`INSTALL.md`](INSTALL.md)**.
 
-**Recommended: let the agent install the skills for you.** Hand it the repo URL and ask it to clone and drop the skills into the right directory — for example:
+**Recommended: let the agent install the skills for you.** Hand it the repo URL and ask it to clone and copy the skills into the right directory without overwriting existing files — for example:
 
-> *"Please install SenseNova-Skills from https://github.com/OpenSenseNova/SenseNova-Skills into your skills directory."*
+> *"Please install SenseNova-Skills from https://github.com/OpenSenseNova/SenseNova-Skills into your skills directory without overwriting existing files."*
 
 After it finishes, **you may need to manually restart the agent service** before the new skills are picked up.
 
@@ -57,15 +57,22 @@ After it finishes, **you may need to manually restart the agent service** before
 <details>
 <summary>Prefer to install manually?</summary>
 
-Clone this repository, then copy the subdirectories under `skills/` into the target directory yourself:
+Clone this repository, then copy the subdirectories under `skills/` into the target directory without replacing files that are already installed:
 
 ```bash
 git clone https://github.com/OpenSenseNova/SenseNova-Skills.git --depth=1
 mkdir -p ~/.openclaw/skills
-cp -r SenseNova-Skills/skills/* ~/.openclaw/skills/
+cp -R -n SenseNova-Skills/skills/* ~/.openclaw/skills/
 ```
 
-For Hermes, swap the target to `~/.hermes/skills/`.
+For Hermes, use its skills directory:
+
+```bash
+mkdir -p ~/.hermes/skills
+cp -R -n SenseNova-Skills/skills/* ~/.hermes/skills/
+```
+
+The `-n` flag preserves existing files, which helps avoid overwriting local customizations. If you want to review each conflict interactively, replace `-n` with `-i`.
 
 </details>
 

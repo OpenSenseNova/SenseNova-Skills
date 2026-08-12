@@ -302,17 +302,19 @@ OpenClaw：
 
 ```bash
 mkdir -p ~/.openclaw/skills
-cp -r skills/* ~/.openclaw/skills/
+cp -R -n skills/* ~/.openclaw/skills/
 ```
 
 hermes-agent：
 
 ```bash
 mkdir -p ~/.hermes/skills
-cp -r skills/* ~/.hermes/skills/
+cp -R -n skills/* ~/.hermes/skills/
 ```
 
-> 想保持与仓库同步可以用软链接代替 `cp -r`，例如：
+`-n` 会保留已有文件，避免静默覆盖本地自定义内容。如需逐个确认冲突文件，可将 `-n` 替换为 `-i`。
+
+> 想保持与仓库同步可以用软链接代替复制目录，例如：
 > ```bash
 > ln -s "$PWD"/skills/* ~/.openclaw/skills/
 > ```
@@ -322,9 +324,9 @@ cp -r skills/* ~/.hermes/skills/
 
 启动 agent 后，把下面这条消息发给它：
 
-> 把当前目录 `SenseNova-Skills/skills/` 下所有子目录复制到 OpenClaw 的 skill 目录（`~/.openclaw/skills/`）。完成后列出已安装的 skill 名称。
+> 把当前目录 `SenseNova-Skills/skills/` 下所有子目录复制到 OpenClaw 的 skill 目录（`~/.openclaw/skills/`），不要覆盖已有文件。完成后列出已安装的 skill 名称。
 
-把"OpenClaw"和路径换成 `hermes-agent` / `~/.hermes/skills/` 即可用于 hermes。Agent 会通过自己的 shell 工具完成 `mkdir` + `cp` + 列目录的动作，并把结果回报给你。
+把"OpenClaw"和路径换成 `hermes-agent` / `~/.hermes/skills/` 即可用于 hermes。Agent 会通过自己的 shell 工具创建目标目录、执行不覆盖已有文件的复制，并把结果回报给你。
 
 > 这种方式适合按需挑选 skill，例如："只把 `sn-image-*` 和 `sn-deep-research` 这几个 skill 复制过去"。
 
