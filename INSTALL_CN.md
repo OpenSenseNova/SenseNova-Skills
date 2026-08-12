@@ -10,7 +10,7 @@
 
 ## 0. 先准备 SenseNova API Key 与端点
 
-后续两种 agent 都需要下面这组配置，但具体值取决于你使用的是海外版还是中国内地版：
+请根据你所在的区域（海外/中国内地）选用对应的API配置，这组配置后续将同时用于[OpenClaw](https://openclaw.ai/) 和 [hermes-agent](https://github.com/NousResearch/hermes-agent)：
 
 | 地区     | 文档 / 申请入口                                                                                                           | Base URL                          | 模型名                       |
 | -------- | ------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------- |
@@ -57,6 +57,7 @@ OpenClaw 在 Windows 上推荐 WSL2，hermes-agent 在 Windows 上**仅支持** 
 要求：Windows 10 22H2+ 或 Windows 11。
 
 1. 以**管理员身份**打开 PowerShell：
+
    ```powershell
    wsl --install
    ```
@@ -65,6 +66,7 @@ OpenClaw 在 Windows 上推荐 WSL2，hermes-agent 在 Windows 上**仅支持** 
 2. 重启电脑。
 3. 重启后会自动启动 Ubuntu 终端，按提示设置 UNIX 用户名与密码。
 4. 检查 WSL 版本与发行版：
+
    ```powershell
    wsl -l -v
    ```
@@ -289,10 +291,10 @@ hermes setup        # 全量向导
 hermes model        # 仅交互式选择/配置 LLM
 ```
 
-向导询问 provider 时选 `custom (OpenAI-compatible)`，然后填写同一地区的一组值：
+向导询问 provider 时选 `custom (OpenAI-compatible)`，然后填写API配置：
 
-- 海外：Base URL `https://token.sensenova.ai/v1`，Model name `sensenova-6.8-flash-lite`
-- 中国内地：Base URL `https://token.sensenova.cn/v1`，Model name `sensenova-6.8-flash-lite`
+- Base URL：`https://token.sensenova.ai/v1`（海外版）；Base URL `https://token.sensenova.cn/v1`（中国内地）
+- Model name： `sensenova-6.8-flash-lite`
 - API Key：使用同一地区申请到的 key
 
 #### 2.B.4 验证 LLM 通路

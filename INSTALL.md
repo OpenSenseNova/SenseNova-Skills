@@ -59,6 +59,7 @@ OpenClaw recommends running under WSL2 on Windows; hermes-agent **only supports*
 Requirements: Windows 10 22H2+ or Windows 11.
 
 1. Open PowerShell **as Administrator**:
+
    ```powershell
    wsl --install
    ```
@@ -67,6 +68,7 @@ Requirements: Windows 10 22H2+ or Windows 11.
 2. Reboot the machine.
 3. After reboot, the Ubuntu terminal launches automatically — set your UNIX username and password as prompted.
 4. Verify the WSL version and distribution:
+
    ```powershell
    wsl -l -v
    ```
@@ -204,10 +206,10 @@ Follow the prompts as shown below. Use the API key from §0, and configure at le
 │  Skip for now
 ```
 
-Depending on your region, use one of the following pair:
+Depending on your region, use one of the following base URL:
 
-- International: `https://token.sensenova.ai/v1` + `sensenova-6.8-flash-lite`
-- Mainland China: `https://token.sensenova.cn/v1` + `sensenova-6.8-flash-lite`
+- International: `https://token.sensenova.ai/v1`
+- Mainland China: `https://token.sensenova.cn/v1`
 
 #### 2.A.5 Verify the LLM connection
 
@@ -293,9 +295,9 @@ hermes model        # just the LLM provider step
 
 When the wizard asks for a provider, pick `custom (OpenAI-compatible)` and enter:
 
-- Base URL `https://token.sensenova.ai/v1`, model `sensenova-6.8-flash-lite`(for international users)
-- Base URL `https://token.sensenova.cn/v1`, model `sensenova-6.8-flash-lite`(for mainland China users)
-- API key: use the key generated from the same region's docs page
+- Base URL:`https://token.sensenova.ai/v1`(for international users), or `https://token.sensenova.cn/v1` (for mainland China users)
+- API key: use the key you generated above
+- Model name:`sensenova-6.8-flash-lite`
 
 #### 2.B.4 Verify the LLM connection
 
@@ -377,5 +379,5 @@ If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, and `sn-de
 - **Node version too low**: `node -v` must be ≥ 22.14. Switch with nvm: `nvm install 24 && nvm use 24`.
 - **`openclaw doctor` / `hermes doctor` complains**: follow the report's hints — install whatever's missing.
 - **LLM returns 401 / 403**: double-check the LLM API key stored in your config (`openclaw config get models.providers.custom` for OpenClaw, or `hermes config get model.api_key` for hermes-agent); make sure the key, base URL, and model all come from the same region.
-- **Provider verification fails in OpenClaw / Hermes**: verify that you did not mix the two regional setups. Use either `https://token.sensenova.ai/v1` + `sensenova-6.8-flash-lite`, or `https://token.sensenova.cn/v1` + `sensenova-6.8-flash-lite`.
+- **Provider verification fails in OpenClaw / Hermes**: verify that you choose the setups that match your region, whether you are an international user (`https://token.sensenova.ai/v1`) or a mainland China user (`https://token.sensenova.cn/v1`).
 - **Slow `curl` inside WSL2**: check the WSL2 networking mode (`wsl --status`); switch to `mirrored` networking or use a proxy if needed.
