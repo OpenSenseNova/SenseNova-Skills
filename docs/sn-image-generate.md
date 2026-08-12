@@ -118,7 +118,7 @@ SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```ini
 SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_API_KEY="your-api-key"
-SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
 环境变量 fallback 优先级为：专用变量 > 领域共享变量 > 全局变量。若某个能力需要不同 provider，可再设置 `SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 或 `SN_IMAGE_GEN_*`。

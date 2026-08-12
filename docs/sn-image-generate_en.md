@@ -118,7 +118,7 @@ Mainland China:
 ```ini
 SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_API_KEY="your-api-key"
-SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
 Fallback priority is dedicated variable > domain shared variable > global variable. If a capability needs a different provider, set `SN_TEXT_*`, `SN_VISION_*`, `SN_CHAT_*`, or `SN_IMAGE_GEN_*`.
