@@ -1,4 +1,5 @@
 httpx>=0.27
+defusedxml>=0.7.1
 arxiv>=2.0.0
 beautifulsoup4>=4.12.3
 semanticscholar
