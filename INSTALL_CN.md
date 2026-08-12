@@ -289,6 +289,14 @@ hermes
 
 ## 3. 加载本仓库的 Skill
 
+> **OpenClaw 用户 —— 最快捷的方式：** 完整技能套件已作为 bundle plugin 发布到 [ClawHub](https://clawhub.ai/plugins/sensenova-skills)。无需执行下方基于克隆的步骤，一条命令即可装好全部 skill：
+>
+> ```bash
+> openclaw plugins install clawhub:sensenova-skills
+> ```
+>
+> 之后直接跳到 [§3.4](#34-各分类-skill-的额外依赖) 查看各分类依赖，并按 [§4](#4-验证整体可用) 做整体验证。下方 §3.1–§3.3 适用于 hermes-agent、手动安装，或希望直接跟踪本仓库的场景。
+
 ### 3.1 先克隆仓库
 
 ```bash
