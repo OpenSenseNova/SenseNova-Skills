@@ -96,16 +96,29 @@ pip install -r skills/sn-image-base/requirements.txt
 
 **Minimum Configurations:**
 
-For the English/international flow, use the official [SenseNova API docs](https://platform.sensenova.ai/docs).
+Use one of the following SenseNova API flows:
 
-Create an account, verify your email, then create an API key in Console → API Keys.
+- International: [platform.sensenova.ai/docs](https://platform.sensenova.ai/docs)
+- Mainland China: [platform.sensenova.cn/token-plan](https://platform.sensenova.cn/token-plan)
+
+Make sure the docs page, API key, base URL, and model all come from the same region.
 
 Set the following environment variables in `~/.openclaw/.env` (for OpenClaw) or `~/.hermes/.env` (for Hermes):
+
+International:
 
 ```ini
 SN_BASE_URL="https://token.sensenova.ai/v1"
 SN_API_KEY="your-api-key"
 SN_CHAT_MODEL="sensenova-6.8-flash-lite"
+```
+
+Mainland China:
+
+```ini
+SN_BASE_URL="https://token.sensenova.cn/v1"
+SN_API_KEY="your-api-key"
+SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ```
 
 Fallback priority is dedicated variable > domain shared variable > global variable. If a capability needs a different provider, set `SN_TEXT_*`, `SN_VISION_*`, `SN_CHAT_*`, or `SN_IMAGE_GEN_*`.

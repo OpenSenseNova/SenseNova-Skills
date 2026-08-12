@@ -96,15 +96,29 @@ pip install -r skills/sn-image-base/requirements.txt
 
 **最小化配置：**
 
-推荐使用 [SenseNova Token Plan](https://platform.sensenova.cn/token-plan) 来配置这些技能。
+这些技能同时支持海外版与中国内地版 SenseNova API。
 
-前往 <https://platform.sensenova.cn/token-plan/> 注册免费账号并获取 API Key。
+- 海外：参考 <https://platform.sensenova.ai/docs> 注册账号、验证邮箱，并在 Console → API Keys 创建 key
+- 中国内地：前往 <https://platform.sensenova.cn/token-plan/> 注册免费账号并获取 API Key
+
+请确保文档入口、API Key、Base URL 与模型名来自同一地区配置。
 
 将以下环境变量写入 `~/.openclaw/.env`（OpenClaw）或 `~/.hermes/.env`（Hermes）：
+
+海外：
+
+```ini
+SN_BASE_URL="https://token.sensenova.ai/v1"
+SN_API_KEY="your-api-key"
+SN_CHAT_MODEL="sensenova-6.8-flash-lite"
+```
+
+中国内地：
 
 ```ini
 SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_API_KEY="your-api-key"
+SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 ```
 
 环境变量 fallback 优先级为：专用变量 > 领域共享变量 > 全局变量。若某个能力需要不同 provider，可再设置 `SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 或 `SN_IMAGE_GEN_*`。

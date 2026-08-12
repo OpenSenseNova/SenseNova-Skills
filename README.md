@@ -40,10 +40,12 @@ Raccoon now ships a full upgrade across product capability and client experience
 These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent.
 
 - **Recommended runtime**: pair them with **[OpenClaw](https://openclaw.ai/)** or **[hermes-agent](https://github.com/NousResearch/hermes-agent)**.
-- **Recommended LLM**: pair them with the **[SenseNova international API docs](https://platform.sensenova.ai/docs)** and use the global endpoint `https://token.sensenova.ai/v1`.
+- **Recommended LLM**: pair them with the **SenseNova Platform API**.
+  International: [platform.sensenova.ai/docs](https://platform.sensenova.ai/docs), Base URL `https://token.sensenova.ai/v1`
+  Mainland China: [platform.sensenova.cn/token-plan](https://platform.sensenova.cn/token-plan), Base URL `https://token.sensenova.cn/v1`
 - **Install & configure**: follow the full walkthrough in **[`INSTALL.md`](INSTALL.md)**.
 
-> The English docs in this repo target the international SenseNova API. The Chinese docs keep the mainland China token-plan flow.
+> This repo documents both the international and mainland China SenseNova API flows. Make sure the docs page, API key, base URL, and model name all come from the same region.
 
 **Recommended: let the agent install the skills for you.** Hand it the repo URL and ask it to clone and drop the skills into the right directory — for example:
 
