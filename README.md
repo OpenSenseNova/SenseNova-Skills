@@ -35,6 +35,14 @@ Raccoon now ships a full upgrade across product capability and client experience
 
 > 👉 Try it: [xiaohuanxiong.com](https://office.xiaohuanxiong.com/home)
 
+## Third-Party Quick Try
+
+If you want to try a single skill before setting up the full local stack, here are some community / third-party entry points.
+
+> These links are maintained outside this repository and are not part of the official SenseNova-Skills support surface. Availability, account requirements, and platform terms may vary by provider.
+
+- [`sn-infographic` on ClawMama (Telegram / WhatsApp)](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — a lightweight first run for the infographic workflow in an OpenClaw / Hermes-style agent.
+
 ## How to Use
 
 These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent.
