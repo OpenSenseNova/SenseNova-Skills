@@ -36,14 +36,6 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 > 👉 立即体验：[xiaohuanxiong.com](https://office.xiaohuanxiong.com/home)
 
-## 社区与第三方体验入口
-
-如果你想先快速体验单个 skill、再决定是否搭建完整本地环境，也可以先试试下面这些社区 / 第三方入口。
-
-> 这些链接并非由本仓库官方维护，不属于 SenseNova-Skills 的官方支持范围。具体可用性、账号要求与平台条款请以对应提供方为准。
-
-- [`sn-infographic`（ClawMama / Telegram / WhatsApp）](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — 适合先低门槛体验一次信息图生成工作流。
-
 ## 如何使用
 
 本仓库的 skill 需要配合支持 [Agent Skills](https://agentskills.io/) 规范的智能体使用。
@@ -181,6 +173,14 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 [`examples/property-fee-pricing-ppt`](examples/property-fee-pricing-ppt/)。智能体读到一份开放式输入（主题：物业费定价；受众：物业管理人员 + 物业委员会；26 页；黑白温馨风），先确定大纲，再产出符合风格规范的逐页素材计划。每一页以语义化的 HTML 方式构造，而不是直接出整页大图：文案、版式、配图、图标、需要的数据图表都是分槽位规划的。素材按槽位生成或选型，并由 VLM 对照页面意图做质检；每页 HTML 渲染出来后再走一轮评审与按需改写，保证用语和视觉一致性。最后把分页截图合成 PPTX，分页 HTML 也保留下来，便于直接在浏览器里预览或继续修改。这个样例展示了 `sn-ppt-standard` 在一份偏文本、长篇幅的方案稿上如何在每一页都遵守同一套受众和配色约束。
 
 - 依赖技能：[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
+
+## 社区与第三方体验入口
+
+如果你想先快速体验单个 skill、再决定是否搭建完整本地环境，也可以先试试下面这些社区 / 第三方入口。
+
+> 这些链接并非由本仓库官方维护，不属于 SenseNova-Skills 的官方支持范围。具体可用性、账号要求与平台条款请以对应提供方为准。
+
+- [`sn-infographic`（ClawMama / Telegram / WhatsApp）](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — 适合先低门槛体验一次信息图生成工作流。
 
 ## 常见问题
 

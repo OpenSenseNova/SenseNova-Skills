@@ -35,14 +35,6 @@ Raccoon now ships a full upgrade across product capability and client experience
 
 > 👉 Try it: [xiaohuanxiong.com](https://office.xiaohuanxiong.com/home)
 
-## Third-Party Quick Try
-
-If you want to try a single skill before setting up the full local stack, here are some community / third-party entry points.
-
-> These links are maintained outside this repository and are not part of the official SenseNova-Skills support surface. Availability, account requirements, and platform terms may vary by provider.
-
-- [`sn-infographic` on ClawMama (Telegram / WhatsApp)](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — a lightweight first run for the infographic workflow in an OpenClaw / Hermes-style agent.
-
 ## How to Use
 
 These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent.
@@ -182,6 +174,14 @@ A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs
 [`examples/property-fee-pricing-ppt`](examples/property-fee-pricing-ppt/). The agent takes a free-form brief — topic (property fee pricing), audience (property staff + committee), 26 pages, black-and-white warm style — and first commits to an outline plus a per-page asset plan that conforms to the style spec. Each slide is then built as semantic per-page HTML rather than free-form image generation: copy, layout, illustrations, icons, and any data charts are reasoned about per slot. Imagery is produced or selected per slot and VLM-checked against the page's intent; each rendered page goes through a review pass with optional rewrite for coherence and copy quality. Final pages are screenshotted and composited into the PPTX, with the per-page HTML kept alongside for direct browser preview or re-editing. The example demonstrates `sn-ppt-standard` style consistency on a long, prose-heavy deck where every slide must obey the same audience and palette constraints.
 
 - Depends on: [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md), [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
+
+## Third-Party Quick Try
+
+If you want to try a single skill before setting up the full local stack, here are some community / third-party entry points.
+
+> These links are maintained outside this repository and are not part of the official SenseNova-Skills support surface. Availability, account requirements, and platform terms may vary by provider.
+
+- [`sn-infographic` on ClawMama (Telegram / WhatsApp)](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — a lightweight first run for the infographic workflow in an OpenClaw / Hermes-style agent.
 
 ## FAQ
 
