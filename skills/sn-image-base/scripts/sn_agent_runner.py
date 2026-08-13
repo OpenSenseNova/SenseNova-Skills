@@ -30,6 +30,7 @@ from sn_image_base.exceptions import (
     U1BaseError,
 )
 from sn_image_base.generation import (
+    AtlasCloudText2ImageClient,
     NanoBananaText2ImageClient,
     OpenAIImageGenerationClient,
     SensenovaText2ImageClient,
@@ -285,8 +286,23 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             f"Using OpenAI-compatible model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation",
             file=sys.stderr,
         )
+    elif global_configs.SN_IMAGE_GEN_MODEL_TYPE == "atlas-cloud":
+        if not global_configs.SN_IMAGE_GEN_MODEL:
+            env_var_help = global_configs.get_env_var_help("SN_IMAGE_GEN_MODEL")
+            raise BadConfigurationError(f"No model provided. {env_var_help}")
+        client = AtlasCloudText2ImageClient(
+            api_key=api_key,
+            base_url=base_url,
+            model=global_configs.SN_IMAGE_GEN_MODEL,
+            timeout=args.timeout,
+            ssl_verify=not args.insecure,
+        )
+        print(
+            f"Using Atlas Cloud model {global_configs.SN_IMAGE_GEN_MODEL!r} for image generation",
+            file=sys.stderr,
+        )
     else:
-        supported_types = "sensenova, nano-banana, openai-image"
+        supported_types = "sensenova, nano-banana, openai-image, atlas-cloud"
         raise BadConfigurationError(
             f"Unsupported SN_IMAGE_GEN_MODEL_TYPE {global_configs.SN_IMAGE_GEN_MODEL_TYPE!r}. "
             f"Supported values: {supported_types}."
@@ -299,6 +315,7 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             aspect_ratio=args.aspect_ratio,
             seed=args.seed,
             unet_name=args.unet_name,
+            poll_interval=args.poll_interval,
             output_path=args.save_path,
         )
         return result, 0 if result["status"] == "ok" else 1
