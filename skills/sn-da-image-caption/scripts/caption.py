@@ -141,8 +141,17 @@ def get_prompt(image_type: str, custom_prompt: Optional[str] = None) -> str:
 
 # ─── Image processing ───────────────────────────────────────────────
 
+def _cache_md5(data: bytes = b""):
+    # MD5 is used only for local cache keys, not as a security primitive.
+    # Python 3.9+ lets FIPS builds opt into that non-security use explicitly.
+    try:
+        return hashlib.md5(data, usedforsecurity=False)
+    except TypeError:
+        return hashlib.md5(data)
+
+
 def compute_md5(file_path: str) -> str:
-    h = hashlib.md5()
+    h = _cache_md5()
     with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
             h.update(chunk)
@@ -296,7 +305,7 @@ def caption_image(
 
     # Cache check
     md5 = compute_md5(image_path)
-    prompt_hash = hashlib.md5(final_prompt.encode()).hexdigest()[:8]
+    prompt_hash = _cache_md5(final_prompt.encode()).hexdigest()[:8]
 
     if use_cache:
         cached = cache_get(md5, prompt_hash)
