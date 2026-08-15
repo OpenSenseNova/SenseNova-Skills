@@ -30,6 +30,7 @@ import json
 import os
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -334,9 +335,14 @@ def caption_batch(
     model: Optional[str] = None,
     api_key: Optional[str] = None,
     api_base: Optional[str] = None,
+    concurrency: int = 1,
 ) -> List[dict]:
-    """Caption all images in a directory."""
-    results = []
+    """Caption all images in a directory.
+
+    When ``concurrency`` > 1, images are captioned in parallel using a
+    ``ThreadPoolExecutor`` (clamped to 1-16). Results are returned in the
+    original sorted file order regardless of completion order.
+    """
     image_files = []
     for ext in SUPPORTED_EXTENSIONS:
         image_files.extend(glob.glob(os.path.join(dir_path, f"*{ext}")))
@@ -344,21 +350,37 @@ def caption_batch(
 
     image_files = sorted(set(image_files))
     total = len(image_files)
+    workers = max(1, min(int(concurrency), 16))
     print(f"Found {total} images in {dir_path}", file=sys.stderr)
 
-    for i, img_path in enumerate(image_files, 1):
-        print(f"  [{i}/{total}] {os.path.basename(img_path)}...", end="", file=sys.stderr)
+    def _run_one(idx: int, img_path: str) -> dict:
         result = caption_image(img_path, prompt=prompt, model=model,
                                api_key=api_key, api_base=api_base)
         cached_tag = " (cached)" if result.get("cached") else ""
+        name = os.path.basename(img_path)
         if "error" in result:
-            print(f" ERROR: {result['error']}", file=sys.stderr)
+            print(f"  [{idx}/{total}] {name}... ERROR: {result['error']}", file=sys.stderr)
         else:
             desc_preview = result["description"][:60].replace("\n", " ")
-            print(f" OK{cached_tag}: {desc_preview}...", file=sys.stderr)
-        results.append(result)
+            print(f"  [{idx}/{total}] {name}... OK{cached_tag}: {desc_preview}...",
+                  file=sys.stderr)
+        return result
 
-    return results
+    results: List[Optional[dict]] = [None] * total
+    if workers == 1:
+        for i, img_path in enumerate(image_files, 1):
+            results[i - 1] = _run_one(i, img_path)
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            future_to_idx = {
+                ex.submit(_run_one, i + 1, p): i
+                for i, p in enumerate(image_files)
+            }
+            for fut in as_completed(future_to_idx):
+                idx = future_to_idx[fut]
+                results[idx] = fut.result()
+
+    return [r for r in results if r is not None]
 
 
 # ─── CLI ─────────────────────────────────────────────────────────────
@@ -373,6 +395,8 @@ def main():
     parser.add_argument("--api-key", default=None, help="API key (or set SN_API_KEY / SN_VISION_API_KEY)")
     parser.add_argument("--api-base", default=None, help="API base URL")
     parser.add_argument("--batch", action="store_true", help="Process all images in directory")
+    parser.add_argument("--concurrency", "-j", type=int, default=1,
+                        help="Parallel workers in batch mode, clamped to 1-16 (default 1)")
     parser.add_argument("--output", "-o", default=None, help="Output file for batch results (JSON)")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     parser.add_argument("--no-cache", action="store_true", help="Disable result caching")
@@ -385,6 +409,7 @@ def main():
         results = caption_batch(
             args.path, prompt=args.prompt, model=args.model,
             api_key=args.api_key, api_base=args.api_base,
+            concurrency=args.concurrency,
         )
         output = json.dumps(results, ensure_ascii=False, indent=2)
         if args.output:
