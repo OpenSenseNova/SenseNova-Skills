@@ -1,5 +1,5 @@
 ---
-name: sn-search-prediction
+name: sn-future-prediction
 description: 用于预测未来奖项、赛事、选举、排名或其它可验证事件的结果；强制执行多轮跨来源搜索、多角度与反证分析，根据官方规则和截至指定日期的现实表现形成独立预测，再与 Polymarket 等市场快照比较，调用多个 subagent，并输出同时含 AI 生图、代码生成统计图、网页链接和 self-check 的 Markdown 报告。不用于无依据猜测、实时下注或投资建议。
 ---
 

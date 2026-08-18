@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SVG 图表生成助手（纯 Python，零外部依赖）。
+"""未来预测报告 SVG 图表生成助手（纯 Python，零外部依赖）。
 
 用法：设计好候选人数据后直接调用 build_* 函数，输出 SVG 文本写到
 prediction-reports/assets/ 即可。Markdown 里用相对路径引用。
