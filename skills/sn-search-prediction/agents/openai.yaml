@@ -1,0 +1,4 @@
+interface:
+  display_name: "预测研究"
+  short_description: "多轮检索、多角度分析并用生图与代码图表交付预测报告"
+  default_prompt: "使用 $sn-search-prediction 深入研究一个未来事件，完成多轮搜索、多角度预测与市场对比，并生成含 AI 插画、代码统计图、来源链接和 self-check 的 Markdown 报告。"
