@@ -288,6 +288,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
             # "n": 1,
             "response_format": response_format,
             "output_format": output_format,
+            "watermark": False,
             **kwargs,
         }
         return payload

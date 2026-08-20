@@ -59,6 +59,8 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--insecure` | flag | `False` | Disable TLS verification |
 | `--save-path` | Path | Auto-generated | Save path |
 
+SenseNova U1 Fast requests explicitly send `watermark=false` by default so generated images have no watermark. This feature is currently in free public beta and may become paid.
+
 ### sn-image-recognize
 
 Image recognition tool that uses VLM (Vision Language Model) to analyze image content. Supports multiple image inputs.
