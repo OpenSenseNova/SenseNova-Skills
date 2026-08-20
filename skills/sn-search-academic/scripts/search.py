@@ -36,7 +36,7 @@ class ProviderConfig(NamedTuple):
     lang_kwarg: str | None = None
 
 
-DEFAULT_SOURCES = ["arxiv", "semantic", "google_scholar", "pubmed", "wikipedia"]
+DEFAULT_SOURCES = ["arxiv", "semantic", "google_scholar", "pubmed", "wikipedia", "ssrn"]
 
 PROVIDER_GROUPS: dict[str, list[ProviderConfig]] = {
     "arxiv": [
@@ -57,6 +57,9 @@ PROVIDER_GROUPS: dict[str, list[ProviderConfig]] = {
     "pubmed": [
         ProviderConfig("pubmed_search", "pubmed", "pubmed"),
     ],
+    "ssrn": [
+        ProviderConfig("ssrn_search", "ssrn", "ssrn"),
+    ],
     "wikipedia": [
         ProviderConfig("wikipedia_search", "wikipedia", "wikipedia", lang_kwarg="lang"),
     ],
@@ -68,6 +71,7 @@ IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "google_scholar": ("scholar_id", "doi", "url", "title"),
     "pubmed": ("pmid", "doi", "pmc_id", "url", "title"),
     "wikipedia": ("page_id", "url", "title"),
+    "ssrn": ("doi", "url", "title"),
 }
 
 
