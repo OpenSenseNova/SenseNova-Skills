@@ -81,6 +81,14 @@ def _caption_one(vlm, image_path: Path) -> tuple[str | None, str | None]:
     return out.strip(), None
 
 
+def _load_json_file(path: Path) -> tuple[object | None, str | None]:
+    """Load one input file, returning a user-facing error for invalid JSON."""
+    try:
+        return json.loads(path.read_text(encoding="utf-8")), None
+    except json.JSONDecodeError as exc:
+        return None, f"invalid JSON in {path}: {exc}"
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--deck-dir", type=Path, required=True)
@@ -93,8 +101,13 @@ def main(argv: list[str] | None = None) -> int:
     raw_path = deck / "raw_documents.json"
     info_path = deck / "info_pack.json"
 
-    raw = json.loads(raw_path.read_text(encoding="utf-8")) if raw_path.exists() else None
-    info = json.loads(info_path.read_text(encoding="utf-8")) if info_path.exists() else None
+    raw, raw_error = _load_json_file(raw_path) if raw_path.exists() else (None, None)
+    info, info_error = _load_json_file(info_path) if info_path.exists() else (None, None)
+
+    load_error = raw_error or info_error
+    if load_error:
+        print(json.dumps({"status": "failed", "error": load_error}, ensure_ascii=False))
+        return 1
 
     if raw is None and info is None:
         print(json.dumps({"status": "failed", "error": "neither raw_documents.json nor info_pack.json found"},
