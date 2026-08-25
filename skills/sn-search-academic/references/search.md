@@ -46,12 +46,13 @@ python3 scripts/search.py "NSA" \
 - `semantic`
 - `google_scholar`
 - `pubmed`
+- `ssrn`
 - `wikipedia`
 
 `--source all` 等价于：
 
 ```text
-arxiv,semantic,google_scholar,pubmed,wikipedia
+arxiv,semantic,google_scholar,pubmed,ssrn,wikipedia
 ```
 
 ## Provider 回退链
@@ -78,6 +79,7 @@ arxiv,semantic,google_scholar,pubmed,wikipedia
 
 - `google_scholar` -> `google_scholar_search.py`
 - `pubmed` -> `pubmed_search.py`
+- `ssrn` -> `ssrn_search.py`
 - `wikipedia` -> `wikipedia_search.py`
 
 ## 参数分发规则
@@ -178,6 +180,7 @@ CLI stdout 和 `--output` 文件使用同一份输出格式。
 - Semantic Scholar: `paper_id`, `doi`, `arxiv_id`, `venue`, `year`
 - Google Scholar: `scholar_id`, `cited_by_url`, `pdf_url`
 - PubMed: `pmid`, `pmc_id`, `journal`, `pub_date`, `doi`
+- SSRN: `doi`, `year`, `publication_date`, `publisher`, `container`
 - Wikipedia: `page_id`, `word_count`, `timestamp`, `section_title`
 
 ## 去重规则
@@ -190,6 +193,7 @@ CLI stdout 和 `--output` 文件使用同一份输出格式。
 - `semantic`: `paper_id`, `doi`, `arxiv_id`, `url`, `title`
 - `google_scholar`: `scholar_id`, `doi`, `url`, `title`
 - `pubmed`: `pmid`, `doi`, `pmc_id`, `url`, `title`
+- `ssrn`: `doi`, `url`, `title`
 - `wikipedia`: `page_id`, `url`, `title`
 
 ## Python API
