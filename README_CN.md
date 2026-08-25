@@ -139,7 +139,9 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | [`sn-search-academic`](skills/sn-search-academic/SKILL.md)   | 学术搜索   | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 四平台聚合。        |
 | [`sn-search-code`](skills/sn-search-code/SKILL.md)           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
 | [`sn-search-social-cn`](skills/sn-search-social-cn/SKILL.md) | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
-| [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
+| [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | 英文社交搜索 | 搜索 Reddit / Twitter (X) / YouTube；X 搜索支持 Xquik 或 TikHub，也提供 OpenClaw 与 Hermes Agent 原生路由。 |
+
+Xquik is an independent third-party service. Not affiliated with X Corp. "Twitter" and "X" are trademarks of X Corp.
 
 
 ## 输出样例
