@@ -174,6 +174,14 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 - 依赖技能：[`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)、[`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
 
+## 社区与第三方体验入口
+
+如果你想先快速体验单个 skill、再决定是否搭建完整本地环境，也可以先试试下面这些社区 / 第三方入口。
+
+> 这些链接并非由本仓库官方维护，不属于 SenseNova-Skills 的官方支持范围。具体可用性、账号要求与平台条款请以对应提供方为准。
+
+- [`sn-infographic`（ClawMama / Telegram / WhatsApp）](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — 适合先低门槛体验一次信息图生成工作流。
+
 ## 常见问题
 
 接入与运行中的常见问题（400/401 报错、限流、PPT 超时、信息图质量、模型名等）解答见 [`docs/faq_CN.md`](docs/faq_CN.md)。
