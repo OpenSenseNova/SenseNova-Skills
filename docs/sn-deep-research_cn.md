@@ -8,16 +8,15 @@
 
 | 技能 / 组件 | 作用 |
 |---|---|
-| [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | 统一入口。选择 quick / normal / heavy 档位，创建报告目录，调度专家 agent，运行 validator，并渲染最终报告。 |
-| `sn-deep-research/agents/scout.md` | normal / heavy 运行前的预研 briefing、档位建议，以及对格式发现 skill 的调用。 |
-| `sn-deep-research/agents/plan.md` | 只负责研究计划：按覆盖义务拆分维度；仅当下游检索范围必须消费上游结果时建立依赖与 wave。 |
-| `sn-deep-research/agents/research.md` | 分维度取证，输出 schema 化的 `sub_reports/dN.evidence.json`，并把实际使用的完整正文固定到报告级 `source_cache/`。 |
-| `validate_plan.py` / `validate_evidence.py` / `validate_outline.py` | 计划拓扑、来源快照、格式偏好、outline 与 evidence subset 的硬门禁。 |
+| [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | 统一入口。选择 quick / normal / heavy 档位，启动 Research Workbench 进度页，调度专家 agent，运行 validator，并渲染最终报告。 |
+| `sn-deep-research/agents/scout.md` | heavy 模式的预研 briefing。 |
+| `sn-deep-research/agents/plan.md` | 只负责研究计划：把需求划分为范围归属清晰、可独立执行且尽量避免重复检索的工作包。 |
+| `sn-deep-research/agents/research.md` | 分维度取证；从 `plan.json` 自行读取工作包、核验原始页面，并输出通过校验的 `sub_reports/dN.evidence.json`。 |
+| `validate_briefing.py` / `validate_plan.py` / `validate_evidence.py` / `validate_supplement_plan.py` / `validate_outline.py` | briefing 结构、独立研究工作包、证据完整性、补研计划生成、outline 与 evidence subset 的硬门禁。 |
 | `review.md`、`perspective.md`、`supplement-planner.md` | evidence 审查、覆盖缺口检查与定向补研计划。 |
-| `report-planner.md`、`report-writer.md`、`report-stitcher.md` | 把用户已确认的呈现形式实现为 evidence-bound content units，并为 normal / heavy 组装成品；结构件可以直接作为主体。 |
-| `source_snapshot.py` | 对 URL 正规化后的完整 UTF-8 正文做不可变、内容寻址缓存；research、review 与补研复用同一快照。 |
+| `report-writer.md` | quick / normal 读取全部已路由 evidence 一次成文；heavy 按 evidence-bound content units 写作。 |
+| `report-planner.md`、`report-stitcher.md` | 仅 heavy 使用的报告组织与组装角色；结构件可以直接作为主体。 |
 | [`sn-prepare-citations`](../skills/sn-prepare-citations/SKILL.md) | 将 `[^source_id]` 脚注转换为编号引用，并写出 `report.md` + `citations.json`。 |
-| [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | 格式发现的唯一责任方；由 scout 传入预研上下文，比较研究报告、学术论文、表格优先报表、决策备忘录或自定义最终呈现形式。 |
 | [`sn-research-report`](../skills/sn-research-report/SKILL.md) | 独立的报告结构参考 / 模板技能；不参与集成流水线控制流。 |
 
 ## Research Agent 可调用的搜索技能
@@ -41,6 +40,7 @@ research agent 会按维度的 source category 选择合适搜索技能。凭证
 
 | 技能 | 当前状态 |
 |---|---|
+| [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | 可选的独立格式推荐；`sn-deep-research` 自身只使用一个请求级 `format` 字符串，不创建格式产物。 |
 | [`sn-md-to-html-report`](../skills/sn-md-to-html-report/SKILL.md) | 将已生成的 Markdown 报告重组为自包含 HTML 专题页；不由 `sn-deep-research` 自动调用。 |
 | [`sn-search-image`](../skills/sn-search-image/SKILL.md) | 图片搜索技能；当前 research agent 的 source category 未将它作为强制入口。 |
 | [`sn-update`](../skills/sn-update/SKILL.md) | 刷新 / 更新 `sn-*` 技能包的维护技能；不参与研究执行流程。 |
@@ -55,13 +55,13 @@ research agent 会按维度的 source category 选择合适搜索技能。凭证
 
 controller 会选择档位并执行对应流水线：
 
-- **quick**：单个 skim evidence 维度 → 来源快照与 evidence 校验 → quick writer → 引用渲染。
-- **normal**：scout + 格式确认 → plan 校验 → 并行 evidence research / review → outline v2 content units → per-unit writer → stitcher → 终稿 review → 引用渲染。
-- **heavy**：在 normal 上增加覆盖维度、perspective、supplement planning 和完整 review。独立维度保持并行；只有真实信息依赖形成后续 wave，下游等上游最终 evidence 稳定后再检索。
+- **quick**：单个自包含 research agent → 通过校验的 evidence → writer 一次成文 → 引用渲染。
+- **normal**：plan 校验 → 并行 evidence research → 一个 `quick_synthesis` writer 综合全部 evidence 一次成文 → 引用渲染。
+- **heavy**：briefing → plan 校验 → 并行 evidence research → review、perspective 与定向补研 → evidence-bound content units → stitcher 与完整终稿 review。
 
-normal / heavy 运行中，scout 调用 `sn-report-format-discovery` 写出 `format_proposal.json`。这里保留三层正交合同：`selected_format` 定义整体交付形态（报告、brief、board 等），内容 `paradigm` 定义论证如何推进，`structure_preference` 定义核心信息载体（narrative、matrix、timeline、checklist 等）的 `required / preferred / auto` 强度。研究完成后 report planner 才按真实 evidence 写出 `organization_decision + content_units`；不存在 comparison→matrix 或 investigation→timeline 的固定映射。
+controller 在派发前确定一个请求级 `format` 字符串，例如 `report`、`paper`、`table` 或 `memo`，并像 `language` 一样随 payload 传递。不创建 `format.json`、proposal 或格式 schema。quick / normal 直接一次成文，只有 heavy 在研究完成后由 report planner 生成 `organization_decision + content_units`。
 
-每条 v1.2 evidence 都包含 `snapshot_ref`，指向本次报告 `source_cache/{url_hash}/{content_hash}.md`。review 按 ref 分组核验，补研在任何抓取前先 lookup；已有正文不重复抓取，新增正文立即写入不可变缓存。
+每份 evidence 都保留可核验的来源 URL、snippet、引用类型、claims 与 writing-context 边界。Research 只有读取原始页面后才能采信证据；heavy review 按 URL 去重，同一轮审查中每个页面只抓取一次。补研直接更新同一维度的 evidence，并把未解决边界写入 `writing_context`。
 
 ## 配置
 
