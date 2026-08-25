@@ -81,6 +81,7 @@ python3 scripts/search.py <query> [选项]
 - `semantic`
 - `google_scholar`
 - `pubmed`
+- `ssrn`
 - `wikipedia`
 
 示例：
@@ -89,6 +90,7 @@ python3 scripts/search.py <query> [选项]
 python3 scripts/search.py "retrieval augmented generation" --limit 5
 python3 scripts/search.py "diffusion model" --source arxiv,semantic --category cs.CV --limit 5
 python3 scripts/search.py "阿尔茨海默病 多模态诊断" --source pubmed,wikipedia --lang zh --limit 5
+python3 scripts/search.py "open source governance" --source ssrn --limit 10
 python3 scripts/search.py "agentic memory" --source all --limit 8 --output results/search.json
 ```
 
@@ -194,6 +196,7 @@ CLI 输出的顶层不包含 `items`，论文条目在 `source_results[*].items`
 - 通用：`title`、`abstract`、`snippet`、`url`、`citation_count`、`doi`
 - arXiv：`arxiv_id`、`pdf_url`、`categories`
 - Semantic Scholar：`paper_id`、`venue`、`year`
+- SSRN：`doi`、`year`、`publication_date`、`publisher`、`container`（`container` 为 SSRN working paper 系列名称，如 "SSRN Electronic Journal"）
 - PubMed：`pmid`、`pmc_id`、`journal`、`pub_date`
 - Wikipedia：`page_id`、`word_count`、`section_title`
 
