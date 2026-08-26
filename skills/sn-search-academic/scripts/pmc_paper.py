@@ -17,7 +17,7 @@ PMC 论文全文章节阅读器。
 import argparse
 import re
 import sys
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 from typing import Any
 
 
