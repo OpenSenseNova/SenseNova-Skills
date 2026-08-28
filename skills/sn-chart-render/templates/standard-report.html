@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:#f5f6fa;color:#2d3436;line-height:1.7}
+.header{background:linear-gradient(135deg,{{ palette.primary }},{{ palette.dark }});color:#fff;padding:48px 0;text-align:center}
+.header h1{font-size:28px;font-weight:700;margin-bottom:8px}
+.header p{opacity:.85;font-size:14px}
+.container{max-width:960px;margin:0 auto;padding:20px}
+.card{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.card h2{font-size:18px;color:{{ palette.primary }};border-left:4px solid {{ palette.primary }};padding-left:12px;margin-bottom:16px}
+.card h3{font-size:15px;color:#636e72;margin:12px 0 8px}
+.chart-row{display:flex;flex-wrap:wrap;gap:16px;margin:16px 0}
+.chart-box{flex:1;min-width:280px;height:260px;position:relative}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+th{background:#f8f9fa;color:#636e72;font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid #dfe6e9}
+td{padding:7px 10px;border-bottom:1px solid #f1f2f6}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8f9fa}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:16px 0}
+.summary-item{background:#f8f9fa;border-radius:8px;padding:14px;text-align:center}
+.summary-item .num{font-size:22px;font-weight:700;color:{{ palette.primary }}}
+.summary-item .label{font-size:11px;color:#636e72;margin-top:4px}
+.insight{background:#fff3e0;border-radius:8px;padding:14px;margin:10px 0;border-left:4px solid {{ palette.warn }}}
+.insight h4{color:{{ palette.warn }};font-size:13px;margin-bottom:4px}
+.insight p{font-size:13px;color:#2d3436}
+.suggestion{background:#e8f5e9;border-radius:8px;padding:14px;margin:10px 0;border-left:4px solid {{ palette.secondary }}}
+.suggestion h4{color:{{ palette.secondary }};font-size:13px;margin-bottom:4px}
+.suggestion p{font-size:13px;color:#2d3436}
+.risk{background:#ffebee;border-radius:8px;padding:14px;margin:10px 0;border-left:4px solid {{ palette.danger }}}
+.risk h4{color:{{ palette.danger }};font-size:13px;margin-bottom:4px}
+.risk p{font-size:13px;color:#2d3436}
+.ft{text-align:center;color:#636e72;font-size:11px;padding:24px 0}
+.chart-note{font-size:11px;color:#b2bec3;text-align:center;margin-top:-8px;margin-bottom:12px}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.tag.green{background:#00b89420;color:#00b894}
+.tag.orange{background:{{ palette.warn }}20;color:{{ palette.warn }}}
+.tag.red{background:{{ palette.danger }}20;color:{{ palette.danger }}}
+.tag.blue{background:#0984e320;color:#0984e3}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>{{ title }}</h1>
+<p>{{ subtitle }}</p>
+</div>
+<div class="container">
+{% if summary_items %}
+<div class="card">
+<h2>关键指标</h2>
+<div class="summary-grid">
+{% for item in summary_items %}
+<div class="summary-item"><div class="num">{{ item.value }}</div><div class="label">{{ item.label }}</div></div>
+{% endfor %}
+</div>
+</div>
+{% endif %}
+
+{% for section in sections %}
+<div class="card">
+<h2>{{ section.title }}</h2>
+{% if section.description %}<p style="color:#636e72;font-size:13px;margin-bottom:12px">{{ section.description }}</p>{% endif %}
+
+{% if section.charts %}
+<div class="chart-row">
+{% for chart in section.charts %}
+<div class="chart-box">
+{{ chart.html }}
+{% if chart.note %}<div class="chart-note">{{ chart.note }}</div>{% endif %}
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+{% if section.table %}
+<table>
+{% if section.table.headers %}<thead><tr>{% for h in section.table.headers %}<th>{{ h }}</th>{% endfor %}</tr></thead>{% endif %}
+<tbody>
+{% for row in section.table.rows %}
+<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+
+{% if section.findings %}
+{% for f in section.findings %}
+{% if f.type == "insight" %}
+<div class="insight"><h4>{{ f.title }}</h4><p>{{ f.content }}</p></div>
+{% elif f.type == "suggestion" %}
+<div class="suggestion"><h4>{{ f.title }}</h4><p>{{ f.content }}</p></div>
+{% elif f.type == "risk" %}
+<div class="risk"><h4>{{ f.title }}</h4><p>{{ f.content }}</p></div>
+{% endif %}
+{% endfor %}
+{% endif %}
+</div>
+{% endfor %}
+
+<div class="ft">
+<p>生成时间：{{ generated_at }}</p>
+</div>
+</div>
+</body>
+</html>
