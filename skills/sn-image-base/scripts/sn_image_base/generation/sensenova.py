@@ -27,6 +27,7 @@ DEFAULT_RESOLUTION: Literal["1K", "2K", "4K"] = "2K"
 DEFAULT_ASPECT_RATIO = "16:9"
 DEFAULT_POLL_INTERVAL = 5.0
 OUTPUT_DIR = Path("/tmp/openclaw-sn-image")
+U15_LITE_MODEL = "sensenova-u1.5-lite"
 
 
 IMAGE_GEN_ENDPOINT = "/images/generations"
@@ -131,7 +132,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
         # Normalize image_size to uppercase for NanoBanana API
         image_size = image_size.upper()  # type: ignore[assignment]
         output_format = "png"
-        size = self._resolve_size(image_size, aspect_ratio)
+        size = self._resolve_size(image_size, aspect_ratio, model=model)
         payload = self.build_payload(
             prompt=prompt,
             model=model,
@@ -310,8 +311,10 @@ class SensenovaText2ImageClient(T2IBaseClient):
     @classmethod
     def _resolve_size(
         cls,
-        resolution: Literal["1K", "2K"] | str | None = None,
+        resolution: Literal["1K", "2K", "4K"] | str | None = None,
         aspect_ratio: ASPECT_RATIO_LITERALS | str | None = None,
+        *,
+        model: str | None = None,
     ) -> str | None:
         """Convert (resolution, aspect_ratio) to a pixel size string.
 
@@ -325,13 +328,14 @@ class SensenovaText2ImageClient(T2IBaseClient):
             buckets = BUCKETS_1K
         elif resolution == "2K":
             buckets = BUCKETS_2K
+        elif resolution == "4K" and (model or "").lower() == U15_LITE_MODEL:
+            buckets = BUCKETS_4K
         else:
-            # The SenseNova backend only has 1K / 2K pixel buckets. Reject any
-            # other resolution (e.g. 4K) here; the ValueError propagates to the
-            # runner and is returned to the caller as a status=failed JSON.
+            # U1 Fast only supports 1K / 2K. U1.5 Lite is the only SenseNova
+            # model currently supporting native 4K output.
             raise ValueError(
                 f"image-size {resolution!r} is not supported by the SenseNova image backend "
-                f"(supported: 1K, 2K)."
+                f"for model {model or 'unknown'!r} (supported: 1K, 2K; U1.5 Lite also supports 4K)."
             )
         try:
             ws, _, hs = aspect_ratio.strip().partition(":")
@@ -484,6 +488,18 @@ BUCKETS_2K: dict[ASPECT_RATIO_LITERALS, tuple[int, int]] = {
     "16:9": (2752, 1536),
     "9:16": (1536, 2752),
     "9:21": (1344, 3136),
+}
+BUCKETS_4K: dict[ASPECT_RATIO_LITERALS, tuple[int, int]] = {
+    "2:3": (2731, 4096),
+    "3:2": (4096, 2731),
+    "3:4": (3072, 4096),
+    "4:3": (4096, 3072),
+    "4:5": (3277, 4096),
+    "5:4": (4096, 3277),
+    "1:1": (4096, 4096),
+    "16:9": (4096, 2304),
+    "9:16": (2304, 4096),
+    "9:21": (1755, 4096),
 }
 
 

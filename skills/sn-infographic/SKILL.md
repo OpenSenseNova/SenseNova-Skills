@@ -50,7 +50,7 @@ Features:
 |                       |        |          | `force`: skip evaluation, always execute Step 2 expansion |
 |                       |        |          | `disable`: skip Step 2, use `user_prompt` directly as `expanded_prompt` |
 | `aspect_ratio` | string | *inferred* (`16:9`) | Set by **Main Agent** when the user states an explicit supported ratio (e.g. `16:9` / `9:16`, optionally via `宽高比` / `画面比例` / `aspect ratio`); otherwise left unset and the **Worker** infers it in Step 0 from `user_prompt` (orientation / scene cues) per `references/runtime-parameters.md`. |
-| `image_size` | string | *inferred* (`2k`) | Set by **Main Agent** when the user states an explicit size (`2k` / `4k`); otherwise the **Worker** infers it in Step 0 (currently a single option, `2k`). `4k` is forwarded to the model and may be rejected (e.g. sensenova) → surfaced as an error. |
+| `image_size` | string | *inferred* (`2k`) | Set by **Main Agent** when the user states an explicit size (`2k` / `4k`); otherwise the **Worker** infers it in Step 0 (currently a single option, `2k`). `4k` is supported when `SN_IMAGE_GEN_MODEL=sensenova-u1.5-lite`; other models may reject it and the skill surfaces that error. |
 
 > **Who extracts what:** Main Agent parameter extraction resolves `max_rounds`, `output_mode`, `prompts_expand_mode`, and `aspect_ratio` / `image_size` (each only when the user gives an explicit value). `aspect_ratio` and `image_size` without an explicit value are inferred by the Worker in Step 0.
 
@@ -62,7 +62,7 @@ All API calls in this skill are executed through the `sn_agent_runner.py` of the
 |-----------|------|---------------------------|-------------|
 | **LLM** | sn-text-optimize (evaluation/expansion) | Default reads `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | Built-in default points to Sensenova internal network service |
 | **VLM** | sn-image-recognize (image review) | Default reads `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | Built-in default points to Sensenova internal network service |
-| **Image Generation** | sn-image-generate | Default reads `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY`; `SN_IMAGE_GEN_API_KEY` is only needed for image-specific override | Default uses image generation configuration of `sn-image-base` |
+| **Image Generation** | sn-image-generate | Default reads `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY`; `SN_IMAGE_GEN_API_KEY` is only needed for image-specific override | Uses image generation configuration of `sn-image-base` |
 
 **When encountering `MissingApiKeyError` or needing to specify a model**: pass explicitly via CLI parameters, parameter reference `$SN_IMAGE_BASE/references/api_spec.md`.
 

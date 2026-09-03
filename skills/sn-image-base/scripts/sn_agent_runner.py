@@ -39,9 +39,8 @@ from sn_image_base.llm import AnthropicMessagesAdapter, OpenAIChatAdapter
 # Allowed --image-size values, canonical lowercase form. Comparison is
 # case-insensitive (see run_image_generate). The runner forwards both 2k and 4k
 # to the configured backend; each backend then either renders the size, forwards
-# it upstream, or rejects it (e.g. the sensenova backend rejects 4k since it only
-# has 1K / 2K buckets). Any rejection surfaces as a status=failed JSON. 1k remains
-# backend-only until a caller adds it here.
+# it upstream, or rejects it. SenseNova U1.5 Lite supports native 4K; U1 Fast
+# remains limited to 1K / 2K. Any rejection surfaces as status=failed JSON.
 ALLOWED_IMAGE_SIZES = frozenset({"2k", "4k"})
 
 

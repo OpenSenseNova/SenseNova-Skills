@@ -39,7 +39,7 @@ SN_VISION_*  ┘                     ├─►  SN_*（全局）  ─►  内置
 | --- | --- | --- |
 | Base URL | `SN_BASE_URL` | `https://token.sensenova.cn/v1` |
 | Chat 模型 | `SN_CHAT_MODEL` | `sensenova-6.7-flash-lite` |
-| 图生模型 | `SN_IMAGE_GEN_MODEL` | `sensenova-u1-fast` |
+| 图生模型 | `SN_IMAGE_GEN_MODEL` | `sensenova-u1.5-lite` |
 | Chat 协议 | `SN_CHAT_TYPE` | `openai-completions` |
 | 图生协议 | `SN_IMAGE_GEN_MODEL_TYPE` | `sensenova` |
 | Timeout | `SN_CHAT_TIMEOUT` | `120`（秒） |
@@ -75,7 +75,7 @@ SN_VISION_*  ┘                     ├─►  SN_*（全局）  ─►  内置
 | --- | --- |
 | API Key | `SN_IMAGE_GEN_API_KEY` → `SN_API_KEY` |
 | Base URL | `SN_IMAGE_GEN_BASE_URL` → `SN_BASE_URL` → `https://token.sensenova.cn/v1` |
-| Model | `SN_IMAGE_GEN_MODEL` → `sensenova-u1-fast` |
+| Model | `SN_IMAGE_GEN_MODEL` → `sensenova-u1.5-lite` |
 | 协议类型 | `SN_IMAGE_GEN_MODEL_TYPE` → `sensenova` |
 
 ## 五、用户视角的两套配置面

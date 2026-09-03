@@ -48,7 +48,7 @@ Image generation tool that calls the text-to-image-no-enhance API.
 |------|------|--------|------|
 | `--prompt` | string | **Required** | Prompt text for image generation |
 | `--negative-prompt` | string | `""` | Negative prompt |
-| `--image-size` | string | `2k` | Image size preset (case-insensitive). Recommended: `2k`. `4k` optional, needs model support (sensenova rejects it → `status=failed`). Other values → `status=failed`. |
+| `--image-size` | string | `2k` | Image size preset (case-insensitive). Recommended: `2k`. `4k` is supported by `sensenova-u1.5-lite`; other SenseNova image models may reject it. Other values → `status=failed`. |
 | `--aspect-ratio` | string | `16:9` | Aspect ratio, e.g. `1:1`, `16:9`, `9:16` |
 | `--seed` | int | `None` | Random seed for reproducible generation |
 | `--unet-name` | string | `None` | Specify a UNet model name |
@@ -59,7 +59,7 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--insecure` | flag | `False` | Disable TLS verification |
 | `--save-path` | Path | Auto-generated | Save path |
 
-SenseNova U1 Fast requests explicitly send `watermark=false` by default so generated images have no watermark. This feature is currently in free public beta and may become paid.
+SenseNova image requests explicitly send `watermark=false` by default. Both `sensenova-u1-fast` and `sensenova-u1.5-lite` are supported; U1.5 Lite additionally supports native 4K output. This no-watermark feature is currently in free public beta and may become paid.
 
 ### sn-image-recognize
 
