@@ -28,9 +28,10 @@ pip install -r requirements.txt
 
 ## Overview
 
-`sn-image-base` is the base-layer skill (tier 0) of the SenseNova-Skills project and provides three low-level tools:
+`sn-image-base` is the base-layer skill (tier 0) of the SenseNova-Skills project and provides four low-level tools:
 
 - `sn-image-generate`: image generation (calls text-to-image-no-enhance API)
+- `sn-image-edit`: image editing with SenseNova U1.5 Lite (calls `/images/edits`)
 - `sn-image-recognize`: image recognition (uses VLM to analyze image content)
 - `sn-text-optimize`: text optimization (uses LLM to process text)
 
@@ -60,6 +61,19 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--save-path` | Path | Auto-generated | Save path |
 
 SenseNova image requests explicitly send `watermark=false` by default. Both `sensenova-u1-fast` and `sensenova-u1.5-lite` are supported; U1.5 Lite additionally supports native 4K output. This no-watermark feature is currently in free public beta and may become paid.
+
+### sn-image-edit
+
+Edits one or more reference images with SenseNova U1.5 Lite through the `/images/edits` endpoint. Local paths are converted to Data URLs; HTTP(S) URLs and Data URLs are passed through.
+
+```bash
+python scripts/sn_agent_runner.py sn-image-edit \
+    --prompt "Change the background to a snowy mountain" \
+    --images source.png reference.png \
+    --save-path edited.png
+```
+
+The edit request uses the official defaults `n=1`, `size=auto`, `watermark=false`, `prompt_extend=true`, and `response_format=url`.
 
 ### sn-image-recognize
 

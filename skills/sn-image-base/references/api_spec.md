@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [sn-image-generate](#sn-image-generate)
+- [sn-image-edit](#sn-image-edit)
 - [sn-image-recognize](#sn-image-recognize)
 - [sn-text-optimize](#sn-text-optimize)
 - [Error Handling](#error-handling)
@@ -94,6 +95,21 @@ Error: API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE
 ```json
 {"status": "failed", "error_type": "MissingApiKeyError", "error": "API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE_GEN_API_KEY only for an image-generation-specific override, or pass --api-key explicitly.", "elapsed_seconds": 0.05}
 ```
+
+## sn-image-edit
+
+Edits one or more reference images with SenseNova U1.5 Lite through `/images/edits`.
+
+```bash
+python sn_agent_runner.py sn-image-edit \
+    --prompt "Change the background to a snowy mountain" \
+    --images source.png reference.png \
+    [--api-key <string>] [--base-url <string>] \
+    [--timeout <float>] [--insecure] \
+    [--output-format text|json] [--save-path <path>]
+```
+
+Local paths are converted to Data URLs; HTTP(S) URLs and image Data URLs are passed through. The request uses `n=1`, `size=auto`, `watermark=false`, `prompt_extend=true`, and `response_format=url`. The temporary response URL is downloaded to the output path.
 
 ---
 

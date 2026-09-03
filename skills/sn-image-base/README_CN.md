@@ -13,6 +13,7 @@
 该技能提供以下子命令：
 
 - `sn-image-generate`：图像生成
+- `sn-image-edit`：图像编辑（SenseNova U1.5 Lite）
 - `sn-image-recognize`：图像识别（VLM）
 - `sn-text-optimize`：文本优化（LLM）
 

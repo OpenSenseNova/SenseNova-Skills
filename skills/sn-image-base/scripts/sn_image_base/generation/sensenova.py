@@ -5,6 +5,7 @@ import tempfile
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
+from urllib.parse import urlparse
 
 import httpx
 from PIL import Image
@@ -19,6 +20,7 @@ from sn_image_base.generation.core.client_base import (
     T2IBaseClient,
 )
 from sn_image_base.utils.error_utils import U1HttpErrorBase
+from sn_image_base.vlm.utils import image_to_data_url
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -31,6 +33,17 @@ U15_LITE_MODEL = "sensenova-u1.5-lite"
 
 
 IMAGE_GEN_ENDPOINT = "/images/generations"
+IMAGE_EDIT_ENDPOINT = "/images/edits"
+
+
+def _normalize_edit_image(image: str) -> str:
+    """Return an edit image as a URL or data URL accepted by SenseNova."""
+    if image.startswith("data:image/") and ";base64," in image:
+        return image
+    parsed = urlparse(image)
+    if parsed.scheme in {"http", "https"} and parsed.netloc:
+        return image
+    return image_to_data_url(image)
 
 
 class SensenovaText2ImageClient(T2IBaseClient):
@@ -140,44 +153,80 @@ class SensenovaText2ImageClient(T2IBaseClient):
             aspect_ratio=aspect_ratio,
             output_format=output_format,
         )
+        return await self._request_and_save(
+            payload, IMAGE_GEN_ENDPOINT, output_path, output_format, "t2i"
+        )
+
+    async def edit(
+        self,
+        prompt: str,
+        images: Sequence[str],
+        *,
+        model: str | None = None,
+        output_path: Path | None = None,
+    ) -> dict:
+        """Edit one or more reference images with SenseNova U1.5 Lite."""
+        model = model or self.model or global_configs.SN_IMAGE_GEN_MODEL
+        if model.lower() != U15_LITE_MODEL:
+            raise ValueError(
+                f"SenseNova image editing requires model {U15_LITE_MODEL!r}; got {model!r}."
+            )
+        if not images:
+            raise ValueError("At least one reference image is required.")
+        payload = {
+            "model": model,
+            "images": [{"image_url": _normalize_edit_image(image)} for image in images],
+            "prompt": prompt,
+            "n": 1,
+            "size": "auto",
+            "watermark": False,
+            "prompt_extend": True,
+            "response_format": "url",
+        }
+        return await self._request_and_save(
+            payload, IMAGE_EDIT_ENDPOINT, output_path, "png", "edit"
+        )
+
+    async def _request_and_save(
+        self,
+        payload: dict[str, Any],
+        endpoint: str,
+        output_path: Path | None,
+        output_format: str,
+        filename_prefix: str,
+    ) -> dict:
         headers = self.headers
-        api_url = self.get_api_url(model)
         if output_path is None:
             OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
             timestamp = time.strftime("%Y%m%d_%H%M%S")
-            output_path = OUTPUT_DIR / f"t2i_{timestamp}.png"
+            output_path = OUTPUT_DIR / f"{filename_prefix}_{timestamp}.png"
         output_path = ensure_output_path(output_path)
-
         client = await self._get_client()
-
         try:
             create_response = await client.post(
-                api_url,
+                f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}",
                 json=payload,
                 headers=headers,
             )
             data = self.parse_response(create_response)
         except U1HttpErrorBase as exc:
             details = exc.detail or ""
-            field_name = None
-            if exc.code == 404:
-                field_name = "SN_IMAGE_GEN_BASE_URL"
-            elif exc.code == 401:
-                field_name = "SN_IMAGE_GEN_API_KEY"
-            # elif exc.code == 400:
-            #     warnings.warn(f"Bad request: {exc.message}; body: {payload}", stacklevel=2)
+            field_name = "SN_IMAGE_GEN_BASE_URL" if exc.code == 404 else None
+            field_name = "SN_IMAGE_GEN_API_KEY" if exc.code == 401 else field_name
             if field_name is not None:
                 field_hint = global_configs.get_annotated_field(field_name)
-                if field_hint is not None:
-                    env_names = list(field_hint.env_names) if field_hint.env_names else []
-                    if env_names:
-                        if len(env_names) == 1:
-                            details += (
-                                f"\nIs the environment variable `{env_names[0]}` set correctly?"
-                            )
-                        else:
-                            env_names_str = ", ".join([f"`{n}`" for n in env_names])
-                            details += f"\nIs any of the following environment variable(s) set correctly: {env_names_str}?"
+                env_names = (
+                    list(field_hint.env_names) if field_hint and field_hint.env_names else []
+                )
+                if env_names:
+                    if len(env_names) == 1:
+                        details += f"\nIs the environment variable `{env_names[0]}` set correctly?"
+                    else:
+                        env_names_str = ", ".join(f"`{name}`" for name in env_names)
+                        details += (
+                            "\nIs any of the following environment variable(s) set correctly: "
+                            f"{env_names_str}?"
+                        )
             return {
                 "status": "failed",
                 "error_type": type(exc).__name__,
@@ -191,10 +240,10 @@ class SensenovaText2ImageClient(T2IBaseClient):
                     "error_type": "EmptyResponse",
                     "error": "No image generated from the model",
                 }
-            url = images_urls[-1]
-            suffix = f".{output_format}"
-            save_path = output_path.with_suffix(suffix)
-            saved_path = await download_image(url, save_path)
+            saved_path = await download_image(
+                url=images_urls[-1],
+                save_path=output_path.with_suffix(f".{output_format}"),
+            )
             return {
                 "status": "ok",
                 "output": str(saved_path),
@@ -207,11 +256,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
                 "error": f"HTTP {exc.response.status_code}: {exc.response.text}",
             }
         except (httpx.HTTPError, OSError, ValueError) as exc:
-            return {
-                "status": "failed",
-                "error_type": type(exc).__name__,
-                "error": str(exc),
-            }
+            return {"status": "failed", "error_type": type(exc).__name__, "error": str(exc)}
 
     @property
     @override

@@ -13,6 +13,7 @@ For installation and usage, please refer to the project's [README.md](https://gi
 The skill provides the following subcommands:
 
 - `sn-image-generate`: image generation
+- `sn-image-edit`: image editing (SenseNova U1.5 Lite)
 - `sn-image-recognize`: image recognition (VLM)
 - `sn-text-optimize`: text optimization (LLM)
 
