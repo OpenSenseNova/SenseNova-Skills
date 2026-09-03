@@ -28,9 +28,10 @@ pip install -r requirements.txt
 
 ## Overview
 
-`sn-image-base` is the base-layer skill (tier 0) of the SenseNova-Skills project and provides three low-level tools:
+`sn-image-base` is the base-layer skill (tier 0) of the SenseNova-Skills project and provides four low-level tools:
 
 - `sn-image-generate`: image generation (calls text-to-image-no-enhance API)
+- `sn-image-edit`: image editing with SenseNova U1.5 Lite (calls `/images/edits`)
 - `sn-image-recognize`: image recognition (uses VLM to analyze image content)
 - `sn-text-optimize`: text optimization (uses LLM to process text)
 
@@ -48,7 +49,7 @@ Image generation tool that calls the text-to-image-no-enhance API.
 |------|------|--------|------|
 | `--prompt` | string | **Required** | Prompt text for image generation |
 | `--negative-prompt` | string | `""` | Negative prompt |
-| `--image-size` | string | `2k` | Image size preset (case-insensitive). Recommended: `2k`. `4k` optional, needs model support (sensenova rejects it → `status=failed`). Other values → `status=failed`. |
+| `--image-size` | string | `2k` | Image size preset (case-insensitive). Recommended: `2k`. `4k` is supported by `sensenova-u1.5-lite`; other SenseNova image models may reject it. Other values → `status=failed`. |
 | `--aspect-ratio` | string | `16:9` | Aspect ratio, e.g. `1:1`, `16:9`, `9:16` |
 | `--seed` | int | `None` | Random seed for reproducible generation |
 | `--unet-name` | string | `None` | Specify a UNet model name |
@@ -59,7 +60,20 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--insecure` | flag | `False` | Disable TLS verification |
 | `--save-path` | Path | Auto-generated | Save path |
 
-SenseNova U1 Fast requests explicitly send `watermark=false` by default so generated images have no watermark. This feature is currently in free public beta and may become paid.
+SenseNova image requests explicitly send `watermark=false` by default. Both `sensenova-u1-fast` and `sensenova-u1.5-lite` are supported; U1.5 Lite additionally supports native 4K output. This no-watermark feature is currently in free public beta and may become paid.
+
+### sn-image-edit
+
+Edits one or more reference images with SenseNova U1.5 Lite through the `/images/edits` endpoint. Local paths are converted to Data URLs; HTTP(S) URLs and Data URLs are passed through.
+
+```bash
+python scripts/sn_agent_runner.py sn-image-edit \
+    --prompt "Change the background to a snowy mountain" \
+    --images source.png reference.png \
+    --save-path edited.png
+```
+
+The edit request uses the official defaults `n=1`, `size=auto`, `watermark=false`, `prompt_extend=true`, and `response_format=url`.
 
 ### sn-image-recognize
 
@@ -71,7 +85,7 @@ Image recognition tool that uses VLM (Vision Language Model) to analyze image co
 |------|------|-----------|---------|------|
 | `--api-key` | string | No hardcoded default | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
 | `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` | Vision provider base URL; falls back to shared chat/global provider |
-| `--model` | string | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | Vision-capable model name |
+| `--model` | string | `sensenova-6.8-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | Vision-capable model name |
 | `--vlm-type` | string | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` | Chat protocol type override |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
 | `--system-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--system-prompt` |
@@ -91,7 +105,7 @@ Text optimization tool that uses LLM (Language Model) to optimize text content. 
 |------|------|-----------|---------|------|
 | `--api-key` | string | No hardcoded default | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | Chat runtime API key; raises `MissingApiKeyError` when all are unset |
 | `--base-url` | string | `SN_CHAT_BASE_URL` default | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` | Text provider base URL; falls back to shared chat/global provider |
-| `--model` | string | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` | Text model name |
+| `--model` | string | `sensenova-6.8-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` | Text model name |
 | `--llm-type` | string | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` | Chat protocol type override |
 | `--user-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--user-prompt` |
 | `--system-prompt-path` | string | `None` | - | Local file path, mutually exclusive with `--system-prompt` |
@@ -169,7 +183,7 @@ Authentication parameters for `sn-image-generate` have the following default beh
 |------|-----------|-------------|-------------|
 | `--api-key` | None (must be provided) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` |
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
-| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
+| `--model` | `sensenova-6.8-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
 | `--vlm-type` / `--llm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
 
 `api_key` resolution order (high to low): CLI `--api-key` > command-specific key (`SN_VISION_API_KEY`/`SN_TEXT_API_KEY`) > `SN_CHAT_API_KEY` > `SN_API_KEY`. If all are unset, `MissingApiKeyError` is raised.
@@ -229,7 +243,7 @@ JSON output for `sn-image-recognize` and `sn-text-optimize` also includes `model
 {
   "status": "ok",
   "result": "...",
-  "model": "sensenova-6.7-flash-lite",
+  "model": "sensenova-6.8-flash-lite",
   "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 1.23

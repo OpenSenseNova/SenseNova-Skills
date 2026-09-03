@@ -100,7 +100,7 @@ class Configs:
     SN_IMAGE_GEN_MODEL_TYPE: Annotated[
         Literal["sensenova", "nano-banana", "openai-image"], Field("SN_IMAGE_GEN_MODEL_TYPE")
     ] = "sensenova"
-    SN_IMAGE_GEN_MODEL: Annotated[str, Field("SN_IMAGE_GEN_MODEL")] = "sensenova-u1-fast"
+    SN_IMAGE_GEN_MODEL: Annotated[str, Field("SN_IMAGE_GEN_MODEL")] = "sensenova-u1.5-lite"
 
     # chat runtime shared by text and vision commands; command-specific
     # SN_TEXT_* / SN_VISION_* values override these defaults.
@@ -111,7 +111,7 @@ class Configs:
     SN_CHAT_TYPE: Annotated[
         Literal["anthropic-messages", "openai-completions"], Field("SN_CHAT_TYPE")
     ] = "openai-completions"
-    SN_CHAT_MODEL: Annotated[str, Field("SN_CHAT_MODEL")] = "sensenova-6.7-flash-lite"
+    SN_CHAT_MODEL: Annotated[str, Field("SN_CHAT_MODEL")] = "sensenova-6.8-flash-lite"
     SN_TEXT_API_KEY: Annotated[
         str, Field("SN_TEXT_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY", secret=True)
     ] = ""
@@ -123,7 +123,7 @@ class Configs:
         Field("SN_TEXT_TYPE", "SN_CHAT_TYPE"),
     ] = ""
     SN_TEXT_MODEL: Annotated[str, Field("SN_TEXT_MODEL", "SN_CHAT_MODEL")] = (
-        "sensenova-6.7-flash-lite"
+        "sensenova-6.8-flash-lite"
     )
     SN_VISION_API_KEY: Annotated[
         str, Field("SN_VISION_API_KEY", "SN_CHAT_API_KEY", "SN_API_KEY", secret=True)
@@ -136,7 +136,7 @@ class Configs:
         Field("SN_VISION_TYPE", "SN_CHAT_TYPE"),
     ] = ""
     SN_VISION_MODEL: Annotated[str, Field("SN_VISION_MODEL", "SN_CHAT_MODEL")] = (
-        "sensenova-6.7-flash-lite"
+        "sensenova-6.8-flash-lite"
     )
 
     def __init__(self) -> None:

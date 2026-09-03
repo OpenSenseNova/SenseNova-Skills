@@ -31,7 +31,7 @@ import httpx
 
 
 _DEFAULT_CHAT_BASE_URL = "https://token.sensenova.cn/v1"
-_DEFAULT_CHAT_MODEL = "sensenova-6.7-flash-lite"
+_DEFAULT_CHAT_MODEL = "sensenova-6.8-flash-lite"
 
 
 # ---------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [sn-image-generate](#sn-image-generate)
+- [sn-image-edit](#sn-image-edit)
 - [sn-image-recognize](#sn-image-recognize)
 - [sn-text-optimize](#sn-text-optimize)
 - [Error Handling](#error-handling)
@@ -40,7 +41,7 @@ python sn_agent_runner.py sn-image-generate \
 | `--api-key` | string | No | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | API Key (CLI takes precedence; raises `MissingApiKeyError` if all are empty) |
 | `--base-url` | string | No | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` | API base URL (CLI takes precedence) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
-| `--image-size` | string | No | `"2k"` | Image size (case-insensitive). Recommended: `2k`. `4k` optional, needs model support (sensenova rejects it → `ValueError`). Other values → `ValueError` (see Error Handling). |
+| `--image-size` | string | No | `"2k"` | Image size (case-insensitive). Recommended: `2k`. `sensenova-u1.5-lite` also supports `4k`; `sensenova-u1-fast` remains limited to `1k`/`2k`. Other values → `ValueError` (see Error Handling). |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
 | `--seed` | int | No | `None` | Random seed (for reproducibility) |
 | `--unet-name` | string | No | `None` | UNet model name |
@@ -95,6 +96,21 @@ Error: API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE
 {"status": "failed", "error_type": "MissingApiKeyError", "error": "API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE_GEN_API_KEY only for an image-generation-specific override, or pass --api-key explicitly.", "elapsed_seconds": 0.05}
 ```
 
+## sn-image-edit
+
+Edits one or more reference images with SenseNova U1.5 Lite through `/images/edits`.
+
+```bash
+python sn_agent_runner.py sn-image-edit \
+    --prompt "Change the background to a snowy mountain" \
+    --images source.png reference.png \
+    [--api-key <string>] [--base-url <string>] \
+    [--timeout <float>] [--insecure] \
+    [--output-format text|json] [--save-path <path>]
+```
+
+Local paths are converted to Data URLs; HTTP(S) URLs and image Data URLs are passed through. The request uses `n=1`, `size=auto`, `watermark=false`, `prompt_extend=true`, and `response_format=url`. The temporary response URL is downloaded to the output path.
+
 ---
 
 ## sn-image-recognize
@@ -125,7 +141,7 @@ python sn_agent_runner.py sn-image-recognize \
 | `--images` | string[] | **Yes** | - | List of image paths (supports multiple) |
 | `--api-key` | string | No | No hardcoded default | CLI > `SN_VISION_API_KEY` > `SN_CHAT_API_KEY` > `SN_API_KEY`; raises `MissingApiKeyError` if all are empty |
 | `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_VISION_BASE_URL` > `SN_CHAT_BASE_URL` > `SN_BASE_URL` |
-| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_VISION_MODEL` > `SN_CHAT_MODEL` |
+| `--model` | string | No | `sensenova-6.8-flash-lite` | CLI > `SN_VISION_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
 | `--vlm-type` | string | No | `openai-completions` | CLI > `SN_VISION_TYPE` > `SN_CHAT_TYPE` |
@@ -150,7 +166,7 @@ This image shows an adorable orange cat napping in the sunlight.
 {
   "status": "ok",
   "result": "This image shows an adorable orange cat napping in the sunlight.",
-  "model": "sensenova-6.7-flash-lite",
+  "model": "sensenova-6.8-flash-lite",
   "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 2.15
@@ -165,7 +181,7 @@ This image shows an adorable orange cat napping in the sunlight.
 |-----------|-----------------|---------------------|
 | `--api-key` | None (required) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` |
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
-| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` |
+| `--model` | `sensenova-6.8-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` |
 | `--vlm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` |
 
 Compatibility note: host-only chat base URLs such as `https://token.sensenova.cn`
@@ -201,7 +217,7 @@ python sn_agent_runner.py sn-text-optimize \
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
 | `--api-key` | string | No | No hardcoded default | CLI > `SN_TEXT_API_KEY` > `SN_CHAT_API_KEY` > `SN_API_KEY`; raises `MissingApiKeyError` if all are empty |
 | `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_TEXT_BASE_URL` > `SN_CHAT_BASE_URL` > `SN_BASE_URL` |
-| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_TEXT_MODEL` > `SN_CHAT_MODEL` |
+| `--model` | string | No | `sensenova-6.8-flash-lite` | CLI > `SN_TEXT_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
 | `--llm-type` | string | No | `openai-completions` | CLI > `SN_TEXT_TYPE` > `SN_CHAT_TYPE` |
@@ -226,7 +242,7 @@ Optimized text content...
 {
   "status": "ok",
   "result": "Optimized text content...",
-  "model": "sensenova-6.7-flash-lite",
+  "model": "sensenova-6.8-flash-lite",
   "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 0.83
@@ -241,7 +257,7 @@ Optimized text content...
 |-----------|-----------------|---------------------|
 | `--api-key` | None (required) | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` |
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
-| `--model` | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
+| `--model` | `sensenova-6.8-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
 | `--llm-type` | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
 
 Compatibility note: host-only chat base URLs such as `https://token.sensenova.cn`
@@ -275,7 +291,7 @@ In text mode, `error` is written to stderr (no `error_type` prefix). `stdout` is
 | `error_type` | Source | Trigger |
 |--------------|--------|---------|
 | `MissingApiKeyError` | Custom business exception | API key not provided for `sn-image-generate` |
-| `ValueError` | `_resolve_prompt`, `run_image_generate`, backend `_resolve_size` | prompt mutual-exclusion / file-read failure; `--image-size` not in the allowed input set; `4k` on unsupported models (1K/2K only); unsupported aspect ratio inside backend |
+| `ValueError` | `_resolve_prompt`, `run_image_generate`, backend `_resolve_size` | prompt mutual-exclusion / file-read failure; `--image-size` not in the allowed input set; `4k` on models without 4K support; unsupported aspect ratio inside backend |
 | argparse missing param | argparse standard error | Missing required parameters for `sn-image-recognize` / `sn-text-optimize` (still exits via argparse's stderr + exit 2; **not** unified) |
 | `HTTPStatusError` (or backend's `U1HttpError` subclass) | httpx request layer | API returns non-2xx status code |
 | `httpx.HTTPError` / `OSError` | httpx request layer | Network error, timeout, etc. |

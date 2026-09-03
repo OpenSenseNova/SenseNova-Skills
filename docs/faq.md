@@ -93,7 +93,7 @@ SenseNova supports both the Anthropic Messages format (via `https://token.sensen
 
 If you hit an error like `The supported API model names are ... but you passed ...`, first confirm the model name is spelled correctly. The currently supported model names are:
 
-- `sensenova-6.7-flash-lite` — SenseNova 6.7 Flash-Lite, lightweight and fast
+- `sensenova-6.8-flash-lite` — SenseNova 6.8 Flash-Lite, lightweight and fast
 - `sensenova-u1-fast` — SenseNova U1 Fast, reasoning-enhanced
 
 Note: model names are case-sensitive, so make sure they match the names above exactly.

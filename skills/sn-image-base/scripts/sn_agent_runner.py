@@ -4,6 +4,7 @@ All tools are invoked as async coroutines and executed via asyncio.run().
 
 Usage:
     python sn_agent_runner.py sn-image-generate --prompt "..."
+    python sn_agent_runner.py sn-image-edit --prompt "..." --images "..."
     python sn_agent_runner.py sn-image-recognize --user-prompt "..." --images "..." --api-key "..." --base-url "..." --model "..."
     python sn_agent_runner.py sn-text-optimize --user-prompt "..." --api-key "..." --base-url "..." --model "..."
 """
@@ -39,9 +40,8 @@ from sn_image_base.llm import AnthropicMessagesAdapter, OpenAIChatAdapter
 # Allowed --image-size values, canonical lowercase form. Comparison is
 # case-insensitive (see run_image_generate). The runner forwards both 2k and 4k
 # to the configured backend; each backend then either renders the size, forwards
-# it upstream, or rejects it (e.g. the sensenova backend rejects 4k since it only
-# has 1K / 2K buckets). Any rejection surfaces as a status=failed JSON. 1k remains
-# backend-only until a caller adds it here.
+# it upstream, or rejects it. SenseNova U1.5 Lite supports native 4K; U1 Fast
+# remains limited to 1K / 2K. Any rejection surfaces as status=failed JSON.
 ALLOWED_IMAGE_SIZES = frozenset({"2k", "4k"})
 
 
@@ -76,7 +76,7 @@ def build_parser() -> argparse.ArgumentParser:
     Returns:
         argparse.ArgumentParser:
             Configured parser with subcommands for sn-image-generate,
-            sn-image-recognize, and sn-text-optimize.
+            sn-image-edit, sn-image-recognize, and sn-text-optimize.
     """
     parser = argparse.ArgumentParser(
         description="sn-image-base unified runner - async tool execution."
@@ -127,6 +127,17 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.add_argument("--insecure", action="store_true", help="Disable TLS verification")
     gen_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
     gen_parser.add_argument("--save-path", type=Path, default=None)
+
+    # sn-image-edit (SenseNova U1.5 Lite)
+    edit_parser = subparsers.add_parser("sn-image-edit", help="Edit reference images")
+    edit_parser.add_argument("--prompt", required=True, help="Image editing instruction")
+    edit_parser.add_argument("--images", required=True, nargs="+", help="Image paths or URLs")
+    edit_parser.add_argument("--api-key", default="", help="API key (CLI > SN_IMAGE_GEN_API_KEY > SN_API_KEY)")
+    edit_parser.add_argument("--base-url", default="", help="API base URL (CLI > SN_IMAGE_GEN_BASE_URL > SN_BASE_URL)")
+    edit_parser.add_argument("--timeout", type=float, default=300.0)
+    edit_parser.add_argument("--insecure", action="store_true", help="Disable TLS verification")
+    edit_parser.add_argument("-o", "--output-format", choices=["text", "json"], default="text")
+    edit_parser.add_argument("--save-path", type=Path, default=None)
 
     # sn-image-recognize (VLM)
     recog_parser = subparsers.add_parser(
@@ -299,6 +310,44 @@ async def run_image_generate(args: argparse.Namespace) -> tuple[dict, int]:
             aspect_ratio=args.aspect_ratio,
             seed=args.seed,
             unet_name=args.unet_name,
+            output_path=args.save_path,
+        )
+        return result, 0 if result["status"] == "ok" else 1
+    finally:
+        await client.aclose()
+
+
+async def run_image_edit(args: argparse.Namespace) -> tuple[dict, int]:
+    """Edit reference images through SenseNova U1.5 Lite."""
+    if global_configs.SN_IMAGE_GEN_MODEL_TYPE != "sensenova":
+        raise BadConfigurationError("sn-image-edit only supports SN_IMAGE_GEN_MODEL_TYPE=sensenova.")
+    model = global_configs.SN_IMAGE_GEN_MODEL
+    if not model:
+        raise BadConfigurationError(
+            f"No model provided. {global_configs.get_env_var_help('SN_IMAGE_GEN_MODEL')}"
+        )
+    if model.lower() != "sensenova-u1.5-lite":
+        raise BadConfigurationError(
+            "sn-image-edit requires SN_IMAGE_GEN_MODEL=sensenova-u1.5-lite; "
+            f"got {model!r}."
+        )
+    api_key = args.api_key or global_configs.SN_IMAGE_GEN_API_KEY
+    if not api_key:
+        raise MissingApiKeyError(global_configs.get_env_var_help("SN_IMAGE_GEN_API_KEY"))
+    base_url = args.base_url or global_configs.SN_IMAGE_GEN_BASE_URL
+    if not base_url:
+        raise InvalidBaseUrlError(global_configs.get_env_var_help("SN_IMAGE_GEN_BASE_URL"))
+    client = SensenovaText2ImageClient(
+        api_key=api_key,
+        base_url=base_url,
+        model=model,
+        timeout=args.timeout,
+        ssl_verify=not args.insecure,
+    )
+    try:
+        result = await client.edit(
+            prompt=args.prompt,
+            images=args.images,
             output_path=args.save_path,
         )
         return result, 0 if result["status"] == "ok" else 1
@@ -559,6 +608,8 @@ async def main_async(args: argparse.Namespace) -> int:
     try:
         if args.command == "sn-image-generate":
             result, _code = await run_image_generate(args)
+        elif args.command == "sn-image-edit":
+            result, _code = await run_image_edit(args)
         elif args.command == "sn-image-recognize":
             result, _code = await run_image_recognize(args)
         elif args.command == "sn-text-optimize":
@@ -583,7 +634,7 @@ async def main_async(args: argparse.Namespace) -> int:
             print(f"Error: {exc}", file=sys.stderr)
         return 1
 
-    except ValueError as exc:
+    except (OSError, ValueError) as exc:
         elapsed = round(time.time() - start_time, 2)
         if args.output_format == "json":
             print(

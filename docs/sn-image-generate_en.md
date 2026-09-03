@@ -24,10 +24,24 @@ Environment diagnostic skill that checks installation, dependencies, and configu
 Base-layer infrastructure skill providing low-level tools for image generation, image recognition (VLM), and text optimization (LLM). See [`skills/sn-image-base/SKILL.md`](../skills/sn-image-base/SKILL.md) for full behavior.
 
 - **sn-image-generate** — text-to-image generation
+- **sn-image-edit** — edit one or more reference images via `/images/edits`
 - **sn-image-recognize** — image recognition using VLM (supports multiple image inputs)
 - **sn-text-optimize** — text processing/optimization using LLM
 
 All tools are invoked through a unified `sn_agent_runner.py` entrypoint.
+
+### sn-image-edit
+
+Edit one or more reference images with SenseNova U1.5 Lite using a natural-language instruction. Local image paths, HTTP(S) URLs, Data URLs, and multiple reference images are supported.
+
+```bash
+python skills/sn-image-base/scripts/sn_agent_runner.py sn-image-edit \
+  --prompt "Change the background to a snowy mountain while keeping the person unchanged" \
+  --images source.png reference.png \
+  --save-path edited.png
+```
+
+The edit request defaults to `n=1`, `size=auto`, `watermark=false`, `prompt_extend=true`, and `response_format=url`. See the [`sn-image-base API specification`](../skills/sn-image-base/references/api_spec.md#sn-image-edit) for details.
 
 ### sn-infographic (Tier 1)
 

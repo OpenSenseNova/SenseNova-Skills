@@ -13,6 +13,7 @@
 该技能提供以下子命令：
 
 - `sn-image-generate`：图像生成
+- `sn-image-edit`：图像编辑（SenseNova U1.5 Lite）
 - `sn-image-recognize`：图像识别（VLM）
 - `sn-text-optimize`：文本优化（LLM）
 
@@ -44,8 +45,8 @@ SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_API_KEY="<sensenova-token-plan-api-key>"
 
 # 可选模型覆盖
-SN_IMAGE_GEN_MODEL="sensenova-u1-fast"   # 或 Token Plan 中可用的其他图像生成模型
-SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+SN_IMAGE_GEN_MODEL="sensenova-u1.5-lite"   # 或 sensenova-u1-fast，或 Token Plan 中的其他图像生成模型
+SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
 **注意：不要将 `.env` 文件或 API key 提交到 git。**
@@ -88,7 +89,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 | `SN_BASE_URL` | 所有能力共用的全局基础 URL | `""` |
 | `SN_IMAGE_GEN_API_KEY` | 可选的图像生成专用 API key 覆盖 | `SN_API_KEY` |
 | `SN_IMAGE_GEN_MODEL_TYPE` | 图像生成模型类型 | `"sensenova"` |
-| `SN_IMAGE_GEN_MODEL` | 图像生成模型名 | `"sensenova-u1-fast"` |
+| `SN_IMAGE_GEN_MODEL` | 图像生成模型名 | `"sensenova-u1.5-lite"` |
 | `SN_IMAGE_GEN_BASE_URL` | 图像生成 API 的基础 URL | `SN_BASE_URL`，然后 `"https://token.sensenova.cn/v1"` |
 
 默认值适用于 [SenseNova](https://platform.sensenova.cn/)。
@@ -124,7 +125,9 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 
     ```ini
     # （默认）用于 [SenseNova](https://platform.sensenova.cn/)
-    SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
+    SN_IMAGE_GEN_MODEL="sensenova-u1.5-lite"
+    # 或使用 SenseNova U1 Fast：
+    # SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
     # 用于 Google Nano Banana 模型 API
     SN_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"
     # 用于 OpenAI 图像生成 API
@@ -148,7 +151,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 | `SN_CHAT_API_KEY` | text/vision chat 调用共用 API key | `SN_API_KEY` |
 | `SN_CHAT_BASE_URL` | 共享 Chat API 基础 URL | `SN_BASE_URL`，然后 `"https://token.sensenova.cn/v1"` |
 | `SN_CHAT_TYPE` | 共享 Chat 协议类型 | `"openai-completions"` |
-| `SN_CHAT_MODEL` | text/vision chat 调用共用默认模型 | `"sensenova-6.7-flash-lite"` |
+| `SN_CHAT_MODEL` | text/vision chat 调用共用默认模型 | `"sensenova-6.8-flash-lite"` |
 | `SN_TEXT_API_KEY` | 可选文本 provider API key | `SN_CHAT_API_KEY` -> `SN_API_KEY` |
 | `SN_TEXT_BASE_URL` | 可选文本 provider 基础 URL | `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `SN_TEXT_TYPE` | 可选文本协议类型 | `SN_CHAT_TYPE` |
@@ -195,7 +198,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 
     ```ini
     # （默认）SenseNova 6.7 Flash Lite
-    SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+    SN_CHAT_MODEL="sensenova-6.8-flash-lite"
     # Anthropic Claude Sonnet 4.6
     SN_VISION_MODEL="claude-sonnet-4-6"
     # Google Gemini 3 Flash Preview

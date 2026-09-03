@@ -153,7 +153,7 @@ cat > .env << EOF
 SN_API_KEY=your-api-key
 SN_BASE_URL=https://token.sensenova.cn/v1
 SN_CHAT_TYPE=openai-completions
-SN_CHAT_MODEL=sensenova-6.7-flash-lite
+SN_CHAT_MODEL=sensenova-6.8-flash-lite
 EOF
 
 # Load .env file

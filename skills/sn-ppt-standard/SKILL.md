@@ -247,7 +247,7 @@ This split keeps converter-facing mechanical contracts (chart container id = `ch
 
 ## SN API model pitfall
 
-The default model `sensenova-6.7-flash-lite` frequently returns `reasoning_content`
+The former default model `sensenova-6.7-flash-lite` frequently returned `reasoning_content`
 but **empty `content`** in its response. This causes `run_stage.py` to fail with
 `"LLM response had no usable text"` on stages that parse JSON output:
 `outline`, `asset-plan`, and `page-html`.
@@ -256,7 +256,7 @@ but **empty `content`** in its response. This causes `run_stage.py` to fail with
 Set `SN_TEXT_MODEL=deepseek-v4-flash` (or another reliable non-reasoning model)
 in the SenseNova `.env`. This resolves the `reasoning_content` empty-shell bug
 and **greatly reduces** (but does not eliminate) the malformed-JSON
-`"Expecting ',' delimiter"` errors that `sensenova-6.7-flash-lite` produces on
+`"Expecting ',' delimiter"` errors that `sensenova-6.7-flash-lite` produced on
 the `outline` stage. Even with `deepseek-v4-flash`, outline can still fail
 with JSON parse errors on some runs — treat it as flaky, not fixed. After the
 switch, `asset-plan` and `page-html` run more reliably, but `outline` remains
@@ -388,7 +388,7 @@ Some models are **reasoning models** that return their output in
 | Model | Manifestation |
 |-------|--------------|
 | `kimi-k2.7-code` | `reasoning_content` present, `content` empty |
-| `sensenova-6.7-flash-lite` (default when no `SN_TEXT_MODEL` set) | `reasoning_content` present, `content` empty; OR produces malformed JSON causing `"Expecting ',' delimiter"` errors on `outline` |
+| `sensenova-6.7-flash-lite` (former default; no longer available) | `reasoning_content` present, `content` empty; OR produced malformed JSON causing `"Expecting ',' delimiter"` errors on `outline` |
 
 The `_coerce_message_content` function in `lib/model_client.py` must handle this field as a
 fallback. If you encounter `"LLM response had no usable text"` errors, check that
