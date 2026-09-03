@@ -634,7 +634,7 @@ async def main_async(args: argparse.Namespace) -> int:
             print(f"Error: {exc}", file=sys.stderr)
         return 1
 
-    except ValueError as exc:
+    except (OSError, ValueError) as exc:
         elapsed = round(time.time() - start_time, 2)
         if args.output_format == "json":
             print(
