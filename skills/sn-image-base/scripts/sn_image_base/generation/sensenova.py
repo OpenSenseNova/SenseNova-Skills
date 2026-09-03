@@ -319,7 +319,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
 
         Example:
         {
-            "model": "sensenova-u1-fast",
+            "model": "sensenova-u1.5-lite",
             "prompt": "A cat wearing a hat",
             "size": "1024x1024",
             "response_format": "url",
