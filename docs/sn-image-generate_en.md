@@ -24,7 +24,7 @@ Environment diagnostic skill that checks installation, dependencies, and configu
 Base-layer infrastructure skill providing low-level tools for image generation, image recognition (VLM), and text optimization (LLM). See [`skills/sn-image-base/SKILL.md`](../skills/sn-image-base/SKILL.md) for full behavior.
 
 - **sn-image-generate** — text-to-image generation
-- **sn-image-edit** — edit one or more reference images with SenseNova U1.5 Lite via `/images/edits`
+- **sn-image-edit** — edit one or more reference images via `/images/edits`
 - **sn-image-recognize** — image recognition using VLM (supports multiple image inputs)
 - **sn-text-optimize** — text processing/optimization using LLM
 

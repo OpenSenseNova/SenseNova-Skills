@@ -24,7 +24,7 @@
 底层基础设施技能，提供图像生成、图像识别（VLM）与文本优化（LLM）的低级工具。完整行为见 [`skills/sn-image-base/SKILL.md`](../skills/sn-image-base/SKILL.md)。
 
 - **sn-image-generate** —— 文生图（调用 text-to-image 接口）
-- **sn-image-edit** —— 使用 SenseNova U1.5 Lite 编辑一张或多张参考图（调用 `/images/edits` 接口）
+- **sn-image-edit** —— 编辑一张或多张参考图（调用 `/images/edits` 接口）
 - **sn-image-recognize** —— 图像识别，使用 VLM 解析图像内容（支持多图输入）
 - **sn-text-optimize** —— 基于 LLM 的文本优化与处理
 
