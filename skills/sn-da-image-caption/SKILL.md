@@ -41,7 +41,7 @@ python3 scripts/caption.py /mnt/data/image.png --model gemini-3.1-flash-lite-pre
 | Option | Description |
 |--------|------------|
 | `--prompt, -p` | Custom prompt (overrides auto-detection) |
-| `--model, -m` | Vision model (default: sensenova-6.7-flash-lite) |
+| `--model, -m` | Vision model (default: sensenova-6.8-flash-lite) |
 | `--json` | Output structured JSON instead of plain text |
 | `--batch` | Process all images in a directory |
 | `--output, -o` | Output file for batch results |

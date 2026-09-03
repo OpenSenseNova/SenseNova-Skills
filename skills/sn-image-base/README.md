@@ -46,7 +46,7 @@ SN_API_KEY="<sensenova-token-plan-api-key>"
 
 # Optional model overrides
 SN_IMAGE_GEN_MODEL="sensenova-u1.5-lite"   # or sensenova-u1-fast, or another Token Plan image model
-SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
 ### Detailed Configurations
@@ -151,7 +151,7 @@ models only when needed:
 | `SN_CHAT_API_KEY` | API key for text and vision chat calls | `SN_API_KEY` |
 | `SN_CHAT_BASE_URL` | Shared base URL for the chat API | `SN_BASE_URL`, then `"https://token.sensenova.cn/v1"` |
 | `SN_CHAT_TYPE` | Shared chat protocol type | `"openai-completions"` |
-| `SN_CHAT_MODEL` | Shared default model for text and vision chat calls | `"sensenova-6.7-flash-lite"` |
+| `SN_CHAT_MODEL` | Shared default model for text and vision chat calls | `"sensenova-6.8-flash-lite"` |
 | `SN_TEXT_API_KEY` | Optional text-only provider API key | `SN_CHAT_API_KEY` -> `SN_API_KEY` |
 | `SN_TEXT_BASE_URL` | Optional text-only provider base URL | `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `SN_TEXT_TYPE` | Optional text-only protocol type | `SN_CHAT_TYPE` |
@@ -199,7 +199,7 @@ To use non-default shared chat settings, please:
 
     ```ini
     # (Default) SenseNova 6.7 Flash Lite
-    SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+    SN_CHAT_MODEL="sensenova-6.8-flash-lite"
     # Anthropic Claude Sonnet 4.6
     SN_VISION_MODEL="claude-sonnet-4-6"
     # Google Gemini 3 Flash Preview

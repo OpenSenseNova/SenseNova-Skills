@@ -187,7 +187,7 @@ After Worker Agent completes, its last message must be and only be the following
   "generation_prompt": "<included only when output_mode=verbose>",
   "timing": {
     "total_elapsed_seconds": 25.12,
-    "prompt_generation": { "elapsed_seconds": 5.23, "model": "sensenova-6.7-flash-lite" },
+    "prompt_generation": { "elapsed_seconds": 5.23, "model": "sensenova-6.8-flash-lite" },
     "image_generation": { "elapsed_seconds": 19.89, "model": "sn_image_model" }
   }
 }

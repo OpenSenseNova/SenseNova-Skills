@@ -396,7 +396,7 @@ When `max_rounds=1` (no VLM call), default the round record to `result="PASS"`, 
   "reasoning": "<VLM reasoning, or \"\" when max_rounds=1>",
   "timing": {
     "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
-    "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
+    "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.8-flash-lite" }
   }
 }
 ```
@@ -432,9 +432,9 @@ After Worker Agent completes, its last message must be and only be the following
   "early_terminated": true,
   "timing": {
     "total_elapsed_seconds": 35.12,
-    "prompt_evaluation": { "elapsed_seconds": 2.11, "model": "sensenova-6.7-flash-lite" },
-    "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-6.7-flash-lite" },
-    "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-6.7-flash-lite" }
+    "prompt_evaluation": { "elapsed_seconds": 2.11, "model": "sensenova-6.8-flash-lite" },
+    "content_analysis": { "elapsed_seconds": 3.22, "model": "sensenova-6.8-flash-lite" },
+    "prompt_expand": { "elapsed_seconds": 8.45, "model": "sensenova-6.8-flash-lite" }
   },
   "rounds": [
     {
@@ -453,7 +453,7 @@ After Worker Agent completes, its last message must be and only be the following
       "reasoning": "<VLM reasoning, or \"\" when max_rounds=1>",
       "timing": {
         "image_generation": { "elapsed_seconds": 12.34, "model": "sn_image_model" },
-        "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.7-flash-lite" }
+        "vlm_review": { "elapsed_seconds": 5.67, "model": "sensenova-6.8-flash-lite" }
       }
     }
   ]

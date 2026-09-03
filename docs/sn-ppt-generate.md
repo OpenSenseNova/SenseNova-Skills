@@ -50,7 +50,7 @@ SN_API_KEY="your-api-key"
 SN_BASE_URL="https://token.sensenova.cn/v1"
 
 # LLM (outline, style_spec, content planning, image caption, page review)
-SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
 Optional variables `SN_IMAGE_GEN_*`, `SN_CHAT_*`, `SN_TEXT_*`, and `SN_VISION_*` override default models, gateways, or keys. If `SN_API_KEY` is set, `SN_IMAGE_GEN_API_KEY` is not needed unless image generation uses a different key. Full list: [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md).

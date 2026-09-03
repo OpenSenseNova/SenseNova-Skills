@@ -19,7 +19,7 @@ Depending on which region you are in, use the corresponding base URL / API key /
 
 > The endpoint speaks the OpenAI-compatible protocol, so it fits any "OpenAI compatible" provider slot.
 >
-> As of August 12, 2026, the official international docs use `sensenova-6.8-flash-lite`. Calls made with `sensenova-6.7-flash-lite` are compatibility-routed to `sensenova-6.8-flash-lite` through August 31, 2026.
+> `sensenova-6.8-flash-lite` is the currently available Flash-Lite model; the former `sensenova-6.7-flash-lite` endpoint is no longer available.
 
 ---
 

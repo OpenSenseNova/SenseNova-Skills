@@ -50,7 +50,7 @@ SN_API_KEY="your-api-key"
 SN_BASE_URL="https://token.sensenova.cn/v1"
 
 # LLM（大纲、style_spec、内容规划、图片内容识别、页面review）
-SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
 可选环境变量：`SN_IMAGE_GEN_*`、`SN_CHAT_*`、`SN_TEXT_*`、`SN_VISION_*` 用于覆盖默认模型、网关或 key。已有 `SN_API_KEY` 时，不需要再设置 `SN_IMAGE_GEN_API_KEY`，除非图像生成使用不同 key。详细列表见 [`skills/sn-image-base/README.md`](../skills/sn-image-base/README.md)。

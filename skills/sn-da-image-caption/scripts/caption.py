@@ -46,7 +46,7 @@ CACHE_DIR = os.path.join(os.path.dirname(__file__), ".caption_cache")
 # Minimum setup: set SN_API_KEY
 
 _BUILTIN_BASE_URL = "https://token.sensenova.cn/v1"
-_BUILTIN_MODEL = "sensenova-6.7-flash-lite"
+_BUILTIN_MODEL = "sensenova-6.8-flash-lite"
 
 DEFAULT_API_KEY = (
     os.environ.get("SN_VISION_API_KEY")

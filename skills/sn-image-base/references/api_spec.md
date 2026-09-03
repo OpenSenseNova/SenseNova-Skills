@@ -141,7 +141,7 @@ python sn_agent_runner.py sn-image-recognize \
 | `--images` | string[] | **Yes** | - | List of image paths (supports multiple) |
 | `--api-key` | string | No | No hardcoded default | CLI > `SN_VISION_API_KEY` > `SN_CHAT_API_KEY` > `SN_API_KEY`; raises `MissingApiKeyError` if all are empty |
 | `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_VISION_BASE_URL` > `SN_CHAT_BASE_URL` > `SN_BASE_URL` |
-| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_VISION_MODEL` > `SN_CHAT_MODEL` |
+| `--model` | string | No | `sensenova-6.8-flash-lite` | CLI > `SN_VISION_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
 | `--vlm-type` | string | No | `openai-completions` | CLI > `SN_VISION_TYPE` > `SN_CHAT_TYPE` |
@@ -166,7 +166,7 @@ This image shows an adorable orange cat napping in the sunlight.
 {
   "status": "ok",
   "result": "This image shows an adorable orange cat napping in the sunlight.",
-  "model": "sensenova-6.7-flash-lite",
+  "model": "sensenova-6.8-flash-lite",
   "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 2.15
@@ -181,7 +181,7 @@ This image shows an adorable orange cat napping in the sunlight.
 |-----------|-----------------|---------------------|
 | `--api-key` | None (required) | `SN_VISION_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` |
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_VISION_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
-| `--model` | `sensenova-6.7-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` |
+| `--model` | `sensenova-6.8-flash-lite` | `SN_VISION_MODEL` -> `SN_CHAT_MODEL` |
 | `--vlm-type` | `openai-completions` | `SN_VISION_TYPE` -> `SN_CHAT_TYPE` |
 
 Compatibility note: host-only chat base URLs such as `https://token.sensenova.cn`
@@ -217,7 +217,7 @@ python sn_agent_runner.py sn-text-optimize \
 | `--user-prompt-path` | path | One of two | - | Local file path to read user instruction from (mutually exclusive with `--user-prompt`) |
 | `--api-key` | string | No | No hardcoded default | CLI > `SN_TEXT_API_KEY` > `SN_CHAT_API_KEY` > `SN_API_KEY`; raises `MissingApiKeyError` if all are empty |
 | `--base-url` | string | No | `https://token.sensenova.cn/v1` | CLI > `SN_TEXT_BASE_URL` > `SN_CHAT_BASE_URL` > `SN_BASE_URL` |
-| `--model` | string | No | `sensenova-6.7-flash-lite` | CLI > `SN_TEXT_MODEL` > `SN_CHAT_MODEL` |
+| `--model` | string | No | `sensenova-6.8-flash-lite` | CLI > `SN_TEXT_MODEL` > `SN_CHAT_MODEL` |
 | `--system-prompt` | string | No | `""` | System instruction (mutually exclusive with `--system-prompt-path`) |
 | `--system-prompt-path` | path | No | - | Local file path to read system instruction from (mutually exclusive with `--system-prompt`) |
 | `--llm-type` | string | No | `openai-completions` | CLI > `SN_TEXT_TYPE` > `SN_CHAT_TYPE` |
@@ -242,7 +242,7 @@ Optimized text content...
 {
   "status": "ok",
   "result": "Optimized text content...",
-  "model": "sensenova-6.7-flash-lite",
+  "model": "sensenova-6.8-flash-lite",
   "base_url": "https://token.sensenova.cn/v1",
   "interface_type": "openai-completions",
   "elapsed_seconds": 0.83
@@ -257,7 +257,7 @@ Optimized text content...
 |-----------|-----------------|---------------------|
 | `--api-key` | None (required) | `SN_TEXT_API_KEY` -> `SN_CHAT_API_KEY` -> `SN_API_KEY` |
 | `--base-url` | `https://token.sensenova.cn/v1` | `SN_TEXT_BASE_URL` -> `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
-| `--model` | `sensenova-6.7-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
+| `--model` | `sensenova-6.8-flash-lite` | `SN_TEXT_MODEL` -> `SN_CHAT_MODEL` |
 | `--llm-type` | `openai-completions` | `SN_TEXT_TYPE` -> `SN_CHAT_TYPE` |
 
 Compatibility note: host-only chat base URLs such as `https://token.sensenova.cn`

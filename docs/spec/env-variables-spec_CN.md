@@ -38,7 +38,7 @@ SN_VISION_*  ┘                     ├─►  SN_*（全局）  ─►  内置
 | 维度 | 默认值挂载点 | 默认值 |
 | --- | --- | --- |
 | Base URL | `SN_BASE_URL` | `https://token.sensenova.cn/v1` |
-| Chat 模型 | `SN_CHAT_MODEL` | `sensenova-6.7-flash-lite` |
+| Chat 模型 | `SN_CHAT_MODEL` | `sensenova-6.8-flash-lite` |
 | 图生模型 | `SN_IMAGE_GEN_MODEL` | `sensenova-u1.5-lite` |
 | Chat 协议 | `SN_CHAT_TYPE` | `openai-completions` |
 | 图生协议 | `SN_IMAGE_GEN_MODEL_TYPE` | `sensenova` |
@@ -55,7 +55,7 @@ SN_VISION_*  ┘                     ├─►  SN_*（全局）  ─►  内置
 | --- | --- |
 | API Key | `SN_TEXT_API_KEY` → `SN_CHAT_API_KEY` → `SN_API_KEY` |
 | Base URL | `SN_TEXT_BASE_URL` → `SN_CHAT_BASE_URL` → `SN_BASE_URL` → `https://token.sensenova.cn/v1` |
-| Model | `SN_TEXT_MODEL` → `SN_CHAT_MODEL` → `sensenova-6.7-flash-lite` |
+| Model | `SN_TEXT_MODEL` → `SN_CHAT_MODEL` → `sensenova-6.8-flash-lite` |
 | 协议类型 | `SN_TEXT_TYPE` → `SN_CHAT_TYPE` → `openai-completions` |
 | 超时（秒） | `SN_TEXT_TIMEOUT` → `SN_CHAT_TIMEOUT` → `120` |
 
@@ -65,7 +65,7 @@ SN_VISION_*  ┘                     ├─►  SN_*（全局）  ─►  内置
 | --- | --- |
 | API Key | `SN_VISION_API_KEY` → `SN_CHAT_API_KEY` → `SN_API_KEY` |
 | Base URL | `SN_VISION_BASE_URL` → `SN_CHAT_BASE_URL` → `SN_BASE_URL` → `https://token.sensenova.cn/v1` |
-| Model | `SN_VISION_MODEL` → `SN_CHAT_MODEL` → `sensenova-6.7-flash-lite` |
+| Model | `SN_VISION_MODEL` → `SN_CHAT_MODEL` → `sensenova-6.8-flash-lite` |
 | 协议类型 | `SN_VISION_TYPE` → `SN_CHAT_TYPE` → `openai-completions` |
 | 超时（秒） | `SN_VISION_TIMEOUT` → `SN_CHAT_TIMEOUT` → `120` |
 

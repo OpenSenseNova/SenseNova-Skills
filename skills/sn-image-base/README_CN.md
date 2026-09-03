@@ -46,7 +46,7 @@ SN_API_KEY="<sensenova-token-plan-api-key>"
 
 # 可选模型覆盖
 SN_IMAGE_GEN_MODEL="sensenova-u1.5-lite"   # 或 sensenova-u1-fast，或 Token Plan 中的其他图像生成模型
-SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
 **注意：不要将 `.env` 文件或 API key 提交到 git。**
@@ -151,7 +151,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 | `SN_CHAT_API_KEY` | text/vision chat 调用共用 API key | `SN_API_KEY` |
 | `SN_CHAT_BASE_URL` | 共享 Chat API 基础 URL | `SN_BASE_URL`，然后 `"https://token.sensenova.cn/v1"` |
 | `SN_CHAT_TYPE` | 共享 Chat 协议类型 | `"openai-completions"` |
-| `SN_CHAT_MODEL` | text/vision chat 调用共用默认模型 | `"sensenova-6.7-flash-lite"` |
+| `SN_CHAT_MODEL` | text/vision chat 调用共用默认模型 | `"sensenova-6.8-flash-lite"` |
 | `SN_TEXT_API_KEY` | 可选文本 provider API key | `SN_CHAT_API_KEY` -> `SN_API_KEY` |
 | `SN_TEXT_BASE_URL` | 可选文本 provider 基础 URL | `SN_CHAT_BASE_URL` -> `SN_BASE_URL` |
 | `SN_TEXT_TYPE` | 可选文本协议类型 | `SN_CHAT_TYPE` |
@@ -198,7 +198,7 @@ SN_CHAT_MODEL="sensenova-6.7-flash-lite"
 
     ```ini
     # （默认）SenseNova 6.7 Flash Lite
-    SN_CHAT_MODEL="sensenova-6.7-flash-lite"
+    SN_CHAT_MODEL="sensenova-6.8-flash-lite"
     # Anthropic Claude Sonnet 4.6
     SN_VISION_MODEL="claude-sonnet-4-6"
     # Google Gemini 3 Flash Preview
