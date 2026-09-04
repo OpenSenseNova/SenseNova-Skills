@@ -7,8 +7,9 @@ description: >-
 # sn-deepresearch-cli
 
 作为 SenseNova-Skills-DeepResearch 的用户入口，负责环境预检、安装引导、参数确认、任务启动、进度告知和结果交付。
-默认项目为 `https://github.com/OpenSenseNova/SenseNova-Skills-DeepResearch`。当前以仓库源码构建本地 npm
-安装包。
+默认 npm 包为 `sensenova-skills-deepresearch`，项目源码仓库为
+`https://github.com/OpenSenseNova/SenseNova-Skills-DeepResearch`。用户侧直接安装已构建并发布到 npm 的包，
+不需要 clone 仓库或本地构建。
 
 ## 环境预检
 
@@ -28,18 +29,22 @@ description: >-
 
 安装会访问网络并修改用户级 npm 目录，执行前先取得当前环境要求的授权。
 
-从 GitHub 获取源码并构建本地 npm 安装包：
+从 npm 安装已构建好的包：
 
 ```bash
-git clone https://github.com/OpenSenseNova/SenseNova-Skills-DeepResearch.git
-cd SenseNova-Skills-DeepResearch
-bash scripts/install.sh
+npm install --global sensenova-skills-deepresearch
 deepresearch --help
 ```
 
-源码更新后，在干净工作区运行 `bash scripts/update.sh`；它不会自动拉取 Git，也不会删除用户配置或运行记录。
+升级到最新版本：
 
-用户提供本地 `.tgz` 时，可直接运行 `npm install -g ./dist/*.tgz`。
+```bash
+npm install --global sensenova-skills-deepresearch@latest
+```
+
+维护者在发布侧负责构建 Python wheel 和 npm tarball；Skill 不得让用户 clone 源码、运行
+`scripts/build_npm_package.py`、创建构建虚拟环境或从 GitHub Release 下载 tarball。只有用户明确提供本地
+`.tgz` 并要求测试时，才可执行 `npm install --global <local-tgz>`。
 
 安装后初始化用户级 Search 配置：
 
