@@ -1,0 +1,6 @@
+interface:
+  display_name: "$sn-deepresearch-cli"
+  short_description: "多来源深度调研、系统分析、事实核查与完整研究报告交付"
+  default_prompt: "使用 $sn-deepresearch-cli 对这个主题做系统性深度研究，先确认研究参数再启动。"
+policy:
+  allow_implicit_invocation: true
