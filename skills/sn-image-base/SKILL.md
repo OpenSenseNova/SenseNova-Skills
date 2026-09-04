@@ -59,6 +59,8 @@ Image generation tool that calls the text-to-image-no-enhance API.
 | `--insecure` | flag | `False` | Disable TLS verification |
 | `--save-path` | Path | Auto-generated | Save path |
 
+SenseNova U1 Fast requests explicitly send `watermark=false` by default so generated images have no watermark. This feature is currently in free public beta and may become paid.
+
 Set `SN_IMAGE_GEN_MODEL_TYPE=atlas-cloud` to use Atlas Cloud's task-based image
 generation API. Configure `SN_IMAGE_GEN_BASE_URL=https://api.atlascloud.ai/api/v1`,
 `SN_IMAGE_GEN_MODEL=bytedance/seedream-v5.0-lite`, and provide the key through

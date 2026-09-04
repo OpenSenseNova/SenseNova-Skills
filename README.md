@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-  <a href="https://platform.sensenova.cn"><img src="https://img.shields.io/badge/Website-Platform-1f6feb?style=flat-square&logo=googlechrome&logoColor=white" alt="Website"></a>
+  <a href="https://sensenova.ai"><img src="https://img.shields.io/badge/Website-Platform-1f6feb?style=flat-square&logo=googlechrome&logoColor=white" alt="Website"></a>
   <a href="https://office.xiaohuanxiong.com/home"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_Raccoon-Try%20it%20free-f29415?style=flat-square" alt="Raccoon"></a>
-  <a href="https://platform.sensenova.cn/token-plan"><img src="https://img.shields.io/badge/Token_Plan-Free-2ea44f?style=flat-square&logo=opensea&logoColor=white" alt="Token Plan"></a>
+  <a href="https://platform.sensenova.ai/docs"><img src="https://img.shields.io/badge/API_Docs-Global-2ea44f?style=flat-square&logo=readthedocs&logoColor=white" alt="API Docs"></a>
   <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square&logo=github&logoColor=white" alt="SenseNova U1"></a>
   <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square&logo=github&logoColor=white" alt="SenseNova 6.7"></a>
 </p>
@@ -40,8 +40,12 @@ Raccoon now ships a full upgrade across product capability and client experience
 These skills are designed to run inside an [Agent Skills](https://agentskills.io/)-compatible agent.
 
 - **Recommended runtime**: pair them with **[OpenClaw](https://openclaw.ai/)** or **[hermes-agent](https://github.com/NousResearch/hermes-agent)**.
-- **Recommended LLM**: pair them with the **[SenseNova Platform API](https://platform.sensenova.cn/token-plan)** — a free token plan is available.
+- **Recommended LLM**: pair them with the **SenseNova Platform API**.
+  International: [platform.sensenova.ai/docs](https://platform.sensenova.ai/docs), Base URL `https://token.sensenova.ai/v1`
+  Mainland China: [platform.sensenova.cn/token-plan](https://platform.sensenova.cn/token-plan), Base URL `https://token.sensenova.cn/v1`
 - **Install & configure**: follow the full walkthrough in **[`INSTALL.md`](INSTALL.md)**.
+
+> This repo documents both the international and mainland China SenseNova API flows. Make sure the docs page, API key, base URL, and model name all come from the same region.
 
 **Recommended: let the agent install the skills for you.** Hand it the repo URL and ask it to clone and drop the skills into the right directory — for example:
 
@@ -119,9 +123,9 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 | Name                                                                 | Label                          | Description                                                                                                                                                       |
 | -------------------------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **Deep Research Entry Point**  | **Unified deep-research orchestrator** with true-dependency DAGs, reusable source snapshots, and evidence-informed content units, producing final `report.md`. |
+| [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **Deep Research Entry Point**  | **Mode-aware deep-research orchestrator** with parallel research work packages, one-pass quick/normal synthesis, and an auditable heavy workflow, producing final `report.md`. |
 | [`sn-research-report`](skills/sn-research-report/SKILL.md)                 | Final Report Writing & Editing | Renders the judgment layer into the final `report.md`; also handles targeted rewrites — restructuring, polishing, table-augmentation — for an existing draft.    |
-| [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | Presentation-Format Discovery  | Compares final forms such as a research report, academic paper, table-first analysis, decision memo, or a custom Markdown form; scout uses it before research and user confirmation. |
+| [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | Presentation-Format Discovery  | Optional standalone format recommendation; `sn-deep-research` uses a single request-level `format` string instead of format artifacts. |
 | [`sn-prepare-citations`](skills/sn-prepare-citations/SKILL.md)                 | Citation Rendering             | Post-processes `[^source_id]` footnotes into numbered citations and appends references from evidence sources. |
 | [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)             | Markdown → HTML Report          | Converts the research `report.md` (or any Markdown doc) into a clean, single-file HTML reading view that opens offline — embedded images, side-panel TOC, responsive tables, and table-delimiter repair. |
 
@@ -196,7 +200,7 @@ Join our growing community to share feedback, get support, and stay updated on t
   </tr>
   <tr>
     <td align="center"><a href="https://discord.com/invite/BuTXPHmQub"><img src="assets/discord_qr.webp" width="160"/></a></td>
-    <td align="center"><img src="assets/sensenova-skills-chatgroup.jpg" width="160"/></td>
+    <td align="center"><img src="assets/sensenova-skills-chatgroup.png" width="160"/></td>
   </tr>
 </table>
 </div>

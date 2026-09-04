@@ -1,12 +1,8 @@
-# supplement_plan.json Schema
+# `supplement_plan.json` 补研计划字段契约
 
-`{report_dir}/sub_reports/d{N}.supplement_plan.json` records supplement decisions for one existing research dimension.
+`{report_dir}/sub_reports/d{N}.supplement_plan.json` 记录某个现有研究维度的补研决定。
 
-It is a controller-facing audit and execution artifact, not formal evidence. It must not introduce new facts into the final report. Any factual lead listed here must be re-checked by a research agent and incorporated into `d{N}.evidence.json` before it can support report claims.
-
-The supplement planner is file-only. It derives this artifact from the target dimension's `plan.json` fields, `evidence.json`, optional `review.md`, optional `perspectives/*.md`, and exact source snapshots already referenced by that evidence. It does not search the web or open source URLs.
-
-## Top-level object
+## 顶层对象
 
 ```json
 {
@@ -20,57 +16,55 @@ The supplement planner is file-only. It derives this artifact from the target di
 
 ## `meta`
 
-| field | type | required | description |
+| 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `task` | string | yes | Usually `补研计划` |
-| `generated_from` | string | yes | Current dimension evidence/review/perspective files and, when needed, their pinned source snapshots |
-| `target_report` | string | yes | Report topic or empty string |
-| `date` | string | yes | Generation date, `YYYY-MM-DD` |
-| `principle` | string | yes | One-sentence decision principle |
+| `task` | 字符串 | 是 | 通常填写 `补研计划` |
+| `generated_from` | 字符串 | 是 | 当前维度的证据、审查和视角反馈文件 |
+| `target_report` | 字符串 | 是 | 报告主题或空字符串 |
+| `date` | 字符串 | 是 | 生成日期，格式为 `YYYY-MM-DD` |
+| `principle` | 字符串 | 是 | 一句话说明决策原则 |
 
-## Dimension fields
+## 维度字段
 
-| field | type | required | description |
+| 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `dimension_id` | string | yes | Existing dimension id, e.g. `d1` |
-| `dimension_name` | string | yes | Dimension name from `plan.json` |
-| `supplement_items` | array | yes | Items that research supplement mode should execute; may be empty |
-| `deferred_items` | array | yes | Items not executed as supplement research; may be empty |
+| `dimension_id` | 字符串 | 是 | 已存在的维度 ID，例如 `d1` |
+| `dimension_name` | 字符串 | 是 | 来自 `plan.json` 的维度名称 |
+| `supplement_items` | 数组 | 是 | `research` 补研模式需要执行的事项；可以为空 |
+| `deferred_items` | 数组 | 是 | 不作为补研任务执行的事项；可以为空 |
 
 ## `supplement_items[]`
 
-| field | type | required | description |
+| 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `id` | string | yes | Stable id, e.g. `d1-s1`, `d1-s2` |
-| `type` | enum | yes | `coverage` / `claim_fix` / `both` |
-| `gap` | string | yes | Short description of the evidence or claim-quality gap |
-| `question` | string | yes | Specific question for research agent to answer |
-| `rationale` | string | yes | Why this supplement matters |
-| `suggested_sources` | array[string] | yes | Source categories or concrete source types |
-| `candidate_leads` | array[string] | yes | Candidate URLs, source names, or search leads already present in input files; may be empty. Planner must not add external leads |
-| `source_refs` | array[string] | yes | Review/perspective locations that raised this item |
-| `review_refs` | array[string] | yes | Claim ids or review bullets involved; may be empty for pure coverage items |
-| `impact_if_skipped` | string | yes | How final report should be constrained if skipped |
-| `status` | enum | yes | Initial value `pending`; research later updates to `resolved` / `partial` / `no_data` / `out_of_scope` |
-| `resolution_note` | string | yes | Empty initially; research fills after execution |
-
-For `partial`, `no_data`, and `out_of_scope`, `resolution_note` is not the downstream boundary. Research must also write a schema-valid `writing_context` object into the target evidence: `unresolved_gap`, `availability_gap`, or `scope_boundary` respectively. Report planning consumes only evidence, not this audit file.
+| `id` | 字符串 | 是 | 稳定 ID，例如 `d1-s1`、`d1-s2` |
+| `type` | 枚举 | 是 | `coverage` / `claim_fix` / `both` |
+| `gap` | 字符串 | 是 | 简要说明证据缺口或断言质量缺口 |
+| `question` | 字符串 | 是 | 交给 `research` 智能体回答的具体问题 |
+| `rationale` | 字符串 | 是 | 说明这项补研为什么重要 |
+| `suggested_sources` | 字符串数组 | 是 | 建议的来源类别或具体来源类型 |
+| `candidate_leads` | 字符串数组 | 是 | 输入文件中已有的候选 URL、来源名称或搜索线索；可以为空。|
+| `source_refs` | 字符串数组 | 是 | 提出该事项的审查或视角反馈位置 |
+| `review_refs` | 字符串数组 | 是 | 涉及的断言 ID 或审查要点；纯覆盖型事项可以为空 |
+| `impact_if_skipped` | 字符串 | 是 | 如果跳过，最终报告应受到什么限制 |
+| `status` | 枚举 | 是 | 初始值为 `pending`；`research` 后续更新为 `resolved` / `partial` / `no_data` / `out_of_scope` |
+| `resolution_note` | 字符串 | 是 | 初始为空；`research` 执行后填写 |
 
 ## `deferred_items[]`
 
-Use this array for candidates that should not trigger supplement research.
+该数组用于记录不应触发补研的候选事项。
 
-| field | type | required | description |
+| 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `id` | string | yes | Stable id, e.g. `d1-d1` |
-| `reason` | enum | yes | `writing_context_only` / `low_value` / `not_actionable` / `out_of_scope` / `already_covered` / `unavailable` |
-| `item` | string | yes | Short description of the deferred candidate |
-| `source_refs` | array[string] | yes | Review/perspective locations that raised it |
-| `writing_context_use` | string | yes | How to surface it, or empty string if not applicable |
+| `id` | 字符串 | 是 | 稳定 ID，例如 `d1-d1` |
+| `reason` | 枚举 | 是 | `writing_context_only` / `low_value` / `not_actionable` / `out_of_scope` / `already_covered` / `unavailable` |
+| `item` | 字符串 | 是 | 简要说明被延后的候选事项 |
+| `source_refs` | 字符串数组 | 是 | 提出该事项的审查或视角反馈位置 |
+| `writing_context_use` | 字符串 | 是 | 说明如何呈现；不适用时填写空字符串 |
 
-## Empty plan
+## 空计划
 
-If no supplement is needed, write a valid empty plan:
+如果无需补研，写入一份合法的空计划：
 
 ```json
 {
@@ -87,11 +81,3 @@ If no supplement is needed, write a valid empty plan:
   "deferred_items": []
 }
 ```
-
-## Consumer rules
-
-- Controller uses `supplement_items[]` only to decide whether to run `research` in `mode: supplement` for this dimension.
-- Supplement research executes only `supplement_items[]`; it does not process `deferred_items[]`.
-- Report-stage agents do not consume this file as evidence.
-- `deferred_items[]` can only inform writing-context boundaries, limitations, or audit notes.
-- Planner may copy and deduplicate `candidate_leads[]` from its input files, but it must not perform validation searches or introduce a new URL/source/search lead.

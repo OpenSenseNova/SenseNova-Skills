@@ -2,7 +2,7 @@
 
 English | [简体中文](INSTALL_CN.md)
 
-This guide walks you through installing [OpenClaw](https://openclaw.ai/) or [hermes-agent](https://github.com/NousResearch/hermes-agent) on Windows / macOS / Linux, wiring it up to a [SenseNova](https://platform.sensenova.cn/) LLM, and loading the skills in this repository — giving you a fully working skill-driven agent.
+This guide walks you through installing [OpenClaw](https://openclaw.ai/) or [hermes-agent](https://github.com/NousResearch/hermes-agent) on Windows / macOS / Linux, wiring it up to SenseNova, and loading the skills in this repository — giving you a fully working skill-driven agent.
 
 > Pick **either** agent. Both OpenClaw and hermes-agent follow the [Agent Skills](https://agentskills.io/) convention, so the skills in this repo work in either runtime without modification.
 
@@ -10,15 +10,16 @@ This guide walks you through installing [OpenClaw](https://openclaw.ai/) or [her
 
 ## 0. Prepare your SenseNova API key and endpoint
 
-Both agents below will use the same three values:
+Depending on which region you are in, use the corresponding base URL / API key / model name from the table below. The same three values wil be used for both agents ([OpenClaw](https://openclaw.ai/) and [hermes-agent](https://github.com/NousResearch/hermes-agent)).
 
-| Field      | Value                                                                                                          |
-| ---------- | -------------------------------------------------------------------------------------------------------------- |
-| Base URL   | `https://token.sensenova.cn/v1`                                                                                |
-| API key    | Get one for free at [SenseNova Console · token-plan](https://platform.sensenova.cn/token-plan) and copy it. |
-| Model name | `sensenova-6.7-flash-lite`                                                                                     |
+| Region         | Docs / key signup                                                                                                                                     | Base URL                          | Model name                   |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------- |
+| International  | Follow[platform.sensenova.ai/docs](https://platform.sensenova.ai/docs): create an account, verify your email, then create a key in Console → API Keys | `https://token.sensenova.ai/v1` | `sensenova-6.8-flash-lite` |
+| Mainland China | Use[platform.sensenova.cn/token-plan](https://platform.sensenova.cn/token-plan) to apply for a token-plan key                                          | `https://token.sensenova.cn/v1` | `sensenova-6.8-flash-lite` |
 
 > The endpoint speaks the OpenAI-compatible protocol, so it fits any "OpenAI compatible" provider slot.
+>
+> As of August 12, 2026, the official international docs use `sensenova-6.8-flash-lite`. Calls made with `sensenova-6.7-flash-lite` are compatibility-routed to `sensenova-6.8-flash-lite` through August 31, 2026.
 
 ---
 
@@ -35,11 +36,11 @@ If you'd rather skip the manual steps below, [Agent Pack](https://github.com/Ope
 
 Pre-built installers live on the [GitHub Releases page](https://github.com/OpenSenseNova/agent_pack/releases/latest):
 
-| Platform | Download | How to use |
-|----------|----------|------------|
-| Windows | [`-windows-x64.exe` from the latest release](https://github.com/OpenSenseNova/agent_pack/releases/latest) | Double-click and follow the wizard; installation runs inside WSL2, and the PowerShell window is taken over by the installed agent when setup finishes. |
-| macOS | [`-macos-universal.pkg` from the latest release](https://github.com/OpenSenseNova/agent_pack/releases/latest) | Double-click, then complete the macOS wizard for product selection and LLM configuration; on finish it opens the OpenClaw Gateway Terminal + dashboard, and/or the Hermes Terminal as selected. |
-| Linux | [`-linux.sh` from the latest release](https://github.com/OpenSenseNova/agent_pack/releases/latest), or the one-liner on the right | `chmod +x AgentPack-*-linux.sh && ./AgentPack-*-linux.sh`, or paste `bash <(curl -fsSL https://raw.githubusercontent.com/OpenSenseNova/agent_pack/main/linux/install.sh)` — either way the shell that ran the installer is handed over to the agent via `exec`. |
+| Platform | Download                                                                                                                           | How to use                                                                                                                                                                                                                                                             |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows  | [`-windows-x64.exe` from the latest release](https://github.com/OpenSenseNova/agent_pack/releases/latest)                         | Double-click and follow the wizard; installation runs inside WSL2, and the PowerShell window is taken over by the installed agent when setup finishes.                                                                                                                 |
+| macOS    | [`-macos-universal.pkg` from the latest release](https://github.com/OpenSenseNova/agent_pack/releases/latest)                     | Double-click, then complete the macOS wizard for product selection and LLM configuration; on finish it opens the OpenClaw Gateway Terminal + dashboard, and/or the Hermes Terminal as selected.                                                                        |
+| Linux    | [`-linux.sh` from the latest release](https://github.com/OpenSenseNova/agent_pack/releases/latest), or the one-liner on the right | `chmod +x AgentPack-*-linux.sh && ./AgentPack-*-linux.sh`, or paste `bash <(curl -fsSL https://raw.githubusercontent.com/OpenSenseNova/agent_pack/main/linux/install.sh)` — either way the shell that ran the installer is handed over to the agent via `exec`. |
 
 When the installer asks for the LLM provider, choose **Custom (OpenAI-compatible)** and feed in the three values from §0 (Base URL, API key, model name). If you're in a China-region network, set `AGENTPACK_CN=1` to enable the GitHub mirror fallbacks.
 
@@ -58,16 +59,20 @@ OpenClaw recommends running under WSL2 on Windows; hermes-agent **only supports*
 Requirements: Windows 10 22H2+ or Windows 11.
 
 1. Open PowerShell **as Administrator**:
+
    ```powershell
    wsl --install
    ```
+
    This enables the required Windows features and installs the default Ubuntu distribution.
 2. Reboot the machine.
 3. After reboot, the Ubuntu terminal launches automatically — set your UNIX username and password as prompted.
 4. Verify the WSL version and distribution:
+
    ```powershell
    wsl -l -v
    ```
+
    The `VERSION` column should read `2`.
 
 From here on, run every command in the **Ubuntu (WSL2) terminal**, not in PowerShell.
@@ -110,7 +115,7 @@ OpenClaw needs **Node.js 24 (recommended) or 22.14+**.
 
 Pick any one option:
 
-- **Official installer**: download the LTS from <https://nodejs.org/>.
+- **Official installer**: download the LTS from [https://nodejs.org/](https://nodejs.org/).
 - **Homebrew (macOS)**: `brew install node@24`
 - **nvm (recommended for Linux/WSL2/macOS)**:
   ```bash
@@ -164,7 +169,7 @@ Follow the prompts as shown below. Use the API key from §0, and configure at le
 │  Custom Provider
 │
 ◇  API Base URL
-│  https://token.sensenova.cn/v1
+│  https://token.sensenova.ai/v1
 │
 ◇  How do you want to provide this API key?
 │  Paste API key now
@@ -176,12 +181,12 @@ Follow the prompts as shown below. Use the API key from §0, and configure at le
 │  OpenAI-compatible
 │
 ◇  Model ID
-│  sensenova-6.7-flash-lite
+│  sensenova-6.8-flash-lite
 │
 ◇  Verification successful.
 │
 ◇  Endpoint ID
-│  custom-token-sensenova-cn
+│  custom-token-sensenova-ai
 │
 ◇  Select channel (QuickStart)
 │  Skip for now
@@ -200,6 +205,11 @@ Follow the prompts as shown below. Use the API key from §0, and configure at le
 ◇  Enable hooks?
 │  Skip for now
 ```
+
+Depending on your region, use one of the following base URL:
+
+- International: `https://token.sensenova.ai/v1`
+- Mainland China: `https://token.sensenova.cn/v1`
 
 #### 2.A.5 Verify the LLM connection
 
@@ -249,14 +259,26 @@ hermes doctor
 
 #### 2.B.3 Configure the SenseNova LLM
 
-Fastest path — use `hermes config set`:
+Fastest path — use `hermes config set`.
+
+International:
+
+```bash
+hermes config set model.provider custom
+hermes config set model.base_url https://token.sensenova.ai/v1
+hermes config set model.api_key "<your API key>"
+hermes config set model.name sensenova-6.8-flash-lite
+hermes config set model.default custom/sensenova-6.8-flash-lite
+```
+
+Mainland China:
 
 ```bash
 hermes config set model.provider custom
 hermes config set model.base_url https://token.sensenova.cn/v1
 hermes config set model.api_key "<your API key>"
-hermes config set model.name sensenova-6.7-flash-lite
-hermes config set model.default custom/sensenova-6.7-flash-lite
+hermes config set model.name sensenova-6.8-flash-lite
+hermes config set model.default custom/sensenova-6.8-flash-lite
 ```
 
 > The last line is required — without `model.default`, hermes still routes through whatever was configured at install time (e.g. `anthropic/claude-opus-4.6`) and `hermes -z "..."` fails with `HTTP 404: model is not found`. If you'd rather not run individual commands, use `hermes setup` or `hermes model` (below) instead — both update `model.default` for you.
@@ -273,9 +295,9 @@ hermes model        # just the LLM provider step
 
 When the wizard asks for a provider, pick `custom (OpenAI-compatible)` and enter:
 
-- Base URL: `https://token.sensenova.cn/v1`
-- API key: the one you generated above
-- Model name: `sensenova-6.7-flash-lite`
+- Base URL:`https://token.sensenova.ai/v1`(for international users), or `https://token.sensenova.cn/v1` (for mainland China users)
+- API key: use the key you generated above
+- Model name:`sensenova-6.8-flash-lite`
 
 #### 2.B.4 Verify the LLM connection
 
@@ -313,9 +335,11 @@ cp -r skills/* ~/.hermes/skills/
 ```
 
 > Want skills to track this repo? Use symlinks instead of `cp -r`:
+>
 > ```bash
 > ln -s "$PWD"/skills/* ~/.openclaw/skills/
 > ```
+>
 > Then `git pull` automatically pulls in skill updates.
 
 ### 3.3 Option 2: ask the agent to install them
@@ -354,5 +378,6 @@ If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, and `sn-de
 - **`wsl --install` not found**: needs Windows 10 22H2+ / Windows 11, run PowerShell as Administrator.
 - **Node version too low**: `node -v` must be ≥ 22.14. Switch with nvm: `nvm install 24 && nvm use 24`.
 - **`openclaw doctor` / `hermes doctor` complains**: follow the report's hints — install whatever's missing.
-- **LLM returns 401 / 403**: double-check the LLM API key stored in your config (`openclaw config get models.providers.custom` for OpenClaw, or `hermes config get model.api_key` for hermes-agent); confirm the key still has free quota in [token-plan](https://platform.sensenova.cn/token-plan).
+- **LLM returns 401 / 403**: double-check the LLM API key stored in your config (`openclaw config get models.providers.custom` for OpenClaw, or `hermes config get model.api_key` for hermes-agent); make sure the key, base URL, and model all come from the same region.
+- **Provider verification fails in OpenClaw / Hermes**: verify that you choose the setups that match your region, whether you are an international user (`https://token.sensenova.ai/v1`) or a mainland China user (`https://token.sensenova.cn/v1`).
 - **Slow `curl` inside WSL2**: check the WSL2 networking mode (`wsl --status`); switch to `mirrored` networking or use a proxy if needed.
