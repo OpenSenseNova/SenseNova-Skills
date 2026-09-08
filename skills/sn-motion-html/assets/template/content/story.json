@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "title": "{{TITLE}}",
+    "kicker": "An original visual narrative",
+    "subtitle": "A motion-led visual story",
+    "description": "Replace this description with the story's purpose.",
+    "note": "Replace the example chapters and sources before delivery.",
+    "style": "cinematic",
+    "ui": "folio",
+    "connectorSpan": 1.2
+  },
+  "chapters": [
+    {
+      "id": "01-opening",
+      "label": "Opening",
+      "eyebrow": "Chapter 1",
+      "title": "The journey begins",
+      "subtitle": "Place or phase",
+      "copyPosition": "right",
+      "span": 4.6,
+      "linger": 0.35,
+      "paragraphs": [
+        "Replace this with a concise opening paragraph that identifies the subject and the initial condition.",
+        "Keep all chapter paragraphs short enough to remain visible together while the user controls the clip."
+      ],
+      "tags": ["Example", "Opening"],
+      "still": "assets/images/scenes/01-opening.webp",
+      "clip": "assets/video/dives/01-opening.mp4"
+    },
+    {
+      "id": "02-destination",
+      "label": "Destination",
+      "eyebrow": "Chapter 2",
+      "title": "A changed world",
+      "subtitle": "Outcome or destination",
+      "copyPosition": "left",
+      "span": 4.6,
+      "linger": 0.35,
+      "paragraphs": [
+        "Replace this with the central change, discovery, or resolution.",
+        "End with the idea the audience should carry away from the experience."
+      ],
+      "tags": ["Example", "Resolution"],
+      "still": "assets/images/scenes/02-destination.webp",
+      "clip": "assets/video/dives/02-destination.mp4"
+    }
+  ],
+  "connectors": ["assets/video/connectors/01-opening-to-destination.mp4"],
+  "sources": [{"label": "Replace with a source", "url": "https://example.com"}]
+}

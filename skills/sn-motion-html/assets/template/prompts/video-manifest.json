@@ -1,0 +1,37 @@
+{
+  "model": "doubao-seedance-2-5-260628",
+  "duration": 4,
+  "resolution": "720p",
+  "ratio": "16:9",
+  "target_width": 1280,
+  "target_height": 720,
+  "fps": 24,
+  "crf": 20,
+  "gop": 8,
+  "generate_audio": false,
+  "watermark": false,
+  "conditioning_mode": "reference_images",
+  "dives": [
+    {
+      "id": "01-opening",
+      "prompt": "prompts/video/dives/01-opening.txt",
+      "still": "assets/images/scenes/01-opening.png",
+      "output": "assets/video/dives/01-opening.mp4"
+    },
+    {
+      "id": "02-destination",
+      "prompt": "prompts/video/dives/02-destination.txt",
+      "still": "assets/images/scenes/02-destination.png",
+      "output": "assets/video/dives/02-destination.mp4"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "01-opening-to-destination",
+      "from": "01-opening",
+      "to": "02-destination",
+      "prompt": "prompts/video/connectors/01-opening-to-destination.txt",
+      "output": "assets/video/connectors/01-opening-to-destination.mp4"
+    }
+  ]
+}

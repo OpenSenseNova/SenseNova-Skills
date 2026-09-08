@@ -1,0 +1,1 @@
+Define the motion rendering, camera behavior, temporal consistency rules, and prohibited artifacts for this project's selected visual style.

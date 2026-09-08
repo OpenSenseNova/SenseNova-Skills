@@ -1,0 +1,6 @@
+{
+  "id": "cgi",
+  "label": "CGI",
+  "image_prompt": "CGI VISUAL SYSTEM: high-end authored 3D render with coherent PBR materials, controlled topology and silhouette, physically based lighting, restrained ray-traced reflections, volumetric depth, detailed but uncluttered environments, and polished surfaces that do not look like cheap plastic. Preserve recurring mesh proportions, material IDs, colors, markings, and props. Landscape composition with a safe central crop. No embedded text, no logo, no watermark, no broken geometry, no texture seams.",
+  "video_prompt": "CGI MOTION SYSTEM: preserve geometry, rig proportions, material IDs, texture placement, lighting direction, and simulation scale frame to frame. Use smooth virtual-camera motion, believable secondary animation, and stable volumetric or particle effects. No mesh melting, texture swimming, reflection flicker, rubbery motion, random particle resets, sudden redesign, text, logo, or watermark."
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An immersive motion-driven visual story.">
+  <title>{{TITLE}}</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="src/motion-runtime.js" defer></script>
+  <script src="src/app.js" defer></script>
+</head>
+<body id="top">
+  <div id="boot" class="boot" role="status"><span>Preparing the story…</span></div>
+  <main id="experience" aria-label="{{TITLE}}"></main>
+  <dialog id="sources" class="sources">
+    <button type="button" data-close aria-label="Close">Close</button>
+    <p class="sources__eyebrow">Sources</p>
+    <h2>Research and adaptation</h2>
+    <p id="adaptation-note"></p>
+    <ol id="source-list"></ol>
+  </dialog>
+</body>
+</html>

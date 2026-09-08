@@ -1,0 +1,6 @@
+{
+  "id": "anime",
+  "label": "Anime",
+  "image_prompt": "ANIME VISUAL SYSTEM: polished theatrical anime illustration; clean controlled linework; cel shading with selective soft gradients; expressive but identity-stable faces; strong silhouette readability; deliberate color scripting; layered foreground, midground, and background; crisp focal subject with atmospheric depth. Preserve recurring face geometry, hair shapes, costume colors, props, and scale. Landscape composition with a safe central crop. No photorealistic skin, no embedded text, no logo, no watermark, no line tangles, no extra limbs.",
+  "video_prompt": "ANIME MOTION SYSTEM: preserve line weight, face proportions, hair shapes, costume colors, and cel boundaries in every frame. Use restrained multiplane parallax, small environmental loops, purposeful character gestures, and clean controlled camera movement. Maintain the source composition and color script. No line boil, face drift, flicker, extra fingers, uncontrolled smear frames, sudden style change, text, logo, or watermark."
+}

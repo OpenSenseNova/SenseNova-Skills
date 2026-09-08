@@ -1,0 +1,1 @@
+Define the visual medium, palette, materials, camera grammar, lighting, composition, continuity rules, and exclusions for this project. Reuse this exact block in every still prompt.

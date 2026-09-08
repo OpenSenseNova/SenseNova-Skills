@@ -1,0 +1,6 @@
+{
+  "id": "cinematic",
+  "label": "Cinematic",
+  "image_prompt": "CINEMATIC VISUAL SYSTEM: authored film still with believable production design, fictional casting, motivated practical lighting, cinematic dynamic range, natural lens behavior, controlled depth of field, subtle film grain, atmospheric perspective, and restrained color grading. Preserve recurring facial structure, wardrobe, props, architecture, and period details. Landscape composition with a safe central crop. No recognizable real actor, no glossy AI skin, no embedded text, no logo, no watermark, no modern object unless specified.",
+  "video_prompt": "CINEMATIC MOTION SYSTEM: physically plausible movement with stable faces, wardrobe, props, set geometry, exposure, and color grade. Use motivated dolly, crane, locked, or subtle handheld camera grammar appropriate to the scene. Keep movement restrained and readable for interactive frame control. No abrupt lens change, temporal warping, glossy skin drift, excessive slow motion, unrequested cut, text, logo, or watermark."
+}

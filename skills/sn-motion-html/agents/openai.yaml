@@ -1,0 +1,5 @@
+interface:
+  display_name: "SN Motion HTML"
+  short_description: "从主题策划到 AI 图片、视频和滚动网页的一体化制作"
+  brand_color: "#B85C3C"
+  default_prompt: "Use $sn-motion-html to build an immersive motion-driven visual story from my subject."
