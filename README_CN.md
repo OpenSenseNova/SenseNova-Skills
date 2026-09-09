@@ -12,7 +12,7 @@
   <a href="https://office.xiaohuanxiong.com/home"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_%E5%B0%8F%E6%B5%A3%E7%86%8A-%E5%85%8D%E8%B4%B9%E4%BD%93%E9%AA%8C-f29415?style=flat-square" alt="小浣熊"></a>
   <a href="https://platform.sensenova.cn/token-plan"><img src="https://img.shields.io/badge/Token_%E5%A5%97%E9%A4%90-%E5%85%8D%E8%B4%B9-2ea44f?style=flat-square&logo=opensea&logoColor=white" alt="Token 套餐"></a>
   <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square&logo=github&logoColor=white" alt="SenseNova U1"></a>
-  <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square&logo=github&logoColor=white" alt="SenseNova 6.7"></a>
+  <a href="https://github.com/OpenSenseNova/SenseNova6.8"><img src="https://img.shields.io/badge/SenseNova-6.8-cf222e?style=flat-square&logo=github&logoColor=white" alt="SenseNova 6.8"></a>
 </p>
 
 SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes-agent](https://github.com/NousResearch/hermes-agent) 等智能体；本仓库的 skills 则把这些模型扩展为可直接落地的端到端办公能力。

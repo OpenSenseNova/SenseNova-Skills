@@ -11,7 +11,7 @@
   <a href="https://office.xiaohuanxiong.com/home"><img src="https://img.shields.io/badge/%F0%9F%A6%9D_Raccoon-Try%20it%20free-f29415?style=flat-square" alt="Raccoon"></a>
   <a href="https://platform.sensenova.ai/docs"><img src="https://img.shields.io/badge/API_Docs-Global-2ea44f?style=flat-square&logo=readthedocs&logoColor=white" alt="API Docs"></a>
   <a href="https://github.com/OpenSenseNova/SenseNova-U1"><img src="https://img.shields.io/badge/SenseNova-U1-8957e5?style=flat-square&logo=github&logoColor=white" alt="SenseNova U1"></a>
-  <a href="https://github.com/OpenSenseNova/SenseNova6.7"><img src="https://img.shields.io/badge/SenseNova-6.7-cf222e?style=flat-square&logo=github&logoColor=white" alt="SenseNova 6.7"></a>
+  <a href="https://github.com/OpenSenseNova/SenseNova6.8"><img src="https://img.shields.io/badge/SenseNova-6.8-cf222e?style=flat-square&logo=github&logoColor=white" alt="SenseNova 6.8"></a>
 </p>
 
 The SenseNova model family plugs directly into agent runtimes such as [OpenClaw](https://openclaw.ai/) and [hermes-agent](https://github.com/NousResearch/hermes-agent), with the skills in this repository extending the models with concrete, end-to-end office capabilities.
