@@ -2,7 +2,16 @@
 
 简体中文 | [English](sn-deep-research.md)
 
-本文说明集成版 `sn-deep-research` 升级后的当前深度研究栈。旧的拆分式规划 / 分维取证 / 综合判断流水线已下线：规划、取证、审查、综合、写作、缝合与引用渲染现在统一收进 `sn-deep-research` controller 及其 `agents/*` 契约中。
+本文说明集成版 `sn-deep-research` 升级后的仓库内深度研究栈。旧的拆分式规划 / 分维取证 / 综合判断流水线已下线：规划、取证、审查、综合、写作、缝合与引用渲染现在统一收进 `sn-deep-research` controller 及其 `agents/*` 契约中。
+
+目前有两个受支持的入口：
+
+| 入口 | 适用场景 | 运行方式 |
+|---|---|---|
+| [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | 使用仓库内置的 skill 和集成式 Research Workbench。 | 由当前 Agent runtime 执行 controller 和专家 agent。 |
+| [`sn-deepresearch-cli`](../skills/sn-deepresearch-cli/SKILL.md) | 需要独立 CLI、明确的安装流程、Harness 选择、进度监控、恢复与导出控制。 | skill 会安装已发布的 `sensenova-skills-deepresearch` npm 包；详见 [CLI 指南](sn-deepresearch-cli_cn.md)。 |
+
+CLI 不是本仓库内部 controller 的另一份复制品，而是由独立的 [SenseNova-Skills-DeepResearch](https://github.com/OpenSenseNova/SenseNova-Skills-DeepResearch) 项目提供能力的用户入口。
 
 ## 当前深度研究流水线
 
@@ -41,7 +50,7 @@ research agent 会按维度的 source category 选择合适搜索技能。凭证
 | 技能 | 当前状态 |
 |---|---|
 | [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | 可选的独立格式推荐；`sn-deep-research` 自身只使用一个请求级 `format` 字符串，不创建格式产物。 |
-| [`sn-md-to-html-report`](../skills/sn-md-to-html-report/SKILL.md) | 将已生成的 Markdown 报告重组为自包含 HTML 专题页；不由 `sn-deep-research` 自动调用。 |
+| [`sn-md-to-html-report`](../skills/sn-md-to-html-report/SKILL.md) | 将已生成的 Markdown 报告重组为自包含 HTML 专题页；相关网页体验技能见 [HTML 指南](sn-motion-html_cn.md)，不由 `sn-deep-research` 自动调用。 |
 | [`sn-search-image`](../skills/sn-search-image/SKILL.md) | 图片搜索技能；当前 research agent 的 source category 未将它作为强制入口。 |
 | [`sn-update`](../skills/sn-update/SKILL.md) | 刷新 / 更新 `sn-*` 技能包的维护技能；不参与研究执行流程。 |
 

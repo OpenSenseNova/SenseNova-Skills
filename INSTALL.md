@@ -359,7 +359,9 @@ Some skills need extra Python deps, API keys, or runtime tools. Check the releva
 - Image & visualization: [`docs/sn-image-generate.md`](docs/sn-image-generate.md)
 - Presentations: [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md)
 - Data analysis: [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md)
-- Deep research / search: [`docs/sn-deep-research.md`](docs/sn-deep-research.md)
+- Deep research / search: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) and [`docs/sn-deepresearch-cli.md`](docs/sn-deepresearch-cli.md)
+- HTML & web experiences: [`docs/sn-motion-html.md`](docs/sn-motion-html.md)
+- Team collaboration: [`docs/sn-team-harness.md`](docs/sn-team-harness.md)
 
 ---
 
@@ -369,7 +371,7 @@ Start the agent and ask:
 
 > List the available skills, with a one-line description for each.
 
-If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, and `sn-deep-research` from this repo, the LLM and skill setup is good to go.
+If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, `sn-deep-research`, `sn-motion-html`, and `sn-team-harness` from this repo, the LLM and skill setup is good to go. `sn-deepresearch-cli` additionally requires the standalone CLI installation described in its guide.
 
 ---
 

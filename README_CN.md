@@ -19,7 +19,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
-技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**  等场景，可独立使用，也可组合成端到端工作流。
+技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**、**HTML 网页体验**与**团队协作**等场景，可独立使用，也可组合成端到端工作流。
 
 > 🎨 **想看它到底能干啥？** [**点击逛 sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便 “ 偷师 ”一下  **Prompt**  应该怎么写！
 
@@ -85,7 +85,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | -------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
 | [`sn-image-doctor`](skills/sn-image-doctor/SKILL.md)           | 环境诊断          | 检查 SenseNova-Skills 环境，验证 `sn-image-base` 安装、Python 依赖与必填环境变量；交互式补齐缺失项并写入 `.env`。               |
 | [`sn-image-base`](skills/sn-image-base/SKILL.md)   | 图像基础层（Tier 0） | 提供文生图（`sn-image-generate`）、图像编辑（`sn-image-edit`）、图像识别（`sn-image-recognize`）与文本优化（`sn-text-optimize`）四个底层工具，统一通过 `sn_agent_runner.py` 调用，供上层技能复用。 |
-| [`sn-infographic`](skills/sn-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。 |
+| [`sn-infographic`](skills/sn-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。支持 SenseNova U1.5 Lite，包括原生 4K 输出。 |
 | [`sn-image-imitate`](skills/sn-image-imitate/SKILL.md) | 图像风格模仿（Tier 1） | 给定一张参考图像和目标内容描述，模仿其风格生成新图像。 |
 | [`sn-image-resume`](skills/sn-image-resume/SKILL.md) | 简历图片生成（Tier 1） | 给定一份简历信息，生成简历图片。 |
 
@@ -117,16 +117,35 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 🔬 深度研究
 
-📖 详细使用指南：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md)（环境要求、`web_search` 硬检查、Quick Start 与各阶段调用）。
+📖 详细使用指南：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) 与 [`docs/sn-deepresearch-cli_cn.md`](docs/sn-deepresearch-cli_cn.md)（环境要求、Quick Start、CLI 配置与各阶段调用）。
 
 
 | 名称                                                                   | 标签        | 描述                                                                                      |
 | -------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
 | [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **深度研究入口** | **按档位编排的深度研究统一入口**，支持并行研究工作包、quick / normal 一次综合，以及可审计的 heavy 完整流程，最终产出 `report.md`。 |
+| [`sn-deepresearch-cli`](skills/sn-deepresearch-cli/SKILL.md)               | 深度研究 CLI | 安装并运行独立的 `sensenova-skills-deepresearch` CLI，通过用户选择的 Harness 或 Agent 编排搜索、研究、监控、恢复与报告导出。 |
 | [`sn-research-report`](skills/sn-research-report/SKILL.md)                 | 终稿写作 / 改写 | 把判断层落成最终 `report.md`；也可对已有报告做重写、润色、重组结构、补充表格等定向编辑。                                      |
 | [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | 报告最终呈现形式发现 | 比较研究报告、学术论文、表格优先报表、决策备忘录或自定义 Markdown 形式。 |
 | [`sn-prepare-citations`](skills/sn-prepare-citations/SKILL.md)                 | 引用渲染      | 将 `[^source_id]` 脚注后处理为编号引用，并基于 evidence sources 追加参考文献。 |
-| [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)             | Markdown → HTML 报告 | 把研究产出的 `report.md`（或任意 Markdown 文档）转换成单文件、可离线打开的 HTML 阅读视图——内嵌图片、侧栏目录、自适应表格，并自动修复表格分隔符。 |
+
+
+### 🌐 HTML 与网页体验
+
+📖 详细使用指南：[`docs/sn-motion-html_cn.md`](docs/sn-motion-html_cn.md)（连续镜头故事、媒体生成、项目初始化与浏览器验收）。
+
+| 名称 | 标签 | 描述 |
+| --- | --- | --- |
+| [`sn-motion-html`](skills/sn-motion-html/SKILL.md) | Motion HTML 故事 | 制作沉浸式滚动网页故事，包含连续镜头、风格一致的静帧、Seedance 视频片段、结构化内容与响应式浏览器交付。 |
+| [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md) | Markdown → HTML 报告 | 将 Markdown 报告重组为自包含 HTML 专题页，处理编辑结构、证据顺序、响应式布局与离线资源。 |
+
+
+### 🤝 团队协作
+
+📖 详细使用指南：[`docs/sn-team-harness_cn.md`](docs/sn-team-harness_cn.md)（自托管安装、核心概念、本地执行与安全边界）。
+
+| 名称 | 标签 | 描述 |
+| --- | --- | --- |
+| [`sn-team-harness`](skills/sn-team-harness/SKILL.md) | Team Harness | 介绍一个让人和本地 Agent 共享上下文、项目、工作项、资源与版本化成果的自托管协作工作区。 |
 
 
 ### 🔍 搜索

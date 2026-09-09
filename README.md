@@ -18,7 +18,7 @@ The SenseNova model family plugs directly into agent runtimes such as [OpenClaw]
 
 In this repository each skill lives in its own directory and declares triggers, capabilities, and execution flow through a `SKILL.md` file, following the [Agent Skills](https://agentskills.io/) convention.
 
-The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, and **deep research** — usable standalone or composed into end-to-end workflows.
+The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, **deep research**, **HTML experiences**, and **team collaboration** — usable standalone or composed into end-to-end workflows.
 
 > 🎨 **Want to see what it can do?** Check out our   [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their **prompt designs**  !
 
@@ -86,7 +86,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | -------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`sn-image-doctor`](skills/sn-image-doctor/SKILL.md)           | Environment Doctor             | Validates the SenseNova-Skills environment — checks `sn-image-base` install, Python deps, and required env vars; interactively fills missing values into `.env`. |
 | [`sn-image-base`](skills/sn-image-base/SKILL.md)   | Image Base Layer (Tier 0)      | Low-level tools — text-to-image (`sn-image-generate`), image editing (`sn-image-edit`), image recognition (`sn-image-recognize`), and text optimization (`sn-text-optimize`) — exposed through a unified `sn_agent_runner.py`, designed to be called by upper-layer skills. |
-| [`sn-infographic`](skills/sn-infographic/SKILL.md) | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. |
+| [`sn-infographic`](skills/sn-infographic/SKILL.md) | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. Supports SenseNova U1.5 Lite, including native 4K output. |
 | [`sn-image-imitate`](skills/sn-image-imitate/SKILL.md) | Image Imitation (Tier 1) | Given one reference image and a target content prompt, generates a new image that imitates the reference. |
 | [`sn-image-resume`](skills/sn-image-resume/SKILL.md) | Resume Image Generation (Tier 1) | Given resume information, generates a resume image. |
 
@@ -118,16 +118,35 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ### 🔬 Deep Research
 
-📖 Full guide: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) (prerequisites, `web_search` precheck, Quick Start, and per-stage invocation).
+📖 Full guides: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) and [`docs/sn-deepresearch-cli.md`](docs/sn-deepresearch-cli.md) (prerequisites, Quick Start, CLI setup, and per-stage invocation).
 
 
 | Name                                                                 | Label                          | Description                                                                                                                                                       |
 | -------------------------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`sn-deep-research`](skills/sn-deep-research/SKILL.md)                     | **Deep Research Entry Point**  | **Mode-aware deep-research orchestrator** with parallel research work packages, one-pass quick/normal synthesis, and an auditable heavy workflow, producing final `report.md`. |
+| [`sn-deepresearch-cli`](skills/sn-deepresearch-cli/SKILL.md)               | Deep Research CLI        | Installs and operates the standalone `sensenova-skills-deepresearch` CLI, coordinating search, research, monitoring, recovery, and report export through a selected Harness or Agent. |
 | [`sn-research-report`](skills/sn-research-report/SKILL.md)                 | Final Report Writing & Editing | Renders the judgment layer into the final `report.md`; also handles targeted rewrites — restructuring, polishing, table-augmentation — for an existing draft.    |
 | [`sn-report-format-discovery`](skills/sn-report-format-discovery/SKILL.md) | Presentation-Format Discovery  | Optional standalone format recommendation; `sn-deep-research` uses a single request-level `format` string instead of format artifacts. |
 | [`sn-prepare-citations`](skills/sn-prepare-citations/SKILL.md)                 | Citation Rendering             | Post-processes `[^source_id]` footnotes into numbered citations and appends references from evidence sources. |
-| [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md)             | Markdown → HTML Report          | Converts the research `report.md` (or any Markdown doc) into a clean, single-file HTML reading view that opens offline — embedded images, side-panel TOC, responsive tables, and table-delimiter repair. |
+
+
+### 🌐 HTML & Web Experiences
+
+📖 Full guide: [`docs/sn-motion-html.md`](docs/sn-motion-html.md) (continuous-shot stories, media generation, project setup, and browser QA).
+
+| Name | Label | Description |
+| --- | --- | --- |
+| [`sn-motion-html`](skills/sn-motion-html/SKILL.md) | Motion HTML Storytelling | Builds immersive, scroll-driven web stories with a continuous camera journey, consistent stills, Seedance clips, structured content, and responsive browser delivery. |
+| [`sn-md-to-html-report`](skills/sn-md-to-html-report/SKILL.md) | Markdown → HTML Report | Reworks a Markdown report into a self-contained HTML feature page with editorial structure, evidence order, responsive layout, and offline-friendly assets. |
+
+
+### 🤝 Team Collaboration
+
+📖 Full guide: [`docs/sn-team-harness.md`](docs/sn-team-harness.md) (self-hosted setup, core concepts, local execution, and security boundaries).
+
+| Name | Label | Description |
+| --- | --- | --- |
+| [`sn-team-harness`](skills/sn-team-harness/SKILL.md) | Team Harness | Explains the self-hosted workspace where people and local Agents share context, projects, work items, resources, and versioned artifacts. |
 
 
 ### 🔍 Search

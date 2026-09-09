@@ -2,7 +2,16 @@
 
 English | [简体中文](sn-deep-research_cn.md)
 
-This document describes the current deep-research stack after the integrated `sn-deep-research` upgrade. The old split planning / dimension-research / synthesis pipeline has been retired: planning, evidence gathering, review, synthesis, writing, stitching, and citation rendering now live under the `sn-deep-research` controller and its `agents/*` contracts.
+This document describes the repository-native deep-research stack after the integrated `sn-deep-research` upgrade. The old split planning / dimension-research / synthesis pipeline has been retired: planning, evidence gathering, review, synthesis, writing, stitching, and citation rendering now live under the `sn-deep-research` controller and its `agents/*` contracts.
+
+There are now two supported entry points:
+
+| Entry point | Use it when | Runtime model |
+|---|---|---|
+| [`sn-deep-research`](../skills/sn-deep-research/SKILL.md) | You want the repository-native skill and its integrated research workbench. | The current agent runtime executes the controller and its specialist agents. |
+| [`sn-deepresearch-cli`](../skills/sn-deepresearch-cli/SKILL.md) | You want a standalone CLI with explicit installation, Harness selection, progress monitoring, resume, and export controls. | The skill installs the published `sensenova-skills-deepresearch` npm package; see the [CLI guide](sn-deepresearch-cli.md). |
+
+The CLI is not a second copy of this repository's internal controller. It is a user-facing entry point backed by the separate [SenseNova-Skills-DeepResearch](https://github.com/OpenSenseNova/SenseNova-Skills-DeepResearch) project.
 
 ## Current Deep Research Pipeline
 
@@ -41,7 +50,7 @@ These skills remain in the repository, but they are not automatic steps in the c
 | Skill | Current status |
 |---|---|
 | [`sn-report-format-discovery`](../skills/sn-report-format-discovery/SKILL.md) | Optional standalone format recommendation; `sn-deep-research` itself uses one request-level `format` string and does not create format artifacts. |
-| [`sn-md-to-html-report`](../skills/sn-md-to-html-report/SKILL.md) | Reworks an existing Markdown report into a self-contained HTML feature page; not called automatically by `sn-deep-research`. |
+| [`sn-md-to-html-report`](../skills/sn-md-to-html-report/SKILL.md) | Reworks an existing Markdown report into a self-contained HTML feature page; see the [HTML guide](sn-motion-html.md) for the related web-experience skills. It is not called automatically by `sn-deep-research`. |
 | [`sn-search-image`](../skills/sn-search-image/SKILL.md) | Image search skill; the current research-agent source categories do not map it as a mandatory entry point. |
 | [`sn-update`](../skills/sn-update/SKILL.md) | Maintenance skill for refreshing/updating the `sn-*` bundle; not part of research execution. |
 
