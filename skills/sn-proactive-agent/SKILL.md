@@ -24,9 +24,9 @@ description: 安装、启动和使用 Proactive Agent，记录项目进展并在
 
 `install/` 负责操作系统、依赖和服务生命周期；`connectors/` 负责 Harness
 配置、对话采集与获批续跑。当前安装入口只支持 Hermes；其他 Harness 不能直接套用
-Hermes 的命令。当前工作区为改名后的 `0.1.3` 未发布候选版，可安装指定 Hermes 基线的 Web-only 续跑桥，
+Hermes 的命令。当前运行包为已发布的 `0.1.3`，可安装指定 Hermes 基线的 Web-only 续跑桥，
 会检查源码兼容性、备份并构建；不覆盖未知版本或本地改动。固定版本与 GitHub Release
-下载前置检查见通用流程；新名称的 GitHub Release 尚未发布，也未发布到 PyPI。安装包验收不等于真实接入验收。
+下载前置检查见通用流程；目前通过 GitHub Release 安装，尚未发布到 PyPI。安装包验收不等于真实接入验收。
 Windows 说明是安装参考，不代表完整接入已验收。
 
 ## 命名与命令
