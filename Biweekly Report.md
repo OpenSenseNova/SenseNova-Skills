@@ -7,6 +7,65 @@
 > 💡 Note: Bi-weekly updates are listed in reverse chronological order.
 ---
 
+## 2026.8.10-9.13
+
+### Deep Research
+
+#### sn-deepreseach-cli: Upgraded Deep Research CLI
+
+Deep Research has evolved into an independent CLI tool (sn-deepreseach-cli). Instead of relying solely on prompts, the new system orchestrates the entire workflow—from problem decomposition and concurrent search to synthesis, drafting, and verification—while seamlessly connecting to custom Agents or Harnesses.
+
+Key Advantages:
+- **More Reliable Workflows**: Standardized steps reduce model hallucination and process drift.
+- **Faster Execution**: Multi-source concurrent searching drastically reduces wait times.
+- **Trackable Progress**: Real-time progress visualization with resume capability on interruption.
+- **Flexible Customization**: Switch base agents, adjust research depth, and customize workflows on demand.
+- **Versatile Deliverables**: Generate executive summaries or full reports, exportable in Markdown, PDF, Word, and HTML.
+
+Simply input a topic to receive a well-structured report complete with citations, ideal for competitive analysis, tech research, and industry insights.
+
+### Immersive Web Stories
+
+#### motion-html: Storytelling Through Scroll Animations
+
+motion-html transforms brands, products, or topics into seamless visual narratives. As users scroll, the camera glides smoothly through a continuous spatial canvas, delivering an immersive storytelling experience.
+
+Key Highlights: 
+- **Versatile Applications**: Perfect for brand stories, product launches, timelines, interactive features, and virtual showcases.
+- **End-to-End Assistance**: Helps structure narratives, plan scenes, unify visual styles, and generate image/video assets.
+- **Scroll-Driven Interaction**: Binds text and visual elements directly to scroll gestures for natural scene transitions.
+
+### Team Agent Collaboration Framework
+
+#### TeamHarness: Bringing AI Agents onto the Team
+
+TeamHarness is a human-AI collaboration framework designed for shared context, seamless teamwork, and knowledge retention. It expands single-agent chat into a complete lifecycle: Task Assignment → Execution → Collaborative Review → Knowledge Asset Saving.
+
+Key Advantages: 
+- **Seamless Context Sharing**: Automatically links discussion history and files, eliminating repetitive background explanations.
+- **Agent Agnostic**: Plugs into Codex, Hermes, OpenClaw, Claude Code, and other agents without altering existing workflows.
+- **Local Tool Integration**: Authorizes agents to access local files and dev tools to handle research, coding, writing, and reviewing.
+- **Full Visibility & Resumption**: Live dashboards track task progress and blockers; deliverables are saved independently with resume-on-interruption support.
+
+### Image Generation
+
+#### Supported SenseNova-U1.5-Lite
+
+### Proactive Project Agent
+
+#### sn-proactive-agent: Smart Assistant with Long-Term Memory
+
+sn-proactive-agent solves the long-standing issue of AI context loss in ongoing projects. It automatically captures goals, completed milestones, and next steps during daily interactions, creating a closed loop of "Remember → Suggest → Execute → Update."
+
+Key Highlights:
+- **Automated Context Capture**: Quietly maintains a complete project snapshot, offering centralized views of progress, to-dos, and daily auto-summarized briefings.
+- **Proactive Nudges**: Highlights reusable templates, pending updates, or unblocked tasks via workspace notifications for one-click action.
+- **Built for Long-Term Work**: Ideal for multi-stage research, document reuse, and restarting paused initiatives.
+- **Unified Cross-Tool Memory**: Integrates across major AI tools to maintain a single, consistent project state.
+
+
+---
+
 ## 2026.7.27 - 8.9
 
 ### Deep Research
