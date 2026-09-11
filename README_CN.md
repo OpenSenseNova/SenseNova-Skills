@@ -19,7 +19,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
-技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**、**HTML 网页体验**与**团队协作**等场景，可独立使用，也可组合成端到端工作流。
+技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**、**HTML 网页体验**、**团队协作**与**项目进展主动跟踪**等场景，可独立使用，也可组合成端到端工作流。
 
 > 🎨 **想看它到底能干啥？** [**点击逛 sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便 “ 偷师 ”一下  **Prompt**  应该怎么写！
 
@@ -146,6 +146,15 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | 名称 | 标签 | 描述 |
 | --- | --- | --- |
 | [`sn-team-harness`](skills/sn-team-harness/SKILL.md) | Team Harness | 介绍一个让人和本地 Agent 共享上下文、项目、工作项、资源与版本化成果的自托管协作工作区。 |
+
+
+### 🔔 项目进展主动跟踪
+
+📖 详细使用指南：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)（安装、Hermes 接入、Web 工作台、数据目录与验收检查）。
+
+| 名称 | 标签 | 描述 |
+| --- | --- | --- |
+| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | 记录长期项目进展，维护可审计的 Project / Item / Event 状态，并在 Web 工作台展示下一步建议；用户接受后由原 Hermes Session 继续执行。 |
 
 
 ### 🔍 搜索

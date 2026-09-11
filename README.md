@@ -18,7 +18,7 @@ The SenseNova model family plugs directly into agent runtimes such as [OpenClaw]
 
 In this repository each skill lives in its own directory and declares triggers, capabilities, and execution flow through a `SKILL.md` file, following the [Agent Skills](https://agentskills.io/) convention.
 
-The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, **deep research**, **HTML experiences**, and **team collaboration** — usable standalone or composed into end-to-end workflows.
+The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, **deep research**, **HTML experiences**, **team collaboration**, and **proactive project tracking** — usable standalone or composed into end-to-end workflows.
 
 > 🎨 **Want to see what it can do?** Check out our   [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their **prompt designs**  !
 
@@ -147,6 +147,15 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | Name | Label | Description |
 | --- | --- | --- |
 | [`sn-team-harness`](skills/sn-team-harness/SKILL.md) | Team Harness | Explains the self-hosted workspace where people and local Agents share context, projects, work items, resources, and versioned artifacts. |
+
+
+### 🔔 Proactive Project Tracking
+
+📖 Full guide: [`docs/sn-proactive-agent.md`](docs/sn-proactive-agent.md) (installation, Hermes integration, Web workbench, data layout, and acceptance checks).
+
+| Name | Label | Description |
+| --- | --- | --- |
+| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | Tracks long-running project progress, keeps auditable Project / Item / Event records, and presents next-step suggestions in a Web workbench; accepted suggestions resume the original Hermes session. |
 
 
 ### 🔍 Search
