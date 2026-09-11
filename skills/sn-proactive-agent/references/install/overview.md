@@ -10,8 +10,8 @@
 - **运行包**：通过 `pipx` 安装 Core、Web 和 Connector 资源。
 - **用户数据**：保存在用户 Home 下的 `.sn-proactive-agent/`，不进入安装包。
 
-当前工作区是统一改名后的 `0.1.3` **未发布候选版**，包含 Web-only Connector 安装和按 Session
-的能力探测。新名称的 GitHub Release 尚未发布，也未发布到 PyPI；不能直接按包名从索引安装。
+当前运行包是统一改名后的 `0.1.3`，包含 Web-only Connector 安装和按 Session
+的能力探测。`v0.1.3` 已发布到 GitHub Release，但尚未发布到 PyPI；不能直接按包名从索引安装。
 后续发布渠道为 [GitHub Releases](https://github.com/OpenSenseNova/SenseNova-Skills-ProactiveAgent/releases)。
 已发布的 `v0.1.2` 保持旧包名 `proactive-memory-service`，不改写旧 Tag 或附件，
 也不把旧包当成新名称安装失败后的替代。
@@ -21,7 +21,6 @@
 - `sn_proactive_agent-0.1.3-py3-none-any.whl`：运行包。
 - `SHA256SUMS`：发布文件的 SHA-256 校验值。
 
-仓库当前为私有，下载需要仓库读取权限；不能把浏览器登录等同于 pipx 已获授权。
 Release 不存在、无访问权限或校验失败时停止，报告具体原因，不改用 `main`、旧包或猜测地址。
 发布前只可在用户明确要求本地验收时安装本地构建、已校验的 wheel，不执行下面的 Release 下载。
 发布后，Skill 源码应位于同一 Tag 下的 `skills/sn-proactive-agent/`；按 Harness 的机制安装完整目录，
