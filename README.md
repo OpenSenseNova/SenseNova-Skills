@@ -130,6 +130,19 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | [`sn-prepare-citations`](skills/sn-prepare-citations/SKILL.md)                 | Citation Rendering             | Post-processes `[^source_id]` footnotes into numbered citations and appends references from evidence sources. |
 
 
+### 🔍 Search
+
+📖 Search skills are documented together with deep research: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) (includes per-platform API keys, invocation, and unified JSON output).
+
+
+| Name                                                   | Label                  | Description                                                                                                                                |
+| ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`sn-search-academic`](skills/sn-search-academic/SKILL.md)   | Academic Search        | ArXiv (with section-level HTML reading) / Semantic Scholar (with citation counts) / PubMed (with PMC open-access full text) / Wikipedia, in one aggregated interface. |
+| [`sn-search-code`](skills/sn-search-code/SKILL.md)           | Developer Search       | GitHub (repo / code / issue) / Stack Overflow / Hacker News / HuggingFace (models / datasets / spaces), aggregated.                        |
+| [`sn-search-social-cn`](skills/sn-search-social-cn/SKILL.md) | Chinese Social Search  | Bilibili / Zhihu / Douyin search; some platforms require cookie auth.                                                                      |
+| [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | English Social Search  | Reddit / Twitter (X) / YouTube search.                                                                                                     |
+
+
 ### 🌐 HTML & Web Experiences
 
 📖 Full guide: [`docs/sn-motion-html.md`](docs/sn-motion-html.md) (continuous-shot stories, media generation, project setup, and browser QA).
@@ -156,19 +169,6 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | Name | Label | Description |
 | --- | --- | --- |
 | [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | Tracks long-running project progress, keeps auditable Project / Item / Event records, and presents next-step suggestions in a Web workbench; accepted suggestions resume the original Hermes session. |
-
-
-### 🔍 Search
-
-📖 Search skills are documented together with deep research: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) (includes per-platform API keys, invocation, and unified JSON output).
-
-
-| Name                                                   | Label                  | Description                                                                                                                                |
-| ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`sn-search-academic`](skills/sn-search-academic/SKILL.md)   | Academic Search        | ArXiv (with section-level HTML reading) / Semantic Scholar (with citation counts) / PubMed (with PMC open-access full text) / Wikipedia, in one aggregated interface. |
-| [`sn-search-code`](skills/sn-search-code/SKILL.md)           | Developer Search       | GitHub (repo / code / issue) / Stack Overflow / Hacker News / HuggingFace (models / datasets / spaces), aggregated.                        |
-| [`sn-search-social-cn`](skills/sn-search-social-cn/SKILL.md) | Chinese Social Search  | Bilibili / Zhihu / Douyin search; some platforms require cookie auth.                                                                      |
-| [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | English Social Search  | Reddit / Twitter (X) / YouTube search.                                                                                                     |
 
 
 ## Sample Outputs

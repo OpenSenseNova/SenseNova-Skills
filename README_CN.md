@@ -129,6 +129,19 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | [`sn-prepare-citations`](skills/sn-prepare-citations/SKILL.md)                 | 引用渲染      | 将 `[^source_id]` 脚注后处理为编号引用，并基于 evidence sources 追加参考文献。 |
 
 
+### 🔍 搜索
+
+📖 搜索技能与深度研究合并在同一份文档：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md)（含各平台 API key、调用方式与统一 JSON 输出）。
+
+
+| 名称                                                     | 标签     | 描述                                                                                          |
+| ------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------- |
+| [`sn-search-academic`](skills/sn-search-academic/SKILL.md)   | 学术搜索   | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 四平台聚合。        |
+| [`sn-search-code`](skills/sn-search-code/SKILL.md)           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
+| [`sn-search-social-cn`](skills/sn-search-social-cn/SKILL.md) | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
+| [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
+
+
 ### 🌐 HTML 与网页体验
 
 📖 详细使用指南：[`docs/sn-motion-html_cn.md`](docs/sn-motion-html_cn.md)（连续镜头故事、媒体生成、项目初始化与浏览器验收）。
@@ -155,19 +168,6 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | 名称 | 标签 | 描述 |
 | --- | --- | --- |
 | [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | 记录长期项目进展，维护可审计的 Project / Item / Event 状态，并在 Web 工作台展示下一步建议；用户接受后由原 Hermes Session 继续执行。 |
-
-
-### 🔍 搜索
-
-📖 搜索技能与深度研究合并在同一份文档：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md)（含各平台 API key、调用方式与统一 JSON 输出）。
-
-
-| 名称                                                     | 标签     | 描述                                                                                          |
-| ------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------- |
-| [`sn-search-academic`](skills/sn-search-academic/SKILL.md)   | 学术搜索   | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 四平台聚合。        |
-| [`sn-search-code`](skills/sn-search-code/SKILL.md)           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
-| [`sn-search-social-cn`](skills/sn-search-social-cn/SKILL.md) | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
-| [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
 
 
 ## 输出样例
