@@ -357,7 +357,10 @@ cp -r skills/* ~/.hermes/skills/
 - 图像与可视化：[`docs/sn-image-generate.md`](docs/sn-image-generate.md)
 - 演示文稿：[`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md)
 - 数据分析：[`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md)
-- 深度研究 / 搜索：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md)
+- 深度研究 / 搜索：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) 与 [`docs/sn-deepresearch-cli_cn.md`](docs/sn-deepresearch-cli_cn.md)
+- HTML 与网页体验：[`docs/sn-motion-html_cn.md`](docs/sn-motion-html_cn.md)
+- 团队协作：[`docs/sn-team-harness_cn.md`](docs/sn-team-harness_cn.md)
+- 项目进展主动跟踪：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)
 
 ---
 
@@ -367,7 +370,7 @@ cp -r skills/* ~/.hermes/skills/
 
 > 列出当前可用的 skill，并给出每个 skill 的一句话说明。
 
-如果 agent 能列出 `sn-infographic`、`sn-ppt-entry`、`sn-deep-research` 等本仓库的 skill，说明 LLM 与 skill 都已就绪。
+如果 agent 能列出 `sn-infographic`、`sn-ppt-entry`、`sn-deep-research`、`sn-motion-html`、`sn-team-harness`、`sn-proactive-agent` 等本仓库的 skill，说明 LLM 与 skill 都已就绪。`sn-deepresearch-cli` 还需要按照对应指南额外安装独立 CLI；`sn-proactive-agent` 还需要按照对应指南安装运行包并完成 Hermes 接入。
 
 ---
 
