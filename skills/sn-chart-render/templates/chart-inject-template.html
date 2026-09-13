@@ -1,0 +1,7 @@
+{{ chart_cdn }}
+{% for chart in charts %}
+<!-- chart:{{ chart.id }} -->
+<canvas id="{{ chart.id }}" height="{{ chart.height | default(200) }}"></canvas>
+{{ chart.script }}
+<!-- /chart:{{ chart.id }} -->
+{% endfor %}
