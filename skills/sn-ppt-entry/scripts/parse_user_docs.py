@@ -157,12 +157,6 @@ def parse_pdf(path: Path, asset_root: Path | None = None) -> dict:
     except Exception:
         pass  # image extraction is best-effort
 
-    page_visuals = []
-    if render_pages:
-        # 使用 PyMuPDF/fitz 将每页渲染到 asset_root 下的稳定目录
-        # <DECK_DIR>/source_assets/<paper>_<digest>_pages/pNNN.png
-        page_visuals = render_pdf_pages(path, asset_root)
-
     # Note: pypdf doesn't give structured tables — tables stay embedded in text.
     return {
         "path": str(path),
@@ -171,13 +165,7 @@ def parse_pdf(path: Path, asset_root: Path | None = None) -> dict:
         "pages": len(reader.pages),
         "tables": [],  # best-effort pdf table extraction out of scope (no pdfplumber)
         "inherited_images": images,
-        "page_visuals": [
-            {
-                "page": 3,
-                "path": "<DECK_DIR>/source_assets/paper_<digest>_pages/p003.png",
-                "source": "pdf-page-render"
-            }
-        ]
+        "page_visuals": []
     }
 
 

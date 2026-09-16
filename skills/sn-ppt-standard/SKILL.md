@@ -244,7 +244,7 @@ mode=final_review
     ```bash
     node "$SKILL_ROOT/scripts/export_pptx/html_to_pptx.mjs" --deck-dir "$DECK_DIR" --pages-dir "$DECK_DIR/slides" --output "$DECK_DIR/<DECK_ID>.pptx" --force
     ```
-    
+
     - **这是 PPTX 的唯一合法产出路径**：禁止用 python-pptx、自写 python 脚本、宿主 Agent 原生演示工具或手工重建 PPTX 替代；导出失败时也不得用这些方式"补产出"，只能按下方失败分支处理。
     - Linux 下若该命令报 chromium 启动失败 / `Target page, context or browser has been closed` / 缺动态库（如 libnspr4.so），先执行 `export LD_LIBRARY_PATH="$HOME/.box-agent/runtime/linux-libs${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"` 再重跑同一条命令，最多重试一次；仍失败进入失败分支。
     - 成功且 `DECK_DIR/<DECK_ID>.pptx` 确实存在后，登记 `state.artifacts.pptx`；失败则写入 `state.last_error`（保留原始错误原文）、将 `state.status` 设为 `partial`、保留全部 HTML 产物并如实向用户报告，**不得伪造 PPTX 路径**。
