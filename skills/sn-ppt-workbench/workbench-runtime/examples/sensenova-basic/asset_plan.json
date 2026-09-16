@@ -1,0 +1,64 @@
+{
+  "pages": [
+    {
+      "page_no": 1,
+      "slots": [
+        {
+          "slot_id": "hero",
+          "slot_kind": "decoration",
+          "image_prompt": "A futuristic dark background with a glowing abstract geometric logo representing an AI agent platform. Sky blue and cyan neon lines forming a stylized 'O' or claw shape. Deep blue-black gradient background, subtle grid lines, particle effects. Tech/futuristic style with high contrast, minimalistic.",
+          "aspect_ratio": "16:9",
+          "image_size": "2k",
+          "local_path": "images/page_001_hero.png",
+          "status": "pending",
+          "quality_review": null
+        }
+      ]
+    },
+    {
+      "page_no": 2,
+      "slots": [
+        {
+          "slot_id": "module_illustration",
+          "slot_kind": "concept_visual",
+          "image_prompt": "An abstract illustration of interconnected functional modules, like glowing floating cubes or nodes linked by luminous lines. Dark tech background with sky blue and cyan accents. Each module represented by a simple geometric shape (circle, square, triangle) with subtle internal patterns. Futuristic, clean, minimalistic. 1:1 square composition.",
+          "aspect_ratio": "1:1",
+          "image_size": "2k",
+          "local_path": "images/page_002_module_illustration.png",
+          "status": "pending",
+          "quality_review": null
+        }
+      ]
+    },
+    {
+      "page_no": 3,
+      "slots": [
+        {
+          "slot_id": "scenario_grid",
+          "slot_kind": "concept_visual",
+          "image_prompt": "A grid of four icon-like symbols representing application scenarios: customer service (headset icon), code review (brackets icon), document generation (document icon), data analysis (magnifying glass icon). All icons are minimalistic, glowing sky blue and cyan on a dark background. Futuristic tech style. Square layout, each icon in its own cell, with subtle divider lines.",
+          "aspect_ratio": "1:1",
+          "image_size": "2k",
+          "local_path": "images/page_003_scenario_grid.png",
+          "status": "pending",
+          "quality_review": null
+        }
+      ]
+    },
+    {
+      "page_no": 4,
+      "slots": [
+        {
+          "slot_id": "cta_background",
+          "slot_kind": "decoration",
+          "image_prompt": "A dark futuristic gradient background for a call-to-action slide. Deep navy to black, with subtle sky blue and cyan radial glow in the center. Soft pixel grid lines fading outward. Minimalistic, no text, just atmospheric tech ambiance. Suitable for overlaying text and a button.",
+          "aspect_ratio": "16:9",
+          "image_size": "2k",
+          "local_path": "images/page_004_cta_background.png",
+          "status": "pending",
+          "quality_review": null
+        }
+      ]
+    }
+  ]
+}

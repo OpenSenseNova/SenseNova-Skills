@@ -1,12 +1,6 @@
 ---
 name: sn-ppt-creative
-description: |
-  Creative-mode PPT pipeline. One full-page 16:9 PNG per slide.
-  LLM / VLM calls go through sn-ppt-standard/lib/model_client.py (shared thin
-  client). Text-to-image (the actual png rendering) goes through
-  sn-image-base/scripts/sn_agent_runner.py. Falls back to web image search
-  when T2I generation fails. Expects task_pack.json + info_pack.json already
-  written by sn-ppt-entry.
+description: Use when a prepared PPT task with a current outline.md should be generated as an image-first presentation with one 16:9 image per slide and optional PPTX packaging.
 metadata:
   project: SenseNova-Skills
   tier: 1
@@ -18,282 +12,198 @@ triggers:
 
 # sn-ppt-creative
 
-> **⚠️ This skill must be invoked through `/skill sn-ppt-entry`.** Never start here directly — the entry skill collects parameters and writes `task_pack.json` + `info_pack.json` that this skill requires. If you arrived here without those files, stop and tell the user to enter via `/skill sn-ppt-entry` or "生成 PPT".
+把公共 Story 转译成一套 16:9 整页视觉：每页生成一张完整 PNG，并可组装为 PPTX。
+Creative 负责视觉转译，不负责 Research，不生成自己的内容大纲。
 
-## Call-routing policy
+## 前置与目录边界
 
-| Kind | Backend |
-|---|---|
-| LLM (text) | `$PPT_STANDARD_DIR/lib/model_client.py` → `llm(sys, user)` |
-| VLM (image understanding) | `$PPT_STANDARD_DIR/lib/model_client.py` → `vlm(sys, user, images)` |
-| T2I (image generation) | `$SN_IMAGE_BASE/scripts/sn_agent_runner.py sn-image-generate` |
+必须存在：
 
-Never mix — LLM / VLM through sn-image-base, or T2I through model_client — both violate policy.
+- `<DECK_DIR>/task_pack.json`
+- `<DECK_DIR>/info_pack.json`
+- `<DECK_DIR>/outline.md`
+- `task_pack.choices.output == "creative"`，或旧任务的 `ppt_mode == "creative"`
 
-## Visual asset priority
+`DECK_DIR` 只能取 `task_pack.deck_dir` 的绝对路径。所有生成产物只写到该目录；不得写入
+用户 home 根目录、宿主 workspace 根目录、Skill 目录、repo、`/tmp` 或另一个 workspace。
+已有任务必须复用原 `DECK_DIR`，不得另建目录。
 
-- Creative mode renders each slide as a generated full-page PNG, so **image generation is the first-priority visual path**.
-- If image generation fails for a page, use web search (`sn-search-image`) as a fallback to find a real image that fits the page's topic. Each search result includes the image URL, source page, title, and domain for traceability.
-- Do not create placeholders. If generation and search both fail, record the page failure and continue; never write fake PNGs, grey boxes, broken-image icons, or "image pending" text.
-- Do not mention the search provider name in prompts, visible slide text, progress, or summaries.
+把当前 Skill 所在目录记为只读的 `SKILL_ROOT`，把同级 `sn-ppt-tools/` 解析为绝对
+`PPT_TOOLS_DIR`。开始生图前读取
+`$PPT_TOOLS_DIR/references/capability-policy.md`。文本推理、风格判断和视觉理解使用宿主
+Agent 原生能力；图片生成优先使用宿主原生工具，原生能力不存在或一次实际调用失败时，
+才使用 PPT 整包自带的 `image_generate.py`。
 
-## Preconditions
+不得调用 `model_client.py`、`sn_agent_runner.py`，不得要求用户在 Agent 外再配置文本或
+视觉模型 API。
 
-- `<deck_dir>/task_pack.json` exists and `ppt_mode == "creative"`
-- `<deck_dir>/info_pack.json` exists
-- `<deck_dir>/pages/` exists
-- `$SN_IMAGE_BASE` env var (OpenClaw-injected) points at the sn-image-base skill root
-- `$PPT_STANDARD_DIR` env var points at the sn-ppt-standard skill root (so we can import `model_client`)
+## 公共 Story 契约
 
-Any missing → stop and tell user to enter via `/skill sn-ppt-entry`.
+开始和恢复时重新读取磁盘上的 `outline.md`。它固定：
 
-## Generation progress WebUI
+- 页数、页序和标题；
+- 每页核心结论、内容依据、上屏内容边界和前后关系；
+- 用户明确保留、删除或修改的内容。
 
-`sn-ppt-entry` starts the generation progress WebUI after `task_pack.json` / `info_pack.json` are written. During creative-mode generation, publish progress with the shared writer from `sn-ppt-standard`:
+Creative 可以决定视觉隐喻、艺术媒介、构图、页面动势和信息图形语言，但不能：
+
+- 合并、拆分、增删或重排页面；
+- 改变标题和核心结论的含义；
+- 恢复用户从 outline 删除的内容；
+- 自行搜索事实、补案例或另写 `outline.json`；
+- 因整页生图偏好而牺牲事实、逻辑或文字可读性。
+
+发现现有材料不足时，保留对应页位并明确缺口，返回 Entry/Story；不得在 Creative 内补做
+Research。
+
+## 设计丰富度
+
+读取 `task_pack.choices.design_richness`：
+
+- `restrained`：收敛构图、材质、文字装饰和视觉隐喻，优先稳定与清晰。
+- `rich`：默认，在清晰信息层级上提供充分画面、页型变化和跨页一致性。
+- `high_creative`：允许更大胆的构图、艺术媒介、英雄页面和视觉动势，但不牺牲文字
+  可读性、事实和 Story。
+
+丰富度只控制视觉投入，不改变页数、结论和 Research 边界。本发布版不再提供额外的
+Artistic/Classical 分线选择。
+
+## 产物
+
+```text
+style_spec.md
+pages/
+  page_001.prompt.txt
+  page_001.png
+  page_002.prompt.txt
+  page_002.png
+...
+<deck_id>.pptx
+```
+
+`style_spec.md` 是出口内部的视觉说明，不是第二份 Story；它只能补充跨页视觉语言、构图
+规则、配色、材质、字体气质和负面约束，不得重写 outline。
+
+## 恢复
+
+先运行：
 
 ```bash
-P="python3 $PPT_STANDARD_DIR/scripts/progress_event.py"
-$P --deck-dir <deck_dir> --stage creative-style --status running
-$P --deck-dir <deck_dir> --stage creative-style --status ok --artifact style_spec.md
-$P --deck-dir <deck_dir> --stage creative-outline --status running
-$P --deck-dir <deck_dir> --stage creative-outline --status ok --artifact outline.json
-$P --deck-dir <deck_dir> --stage creative-prompt --page N --status running
-$P --deck-dir <deck_dir> --stage creative-prompt --page N --status ok
-$P --deck-dir <deck_dir> --stage creative-render --page N --status running
-$P --deck-dir <deck_dir> --stage creative-render --page N --status ok
-$P --deck-dir <deck_dir> --stage export --status running
-$P --deck-dir <deck_dir> --stage export --status ok
+python3 "$SKILL_ROOT/scripts/resume_scan.py" --deck-dir "$DECK_DIR"
 ```
 
-On failure, write the same stage with `--status failed --error "<short reason>"` before moving on or aborting. On native Windows, use `python` if `python3` is unavailable.
+按磁盘真实产物继续：
 
-## Resume
+- `style_spec.md` 不存在：重新形成 deck 级视觉说明；
+- `page_NNN.prompt.txt` 存在而 PNG 缺失：只重新生图；
+- PNG 已存在：跳过该页；
+- 用户修改了 outline：重新生成受影响页面的 prompt 和 PNG，不让旧 prompt 覆盖新内容；
+- PPTX 缺失或页面发生变化：重新打包；
+- 已有 style、prompt、PNG 和 PPTX 不无故删除。
+
+## 工作流
+
+### 1. 读取输入并形成视觉说明
+
+读取 task/info pack、当前 outline、用户材料索引、已有 Research 主报告以及
+`reference_image_captions`。把 `task_pack.state.current_stage` 写为
+`output.creative.plan`，状态写为 `generating`。
+
+由宿主 Agent 直接形成 `<DECK_DIR>/style_spec.md`。至少明确：
+
+- 主题、受众、场景与视觉目标；
+- 一句跨页视觉概念；
+- 背景明暗、主辅色、文字层级和画面媒介；
+- 封面、正文、数据页、过渡页和结尾页的统一关系；
+- 为保证可读性和避免把设计说明画进页面而设置的负面约束。
+
+有参考图片时使用宿主原生视觉能力理解它们，并优先复用 `info_pack` 中已有说明；同一张图
+不重复理解。不得在本阶段搜索事实或改写 outline。
+
+### 2. 逐页形成最终生图 prompt
+
+每一页从当前 outline 的同序号页面生成一个
+`<DECK_DIR>/pages/page_NNN.prompt.txt`。prompt 必须包含：
+
+- 本页标题、核心结论和最终上屏文字；
+- 本页与前后页的叙事关系；
+- 构图、视觉层级、主体、背景、留白和阅读路径；
+- `style_spec.md` 中需要跨页一致的视觉语言；
+- 16:9 整页演示画面，以及所有文字清晰、完整、语言一致的要求；
+- 禁止出现设计规格、色值、尺寸标注、代码、占位符和额外文案。
+
+不能把 `style_spec.md`、JSON、CSS 或内部字段名直接拼进 prompt。写完每页后执行：
 
 ```bash
-python3 $SKILL_DIR/scripts/resume_scan.py --deck-dir <deck_dir>
-# => {"style_spec_done": bool, "outline_done": bool, "pptx_done": bool,
-#     "pages": [{"page_no": 1, "action": "skip|render_only|full"}, ...]}
+python3 "$SKILL_ROOT/scripts/sanitize_prompt.py" \
+  --path "$DECK_DIR/pages/page_NNN.prompt.txt"
 ```
 
-Dispatch:
+一页一个独立 Agent 动作，不用单个脚本循环生成全套 prompt。每页完成后输出简短进度。
 
-| Manifest | Do |
-|---|---|
-| `style_spec_done == false` | Run Stage 2 |
-| `outline_done == false` | Run Stage 3 |
-| per-page `action == "full"` | Run Stage 4.1 + 4.2 |
-| per-page `action == "render_only"` | Run Stage 4.2 only (prompt.txt already on disk) |
-| per-page `action == "skip"` | Skip |
-| `pptx_done == false` (all pages done or failed) | Run Stage 5 |
+### 3. 逐页生成整图
 
-## Stage 2 — style_spec.md  (LLM or VLM via model_client)
+对每个缺少 PNG 的页面：
 
-One independent exec tool_call. Two branches based on reference images.
+1. 当前 Agent 有原生图片生成工具时，先用它读取对应 prompt，生成 16:9 整页图片，并把
+   最终文件保存到 `$DECK_DIR/pages/page_NNN.png`。
+2. 原生工具不存在或一次实际调用失败时，执行内置回退：
 
-**Branch A (no ref images, or all missing on disk)** — use `model_client.llm`:
+   ```bash
+   python3 "$PPT_TOOLS_DIR/scripts/image_generate.py" \
+     --prompt-file "$DECK_DIR/pages/page_NNN.prompt.txt" \
+     --deck-dir "$DECK_DIR" \
+     --output "pages/page_NNN.png" \
+     --size "2752x1536"
+   ```
+
+3. 两层都不可用或失败时，记录该页失败并继续其他页。不得创建空白图、透明图、占位图或
+   伪造成功。
+
+每页生图是一个独立工具调用，成功或失败后都输出 heartbeat。不得在第一次失败后循环
+重试；用户后续明确要求重试时再恢复该页。
+
+如果开始生产前已经确认原生和内置生图都不可用，保留 style、prompt 和前置公共产物，
+把状态写为 `partial` 并停止 Creative 出口；不得静默切换到 Standard、Dynamic 或 Native
+PPTX。
+
+### 4. 打包 PPTX
+
+所有页面处理后执行：
 
 ```bash
-python3 -c "
-import sys, pathlib, json
-sys.path.insert(0, '$PPT_STANDARD_DIR/lib')
-from model_client import llm
-
-deck = pathlib.Path('<deck_dir>')
-tp = json.loads((deck / 'task_pack.json').read_text())
-ip = json.loads((deck / 'info_pack.json').read_text())
-
-sys_prompt = open('$SKILL_DIR/prompts/style_from_query.md').read()
-user_prompt = json.dumps({
-    'params': tp['params'],
-    'query': ip.get('user_query'),
-    'digest': ip.get('document_digest'),
-}, ensure_ascii=False)
-
-md = llm(sys_prompt, user_prompt)
-(deck / 'style_spec.md').write_text(md, encoding='utf-8')
-print('style_spec.md ok')
-"
+python3 "$SKILL_ROOT/scripts/build_pptx.py" --deck-dir "$DECK_DIR"
 ```
 
-**Branch B (≥1 reference image on disk)** — use `model_client.vlm`:
+脚本按页号把已有 PNG 满版放入 16:9 PPTX；缺失页保留为空白页并在结果中报告。脚本或
+本地依赖不可用时，不安装新依赖，不改用其他构建器；逐页 PNG 仍是有效交付。
 
-```bash
-python3 -c "
-import sys, pathlib, json
-sys.path.insert(0, '$PPT_STANDARD_DIR/lib')
-from model_client import vlm
+把 `pages/` 和可用 PPTX 的绝对路径写入 `task_pack.state.artifacts`，把 `creative` 加入
+`completed_stages`。全部页面成功时状态写 `completed`；存在缺页或打包失败时写
+`partial` 和 `last_error`。
 
-deck = pathlib.Path('<deck_dir>')
-ip = json.loads((deck / 'info_pack.json').read_text())
-tp = json.loads((deck / 'task_pack.json').read_text())
+## 进度与收尾
 
-refs = [p for p in (ip.get('user_assets') or {}).get('reference_images', []) if pathlib.Path(p).exists()]
+必须提供用户可见的简短进度：
 
-sys_prompt = open('$SKILL_DIR/prompts/style_from_image.md').read()
-user_prompt = f'PPT 主题/参数: {json.dumps(tp[\"params\"], ensure_ascii=False)}\nuser_query: {ip.get(\"user_query\") or \"\"}'
-
-md = vlm(sys_prompt, user_prompt, images=refs)
-(deck / 'style_spec.md').write_text(md, encoding='utf-8')
-print(f'style_spec.md ok (from {len(refs)} ref images)')
-"
+```text
+已进入 sn-ppt-creative，共 N 页
+[style] style_spec.md 完成
+[prompt 2/N] 完成
+[图 2/N] page_002.png 完成
+[pptx] <deck_id>.pptx 完成
 ```
 
-If `user_assets.reference_images` is non-empty but **all** paths missing on disk: fall through to Branch A and prepend a line `reference_images_missing: <original paths>` at the top of style_spec.md.
+失败时在对应行说明原因，然后继续。收尾只总结输出目录、成功页、失败页和 PPTX 状态，
+并指出 `outline.md` 是用户可编辑的叙事源。
 
-## Stage 3 — outline.json  (LLM via model_client)
+## 硬规则
 
-```bash
-python3 -c "
-import sys, pathlib, json
-sys.path.insert(0, '$PPT_STANDARD_DIR/lib')
-from model_client import llm
-
-deck = pathlib.Path('<deck_dir>')
-tp = json.loads((deck / 'task_pack.json').read_text())
-ip = json.loads((deck / 'info_pack.json').read_text())
-style = (deck / 'style_spec.md').read_text()
-
-sys_prompt = open('$SKILL_DIR/prompts/outline.md').read()
-user_prompt = json.dumps({
-    'style_spec_markdown': style,
-    'params': tp['params'],
-    'query': ip.get('user_query'),
-    'digest': ip.get('document_digest'),
-}, ensure_ascii=False)
-
-raw = llm(sys_prompt, user_prompt).strip()
-if raw.startswith('\`\`\`'):
-    raw = raw.split('\n', 1)[1].rsplit('\`\`\`', 1)[0]
-data = json.loads(raw)
-assert len(data['pages']) == tp['params']['page_count'], 'page_count mismatch'
-(deck / 'outline.json').write_text(json.dumps(data, ensure_ascii=False, indent=2))
-print(f'outline ok, {len(data[\"pages\"])} pages')
-"
-```
-
-On failure (non-JSON / length mismatch): **abort**.
-
-## Stage 4 — per-page: one independent exec per page
-
-### 4.1 Compose prompt  (LLM via model_client) — skip if `action == "render_only"`
-
-```bash
-python3 -c "
-import sys, pathlib, json
-sys.path.insert(0, '$PPT_STANDARD_DIR/lib')
-from model_client import llm
-
-deck = pathlib.Path('<deck_dir>')
-N = <NNN>
-style = (deck / 'style_spec.md').read_text()
-outline = json.loads((deck / 'outline.json').read_text())
-page = next(p for p in outline['pages'] if int(p['page_no']) == N)
-
-sys_prompt = open('$SKILL_DIR/prompts/page_prompt.md').read()
-user_prompt = json.dumps({'style_spec_markdown': style, 'page': page}, ensure_ascii=False)
-
-txt = llm(sys_prompt, user_prompt)
-(deck / 'pages' / f'page_{N:03d}.prompt.txt').write_text(txt, encoding='utf-8')
-print(f'prompt page {N} ok')
-"
-
-# sanitize the written prompt in-place: strip hex/rgb/hsl/CSS/px/em/rem etc
-# to prevent T2I server-side prompt-enhance from baking them into the image.
-# Silent: no chat-facing notification; removals go to stderr only.
-python3 $SKILL_DIR/scripts/sanitize_prompt.py --path <deck_dir>/pages/page_<NNN>.prompt.txt
-```
-
-### 4.2 Generate image  (T2I via sn-image-base)
-
-`--negative-prompt` 是针对可能带自身 prompt-enhance 的 T2I 后端的最后一道防线：
-即使前面的 sanitize 没拦住、或后端重写时引入了新的样式元数据，也通过反向约束压制模型把它们画出来。这段字符串在所有页上都一致。
-
-```bash
-python $SN_IMAGE_BASE/scripts/sn_agent_runner.py sn-image-generate \
-  --prompt "$(cat <deck_dir>/pages/page_<NNN>.prompt.txt)" \
-  --negative-prompt "hex color code, #RRGGBB, rgb(), rgba(), hsl(), hsla(), css, json, yaml, code snippet, pixel values, px, em, rem, pt, color palette text, typography label, design spec, style guide, font stack, hex code, layout annotation, dimensional callout, figma-style spec sheet, wireframe annotation, swatch with numbers" \
-  --aspect-ratio 16:9 \
-  --image-size 2k \
-  --save-path <deck_dir>/pages/page_<NNN>.png \
-  --output-format json
-```
-
-### 4.3 Failure handling
-
-- 4.1 failure (model timeout / empty / malformed): record `page_no` into `failed_pages`, echo failure line, continue.
-- 4.2 failure: same — record, echo, continue.
-- **No retries.** **No placeholder PNG.** Don't write 1x1 transparent PNGs to fake success.
-- `.prompt.txt` may remain on disk for a later manual re-run of 4.2 only.
-
-## Stage 5 — pptx 打包（一次独立 exec）
-
-所有页图生成后（含部分失败的情况），把 `pages/page_*.png` 平铺打包成 16:9 整册 PPTX，每张图满版一页。由 `scripts/build_pptx.py` 完成，模型只负责执行脚本。
-
-```bash
-python3 $SKILL_DIR/scripts/build_pptx.py --deck-dir <deck_dir>
-# => {"deck_id": "...", "output": "<deck_dir>/<deck_id>.pptx",
-#     "total_slides": N, "included_pages": [...], "missing_pages": [...]}
-```
-
-行为约定：
-
-- 输出路径默认 `<deck_dir>/<deck_id>.pptx`；可用 `--output` 覆盖。
-- 页序按 `outline.json` 的 `page_no` 排；缺失 `outline.json` 时按 `page_001..page_NNN` 走。
-- 缺失的 PNG 会插入空白页并在 stderr 记录一行，**不中止**；这样跟 Stage 4 的"失败跳过"语义一致。
-- 脚本失败（依赖缺失 / 写盘失败）：echo 失败原因，**不中止整个 skill**，仍进入 Stage 6 收尾；PNG 已在磁盘上。
-  如果 python-pptx 缺失导致失败：🚫 **不要尝试 pip install python-pptx**
-  或任何替代方案。PNG 页面已经是最终交付物，直接进入 Stage 6。
-
-## Stage 6 — closing
-
-Emit:
-
-```
-创意模式已完成。
-
-📁 输出目录：<deck_dir>
-📄 结果文件：
-  - style_spec.md
-  - outline.json
-  - pages/page_001.png ~ page_NNN.png（失败 M 页：page_..., page_...）
-  - <deck_id>.pptx（整册，缺失页插入空白）
-
-⚠️ 未完成：
-  - page_007：生图返回超时，已跳过（pptx 中为空白页）
-
-下一步：
-  - 可直接打开 <deck_id>.pptx 查看整册
-  - 或在 pages/ 目录查看 PNG
-```
-
-## Progress echo — MANDATORY
-
-| Stage | Example |
-|---|---|
-| After resume_scan | `已进入 sn-ppt-creative，共 N 页` |
-| After each progress write | `.workbench/progress.json 已更新：<stage> <status>` |
-| After Stage 2 | `[1] style_spec.md ✓` |
-| After Stage 3 | `[2] outline.json ✓（N 页）` |
-| Per page-prompt (4.1) | `[prompt 3/10] ✓` |
-| Per page-image (4.2) | `[图 3/10] page_003.png ✓` or `[图 3/10] ✗ 超时` |
-| After Stage 5 | `[pptx] <deck_id>.pptx ✓（N 页，缺失 M 页）` or `[pptx] ✗ <reason>` |
-| Closing | full summary above |
-
-- Each echo is a chat reply, not a log write.
-- Per-page echo is the heartbeat for Stage 4.
-- On failure, echo failure line with reason before moving on.
-
-## 🚫 Hard rules
-
-1. **Do NOT loop inside a single exec.** One page = one tool_call.
-2. **Do NOT fake images.** Failed T2I → record failed, move on. No 1x1 placeholder PNGs.
-3. **Do NOT use `model_client.t2i`** — T2I must go through `sn-image-base`. `model_client` handles only LLM / VLM.
-4. **Do NOT use `sn-text-optimize` or `sn-image-recognize`** from sn-image-base — those must go through `model_client.llm` / `model_client.vlm`.
-5. **Do NOT retry on first failure.** If the same stage fails twice in a row with the same error, treat it as permanent and move on.
-6. **Do NOT generate editable JSON from PNG** (out of scope).
-7. **Language integrity.** All user-visible text MUST match the user's query language. A single English slide in a Chinese deck is a regression.
-8. **Do NOT use python-pptx, pptxgenjs, or any alternative PPTX builder.** `scripts/build_pptx.py` is the ONLY way to produce a PPTX. Never `pip install python-pptx` or write Node scripts that import `pptxgenjs`. If PPTX build fails, the PNG pages are the final deliverable.
-9. **Do NOT fabricate data.** All numbers and factual claims MUST come from the user's documents or web search. Use qualitative descriptions if no data source is available.
-10. **Wait for responses.** If you ask the user a question, do NOT proceed until they reply. Never assume default values.
-11. **Multi-round edits: regenerate.** When the user requests changes, re-run the affected pipeline stages. Do NOT sed/perl/patch files in-place.
-12. **Validate paths before writing.** All output goes under `<deck_dir>/` — the absolute path written in `task_pack.json`. Before writing any file, verify the parent directory exists. Never write to `/workspace/`, `/tmp/`, `~/`, `./`, or any hallucinated path.
+1. 不调用 `model_client.py`、`sn_agent_runner.py` 或额外文本模型 API。
+2. 不生成第二份内容大纲，不让视觉计划反向覆盖 `outline.md`。
+3. 不在 Creative 出口 Research 或新增事实。
+4. 不伪造图片，不把远程 URL 当作最终页面。
+5. 一页一个 prompt 和一次生图动作，不把整套页面藏进不可见循环。
+6. 所有用户可见文字使用用户请求的语言。
+7. 所有写入都位于 task pack 指定的绝对 `DECK_DIR`。
+8. 原有可用产物、断点恢复和 PNG -> PPTX 能力不得无故删除。

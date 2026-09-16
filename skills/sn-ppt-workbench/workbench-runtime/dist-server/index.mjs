@@ -32,9 +32,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// ../../../../src/ppt-editor/node_modules/ms/index.js
+// node_modules/ms/index.js
 var require_ms = __commonJS({
-  "../../../../src/ppt-editor/node_modules/ms/index.js"(exports, module) {
+  "node_modules/ms/index.js"(exports, module) {
     var s = 1e3;
     var m = s * 60;
     var h = m * 60;
@@ -45,7 +45,7 @@ var require_ms = __commonJS({
       options = options || {};
       var type = typeof val;
       if (type === "string" && val.length > 0) {
-        return parse5(val);
+        return parse6(val);
       } else if (type === "number" && isFinite(val)) {
         return options.long ? fmtLong(val) : fmtShort(val);
       }
@@ -53,7 +53,7 @@ var require_ms = __commonJS({
         "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
       );
     };
-    function parse5(str) {
+    function parse6(str) {
       str = String(str);
       if (str.length > 100) {
         return;
@@ -148,9 +148,9 @@ var require_ms = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/debug/src/common.js
+// node_modules/debug/src/common.js
 var require_common = __commonJS({
-  "../../../../src/ppt-editor/node_modules/debug/src/common.js"(exports, module) {
+  "node_modules/debug/src/common.js"(exports, module) {
     function setup(env) {
       createDebug.debug = createDebug;
       createDebug.default = createDebug;
@@ -325,9 +325,9 @@ var require_common = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/debug/src/browser.js
+// node_modules/debug/src/browser.js
 var require_browser = __commonJS({
-  "../../../../src/ppt-editor/node_modules/debug/src/browser.js"(exports, module) {
+  "node_modules/debug/src/browser.js"(exports, module) {
     exports.formatArgs = formatArgs;
     exports.save = save;
     exports.load = load;
@@ -495,9 +495,9 @@ var require_browser = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/has-flag/index.js
+// node_modules/has-flag/index.js
 var require_has_flag = __commonJS({
-  "../../../../src/ppt-editor/node_modules/has-flag/index.js"(exports, module) {
+  "node_modules/has-flag/index.js"(exports, module) {
     "use strict";
     module.exports = (flag, argv = process.argv) => {
       const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
@@ -508,9 +508,9 @@ var require_has_flag = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/supports-color/index.js
+// node_modules/supports-color/index.js
 var require_supports_color = __commonJS({
-  "../../../../src/ppt-editor/node_modules/supports-color/index.js"(exports, module) {
+  "node_modules/supports-color/index.js"(exports, module) {
     "use strict";
     var os = __require("os");
     var tty = __require("tty");
@@ -622,9 +622,9 @@ var require_supports_color = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/debug/src/node.js
+// node_modules/debug/src/node.js
 var require_node = __commonJS({
-  "../../../../src/ppt-editor/node_modules/debug/src/node.js"(exports, module) {
+  "node_modules/debug/src/node.js"(exports, module) {
     var tty = __require("tty");
     var util = __require("util");
     exports.init = init;
@@ -796,9 +796,9 @@ var require_node = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/debug/src/index.js
+// node_modules/debug/src/index.js
 var require_src = __commonJS({
-  "../../../../src/ppt-editor/node_modules/debug/src/index.js"(exports, module) {
+  "node_modules/debug/src/index.js"(exports, module) {
     if (typeof process === "undefined" || process.type === "renderer" || process.browser === true || process.__nwjs) {
       module.exports = require_browser();
     } else {
@@ -807,9 +807,9 @@ var require_src = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/depd/index.js
+// node_modules/depd/index.js
 var require_depd = __commonJS({
-  "../../../../src/ppt-editor/node_modules/depd/index.js"(exports, module) {
+  "node_modules/depd/index.js"(exports, module) {
     var relative = __require("path").relative;
     module.exports = depd;
     var basePath = process.cwd();
@@ -1113,9 +1113,9 @@ var require_depd = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/setprototypeof/index.js
+// node_modules/setprototypeof/index.js
 var require_setprototypeof = __commonJS({
-  "../../../../src/ppt-editor/node_modules/setprototypeof/index.js"(exports, module) {
+  "node_modules/setprototypeof/index.js"(exports, module) {
     "use strict";
     module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties);
     function setProtoOf(obj, proto) {
@@ -1133,9 +1133,9 @@ var require_setprototypeof = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/statuses/codes.json
+// node_modules/statuses/codes.json
 var require_codes = __commonJS({
-  "../../../../src/ppt-editor/node_modules/statuses/codes.json"(exports, module) {
+  "node_modules/statuses/codes.json"(exports, module) {
     module.exports = {
       "100": "Continue",
       "101": "Switching Protocols",
@@ -1204,9 +1204,9 @@ var require_codes = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/statuses/index.js
+// node_modules/statuses/index.js
 var require_statuses = __commonJS({
-  "../../../../src/ppt-editor/node_modules/statuses/index.js"(exports, module) {
+  "node_modules/statuses/index.js"(exports, module) {
     "use strict";
     var codes = require_codes();
     module.exports = status;
@@ -1275,9 +1275,9 @@ var require_statuses = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/inherits/inherits_browser.js
+// node_modules/inherits/inherits_browser.js
 var require_inherits_browser = __commonJS({
-  "../../../../src/ppt-editor/node_modules/inherits/inherits_browser.js"(exports, module) {
+  "node_modules/inherits/inherits_browser.js"(exports, module) {
     if (typeof Object.create === "function") {
       module.exports = function inherits(ctor, superCtor) {
         if (superCtor) {
@@ -1307,9 +1307,9 @@ var require_inherits_browser = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/inherits/inherits.js
+// node_modules/inherits/inherits.js
 var require_inherits = __commonJS({
-  "../../../../src/ppt-editor/node_modules/inherits/inherits.js"(exports, module) {
+  "node_modules/inherits/inherits.js"(exports, module) {
     try {
       util = __require("util");
       if (typeof util.inherits !== "function") throw "";
@@ -1321,9 +1321,9 @@ var require_inherits = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/toidentifier/index.js
+// node_modules/toidentifier/index.js
 var require_toidentifier = __commonJS({
-  "../../../../src/ppt-editor/node_modules/toidentifier/index.js"(exports, module) {
+  "node_modules/toidentifier/index.js"(exports, module) {
     "use strict";
     module.exports = toIdentifier;
     function toIdentifier(str) {
@@ -1334,9 +1334,9 @@ var require_toidentifier = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/http-errors/index.js
+// node_modules/http-errors/index.js
 var require_http_errors = __commonJS({
-  "../../../../src/ppt-editor/node_modules/http-errors/index.js"(exports, module) {
+  "node_modules/http-errors/index.js"(exports, module) {
     "use strict";
     var deprecate = require_depd()("http-errors");
     var setPrototypeOf = require_setprototypeof();
@@ -1498,13 +1498,13 @@ var require_http_errors = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/bytes/index.js
+// node_modules/bytes/index.js
 var require_bytes = __commonJS({
-  "../../../../src/ppt-editor/node_modules/bytes/index.js"(exports, module) {
+  "node_modules/bytes/index.js"(exports, module) {
     "use strict";
     module.exports = bytes;
     module.exports.format = format;
-    module.exports.parse = parse5;
+    module.exports.parse = parse6;
     var formatThousandsRegExp = /\B(?=(\d{3})+(?!\d))/g;
     var formatDecimalsRegExp = /(?:\.0*|(\.[^0]+)0+)$/;
     var map = {
@@ -1518,7 +1518,7 @@ var require_bytes = __commonJS({
     var parseRegExp = /^((-|\+)?(\d+(?:\.\d+)?)) *(kb|mb|gb|tb|pb)$/i;
     function bytes(value, options) {
       if (typeof value === "string") {
-        return parse5(value);
+        return parse6(value);
       }
       if (typeof value === "number") {
         return format(value, options);
@@ -1562,7 +1562,7 @@ var require_bytes = __commonJS({
       }
       return str + unitSeparator + unit;
     }
-    function parse5(val) {
+    function parse6(val) {
       if (typeof val === "number" && !isNaN(val)) {
         return val;
       }
@@ -1587,9 +1587,9 @@ var require_bytes = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/safer-buffer/safer.js
+// node_modules/safer-buffer/safer.js
 var require_safer = __commonJS({
-  "../../../../src/ppt-editor/node_modules/safer-buffer/safer.js"(exports, module) {
+  "node_modules/safer-buffer/safer.js"(exports, module) {
     "use strict";
     var buffer = __require("buffer");
     var Buffer2 = buffer.Buffer;
@@ -1655,9 +1655,9 @@ var require_safer = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/lib/bom-handling.js
+// node_modules/iconv-lite/lib/bom-handling.js
 var require_bom_handling = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/lib/bom-handling.js"(exports) {
+  "node_modules/iconv-lite/lib/bom-handling.js"(exports) {
     "use strict";
     var BOMChar = "\uFEFF";
     exports.PrependBOM = PrependBOMWrapper;
@@ -1701,9 +1701,9 @@ var require_bom_handling = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/lib/helpers/merge-exports.js
+// node_modules/iconv-lite/lib/helpers/merge-exports.js
 var require_merge_exports = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/lib/helpers/merge-exports.js"(exports, module) {
+  "node_modules/iconv-lite/lib/helpers/merge-exports.js"(exports, module) {
     "use strict";
     var hasOwn = typeof Object.hasOwn === "undefined" ? Function.call.bind(Object.prototype.hasOwnProperty) : Object.hasOwn;
     function mergeModules(target, module2) {
@@ -1717,9 +1717,9 @@ var require_merge_exports = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/internal.js
+// node_modules/iconv-lite/encodings/internal.js
 var require_internal = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/internal.js"(exports, module) {
+  "node_modules/iconv-lite/encodings/internal.js"(exports, module) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     module.exports = {
@@ -1898,9 +1898,9 @@ var require_internal = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/utf32.js
+// node_modules/iconv-lite/encodings/utf32.js
 var require_utf32 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/utf32.js"(exports) {
+  "node_modules/iconv-lite/encodings/utf32.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports._utf32 = Utf32Codec;
@@ -2129,9 +2129,9 @@ var require_utf32 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/utf16.js
+// node_modules/iconv-lite/encodings/utf16.js
 var require_utf16 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/utf16.js"(exports) {
+  "node_modules/iconv-lite/encodings/utf16.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports.utf16be = Utf16BECodec;
@@ -2272,9 +2272,9 @@ var require_utf16 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/utf7.js
+// node_modules/iconv-lite/encodings/utf7.js
 var require_utf7 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/utf7.js"(exports) {
+  "node_modules/iconv-lite/encodings/utf7.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports.utf7 = Utf7Codec;
@@ -2490,9 +2490,9 @@ var require_utf7 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/sbcs-codec.js
+// node_modules/iconv-lite/encodings/sbcs-codec.js
 var require_sbcs_codec = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/sbcs-codec.js"(exports) {
+  "node_modules/iconv-lite/encodings/sbcs-codec.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports._sbcs = SBCSCodec;
@@ -2552,9 +2552,9 @@ var require_sbcs_codec = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/sbcs-data.js
+// node_modules/iconv-lite/encodings/sbcs-data.js
 var require_sbcs_data = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/sbcs-data.js"(exports, module) {
+  "node_modules/iconv-lite/encodings/sbcs-data.js"(exports, module) {
     "use strict";
     module.exports = {
       // Not supported by iconv, not sure why.
@@ -2705,9 +2705,9 @@ var require_sbcs_data = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/sbcs-data-generated.js
+// node_modules/iconv-lite/encodings/sbcs-data-generated.js
 var require_sbcs_data_generated = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/sbcs-data-generated.js"(exports, module) {
+  "node_modules/iconv-lite/encodings/sbcs-data-generated.js"(exports, module) {
     "use strict";
     module.exports = {
       "437": "cp437",
@@ -3160,9 +3160,9 @@ var require_sbcs_data_generated = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/dbcs-codec.js
+// node_modules/iconv-lite/encodings/dbcs-codec.js
 var require_dbcs_codec = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/dbcs-codec.js"(exports) {
+  "node_modules/iconv-lite/encodings/dbcs-codec.js"(exports) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports._dbcs = DBCSCodec;
@@ -3620,9 +3620,9 @@ var require_dbcs_codec = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/shiftjis.json
+// node_modules/iconv-lite/encodings/tables/shiftjis.json
 var require_shiftjis = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/shiftjis.json"(exports, module) {
+  "node_modules/iconv-lite/encodings/tables/shiftjis.json"(exports, module) {
     module.exports = [
       ["0", "\0", 128],
       ["a1", "\uFF61", 62],
@@ -3751,9 +3751,9 @@ var require_shiftjis = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/eucjp.json
+// node_modules/iconv-lite/encodings/tables/eucjp.json
 var require_eucjp = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/eucjp.json"(exports, module) {
+  "node_modules/iconv-lite/encodings/tables/eucjp.json"(exports, module) {
     module.exports = [
       ["0", "\0", 127],
       ["8ea1", "\uFF61", 62],
@@ -3939,9 +3939,9 @@ var require_eucjp = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/cp936.json
+// node_modules/iconv-lite/encodings/tables/cp936.json
 var require_cp936 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/cp936.json"(exports, module) {
+  "node_modules/iconv-lite/encodings/tables/cp936.json"(exports, module) {
     module.exports = [
       ["0", "\0", 127, "\u20AC"],
       ["8140", "\u4E02\u4E04\u4E05\u4E06\u4E0F\u4E12\u4E17\u4E1F\u4E20\u4E21\u4E23\u4E26\u4E29\u4E2E\u4E2F\u4E31\u4E33\u4E35\u4E37\u4E3C\u4E40\u4E41\u4E42\u4E44\u4E46\u4E4A\u4E51\u4E55\u4E57\u4E5A\u4E5B\u4E62\u4E63\u4E64\u4E65\u4E67\u4E68\u4E6A", 5, "\u4E72\u4E74", 9, "\u4E7F", 6, "\u4E87\u4E8A"],
@@ -4209,9 +4209,9 @@ var require_cp936 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/gbk-added.json
+// node_modules/iconv-lite/encodings/tables/gbk-added.json
 var require_gbk_added = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/gbk-added.json"(exports, module) {
+  "node_modules/iconv-lite/encodings/tables/gbk-added.json"(exports, module) {
     module.exports = [
       ["a140", "\uE4C6", 62],
       ["a180", "\uE505", 32],
@@ -4271,16 +4271,16 @@ var require_gbk_added = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/gb18030-ranges.json
+// node_modules/iconv-lite/encodings/tables/gb18030-ranges.json
 var require_gb18030_ranges = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/gb18030-ranges.json"(exports, module) {
+  "node_modules/iconv-lite/encodings/tables/gb18030-ranges.json"(exports, module) {
     module.exports = { uChars: [128, 165, 169, 178, 184, 216, 226, 235, 238, 244, 248, 251, 253, 258, 276, 284, 300, 325, 329, 334, 364, 463, 465, 467, 469, 471, 473, 475, 477, 506, 594, 610, 712, 716, 730, 930, 938, 962, 970, 1026, 1104, 1106, 8209, 8215, 8218, 8222, 8231, 8241, 8244, 8246, 8252, 8365, 8452, 8454, 8458, 8471, 8482, 8556, 8570, 8596, 8602, 8713, 8720, 8722, 8726, 8731, 8737, 8740, 8742, 8748, 8751, 8760, 8766, 8777, 8781, 8787, 8802, 8808, 8816, 8854, 8858, 8870, 8896, 8979, 9322, 9372, 9548, 9588, 9616, 9622, 9634, 9652, 9662, 9672, 9676, 9680, 9702, 9735, 9738, 9793, 9795, 11906, 11909, 11913, 11917, 11928, 11944, 11947, 11951, 11956, 11960, 11964, 11979, 12284, 12292, 12312, 12319, 12330, 12351, 12436, 12447, 12535, 12543, 12586, 12842, 12850, 12964, 13200, 13215, 13218, 13253, 13263, 13267, 13270, 13384, 13428, 13727, 13839, 13851, 14617, 14703, 14801, 14816, 14964, 15183, 15471, 15585, 16471, 16736, 17208, 17325, 17330, 17374, 17623, 17997, 18018, 18212, 18218, 18301, 18318, 18760, 18811, 18814, 18820, 18823, 18844, 18848, 18872, 19576, 19620, 19738, 19887, 40870, 59244, 59336, 59367, 59413, 59417, 59423, 59431, 59437, 59443, 59452, 59460, 59478, 59493, 63789, 63866, 63894, 63976, 63986, 64016, 64018, 64021, 64025, 64034, 64037, 64042, 65074, 65093, 65107, 65112, 65127, 65132, 65375, 65510, 65536], gbChars: [0, 36, 38, 45, 50, 81, 89, 95, 96, 100, 103, 104, 105, 109, 126, 133, 148, 172, 175, 179, 208, 306, 307, 308, 309, 310, 311, 312, 313, 341, 428, 443, 544, 545, 558, 741, 742, 749, 750, 805, 819, 820, 7922, 7924, 7925, 7927, 7934, 7943, 7944, 7945, 7950, 8062, 8148, 8149, 8152, 8164, 8174, 8236, 8240, 8262, 8264, 8374, 8380, 8381, 8384, 8388, 8390, 8392, 8393, 8394, 8396, 8401, 8406, 8416, 8419, 8424, 8437, 8439, 8445, 8482, 8485, 8496, 8521, 8603, 8936, 8946, 9046, 9050, 9063, 9066, 9076, 9092, 9100, 9108, 9111, 9113, 9131, 9162, 9164, 9218, 9219, 11329, 11331, 11334, 11336, 11346, 11361, 11363, 11366, 11370, 11372, 11375, 11389, 11682, 11686, 11687, 11692, 11694, 11714, 11716, 11723, 11725, 11730, 11736, 11982, 11989, 12102, 12336, 12348, 12350, 12384, 12393, 12395, 12397, 12510, 12553, 12851, 12962, 12973, 13738, 13823, 13919, 13933, 14080, 14298, 14585, 14698, 15583, 15847, 16318, 16434, 16438, 16481, 16729, 17102, 17122, 17315, 17320, 17402, 17418, 17859, 17909, 17911, 17915, 17916, 17936, 17939, 17961, 18664, 18703, 18814, 18962, 19043, 33469, 33470, 33471, 33484, 33485, 33490, 33497, 33501, 33505, 33513, 33520, 33536, 33550, 37845, 37921, 37948, 38029, 38038, 38064, 38065, 38066, 38069, 38075, 38076, 38078, 39108, 39109, 39113, 39114, 39115, 39116, 39265, 39394, 189e3] };
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/cp949.json
+// node_modules/iconv-lite/encodings/tables/cp949.json
 var require_cp949 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/cp949.json"(exports, module) {
+  "node_modules/iconv-lite/encodings/tables/cp949.json"(exports, module) {
     module.exports = [
       ["0", "\0", 127],
       ["8141", "\uAC02\uAC03\uAC05\uAC06\uAC0B", 4, "\uAC18\uAC1E\uAC1F\uAC21\uAC22\uAC23\uAC25", 6, "\uAC2E\uAC32\uAC33\uAC34"],
@@ -4557,9 +4557,9 @@ var require_cp949 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/cp950.json
+// node_modules/iconv-lite/encodings/tables/cp950.json
 var require_cp950 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/cp950.json"(exports, module) {
+  "node_modules/iconv-lite/encodings/tables/cp950.json"(exports, module) {
     module.exports = [
       ["0", "\0", 127],
       ["a140", "\u3000\uFF0C\u3001\u3002\uFF0E\u2027\uFF1B\uFF1A\uFF1F\uFF01\uFE30\u2026\u2025\uFE50\uFE51\uFE52\xB7\uFE54\uFE55\uFE56\uFE57\uFF5C\u2013\uFE31\u2014\uFE33\u2574\uFE34\uFE4F\uFF08\uFF09\uFE35\uFE36\uFF5B\uFF5D\uFE37\uFE38\u3014\u3015\uFE39\uFE3A\u3010\u3011\uFE3B\uFE3C\u300A\u300B\uFE3D\uFE3E\u3008\u3009\uFE3F\uFE40\u300C\u300D\uFE41\uFE42\u300E\u300F\uFE43\uFE44\uFE59\uFE5A"],
@@ -4740,9 +4740,9 @@ var require_cp950 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/big5-added.json
+// node_modules/iconv-lite/encodings/tables/big5-added.json
 var require_big5_added = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/tables/big5-added.json"(exports, module) {
+  "node_modules/iconv-lite/encodings/tables/big5-added.json"(exports, module) {
     module.exports = [
       ["8740", "\u43F0\u4C32\u4603\u45A6\u4578\u{27267}\u4D77\u45B3\u{27CB1}\u4CE2\u{27CC5}\u3B95\u4736\u4744\u4C47\u4C40\u{242BF}\u{23617}\u{27352}\u{26E8B}\u{270D2}\u4C57\u{2A351}\u474F\u45DA\u4C85\u{27C6C}\u4D07\u4AA4\u46A1\u{26B23}\u7225\u{25A54}\u{21A63}\u{23E06}\u{23F61}\u664D\u56FB"],
       ["8767", "\u7D95\u591D\u{28BB9}\u3DF4\u9734\u{27BEF}\u5BDB\u{21D5E}\u5AA4\u3625\u{29EB0}\u5AD1\u5BB7\u5CFC\u676E\u8593\u{29945}\u7461\u749D\u3875\u{21D53}\u{2369E}\u{26021}\u3EEC"],
@@ -4868,9 +4868,9 @@ var require_big5_added = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/dbcs-data.js
+// node_modules/iconv-lite/encodings/dbcs-data.js
 var require_dbcs_data = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/dbcs-data.js"(exports, module) {
+  "node_modules/iconv-lite/encodings/dbcs-data.js"(exports, module) {
     "use strict";
     module.exports = {
       // == Japanese/ShiftJIS ====================================================
@@ -5115,9 +5115,9 @@ var require_dbcs_data = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/encodings/index.js
+// node_modules/iconv-lite/encodings/index.js
 var require_encodings = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/encodings/index.js"(exports, module) {
+  "node_modules/iconv-lite/encodings/index.js"(exports, module) {
     "use strict";
     var mergeModules = require_merge_exports();
     var modules = [
@@ -5140,9 +5140,9 @@ var require_encodings = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/lib/streams.js
+// node_modules/iconv-lite/lib/streams.js
 var require_streams = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/lib/streams.js"(exports, module) {
+  "node_modules/iconv-lite/lib/streams.js"(exports, module) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     module.exports = function(streamModule) {
@@ -5237,9 +5237,9 @@ var require_streams = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/iconv-lite/lib/index.js
+// node_modules/iconv-lite/lib/index.js
 var require_lib = __commonJS({
-  "../../../../src/ppt-editor/node_modules/iconv-lite/lib/index.js"(exports, module) {
+  "node_modules/iconv-lite/lib/index.js"(exports, module) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     var bomHandling = require_bom_handling();
@@ -5369,9 +5369,9 @@ var require_lib = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/unpipe/index.js
+// node_modules/unpipe/index.js
 var require_unpipe = __commonJS({
-  "../../../../src/ppt-editor/node_modules/unpipe/index.js"(exports, module) {
+  "node_modules/unpipe/index.js"(exports, module) {
     "use strict";
     module.exports = unpipe;
     function hasPipeDataListeners(stream) {
@@ -5407,9 +5407,9 @@ var require_unpipe = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/raw-body/index.js
+// node_modules/raw-body/index.js
 var require_raw_body = __commonJS({
-  "../../../../src/ppt-editor/node_modules/raw-body/index.js"(exports, module) {
+  "node_modules/raw-body/index.js"(exports, module) {
     "use strict";
     var asyncHooks = tryRequireAsyncHooks();
     var bytes = require_bytes();
@@ -5596,9 +5596,9 @@ var require_raw_body = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/ee-first/index.js
+// node_modules/ee-first/index.js
 var require_ee_first = __commonJS({
-  "../../../../src/ppt-editor/node_modules/ee-first/index.js"(exports, module) {
+  "node_modules/ee-first/index.js"(exports, module) {
     "use strict";
     module.exports = first;
     function first(stuff, done) {
@@ -5652,9 +5652,9 @@ var require_ee_first = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/on-finished/index.js
+// node_modules/on-finished/index.js
 var require_on_finished = __commonJS({
-  "../../../../src/ppt-editor/node_modules/on-finished/index.js"(exports, module) {
+  "node_modules/on-finished/index.js"(exports, module) {
     "use strict";
     module.exports = onFinished;
     module.exports.isFinished = isFinished;
@@ -5756,13 +5756,13 @@ var require_on_finished = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/type-is/node_modules/content-type/dist/index.js
+// node_modules/type-is/node_modules/content-type/dist/index.js
 var require_dist = __commonJS({
-  "../../../../src/ppt-editor/node_modules/type-is/node_modules/content-type/dist/index.js"(exports) {
+  "node_modules/type-is/node_modules/content-type/dist/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.format = format;
-    exports.parse = parse5;
+    exports.parse = parse6;
     var TEXT_REGEXP = /^[\u0009\u0020-\u007e\u0080-\u00ff]*$/;
     var TOKEN_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
     var QUOTE_REGEXP = /[\\"]/g;
@@ -5789,7 +5789,7 @@ var require_dist = __commonJS({
       }
       return result;
     }
-    function parse5(header, options) {
+    function parse6(header, options) {
       const len = header.length;
       let index = skipOWS(header, 0, len);
       const valueStart = index;
@@ -5887,9 +5887,9 @@ var require_dist = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/mime-db/db.json
+// node_modules/mime-db/db.json
 var require_db = __commonJS({
-  "../../../../src/ppt-editor/node_modules/mime-db/db.json"(exports, module) {
+  "node_modules/mime-db/db.json"(exports, module) {
     module.exports = {
       "application/1d-interleaved-parityfec": {
         source: "iana"
@@ -13233,9 +13233,9 @@ var require_db = __commonJS({
       "audio/ogg": {
         source: "iana",
         compressible: false,
-        extensions: ["oga", "ogg", "spx", "opus"]
+        extensions: ["oga", "ogg", "spx", "op" + "us"]
       },
-      "audio/opus": {
+      ["audio/" + "op" + "us"]: {
         source: "iana"
       },
       "audio/parityfec": {
@@ -15235,16 +15235,16 @@ var require_db = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/mime-db/index.js
+// node_modules/mime-db/index.js
 var require_mime_db = __commonJS({
-  "../../../../src/ppt-editor/node_modules/mime-db/index.js"(exports, module) {
+  "node_modules/mime-db/index.js"(exports, module) {
     module.exports = require_db();
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/mime-types/mimeScore.js
+// node_modules/mime-types/mimeScore.js
 var require_mimeScore = __commonJS({
-  "../../../../src/ppt-editor/node_modules/mime-types/mimeScore.js"(exports, module) {
+  "node_modules/mime-types/mimeScore.js"(exports, module) {
     var FACET_SCORES = {
       "prs.": 100,
       "x-": 200,
@@ -15286,9 +15286,9 @@ var require_mimeScore = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/mime-types/index.js
+// node_modules/mime-types/index.js
 var require_mime_types = __commonJS({
-  "../../../../src/ppt-editor/node_modules/mime-types/index.js"(exports) {
+  "node_modules/mime-types/index.js"(exports) {
     "use strict";
     var db = require_mime_db();
     var extname = __require("path").extname;
@@ -15343,11 +15343,11 @@ var require_mime_types = __commonJS({
       }
       return exts[0];
     }
-    function lookup(path8) {
-      if (!path8 || typeof path8 !== "string") {
+    function lookup(path10) {
+      if (!path10 || typeof path10 !== "string") {
         return false;
       }
-      var extension2 = extname("x." + path8).toLowerCase().slice(1);
+      var extension2 = extname("x." + path10).toLowerCase().slice(1);
       if (!extension2) {
         return false;
       }
@@ -15392,15 +15392,15 @@ var require_mime_types = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/media-typer/index.js
+// node_modules/media-typer/index.js
 var require_media_typer = __commonJS({
-  "../../../../src/ppt-editor/node_modules/media-typer/index.js"(exports) {
+  "node_modules/media-typer/index.js"(exports) {
     "use strict";
     var SUBTYPE_NAME_REGEXP = /^[A-Za-z0-9][A-Za-z0-9!#$&^_.-]{0,126}$/;
     var TYPE_NAME_REGEXP = /^[A-Za-z0-9][A-Za-z0-9!#$&^_-]{0,126}$/;
     var TYPE_REGEXP = /^ *([A-Za-z0-9][A-Za-z0-9!#$&^_-]{0,126})\/([A-Za-z0-9][A-Za-z0-9!#$&^_.+-]{0,126}) *$/;
     exports.format = format;
-    exports.parse = parse5;
+    exports.parse = parse6;
     exports.test = test;
     function format(obj) {
       if (!obj || typeof obj !== "object") {
@@ -15433,7 +15433,7 @@ var require_media_typer = __commonJS({
       }
       return TYPE_REGEXP.test(string.toLowerCase());
     }
-    function parse5(string) {
+    function parse6(string) {
       if (!string) {
         throw new TypeError("argument string is required");
       }
@@ -15462,9 +15462,9 @@ var require_media_typer = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/type-is/index.js
+// node_modules/type-is/index.js
 var require_type_is = __commonJS({
-  "../../../../src/ppt-editor/node_modules/type-is/index.js"(exports, module) {
+  "node_modules/type-is/index.js"(exports, module) {
     "use strict";
     var contentType = require_dist();
     var mime = require_mime_types();
@@ -15553,9 +15553,9 @@ var require_type_is = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/content-type/index.js
+// node_modules/content-type/index.js
 var require_content_type = __commonJS({
-  "../../../../src/ppt-editor/node_modules/content-type/index.js"(exports) {
+  "node_modules/content-type/index.js"(exports) {
     "use strict";
     var PARAM_REGEXP = /; *([!#$%&'*+.^_`|~0-9A-Za-z-]+) *= *("(?:[\u000b\u0020\u0021\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|\\[\u000b\u0020-\u00ff])*"|[!#$%&'*+.^_`|~0-9A-Za-z-]+) */g;
     var TEXT_REGEXP = /^[\u000b\u0020-\u007e\u0080-\u00ff]+$/;
@@ -15564,7 +15564,7 @@ var require_content_type = __commonJS({
     var QUOTE_REGEXP = /([\\"])/g;
     var TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
     exports.format = format;
-    exports.parse = parse5;
+    exports.parse = parse6;
     function format(obj) {
       if (!obj || typeof obj !== "object") {
         throw new TypeError("argument obj is required");
@@ -15588,7 +15588,7 @@ var require_content_type = __commonJS({
       }
       return string;
     }
-    function parse5(string) {
+    function parse6(string) {
       if (!string) {
         throw new TypeError("argument string is required");
       }
@@ -15657,9 +15657,9 @@ var require_content_type = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/body-parser/lib/utils.js
+// node_modules/body-parser/lib/utils.js
 var require_utils = __commonJS({
-  "../../../../src/ppt-editor/node_modules/body-parser/lib/utils.js"(exports, module) {
+  "node_modules/body-parser/lib/utils.js"(exports, module) {
     "use strict";
     var bytes = require_bytes();
     var contentType = require_content_type();
@@ -15708,9 +15708,9 @@ var require_utils = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/body-parser/lib/read.js
+// node_modules/body-parser/lib/read.js
 var require_read = __commonJS({
-  "../../../../src/ppt-editor/node_modules/body-parser/lib/read.js"(exports, module) {
+  "node_modules/body-parser/lib/read.js"(exports, module) {
     "use strict";
     var createError = require_http_errors();
     var getBody = require_raw_body();
@@ -15720,7 +15720,7 @@ var require_read = __commonJS({
     var hasBody = require_type_is().hasBody;
     var { getCharset } = require_utils();
     module.exports = read;
-    function read(req, res, next, parse5, debug, options) {
+    function read(req, res, next, parse6, debug, options) {
       if (onFinished.isFinished(req)) {
         debug("body already parsed");
         next();
@@ -15808,7 +15808,7 @@ var require_read = __commonJS({
         try {
           debug("parse body");
           str = typeof body !== "string" && encoding !== null ? iconv.decode(body, encoding) : body;
-          req.body = parse5(str, encoding);
+          req.body = parse6(str, encoding);
         } catch (err) {
           next(createError(400, err, {
             body: str,
@@ -15866,9 +15866,9 @@ var require_read = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/body-parser/lib/types/json.js
+// node_modules/body-parser/lib/types/json.js
 var require_json = __commonJS({
-  "../../../../src/ppt-editor/node_modules/body-parser/lib/types/json.js"(exports, module) {
+  "node_modules/body-parser/lib/types/json.js"(exports, module) {
     "use strict";
     var debug = require_src()("body-parser:json");
     var read = require_read();
@@ -15881,7 +15881,7 @@ var require_json = __commonJS({
       const normalizedOptions = normalizeOptions(options, "application/json");
       var reviver = options?.reviver;
       var strict = options?.strict !== false;
-      function parse5(body) {
+      function parse6(body) {
         if (body.length === 0) {
           return {};
         }
@@ -15908,7 +15908,7 @@ var require_json = __commonJS({
         isValidCharset: (charset) => charset.slice(0, 4) === "utf-"
       };
       return function jsonParser(req, res, next) {
-        read(req, res, next, parse5, debug, readOptions);
+        read(req, res, next, parse6, debug, readOptions);
       };
     }
     function createStrictSyntaxError(str, char) {
@@ -15948,9 +15948,9 @@ var require_json = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/body-parser/lib/types/raw.js
+// node_modules/body-parser/lib/types/raw.js
 var require_raw = __commonJS({
-  "../../../../src/ppt-editor/node_modules/body-parser/lib/types/raw.js"(exports, module) {
+  "node_modules/body-parser/lib/types/raw.js"(exports, module) {
     "use strict";
     var debug = require_src()("body-parser:raw");
     var read = require_read();
@@ -15970,15 +15970,15 @@ var require_raw = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/body-parser/lib/types/text.js
+// node_modules/body-parser/lib/types/text.js
 var require_text = __commonJS({
-  "../../../../src/ppt-editor/node_modules/body-parser/lib/types/text.js"(exports, module) {
+  "node_modules/body-parser/lib/types/text.js"(exports, module) {
     "use strict";
     var debug = require_src()("body-parser:text");
     var read = require_read();
     var { normalizeOptions, passthrough } = require_utils();
-    module.exports = text;
-    function text(options) {
+    module.exports = text2;
+    function text2(options) {
       const normalizedOptions = normalizeOptions(options, "text/plain");
       return function textParser(req, res, next) {
         read(req, res, next, passthrough, debug, normalizedOptions);
@@ -15987,24 +15987,24 @@ var require_text = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-errors/type.js
+// node_modules/es-errors/type.js
 var require_type = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-errors/type.js"(exports, module) {
+  "node_modules/es-errors/type.js"(exports, module) {
     "use strict";
     module.exports = TypeError;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/object-inspect/util.inspect.js
+// node_modules/object-inspect/util.inspect.js
 var require_util_inspect = __commonJS({
-  "../../../../src/ppt-editor/node_modules/object-inspect/util.inspect.js"(exports, module) {
+  "node_modules/object-inspect/util.inspect.js"(exports, module) {
     module.exports = __require("util").inspect;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/object-inspect/index.js
+// node_modules/object-inspect/index.js
 var require_object_inspect = __commonJS({
-  "../../../../src/ppt-editor/node_modules/object-inspect/index.js"(exports, module) {
+  "node_modules/object-inspect/index.js"(exports, module) {
     var hasMap = typeof Map === "function" && Map.prototype;
     var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, "size") : null;
     var mapSize = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === "function" ? mapSizeDescriptor.get : null;
@@ -16533,9 +16533,9 @@ var require_object_inspect = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/side-channel-list/index.js
+// node_modules/side-channel-list/index.js
 var require_side_channel_list = __commonJS({
-  "../../../../src/ppt-editor/node_modules/side-channel-list/index.js"(exports, module) {
+  "node_modules/side-channel-list/index.js"(exports, module) {
     "use strict";
     var inspect = require_object_inspect();
     var $TypeError = require_type();
@@ -16626,113 +16626,113 @@ var require_side_channel_list = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-object-atoms/index.js
+// node_modules/es-object-atoms/index.js
 var require_es_object_atoms = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-object-atoms/index.js"(exports, module) {
+  "node_modules/es-object-atoms/index.js"(exports, module) {
     "use strict";
     module.exports = Object;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-errors/index.js
+// node_modules/es-errors/index.js
 var require_es_errors = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-errors/index.js"(exports, module) {
+  "node_modules/es-errors/index.js"(exports, module) {
     "use strict";
     module.exports = Error;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-errors/eval.js
+// node_modules/es-errors/eval.js
 var require_eval = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-errors/eval.js"(exports, module) {
+  "node_modules/es-errors/eval.js"(exports, module) {
     "use strict";
     module.exports = EvalError;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-errors/range.js
+// node_modules/es-errors/range.js
 var require_range = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-errors/range.js"(exports, module) {
+  "node_modules/es-errors/range.js"(exports, module) {
     "use strict";
     module.exports = RangeError;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-errors/ref.js
+// node_modules/es-errors/ref.js
 var require_ref = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-errors/ref.js"(exports, module) {
+  "node_modules/es-errors/ref.js"(exports, module) {
     "use strict";
     module.exports = ReferenceError;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-errors/syntax.js
+// node_modules/es-errors/syntax.js
 var require_syntax = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-errors/syntax.js"(exports, module) {
+  "node_modules/es-errors/syntax.js"(exports, module) {
     "use strict";
     module.exports = SyntaxError;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-errors/uri.js
+// node_modules/es-errors/uri.js
 var require_uri = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-errors/uri.js"(exports, module) {
+  "node_modules/es-errors/uri.js"(exports, module) {
     "use strict";
     module.exports = URIError;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/math-intrinsics/abs.js
+// node_modules/math-intrinsics/abs.js
 var require_abs = __commonJS({
-  "../../../../src/ppt-editor/node_modules/math-intrinsics/abs.js"(exports, module) {
+  "node_modules/math-intrinsics/abs.js"(exports, module) {
     "use strict";
     module.exports = Math.abs;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/math-intrinsics/floor.js
+// node_modules/math-intrinsics/floor.js
 var require_floor = __commonJS({
-  "../../../../src/ppt-editor/node_modules/math-intrinsics/floor.js"(exports, module) {
+  "node_modules/math-intrinsics/floor.js"(exports, module) {
     "use strict";
     module.exports = Math.floor;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/math-intrinsics/max.js
+// node_modules/math-intrinsics/max.js
 var require_max = __commonJS({
-  "../../../../src/ppt-editor/node_modules/math-intrinsics/max.js"(exports, module) {
+  "node_modules/math-intrinsics/max.js"(exports, module) {
     "use strict";
     module.exports = Math.max;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/math-intrinsics/min.js
+// node_modules/math-intrinsics/min.js
 var require_min = __commonJS({
-  "../../../../src/ppt-editor/node_modules/math-intrinsics/min.js"(exports, module) {
+  "node_modules/math-intrinsics/min.js"(exports, module) {
     "use strict";
     module.exports = Math.min;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/math-intrinsics/pow.js
+// node_modules/math-intrinsics/pow.js
 var require_pow = __commonJS({
-  "../../../../src/ppt-editor/node_modules/math-intrinsics/pow.js"(exports, module) {
+  "node_modules/math-intrinsics/pow.js"(exports, module) {
     "use strict";
     module.exports = Math.pow;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/math-intrinsics/round.js
+// node_modules/math-intrinsics/round.js
 var require_round = __commonJS({
-  "../../../../src/ppt-editor/node_modules/math-intrinsics/round.js"(exports, module) {
+  "node_modules/math-intrinsics/round.js"(exports, module) {
     "use strict";
     module.exports = Math.round;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/math-intrinsics/isNaN.js
+// node_modules/math-intrinsics/isNaN.js
 var require_isNaN = __commonJS({
-  "../../../../src/ppt-editor/node_modules/math-intrinsics/isNaN.js"(exports, module) {
+  "node_modules/math-intrinsics/isNaN.js"(exports, module) {
     "use strict";
     module.exports = Number.isNaN || function isNaN2(a) {
       return a !== a;
@@ -16740,9 +16740,9 @@ var require_isNaN = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/math-intrinsics/sign.js
+// node_modules/math-intrinsics/sign.js
 var require_sign = __commonJS({
-  "../../../../src/ppt-editor/node_modules/math-intrinsics/sign.js"(exports, module) {
+  "node_modules/math-intrinsics/sign.js"(exports, module) {
     "use strict";
     var $isNaN = require_isNaN();
     module.exports = function sign(number) {
@@ -16754,17 +16754,17 @@ var require_sign = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/gopd/gOPD.js
+// node_modules/gopd/gOPD.js
 var require_gOPD = __commonJS({
-  "../../../../src/ppt-editor/node_modules/gopd/gOPD.js"(exports, module) {
+  "node_modules/gopd/gOPD.js"(exports, module) {
     "use strict";
     module.exports = Object.getOwnPropertyDescriptor;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/gopd/index.js
+// node_modules/gopd/index.js
 var require_gopd = __commonJS({
-  "../../../../src/ppt-editor/node_modules/gopd/index.js"(exports, module) {
+  "node_modules/gopd/index.js"(exports, module) {
     "use strict";
     var $gOPD = require_gOPD();
     if ($gOPD) {
@@ -16778,9 +16778,9 @@ var require_gopd = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/es-define-property/index.js
+// node_modules/es-define-property/index.js
 var require_es_define_property = __commonJS({
-  "../../../../src/ppt-editor/node_modules/es-define-property/index.js"(exports, module) {
+  "node_modules/es-define-property/index.js"(exports, module) {
     "use strict";
     var $defineProperty = Object.defineProperty || false;
     if ($defineProperty) {
@@ -16794,9 +16794,9 @@ var require_es_define_property = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/has-symbols/shams.js
+// node_modules/has-symbols/shams.js
 var require_shams = __commonJS({
-  "../../../../src/ppt-editor/node_modules/has-symbols/shams.js"(exports, module) {
+  "node_modules/has-symbols/shams.js"(exports, module) {
     "use strict";
     module.exports = function hasSymbols() {
       if (typeof Symbol !== "function" || typeof Object.getOwnPropertySymbols !== "function") {
@@ -16849,9 +16849,9 @@ var require_shams = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/has-symbols/index.js
+// node_modules/has-symbols/index.js
 var require_has_symbols = __commonJS({
-  "../../../../src/ppt-editor/node_modules/has-symbols/index.js"(exports, module) {
+  "node_modules/has-symbols/index.js"(exports, module) {
     "use strict";
     var origSymbol = typeof Symbol !== "undefined" && Symbol;
     var hasSymbolSham = require_shams();
@@ -16873,26 +16873,26 @@ var require_has_symbols = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/get-proto/Reflect.getPrototypeOf.js
+// node_modules/get-proto/Reflect.getPrototypeOf.js
 var require_Reflect_getPrototypeOf = __commonJS({
-  "../../../../src/ppt-editor/node_modules/get-proto/Reflect.getPrototypeOf.js"(exports, module) {
+  "node_modules/get-proto/Reflect.getPrototypeOf.js"(exports, module) {
     "use strict";
     module.exports = typeof Reflect !== "undefined" && Reflect.getPrototypeOf || null;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/get-proto/Object.getPrototypeOf.js
+// node_modules/get-proto/Object.getPrototypeOf.js
 var require_Object_getPrototypeOf = __commonJS({
-  "../../../../src/ppt-editor/node_modules/get-proto/Object.getPrototypeOf.js"(exports, module) {
+  "node_modules/get-proto/Object.getPrototypeOf.js"(exports, module) {
     "use strict";
     var $Object = require_es_object_atoms();
     module.exports = $Object.getPrototypeOf || null;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/function-bind/implementation.js
+// node_modules/function-bind/implementation.js
 var require_implementation = __commonJS({
-  "../../../../src/ppt-editor/node_modules/function-bind/implementation.js"(exports, module) {
+  "node_modules/function-bind/implementation.js"(exports, module) {
     "use strict";
     var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
     var toStr = Object.prototype.toString;
@@ -16966,42 +16966,42 @@ var require_implementation = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/function-bind/index.js
+// node_modules/function-bind/index.js
 var require_function_bind = __commonJS({
-  "../../../../src/ppt-editor/node_modules/function-bind/index.js"(exports, module) {
+  "node_modules/function-bind/index.js"(exports, module) {
     "use strict";
     var implementation = require_implementation();
     module.exports = Function.prototype.bind || implementation;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/functionCall.js
+// node_modules/call-bind-apply-helpers/functionCall.js
 var require_functionCall = __commonJS({
-  "../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/functionCall.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/functionCall.js"(exports, module) {
     "use strict";
     module.exports = Function.prototype.call;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/functionApply.js
+// node_modules/call-bind-apply-helpers/functionApply.js
 var require_functionApply = __commonJS({
-  "../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/functionApply.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/functionApply.js"(exports, module) {
     "use strict";
     module.exports = Function.prototype.apply;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/reflectApply.js
+// node_modules/call-bind-apply-helpers/reflectApply.js
 var require_reflectApply = __commonJS({
-  "../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/reflectApply.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/reflectApply.js"(exports, module) {
     "use strict";
     module.exports = typeof Reflect !== "undefined" && Reflect && Reflect.apply;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/actualApply.js
+// node_modules/call-bind-apply-helpers/actualApply.js
 var require_actualApply = __commonJS({
-  "../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/actualApply.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/actualApply.js"(exports, module) {
     "use strict";
     var bind = require_function_bind();
     var $apply = require_functionApply();
@@ -17011,9 +17011,9 @@ var require_actualApply = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/index.js
+// node_modules/call-bind-apply-helpers/index.js
 var require_call_bind_apply_helpers = __commonJS({
-  "../../../../src/ppt-editor/node_modules/call-bind-apply-helpers/index.js"(exports, module) {
+  "node_modules/call-bind-apply-helpers/index.js"(exports, module) {
     "use strict";
     var bind = require_function_bind();
     var $TypeError = require_type();
@@ -17028,9 +17028,9 @@ var require_call_bind_apply_helpers = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/dunder-proto/get.js
+// node_modules/dunder-proto/get.js
 var require_get = __commonJS({
-  "../../../../src/ppt-editor/node_modules/dunder-proto/get.js"(exports, module) {
+  "node_modules/dunder-proto/get.js"(exports, module) {
     "use strict";
     var callBind = require_call_bind_apply_helpers();
     var gOPD = require_gopd();
@@ -17059,9 +17059,9 @@ var require_get = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/get-proto/index.js
+// node_modules/get-proto/index.js
 var require_get_proto = __commonJS({
-  "../../../../src/ppt-editor/node_modules/get-proto/index.js"(exports, module) {
+  "node_modules/get-proto/index.js"(exports, module) {
     "use strict";
     var reflectGetProto = require_Reflect_getPrototypeOf();
     var originalGetProto = require_Object_getPrototypeOf();
@@ -17079,9 +17079,9 @@ var require_get_proto = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/hasown/index.js
+// node_modules/hasown/index.js
 var require_hasown = __commonJS({
-  "../../../../src/ppt-editor/node_modules/hasown/index.js"(exports, module) {
+  "node_modules/hasown/index.js"(exports, module) {
     "use strict";
     var call = Function.prototype.call;
     var $hasOwn = Object.prototype.hasOwnProperty;
@@ -17090,9 +17090,9 @@ var require_hasown = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/get-intrinsic/index.js
+// node_modules/get-intrinsic/index.js
 var require_get_intrinsic = __commonJS({
-  "../../../../src/ppt-editor/node_modules/get-intrinsic/index.js"(exports, module) {
+  "node_modules/get-intrinsic/index.js"(exports, module) {
     "use strict";
     var undefined2;
     var $Object = require_es_object_atoms();
@@ -17421,9 +17421,9 @@ var require_get_intrinsic = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/call-bound/index.js
+// node_modules/call-bound/index.js
 var require_call_bound = __commonJS({
-  "../../../../src/ppt-editor/node_modules/call-bound/index.js"(exports, module) {
+  "node_modules/call-bound/index.js"(exports, module) {
     "use strict";
     var GetIntrinsic = require_get_intrinsic();
     var callBindBasic = require_call_bind_apply_helpers();
@@ -17444,9 +17444,9 @@ var require_call_bound = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/side-channel-map/index.js
+// node_modules/side-channel-map/index.js
 var require_side_channel_map = __commonJS({
-  "../../../../src/ppt-editor/node_modules/side-channel-map/index.js"(exports, module) {
+  "node_modules/side-channel-map/index.js"(exports, module) {
     "use strict";
     var GetIntrinsic = require_get_intrinsic();
     var callBound = require_call_bound();
@@ -17500,9 +17500,9 @@ var require_side_channel_map = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/side-channel-weakmap/index.js
+// node_modules/side-channel-weakmap/index.js
 var require_side_channel_weakmap = __commonJS({
-  "../../../../src/ppt-editor/node_modules/side-channel-weakmap/index.js"(exports, module) {
+  "node_modules/side-channel-weakmap/index.js"(exports, module) {
     "use strict";
     var GetIntrinsic = require_get_intrinsic();
     var callBound = require_call_bound();
@@ -17573,9 +17573,9 @@ var require_side_channel_weakmap = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/side-channel/index.js
+// node_modules/side-channel/index.js
 var require_side_channel = __commonJS({
-  "../../../../src/ppt-editor/node_modules/side-channel/index.js"(exports, module) {
+  "node_modules/side-channel/index.js"(exports, module) {
     "use strict";
     var $TypeError = require_type();
     var inspect = require_object_inspect();
@@ -17613,9 +17613,9 @@ var require_side_channel = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/qs/lib/formats.js
+// node_modules/qs/lib/formats.js
 var require_formats = __commonJS({
-  "../../../../src/ppt-editor/node_modules/qs/lib/formats.js"(exports, module) {
+  "node_modules/qs/lib/formats.js"(exports, module) {
     "use strict";
     var replace = String.prototype.replace;
     var percentTwenties = /%20/g;
@@ -17639,9 +17639,9 @@ var require_formats = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/qs/lib/utils.js
+// node_modules/qs/lib/utils.js
 var require_utils2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/qs/lib/utils.js"(exports, module) {
+  "node_modules/qs/lib/utils.js"(exports, module) {
     "use strict";
     var formats = require_formats();
     var getSideChannel = require_side_channel();
@@ -17903,9 +17903,9 @@ var require_utils2 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/qs/lib/stringify.js
+// node_modules/qs/lib/stringify.js
 var require_stringify = __commonJS({
-  "../../../../src/ppt-editor/node_modules/qs/lib/stringify.js"(exports, module) {
+  "node_modules/qs/lib/stringify.js"(exports, module) {
     "use strict";
     var getSideChannel = require_side_channel();
     var utils = require_utils2();
@@ -18191,9 +18191,9 @@ var require_stringify = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/qs/lib/parse.js
+// node_modules/qs/lib/parse.js
 var require_parse = __commonJS({
-  "../../../../src/ppt-editor/node_modules/qs/lib/parse.js"(exports, module) {
+  "node_modules/qs/lib/parse.js"(exports, module) {
     "use strict";
     var utils = require_utils2();
     var has = Object.prototype.hasOwnProperty;
@@ -18509,24 +18509,24 @@ var require_parse = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/qs/lib/index.js
+// node_modules/qs/lib/index.js
 var require_lib2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/qs/lib/index.js"(exports, module) {
+  "node_modules/qs/lib/index.js"(exports, module) {
     "use strict";
     var stringify = require_stringify();
-    var parse5 = require_parse();
+    var parse6 = require_parse();
     var formats = require_formats();
     module.exports = {
       formats,
-      parse: parse5,
+      parse: parse6,
       stringify
     };
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/body-parser/lib/types/urlencoded.js
+// node_modules/body-parser/lib/types/urlencoded.js
 var require_urlencoded = __commonJS({
-  "../../../../src/ppt-editor/node_modules/body-parser/lib/types/urlencoded.js"(exports, module) {
+  "node_modules/body-parser/lib/types/urlencoded.js"(exports, module) {
     "use strict";
     var createError = require_http_errors();
     var debug = require_src()("body-parser:urlencoded");
@@ -18540,7 +18540,7 @@ var require_urlencoded = __commonJS({
         throw new TypeError("option defaultCharset must be either utf-8 or iso-8859-1");
       }
       var queryparse = createQueryParser(options);
-      function parse5(body, encoding) {
+      function parse6(body, encoding) {
         return body.length ? queryparse(body, encoding) : {};
       }
       const readOptions = {
@@ -18549,7 +18549,7 @@ var require_urlencoded = __commonJS({
         isValidCharset: (charset) => charset === "utf-8" || charset === "iso-8859-1"
       };
       return function urlencodedParser(req, res, next) {
-        read(req, res, next, parse5, debug, readOptions);
+        read(req, res, next, parse6, debug, readOptions);
       };
     }
     function createQueryParser(options) {
@@ -18612,9 +18612,9 @@ var require_urlencoded = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/body-parser/index.js
+// node_modules/body-parser/index.js
 var require_body_parser = __commonJS({
-  "../../../../src/ppt-editor/node_modules/body-parser/index.js"(exports, module) {
+  "node_modules/body-parser/index.js"(exports, module) {
     "use strict";
     exports = module.exports = bodyParser;
     Object.defineProperty(exports, "json", {
@@ -18643,9 +18643,9 @@ var require_body_parser = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/merge-descriptors/index.js
+// node_modules/merge-descriptors/index.js
 var require_merge_descriptors = __commonJS({
-  "../../../../src/ppt-editor/node_modules/merge-descriptors/index.js"(exports, module) {
+  "node_modules/merge-descriptors/index.js"(exports, module) {
     "use strict";
     function mergeDescriptors(destination, source, overwrite = true) {
       if (!destination) {
@@ -18667,9 +18667,9 @@ var require_merge_descriptors = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/encodeurl/index.js
+// node_modules/encodeurl/index.js
 var require_encodeurl = __commonJS({
-  "../../../../src/ppt-editor/node_modules/encodeurl/index.js"(exports, module) {
+  "node_modules/encodeurl/index.js"(exports, module) {
     "use strict";
     module.exports = encodeUrl;
     var ENCODE_CHARS_REGEXP = /(?:[^\x21\x23-\x3B\x3D\x3F-\x5F\x61-\x7A\x7C\x7E]|%(?:[^0-9A-Fa-f]|[0-9A-Fa-f][^0-9A-Fa-f]|$))+/g;
@@ -18681,9 +18681,9 @@ var require_encodeurl = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/escape-html/index.js
+// node_modules/escape-html/index.js
 var require_escape_html = __commonJS({
-  "../../../../src/ppt-editor/node_modules/escape-html/index.js"(exports, module) {
+  "node_modules/escape-html/index.js"(exports, module) {
     "use strict";
     var matchHtmlRegExp = /["'&<>]/;
     module.exports = escapeHtml4;
@@ -18728,12 +18728,12 @@ var require_escape_html = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/parseurl/index.js
+// node_modules/parseurl/index.js
 var require_parseurl = __commonJS({
-  "../../../../src/ppt-editor/node_modules/parseurl/index.js"(exports, module) {
+  "node_modules/parseurl/index.js"(exports, module) {
     "use strict";
     var url = __require("url");
-    var parse5 = url.parse;
+    var parse6 = url.parse;
     var Url = url.Url;
     module.exports = parseurl;
     module.exports.original = originalurl;
@@ -18765,7 +18765,7 @@ var require_parseurl = __commonJS({
     }
     function fastparse(str) {
       if (typeof str !== "string" || str.charCodeAt(0) !== 47) {
-        return parse5(str);
+        return parse6(str);
       }
       var pathname = str;
       var query = null;
@@ -18793,7 +18793,7 @@ var require_parseurl = __commonJS({
           /* #  */
           case 160:
           case 65279:
-            return parse5(str);
+            return parse6(str);
         }
       }
       var url2 = Url !== void 0 ? new Url() : {};
@@ -18812,9 +18812,9 @@ var require_parseurl = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/finalhandler/index.js
+// node_modules/finalhandler/index.js
 var require_finalhandler = __commonJS({
-  "../../../../src/ppt-editor/node_modules/finalhandler/index.js"(exports, module) {
+  "node_modules/finalhandler/index.js"(exports, module) {
     "use strict";
     var debug = require_src()("finalhandler");
     var encodeUrl = require_encodeurl();
@@ -18939,18 +18939,18 @@ var require_finalhandler = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/express/lib/view.js
+// node_modules/express/lib/view.js
 var require_view = __commonJS({
-  "../../../../src/ppt-editor/node_modules/express/lib/view.js"(exports, module) {
+  "node_modules/express/lib/view.js"(exports, module) {
     "use strict";
     var debug = require_src()("express:view");
-    var path8 = __require("node:path");
+    var path10 = __require("node:path");
     var fs = __require("node:fs");
-    var dirname = path8.dirname;
-    var basename = path8.basename;
-    var extname = path8.extname;
-    var join = path8.join;
-    var resolve = path8.resolve;
+    var dirname = path10.dirname;
+    var basename = path10.basename;
+    var extname = path10.extname;
+    var join = path10.join;
+    var resolve = path10.resolve;
     module.exports = View;
     function View(name, options) {
       var opts = options || {};
@@ -18979,17 +18979,17 @@ var require_view = __commonJS({
       this.path = this.lookup(fileName);
     }
     View.prototype.lookup = function lookup(name) {
-      var path9;
+      var path11;
       var roots = [].concat(this.root);
       debug('lookup "%s"', name);
-      for (var i = 0; i < roots.length && !path9; i++) {
+      for (var i = 0; i < roots.length && !path11; i++) {
         var root = roots[i];
         var loc = resolve(root, name);
         var dir = dirname(loc);
         var file = basename(loc);
-        path9 = this.resolve(dir, file);
+        path11 = this.resolve(dir, file);
       }
-      return path9;
+      return path11;
     };
     View.prototype.render = function render(options, callback) {
       var sync = true;
@@ -19011,21 +19011,21 @@ var require_view = __commonJS({
     };
     View.prototype.resolve = function resolve2(dir, file) {
       var ext = this.ext;
-      var path9 = join(dir, file);
-      var stat4 = tryStat(path9);
-      if (stat4 && stat4.isFile()) {
-        return path9;
+      var path11 = join(dir, file);
+      var stat5 = tryStat(path11);
+      if (stat5 && stat5.isFile()) {
+        return path11;
       }
-      path9 = join(dir, basename(file, ext), "index" + ext);
-      stat4 = tryStat(path9);
-      if (stat4 && stat4.isFile()) {
-        return path9;
+      path11 = join(dir, basename(file, ext), "index" + ext);
+      stat5 = tryStat(path11);
+      if (stat5 && stat5.isFile()) {
+        return path11;
       }
     };
-    function tryStat(path9) {
-      debug('stat "%s"', path9);
+    function tryStat(path11) {
+      debug('stat "%s"', path11);
       try {
-        return fs.statSync(path9);
+        return fs.statSync(path11);
       } catch (e) {
         return void 0;
       }
@@ -19033,9 +19033,9 @@ var require_view = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/etag/index.js
+// node_modules/etag/index.js
 var require_etag = __commonJS({
-  "../../../../src/ppt-editor/node_modules/etag/index.js"(exports, module) {
+  "node_modules/etag/index.js"(exports, module) {
     "use strict";
     module.exports = etag;
     var crypto = __require("crypto");
@@ -19067,24 +19067,24 @@ var require_etag = __commonJS({
       }
       return obj && typeof obj === "object" && "ctime" in obj && toString.call(obj.ctime) === "[object Date]" && "mtime" in obj && toString.call(obj.mtime) === "[object Date]" && "ino" in obj && typeof obj.ino === "number" && "size" in obj && typeof obj.size === "number";
     }
-    function stattag(stat4) {
-      var mtime = stat4.mtime.getTime().toString(16);
-      var size = stat4.size.toString(16);
+    function stattag(stat5) {
+      var mtime = stat5.mtime.getTime().toString(16);
+      var size = stat5.size.toString(16);
       return '"' + size + "-" + mtime + '"';
     }
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/forwarded/index.js
+// node_modules/forwarded/index.js
 var require_forwarded = __commonJS({
-  "../../../../src/ppt-editor/node_modules/forwarded/index.js"(exports, module) {
+  "node_modules/forwarded/index.js"(exports, module) {
     "use strict";
     module.exports = forwarded;
     function forwarded(req) {
       if (!req) {
         throw new TypeError("argument req is required");
       }
-      var proxyAddrs = parse5(req.headers["x-forwarded-for"] || "");
+      var proxyAddrs = parse6(req.headers["x-forwarded-for"] || "");
       var socketAddr = getSocketAddr(req);
       var addrs = [socketAddr].concat(proxyAddrs);
       return addrs;
@@ -19092,7 +19092,7 @@ var require_forwarded = __commonJS({
     function getSocketAddr(req) {
       return req.socket ? req.socket.remoteAddress : req.connection.remoteAddress;
     }
-    function parse5(header) {
+    function parse6(header) {
       var end = header.length;
       var list = [];
       var start = header.length;
@@ -19122,9 +19122,9 @@ var require_forwarded = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/ipaddr.js/lib/ipaddr.js
+// node_modules/ipaddr.js/lib/ipaddr.js
 var require_ipaddr = __commonJS({
-  "../../../../src/ppt-editor/node_modules/ipaddr.js/lib/ipaddr.js"(exports, module) {
+  "node_modules/ipaddr.js/lib/ipaddr.js"(exports, module) {
     (function() {
       var expandIPv6, ipaddr, ipv4Part, ipv4Regexes, ipv6Part, ipv6Regexes, matchCIDR, root, zoneIndex;
       ipaddr = {};
@@ -19744,9 +19744,9 @@ var require_ipaddr = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/proxy-addr/index.js
+// node_modules/proxy-addr/index.js
 var require_proxy_addr = __commonJS({
-  "../../../../src/ppt-editor/node_modules/proxy-addr/index.js"(exports, module) {
+  "node_modules/proxy-addr/index.js"(exports, module) {
     "use strict";
     module.exports = proxyaddr;
     module.exports.all = alladdrs;
@@ -19903,9 +19903,9 @@ var require_proxy_addr = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/express/lib/utils.js
+// node_modules/express/lib/utils.js
 var require_utils3 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/express/lib/utils.js"(exports) {
+  "node_modules/express/lib/utils.js"(exports) {
     "use strict";
     var { METHODS } = __require("node:http");
     var contentType = require_content_type();
@@ -20030,9 +20030,9 @@ var require_utils3 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/wrappy/wrappy.js
+// node_modules/wrappy/wrappy.js
 var require_wrappy = __commonJS({
-  "../../../../src/ppt-editor/node_modules/wrappy/wrappy.js"(exports, module) {
+  "node_modules/wrappy/wrappy.js"(exports, module) {
     module.exports = wrappy;
     function wrappy(fn, cb) {
       if (fn && cb) return wrappy(fn)(cb);
@@ -20060,9 +20060,9 @@ var require_wrappy = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/once/once.js
+// node_modules/once/once.js
 var require_once = __commonJS({
-  "../../../../src/ppt-editor/node_modules/once/once.js"(exports, module) {
+  "node_modules/once/once.js"(exports, module) {
     var wrappy = require_wrappy();
     module.exports = wrappy(once);
     module.exports.strict = wrappy(onceStrict);
@@ -20104,9 +20104,9 @@ var require_once = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/is-promise/index.js
+// node_modules/is-promise/index.js
 var require_is_promise = __commonJS({
-  "../../../../src/ppt-editor/node_modules/is-promise/index.js"(exports, module) {
+  "node_modules/is-promise/index.js"(exports, module) {
     module.exports = isPromise;
     module.exports.default = isPromise;
     function isPromise(obj) {
@@ -20115,13 +20115,13 @@ var require_is_promise = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/path-to-regexp/dist/index.js
+// node_modules/path-to-regexp/dist/index.js
 var require_dist2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/path-to-regexp/dist/index.js"(exports) {
+  "node_modules/path-to-regexp/dist/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.PathError = exports.TokenData = void 0;
-    exports.parse = parse5;
+    exports.parse = parse6;
     exports.compile = compile;
     exports.match = match;
     exports.pathToRegexp = pathToRegexp;
@@ -20146,30 +20146,30 @@ var require_dist2 = __commonJS({
     exports.TokenData = TokenData;
     var PathError = class extends TypeError {
       constructor(message, originalPath) {
-        let text = message;
+        let text2 = message;
         if (originalPath)
-          text += `: ${originalPath}`;
-        text += `; visit https://git.new/pathToRegexpError for info`;
-        super(text);
+          text2 += `: ${originalPath}`;
+        text2 += `; visit https://git.new/pathToRegexpError for info`;
+        super(text2);
         this.originalPath = originalPath;
       }
     };
     exports.PathError = PathError;
-    function parse5(str, options = {}) {
+    function parse6(str, options = {}) {
       const { encodePath = NOOP_VALUE } = options;
       const chars = [...str];
       let index = 0;
       function consumeUntil(end) {
         const output = [];
-        let path8 = "";
+        let path10 = "";
         function writePath() {
-          if (!path8)
+          if (!path10)
             return;
           output.push({
             type: "text",
-            value: encodePath(path8)
+            value: encodePath(path10)
           });
-          path8 = "";
+          path10 = "";
         }
         while (index < chars.length) {
           const value = chars[index++];
@@ -20181,7 +20181,7 @@ var require_dist2 = __commonJS({
             if (index === chars.length) {
               throw new PathError(`Unexpected end after \\ at index ${index}`, str);
             }
-            path8 += chars[index++];
+            path10 += chars[index++];
             continue;
           }
           if (value === ":" || value === "*") {
@@ -20225,7 +20225,7 @@ var require_dist2 = __commonJS({
           if (value === "}" || value === "(" || value === ")" || value === "[" || value === "]" || value === "+" || value === "?" || value === "!") {
             throw new PathError(`Unexpected ${value} at index ${index - 1}`, str);
           }
-          path8 += value;
+          path10 += value;
         }
         if (end) {
           throw new PathError(`Unexpected end at index ${index}, expected ${end}`, str);
@@ -20235,17 +20235,17 @@ var require_dist2 = __commonJS({
       }
       return new TokenData(consumeUntil(""), str);
     }
-    function compile(path8, options = {}) {
+    function compile(path10, options = {}) {
       const { encode = encodeURIComponent, delimiter = DEFAULT_DELIMITER } = options;
-      const data = typeof path8 === "object" ? path8 : parse5(path8, options);
+      const data = typeof path10 === "object" ? path10 : parse6(path10, options);
       const fn = tokensToFunction(data.tokens, delimiter, encode);
-      return function path9(params = {}) {
+      return function path11(params = {}) {
         const missing = [];
-        const path10 = fn(params, missing);
+        const path12 = fn(params, missing);
         if (missing.length) {
           throw new TypeError(`Missing parameters: ${missing.join(", ")}`);
         }
-        return path10;
+        return path12;
       };
     }
     function tokensToFunction(tokens, delimiter, encode) {
@@ -20307,9 +20307,9 @@ var require_dist2 = __commonJS({
         return encodeValue(value);
       };
     }
-    function match(path8, options = {}) {
+    function match(path10, options = {}) {
       const { decode = decodeURIComponent, delimiter = DEFAULT_DELIMITER } = options;
-      const { regexp, keys } = pathToRegexp(path8, options);
+      const { regexp, keys } = pathToRegexp(path10, options);
       const decoders = keys.map((key) => {
         if (decode === false)
           return NOOP_VALUE;
@@ -20321,7 +20321,7 @@ var require_dist2 = __commonJS({
         const m = regexp.exec(input);
         if (!m)
           return false;
-        const path9 = m[0];
+        const path11 = m[0];
         const params = /* @__PURE__ */ Object.create(null);
         for (let i = 1; i < m.length; i++) {
           if (m[i] === void 0)
@@ -20330,21 +20330,21 @@ var require_dist2 = __commonJS({
           const decoder = decoders[i - 1];
           params[key.name] = decoder(m[i]);
         }
-        return { path: path9, params };
+        return { path: path11, params };
       };
     }
-    function pathToRegexp(path8, options = {}) {
+    function pathToRegexp(path10, options = {}) {
       const { delimiter = DEFAULT_DELIMITER, end = true, sensitive = false, trailing = true } = options;
       const keys = [];
       let source = "";
       let combinations = 0;
-      function process2(path9) {
-        if (Array.isArray(path9)) {
-          for (const p of path9)
+      function process2(path11) {
+        if (Array.isArray(path11)) {
+          for (const p of path11)
             process2(p);
           return;
         }
-        const data = typeof path9 === "object" ? path9 : parse5(path9, options);
+        const data = typeof path11 === "object" ? path11 : parse6(path11, options);
         flatten(data.tokens, 0, [], (tokens) => {
           if (combinations >= 256) {
             throw new PathError("Too many path combinations", data.originalPath);
@@ -20355,7 +20355,7 @@ var require_dist2 = __commonJS({
           combinations++;
         });
       }
-      process2(path8);
+      process2(path10);
       let pattern = `^(?:${source})`;
       if (trailing)
         pattern += "(?:" + escape2(delimiter) + "$)?";
@@ -20484,9 +20484,9 @@ var require_dist2 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/router/lib/layer.js
+// node_modules/router/lib/layer.js
 var require_layer = __commonJS({
-  "../../../../src/ppt-editor/node_modules/router/lib/layer.js"(exports, module) {
+  "node_modules/router/lib/layer.js"(exports, module) {
     "use strict";
     var isPromise = require_is_promise();
     var pathRegexp = require_dist2();
@@ -20495,18 +20495,18 @@ var require_layer = __commonJS({
     var TRAILING_SLASH_REGEXP = /\/+$/;
     var MATCHING_GROUP_REGEXP = /\((?:\?<(.*?)>)?(?!\?)/g;
     module.exports = Layer;
-    function Layer(path8, options, fn) {
+    function Layer(path10, options, fn) {
       if (!(this instanceof Layer)) {
-        return new Layer(path8, options, fn);
+        return new Layer(path10, options, fn);
       }
-      debug("new %o", path8);
+      debug("new %o", path10);
       const opts = options || {};
       this.handle = fn;
       this.keys = [];
       this.name = fn.name || "<anonymous>";
       this.params = void 0;
       this.path = void 0;
-      this.slash = path8 === "/" && opts.end === false;
+      this.slash = path10 === "/" && opts.end === false;
       function matcher(_path) {
         if (_path instanceof RegExp) {
           const keys = [];
@@ -20545,7 +20545,7 @@ var require_layer = __commonJS({
           decode: decodeParam
         });
       }
-      this.matchers = Array.isArray(path8) ? path8.map(matcher) : [matcher(path8)];
+      this.matchers = Array.isArray(path10) ? path10.map(matcher) : [matcher(path10)];
     }
     Layer.prototype.handleError = function handleError(error, req, res, next) {
       const fn = this.handle;
@@ -20585,9 +20585,9 @@ var require_layer = __commonJS({
         next(err);
       }
     };
-    Layer.prototype.match = function match(path8) {
+    Layer.prototype.match = function match(path10) {
       let match2;
-      if (path8 != null) {
+      if (path10 != null) {
         if (this.slash) {
           this.params = {};
           this.path = "";
@@ -20595,7 +20595,7 @@ var require_layer = __commonJS({
         }
         let i = 0;
         while (!match2 && i < this.matchers.length) {
-          match2 = this.matchers[i](path8);
+          match2 = this.matchers[i](path10);
           i++;
         }
       }
@@ -20623,20 +20623,20 @@ var require_layer = __commonJS({
         throw err;
       }
     }
-    function loosen(path8) {
-      if (path8 instanceof RegExp || path8 === "/") {
-        return path8;
+    function loosen(path10) {
+      if (path10 instanceof RegExp || path10 === "/") {
+        return path10;
       }
-      return Array.isArray(path8) ? path8.map(function(p) {
+      return Array.isArray(path10) ? path10.map(function(p) {
         return loosen(p);
-      }) : String(path8).replace(TRAILING_SLASH_REGEXP, "");
+      }) : String(path10).replace(TRAILING_SLASH_REGEXP, "");
     }
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/router/lib/route.js
+// node_modules/router/lib/route.js
 var require_route = __commonJS({
-  "../../../../src/ppt-editor/node_modules/router/lib/route.js"(exports, module) {
+  "node_modules/router/lib/route.js"(exports, module) {
     "use strict";
     var debug = require_src()("router:route");
     var Layer = require_layer();
@@ -20645,9 +20645,9 @@ var require_route = __commonJS({
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
     module.exports = Route;
-    function Route(path8) {
-      debug("new %o", path8);
-      this.path = path8;
+    function Route(path10) {
+      debug("new %o", path10);
+      this.path = path10;
       this.stack = [];
       this.methods = /* @__PURE__ */ Object.create(null);
     }
@@ -20754,9 +20754,9 @@ var require_route = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/router/index.js
+// node_modules/router/index.js
 var require_router = __commonJS({
-  "../../../../src/ppt-editor/node_modules/router/index.js"(exports, module) {
+  "node_modules/router/index.js"(exports, module) {
     "use strict";
     var isPromise = require_is_promise();
     var Layer = require_layer();
@@ -20855,8 +20855,8 @@ var require_router = __commonJS({
         if (++sync > 100) {
           return setImmediate(next, err);
         }
-        const path8 = getPathname(req);
-        if (path8 == null) {
+        const path10 = getPathname(req);
+        if (path10 == null) {
           return done(layerError);
         }
         let layer;
@@ -20864,7 +20864,7 @@ var require_router = __commonJS({
         let route;
         while (match !== true && idx < stack.length) {
           layer = stack[idx++];
-          match = matchLayer(layer, path8);
+          match = matchLayer(layer, path10);
           route = layer.route;
           if (typeof match !== "boolean") {
             layerError = layerError || match;
@@ -20902,18 +20902,18 @@ var require_router = __commonJS({
           } else if (route) {
             layer.handleRequest(req, res, next);
           } else {
-            trimPrefix(layer, layerError, layerPath, path8);
+            trimPrefix(layer, layerError, layerPath, path10);
           }
           sync = 0;
         });
       }
-      function trimPrefix(layer, layerError, layerPath, path8) {
+      function trimPrefix(layer, layerError, layerPath, path10) {
         if (layerPath.length !== 0) {
-          if (layerPath !== path8.substring(0, layerPath.length)) {
+          if (layerPath !== path10.substring(0, layerPath.length)) {
             next(layerError);
             return;
           }
-          const c = path8[layerPath.length];
+          const c = path10[layerPath.length];
           if (c && c !== "/") {
             next(layerError);
             return;
@@ -20937,7 +20937,7 @@ var require_router = __commonJS({
     };
     Router.prototype.use = function use(handler) {
       let offset = 0;
-      let path8 = "/";
+      let path10 = "/";
       if (typeof handler !== "function") {
         let arg = handler;
         while (Array.isArray(arg) && arg.length !== 0) {
@@ -20945,7 +20945,7 @@ var require_router = __commonJS({
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path8 = handler;
+          path10 = handler;
         }
       }
       const callbacks = flatten.call(slice.call(arguments, offset), Infinity);
@@ -20957,8 +20957,8 @@ var require_router = __commonJS({
         if (typeof fn !== "function") {
           throw new TypeError("argument handler must be a function");
         }
-        debug("use %o %s", path8, fn.name || "<anonymous>");
-        const layer = new Layer(path8, {
+        debug("use %o %s", path10, fn.name || "<anonymous>");
+        const layer = new Layer(path10, {
           sensitive: this.caseSensitive,
           strict: false,
           end: false
@@ -20968,9 +20968,9 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router.prototype.route = function route(path8) {
-      const route2 = new Route(path8);
-      const layer = new Layer(path8, {
+    Router.prototype.route = function route(path10) {
+      const route2 = new Route(path10);
+      const layer = new Layer(path10, {
         sensitive: this.caseSensitive,
         strict: this.strict,
         end: true
@@ -20983,8 +20983,8 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router.prototype[method] = function(path8) {
-        const route = this.route(path8);
+      Router.prototype[method] = function(path10) {
+        const route = this.route(path10);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
       };
@@ -21013,9 +21013,9 @@ var require_router = __commonJS({
       const fqdnIndex = url.substring(0, pathLength).indexOf("://");
       return fqdnIndex !== -1 ? url.substring(0, url.indexOf("/", 3 + fqdnIndex)) : void 0;
     }
-    function matchLayer(layer, path8) {
+    function matchLayer(layer, path10) {
       try {
-        return layer.match(path8);
+        return layer.match(path10);
       } catch (err) {
         return err;
       }
@@ -21152,9 +21152,9 @@ var require_router = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/express/lib/application.js
+// node_modules/express/lib/application.js
 var require_application = __commonJS({
-  "../../../../src/ppt-editor/node_modules/express/lib/application.js"(exports, module) {
+  "node_modules/express/lib/application.js"(exports, module) {
     "use strict";
     var finalhandler = require_finalhandler();
     var debug = require_src()("express:application");
@@ -21243,7 +21243,7 @@ var require_application = __commonJS({
     };
     app2.use = function use(fn) {
       var offset = 0;
-      var path8 = "/";
+      var path10 = "/";
       if (typeof fn !== "function") {
         var arg = fn;
         while (Array.isArray(arg) && arg.length !== 0) {
@@ -21251,7 +21251,7 @@ var require_application = __commonJS({
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path8 = fn;
+          path10 = fn;
         }
       }
       var fns = flatten.call(slice.call(arguments, offset), Infinity);
@@ -21261,12 +21261,12 @@ var require_application = __commonJS({
       var router = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router.use(path8, fn2);
+          return router.use(path10, fn2);
         }
-        debug(".use app under %s", path8);
-        fn2.mountpath = path8;
+        debug(".use app under %s", path10);
+        fn2.mountpath = path10;
         fn2.parent = this;
-        router.use(path8, function mounted_app(req, res, next) {
+        router.use(path10, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -21278,8 +21278,8 @@ var require_application = __commonJS({
       }, this);
       return this;
     };
-    app2.route = function route(path8) {
-      return this.router.route(path8);
+    app2.route = function route(path10) {
+      return this.router.route(path10);
     };
     app2.engine = function engine(ext, fn) {
       if (typeof fn !== "function") {
@@ -21322,7 +21322,7 @@ var require_application = __commonJS({
       }
       return this;
     };
-    app2.path = function path8() {
+    app2.path = function path10() {
       return this.parent ? this.parent.path() + this.mountpath : "";
     };
     app2.enabled = function enabled(setting) {
@@ -21338,17 +21338,17 @@ var require_application = __commonJS({
       return this.set(setting, false);
     };
     methods.forEach(function(method) {
-      app2[method] = function(path8) {
+      app2[method] = function(path10) {
         if (method === "get" && arguments.length === 1) {
-          return this.set(path8);
+          return this.set(path10);
         }
-        var route = this.route(path8);
+        var route = this.route(path10);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
       };
     });
-    app2.all = function all(path8) {
-      var route = this.route(path8);
+    app2.all = function all(path10) {
+      var route = this.route(path10);
       var args = slice.call(arguments, 1);
       for (var i = 0; i < methods.length; i++) {
         route[methods[i]].apply(route, args);
@@ -21413,9 +21413,9 @@ var require_application = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/negotiator/lib/charset.js
+// node_modules/negotiator/lib/charset.js
 var require_charset = __commonJS({
-  "../../../../src/ppt-editor/node_modules/negotiator/lib/charset.js"(exports, module) {
+  "node_modules/negotiator/lib/charset.js"(exports, module) {
     "use strict";
     module.exports = preferredCharsets;
     module.exports.preferredCharsets = preferredCharsets;
@@ -21500,9 +21500,9 @@ var require_charset = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/negotiator/lib/encoding.js
+// node_modules/negotiator/lib/encoding.js
 var require_encoding = __commonJS({
-  "../../../../src/ppt-editor/node_modules/negotiator/lib/encoding.js"(exports, module) {
+  "node_modules/negotiator/lib/encoding.js"(exports, module) {
     "use strict";
     module.exports = preferredEncodings;
     module.exports.preferredEncodings = preferredEncodings;
@@ -21613,9 +21613,9 @@ var require_encoding = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/negotiator/lib/language.js
+// node_modules/negotiator/lib/language.js
 var require_language = __commonJS({
-  "../../../../src/ppt-editor/node_modules/negotiator/lib/language.js"(exports, module) {
+  "node_modules/negotiator/lib/language.js"(exports, module) {
     "use strict";
     module.exports = preferredLanguages;
     module.exports.preferredLanguages = preferredLanguages;
@@ -21708,9 +21708,9 @@ var require_language = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/negotiator/lib/mediaType.js
+// node_modules/negotiator/lib/mediaType.js
 var require_mediaType = __commonJS({
-  "../../../../src/ppt-editor/node_modules/negotiator/lib/mediaType.js"(exports, module) {
+  "node_modules/negotiator/lib/mediaType.js"(exports, module) {
     "use strict";
     module.exports = preferredMediaTypes;
     module.exports.preferredMediaTypes = preferredMediaTypes;
@@ -21870,9 +21870,9 @@ var require_mediaType = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/negotiator/index.js
+// node_modules/negotiator/index.js
 var require_negotiator = __commonJS({
-  "../../../../src/ppt-editor/node_modules/negotiator/index.js"(exports, module) {
+  "node_modules/negotiator/index.js"(exports, module) {
     "use strict";
     var preferredCharsets = require_charset();
     var preferredEncodings = require_encoding();
@@ -21926,9 +21926,9 @@ var require_negotiator = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/accepts/index.js
+// node_modules/accepts/index.js
 var require_accepts = __commonJS({
-  "../../../../src/ppt-editor/node_modules/accepts/index.js"(exports, module) {
+  "node_modules/accepts/index.js"(exports, module) {
     "use strict";
     var Negotiator = require_negotiator();
     var mime = require_mime_types();
@@ -22007,9 +22007,9 @@ var require_accepts = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/fresh/index.js
+// node_modules/fresh/index.js
 var require_fresh = __commonJS({
-  "../../../../src/ppt-editor/node_modules/fresh/index.js"(exports, module) {
+  "node_modules/fresh/index.js"(exports, module) {
     "use strict";
     var CACHE_CONTROL_NO_CACHE_REGEXP = /(?:^|,)\s*?no-cache\s*?(?:,|$)/;
     module.exports = fresh;
@@ -22079,9 +22079,9 @@ var require_fresh = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/range-parser/index.js
+// node_modules/range-parser/index.js
 var require_range_parser = __commonJS({
-  "../../../../src/ppt-editor/node_modules/range-parser/index.js"(exports, module) {
+  "node_modules/range-parser/index.js"(exports, module) {
     "use strict";
     module.exports = rangeParser;
     function rangeParser(size, str, options) {
@@ -22160,9 +22160,9 @@ var require_range_parser = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/express/lib/request.js
+// node_modules/express/lib/request.js
 var require_request = __commonJS({
-  "../../../../src/ppt-editor/node_modules/express/lib/request.js"(exports, module) {
+  "node_modules/express/lib/request.js"(exports, module) {
     "use strict";
     var accepts = require_accepts();
     var isIP = __require("node:net").isIP;
@@ -22170,7 +22170,7 @@ var require_request = __commonJS({
     var http = __require("node:http");
     var fresh = require_fresh();
     var parseRange = require_range_parser();
-    var parse5 = require_parseurl();
+    var parse6 = require_parseurl();
     var proxyaddr = require_proxy_addr();
     var req = Object.create(http.IncomingMessage.prototype);
     module.exports = req;
@@ -22215,7 +22215,7 @@ var require_request = __commonJS({
       if (!queryparse) {
         return /* @__PURE__ */ Object.create(null);
       }
-      var querystring = parse5(this).query;
+      var querystring = parse6(this).query;
       return queryparse(querystring);
     });
     req.is = function is(types) {
@@ -22258,8 +22258,8 @@ var require_request = __commonJS({
       var subdomains2 = !isIP(hostname) ? hostname.split(".").reverse() : [hostname];
       return subdomains2.slice(offset);
     });
-    defineGetter(req, "path", function path8() {
-      return parse5(this).pathname;
+    defineGetter(req, "path", function path10() {
+      return parse6(this).pathname;
     });
     defineGetter(req, "host", function host2() {
       var trust = this.app.get("trust proxy fn");
@@ -22308,12 +22308,12 @@ var require_request = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/content-disposition/index.js
+// node_modules/content-disposition/index.js
 var require_content_disposition = __commonJS({
-  "../../../../src/ppt-editor/node_modules/content-disposition/index.js"(exports, module) {
+  "node_modules/content-disposition/index.js"(exports, module) {
     "use strict";
     module.exports = contentDisposition;
-    module.exports.parse = parse5;
+    module.exports.parse = parse6;
     var utf8Decoder = new TextDecoder("utf-8");
     var ENCODE_URL_ATTR_CHAR_REGEXP = /[\x00-\x20"'()*,/:;<=>?@[\\\]{}\x7f]/g;
     var NON_LATIN1_REGEXP = /[^\x20-\x7e\xa0-\xff]/g;
@@ -22408,7 +22408,7 @@ var require_content_disposition = __commonJS({
     function getlatin1(val) {
       return String(val).replace(NON_LATIN1_REGEXP, "?");
     }
-    function parse5(string) {
+    function parse6(string) {
       if (!string || typeof string !== "string") {
         throw new TypeError("argument string is required");
       }
@@ -22469,8 +22469,8 @@ var require_content_disposition = __commonJS({
       this.type = type;
       this.parameters = parameters;
     }
-    function basename(path8) {
-      const normalized = path8.replaceAll("\\", "/");
+    function basename(path10) {
+      const normalized = path10.replaceAll("\\", "/");
       let end = normalized.length;
       while (end > 0 && normalized[end - 1] === "/") {
         end--;
@@ -22517,9 +22517,9 @@ var require_content_disposition = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/cookie-signature/index.js
+// node_modules/cookie-signature/index.js
 var require_cookie_signature = __commonJS({
-  "../../../../src/ppt-editor/node_modules/cookie-signature/index.js"(exports) {
+  "node_modules/cookie-signature/index.js"(exports) {
     var crypto = __require("crypto");
     exports.sign = function(val, secret) {
       if ("string" != typeof val) throw new TypeError("Cookie value must be provided as a string.");
@@ -22535,11 +22535,11 @@ var require_cookie_signature = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/cookie/index.js
+// node_modules/cookie/index.js
 var require_cookie = __commonJS({
-  "../../../../src/ppt-editor/node_modules/cookie/index.js"(exports) {
+  "node_modules/cookie/index.js"(exports) {
     "use strict";
-    exports.parse = parse5;
+    exports.parse = parse6;
     exports.serialize = serialize;
     var __toString = Object.prototype.toString;
     var __hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -22547,7 +22547,7 @@ var require_cookie = __commonJS({
     var cookieValueRegExp = /^("?)[\u0021\u0023-\u002B\u002D-\u003A\u003C-\u005B\u005D-\u007E]*\1$/;
     var domainValueRegExp = /^([.]?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
     var pathValueRegExp = /^[\u0020-\u003A\u003D-\u007E]*$/;
-    function parse5(str, opt) {
+    function parse6(str, opt) {
       if (typeof str !== "string") {
         throw new TypeError("argument str must be a string");
       }
@@ -22701,9 +22701,9 @@ var require_cookie = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/send/index.js
+// node_modules/send/index.js
 var require_send = __commonJS({
-  "../../../../src/ppt-editor/node_modules/send/index.js"(exports, module) {
+  "node_modules/send/index.js"(exports, module) {
     "use strict";
     var createError = require_http_errors();
     var debug = require_src()("send");
@@ -22716,27 +22716,27 @@ var require_send = __commonJS({
     var ms = require_ms();
     var onFinished = require_on_finished();
     var parseRange = require_range_parser();
-    var path8 = __require("path");
+    var path10 = __require("path");
     var statuses = require_statuses();
     var Stream = __require("stream");
     var util = __require("util");
-    var extname = path8.extname;
-    var join = path8.join;
-    var normalize = path8.normalize;
-    var resolve = path8.resolve;
-    var sep = path8.sep;
+    var extname = path10.extname;
+    var join = path10.join;
+    var normalize = path10.normalize;
+    var resolve = path10.resolve;
+    var sep = path10.sep;
     var BYTES_RANGE_REGEXP = /^ *bytes=/;
     var MAX_MAXAGE = 60 * 60 * 24 * 365 * 1e3;
     var UP_PATH_REGEXP = /(?:^|[\\/])\.\.(?:[\\/]|$)/;
     module.exports = send;
-    function send(req, path9, options) {
-      return new SendStream(req, path9, options);
+    function send(req, path11, options) {
+      return new SendStream(req, path11, options);
     }
-    function SendStream(req, path9, options) {
+    function SendStream(req, path11, options) {
       Stream.call(this);
       var opts = options || {};
       this.options = opts;
-      this.path = path9;
+      this.path = path11;
       this.req = req;
       this._acceptRanges = opts.acceptRanges !== void 0 ? Boolean(opts.acceptRanges) : true;
       this._cacheControl = opts.cacheControl !== void 0 ? Boolean(opts.cacheControl) : true;
@@ -22850,10 +22850,10 @@ var require_send = __commonJS({
       var lastModified = this.res.getHeader("Last-Modified");
       return parseHttpDate(lastModified) <= parseHttpDate(ifRange);
     };
-    SendStream.prototype.redirect = function redirect(path9) {
+    SendStream.prototype.redirect = function redirect(path11) {
       var res = this.res;
       if (hasListeners(this, "directory")) {
-        this.emit("directory", res, path9);
+        this.emit("directory", res, path11);
         return;
       }
       if (this.hasTrailingSlash()) {
@@ -22873,38 +22873,38 @@ var require_send = __commonJS({
     SendStream.prototype.pipe = function pipe(res) {
       var root = this._root;
       this.res = res;
-      var path9 = decode(this.path);
-      if (path9 === -1) {
+      var path11 = decode(this.path);
+      if (path11 === -1) {
         this.error(400);
         return res;
       }
-      if (~path9.indexOf("\0")) {
+      if (~path11.indexOf("\0")) {
         this.error(400);
         return res;
       }
       var parts;
       if (root !== null) {
-        if (path9) {
-          path9 = normalize("." + sep + path9);
+        if (path11) {
+          path11 = normalize("." + sep + path11);
         }
-        if (UP_PATH_REGEXP.test(path9)) {
-          debug('malicious path "%s"', path9);
+        if (UP_PATH_REGEXP.test(path11)) {
+          debug('malicious path "%s"', path11);
           this.error(403);
           return res;
         }
-        parts = path9.split(sep);
-        path9 = normalize(join(root, path9));
+        parts = path11.split(sep);
+        path11 = normalize(join(root, path11));
       } else {
-        if (UP_PATH_REGEXP.test(path9)) {
-          debug('malicious path "%s"', path9);
+        if (UP_PATH_REGEXP.test(path11)) {
+          debug('malicious path "%s"', path11);
           this.error(403);
           return res;
         }
-        parts = normalize(path9).split(sep);
-        path9 = resolve(path9);
+        parts = normalize(path11).split(sep);
+        path11 = resolve(path11);
       }
       if (containsDotFile(parts)) {
-        debug('%s dotfile "%s"', this._dotfiles, path9);
+        debug('%s dotfile "%s"', this._dotfiles, path11);
         switch (this._dotfiles) {
           case "allow":
             break;
@@ -22918,14 +22918,14 @@ var require_send = __commonJS({
         }
       }
       if (this._index.length && this.hasTrailingSlash()) {
-        this.sendIndex(path9);
+        this.sendIndex(path11);
         return res;
       }
-      this.sendFile(path9);
+      this.sendFile(path11);
       return res;
     };
-    SendStream.prototype.send = function send2(path9, stat4) {
-      var len = stat4.size;
+    SendStream.prototype.send = function send2(path11, stat5) {
+      var len = stat5.size;
       var options = this.options;
       var opts = {};
       var res = this.res;
@@ -22936,9 +22936,9 @@ var require_send = __commonJS({
         this.headersAlreadySent();
         return;
       }
-      debug('pipe "%s"', path9);
-      this.setHeader(path9, stat4);
-      this.type(path9);
+      debug('pipe "%s"', path11);
+      this.setHeader(path11, stat5);
+      this.type(path11);
       if (this.isConditionalGET()) {
         if (this.isPreconditionFailure()) {
           this.error(412);
@@ -22987,38 +22987,38 @@ var require_send = __commonJS({
         res.end();
         return;
       }
-      this.stream(path9, opts);
+      this.stream(path11, opts);
     };
-    SendStream.prototype.sendFile = function sendFile(path9) {
+    SendStream.prototype.sendFile = function sendFile(path11) {
       var i = 0;
       var self = this;
-      debug('stat "%s"', path9);
-      fs.stat(path9, function onstat(err, stat4) {
-        var pathEndsWithSep = path9[path9.length - 1] === sep;
-        if (err && err.code === "ENOENT" && !extname(path9) && !pathEndsWithSep) {
+      debug('stat "%s"', path11);
+      fs.stat(path11, function onstat(err, stat5) {
+        var pathEndsWithSep = path11[path11.length - 1] === sep;
+        if (err && err.code === "ENOENT" && !extname(path11) && !pathEndsWithSep) {
           return next(err);
         }
         if (err) return self.onStatError(err);
-        if (stat4.isDirectory()) return self.redirect(path9);
+        if (stat5.isDirectory()) return self.redirect(path11);
         if (pathEndsWithSep) return self.error(404);
-        self.emit("file", path9, stat4);
-        self.send(path9, stat4);
+        self.emit("file", path11, stat5);
+        self.send(path11, stat5);
       });
       function next(err) {
         if (self._extensions.length <= i) {
           return err ? self.onStatError(err) : self.error(404);
         }
-        var p = path9 + "." + self._extensions[i++];
+        var p = path11 + "." + self._extensions[i++];
         debug('stat "%s"', p);
-        fs.stat(p, function(err2, stat4) {
+        fs.stat(p, function(err2, stat5) {
           if (err2) return next(err2);
-          if (stat4.isDirectory()) return next();
-          self.emit("file", p, stat4);
-          self.send(p, stat4);
+          if (stat5.isDirectory()) return next();
+          self.emit("file", p, stat5);
+          self.send(p, stat5);
         });
       }
     };
-    SendStream.prototype.sendIndex = function sendIndex(path9) {
+    SendStream.prototype.sendIndex = function sendIndex(path11) {
       var i = -1;
       var self = this;
       function next(err) {
@@ -23026,21 +23026,21 @@ var require_send = __commonJS({
           if (err) return self.onStatError(err);
           return self.error(404);
         }
-        var p = join(path9, self._index[i]);
+        var p = join(path11, self._index[i]);
         debug('stat "%s"', p);
-        fs.stat(p, function(err2, stat4) {
+        fs.stat(p, function(err2, stat5) {
           if (err2) return next(err2);
-          if (stat4.isDirectory()) return next();
-          self.emit("file", p, stat4);
-          self.send(p, stat4);
+          if (stat5.isDirectory()) return next();
+          self.emit("file", p, stat5);
+          self.send(p, stat5);
         });
       }
       next();
     };
-    SendStream.prototype.stream = function stream(path9, options) {
+    SendStream.prototype.stream = function stream(path11, options) {
       var self = this;
       var res = this.res;
-      var stream2 = fs.createReadStream(path9, options);
+      var stream2 = fs.createReadStream(path11, options);
       this.emit("stream", stream2);
       stream2.pipe(res);
       function cleanup() {
@@ -23055,17 +23055,17 @@ var require_send = __commonJS({
         self.emit("end");
       });
     };
-    SendStream.prototype.type = function type(path9) {
+    SendStream.prototype.type = function type(path11) {
       var res = this.res;
       if (res.getHeader("Content-Type")) return;
-      var ext = extname(path9);
+      var ext = extname(path11);
       var type2 = mime.contentType(ext) || "application/octet-stream";
       debug("content-type %s", type2);
       res.setHeader("Content-Type", type2);
     };
-    SendStream.prototype.setHeader = function setHeader(path9, stat4) {
+    SendStream.prototype.setHeader = function setHeader(path11, stat5) {
       var res = this.res;
-      this.emit("headers", res, path9, stat4);
+      this.emit("headers", res, path11, stat5);
       if (this._acceptRanges && !res.getHeader("Accept-Ranges")) {
         debug("accept ranges");
         res.setHeader("Accept-Ranges", "bytes");
@@ -23079,12 +23079,12 @@ var require_send = __commonJS({
         res.setHeader("Cache-Control", cacheControl);
       }
       if (this._lastModified && !res.getHeader("Last-Modified")) {
-        var modified = stat4.mtime.toUTCString();
+        var modified = stat5.mtime.toUTCString();
         debug("modified %s", modified);
         res.setHeader("Last-Modified", modified);
       }
       if (this._etag && !res.getHeader("ETag")) {
-        var val = etag(stat4);
+        var val = etag(stat5);
         debug("etag %s", val);
         res.setHeader("ETag", val);
       }
@@ -23123,9 +23123,9 @@ var require_send = __commonJS({
       }
       return err instanceof Error ? createError(status, err, { expose: false }) : createError(status, err);
     }
-    function decode(path9) {
+    function decode(path11) {
       try {
-        return decodeURIComponent(path9);
+        return decodeURIComponent(path11);
       } catch (err) {
         return -1;
       }
@@ -23184,9 +23184,9 @@ var require_send = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/vary/index.js
+// node_modules/vary/index.js
 var require_vary = __commonJS({
-  "../../../../src/ppt-editor/node_modules/vary/index.js"(exports, module) {
+  "node_modules/vary/index.js"(exports, module) {
     "use strict";
     module.exports = vary;
     module.exports.append = append;
@@ -23198,7 +23198,7 @@ var require_vary = __commonJS({
       if (!field) {
         throw new TypeError("field argument is required");
       }
-      var fields = !Array.isArray(field) ? parse5(String(field)) : field;
+      var fields = !Array.isArray(field) ? parse6(String(field)) : field;
       for (var j = 0; j < fields.length; j++) {
         if (!FIELD_NAME_REGEXP.test(fields[j])) {
           throw new TypeError("field argument contains an invalid header name");
@@ -23208,7 +23208,7 @@ var require_vary = __commonJS({
         return header;
       }
       var val = header;
-      var vals = parse5(header.toLowerCase());
+      var vals = parse6(header.toLowerCase());
       if (fields.indexOf("*") !== -1 || vals.indexOf("*") !== -1) {
         return "*";
       }
@@ -23221,7 +23221,7 @@ var require_vary = __commonJS({
       }
       return val;
     }
-    function parse5(header) {
+    function parse6(header) {
       var end = 0;
       var list = [];
       var start = 0;
@@ -23257,9 +23257,9 @@ var require_vary = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/express/lib/response.js
+// node_modules/express/lib/response.js
 var require_response = __commonJS({
-  "../../../../src/ppt-editor/node_modules/express/lib/response.js"(exports, module) {
+  "node_modules/express/lib/response.js"(exports, module) {
     "use strict";
     var contentDisposition = require_content_disposition();
     var createError = require_http_errors();
@@ -23269,7 +23269,7 @@ var require_response = __commonJS({
     var http = __require("node:http");
     var onFinished = require_on_finished();
     var mime = require_mime_types();
-    var path8 = __require("node:path");
+    var path10 = __require("node:path");
     var pathIsAbsolute = __require("node:path").isAbsolute;
     var statuses = require_statuses();
     var sign = require_cookie_signature().sign;
@@ -23278,8 +23278,8 @@ var require_response = __commonJS({
     var setCharset = require_utils3().setCharset;
     var cookie = require_cookie();
     var send = require_send();
-    var extname = path8.extname;
-    var resolve = path8.resolve;
+    var extname = path10.extname;
+    var resolve = path10.resolve;
     var vary = require_vary();
     var { Buffer: Buffer2 } = __require("node:buffer");
     var res = Object.create(http.ServerResponse.prototype);
@@ -23425,26 +23425,26 @@ var require_response = __commonJS({
       this.type("txt");
       return this.send(body);
     };
-    res.sendFile = function sendFile(path9, options, callback) {
+    res.sendFile = function sendFile(path11, options, callback) {
       var done = callback;
       var req = this.req;
       var res2 = this;
       var next = req.next;
       var opts = options || {};
-      if (!path9) {
+      if (!path11) {
         throw new TypeError("path argument is required to res.sendFile");
       }
-      if (typeof path9 !== "string") {
+      if (typeof path11 !== "string") {
         throw new TypeError("path must be a string to res.sendFile");
       }
       if (typeof options === "function") {
         done = options;
         opts = {};
       }
-      if (!opts.root && !pathIsAbsolute(path9)) {
+      if (!opts.root && !pathIsAbsolute(path11)) {
         throw new TypeError("path must be absolute or specify root to res.sendFile");
       }
-      var pathname = encodeURI(path9);
+      var pathname = encodeURI(path11);
       opts.etag = this.app.enabled("etag");
       var file = send(req, pathname, opts);
       sendfile(res2, file, opts, function(err) {
@@ -23455,7 +23455,7 @@ var require_response = __commonJS({
         }
       });
     };
-    res.download = function download(path9, filename, options, callback) {
+    res.download = function download(path11, filename, options, callback) {
       var done = callback;
       var name = filename;
       var opts = options || null;
@@ -23472,7 +23472,7 @@ var require_response = __commonJS({
         opts = filename;
       }
       var headers = {
-        "Content-Disposition": contentDisposition(name || path9)
+        "Content-Disposition": contentDisposition(name || path11)
       };
       if (opts && opts.headers) {
         var keys = Object.keys(opts.headers);
@@ -23485,7 +23485,7 @@ var require_response = __commonJS({
       }
       opts = Object.create(opts);
       opts.headers = headers;
-      var fullPath = !opts.root ? resolve(path9) : path9;
+      var fullPath = !opts.root ? resolve(path11) : path11;
       return this.sendFile(fullPath, opts, done);
     };
     res.contentType = res.type = function contentType(type) {
@@ -23727,9 +23727,9 @@ var require_response = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/serve-static/index.js
+// node_modules/serve-static/index.js
 var require_serve_static = __commonJS({
-  "../../../../src/ppt-editor/node_modules/serve-static/index.js"(exports, module) {
+  "node_modules/serve-static/index.js"(exports, module) {
     "use strict";
     var encodeUrl = require_encodeurl();
     var escapeHtml4 = require_escape_html();
@@ -23768,11 +23768,11 @@ var require_serve_static = __commonJS({
         }
         var forwardError = !fallthrough;
         var originalUrl = parseUrl.original(req);
-        var path8 = parseUrl(req).pathname;
-        if (path8 === "/" && originalUrl.pathname.substr(-1) !== "/") {
-          path8 = "";
+        var path10 = parseUrl(req).pathname;
+        if (path10 === "/" && originalUrl.pathname.substr(-1) !== "/") {
+          path10 = "";
         }
-        var stream = send(req, path8, opts);
+        var stream = send(req, path10, opts);
         stream.on("directory", onDirectory);
         if (setHeaders) {
           stream.on("headers", setHeaders);
@@ -23831,9 +23831,9 @@ var require_serve_static = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/express/lib/express.js
+// node_modules/express/lib/express.js
 var require_express = __commonJS({
-  "../../../../src/ppt-editor/node_modules/express/lib/express.js"(exports, module) {
+  "node_modules/express/lib/express.js"(exports, module) {
     "use strict";
     var bodyParser = require_body_parser();
     var EventEmitter = __require("node:events").EventEmitter;
@@ -23871,17 +23871,17 @@ var require_express = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/express/index.js
+// node_modules/express/index.js
 var require_express2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/express/index.js"(exports, module) {
+  "node_modules/express/index.js"(exports, module) {
     "use strict";
     module.exports = require_express();
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/he/he.js
+// node_modules/he/he.js
 var require_he = __commonJS({
-  "../../../../src/ppt-editor/node_modules/he/he.js"(exports, module) {
+  "node_modules/he/he.js"(exports, module) {
     (function(root) {
       var freeExports = typeof exports == "object" && exports;
       var freeModule = typeof module == "object" && module && module.exports == freeExports && module;
@@ -24129,9 +24129,9 @@ var require_he = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/node.js
+// node_modules/node-html-parser/dist/nodes/node.js
 var require_node2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/node.js"(exports) {
+  "node_modules/node-html-parser/dist/nodes/node.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var he_1 = require_he();
@@ -24173,9 +24173,9 @@ var require_node2 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/type.js
+// node_modules/node-html-parser/dist/nodes/type.js
 var require_type2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/type.js"(exports) {
+  "node_modules/node-html-parser/dist/nodes/type.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var NodeType;
@@ -24188,9 +24188,9 @@ var require_type2 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/comment.js
+// node_modules/node-html-parser/dist/nodes/comment.js
 var require_comment = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/comment.js"(exports) {
+  "node_modules/node-html-parser/dist/nodes/comment.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -24223,9 +24223,9 @@ var require_comment = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domelementtype/lib/index.js
+// node_modules/domelementtype/lib/index.js
 var require_lib3 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domelementtype/lib/index.js"(exports) {
+  "node_modules/domelementtype/lib/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Doctype = exports.CDATA = exports.Tag = exports.Style = exports.Script = exports.Comment = exports.Directive = exports.Text = exports.Root = exports.isTag = exports.ElementType = void 0;
@@ -24257,9 +24257,9 @@ var require_lib3 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domhandler/lib/node.js
+// node_modules/domhandler/lib/node.js
 var require_node3 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domhandler/lib/node.js"(exports) {
+  "node_modules/domhandler/lib/node.js"(exports) {
     "use strict";
     var __extends = exports && exports.__extends || /* @__PURE__ */ (function() {
       var extendStatics = function(d, b) {
@@ -24691,9 +24691,9 @@ var require_node3 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domhandler/lib/index.js
+// node_modules/domhandler/lib/index.js
 var require_lib4 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domhandler/lib/index.js"(exports) {
+  "node_modules/domhandler/lib/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -24805,11 +24805,11 @@ var require_lib4 = __commonJS({
           this.lastNode = null;
         };
         DomHandler2.prototype.oncdatastart = function() {
-          var text = new node_js_1.Text("");
-          var node = new node_js_1.CDATA([text]);
+          var text2 = new node_js_1.Text("");
+          var node = new node_js_1.CDATA([text2]);
           this.addNode(node);
-          text.parent = node;
-          this.lastNode = text;
+          text2.parent = node;
+          this.lastNode = text2;
         };
         DomHandler2.prototype.oncdataend = function() {
           this.lastNode = null;
@@ -24850,9 +24850,9 @@ var require_lib4 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/entities/lib/generated/decode-data-html.js
+// node_modules/entities/lib/generated/decode-data-html.js
 var require_decode_data_html = __commonJS({
-  "../../../../src/ppt-editor/node_modules/entities/lib/generated/decode-data-html.js"(exports) {
+  "node_modules/entities/lib/generated/decode-data-html.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = new Uint16Array(
@@ -24864,9 +24864,9 @@ var require_decode_data_html = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/entities/lib/generated/decode-data-xml.js
+// node_modules/entities/lib/generated/decode-data-xml.js
 var require_decode_data_xml = __commonJS({
-  "../../../../src/ppt-editor/node_modules/entities/lib/generated/decode-data-xml.js"(exports) {
+  "node_modules/entities/lib/generated/decode-data-xml.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = new Uint16Array(
@@ -24878,9 +24878,9 @@ var require_decode_data_xml = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/entities/lib/decode_codepoint.js
+// node_modules/entities/lib/decode_codepoint.js
 var require_decode_codepoint = __commonJS({
-  "../../../../src/ppt-editor/node_modules/entities/lib/decode_codepoint.js"(exports) {
+  "node_modules/entities/lib/decode_codepoint.js"(exports) {
     "use strict";
     var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -24942,9 +24942,9 @@ var require_decode_codepoint = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/entities/lib/decode.js
+// node_modules/entities/lib/decode.js
 var require_decode = __commonJS({
-  "../../../../src/ppt-editor/node_modules/entities/lib/decode.js"(exports) {
+  "node_modules/entities/lib/decode.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -25301,9 +25301,9 @@ var require_decode = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/entities/lib/generated/encode-html.js
+// node_modules/entities/lib/generated/encode-html.js
 var require_encode_html = __commonJS({
-  "../../../../src/ppt-editor/node_modules/entities/lib/generated/encode-html.js"(exports) {
+  "node_modules/entities/lib/generated/encode-html.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function restoreDiff(arr) {
@@ -25316,9 +25316,9 @@ var require_encode_html = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/entities/lib/escape.js
+// node_modules/entities/lib/escape.js
 var require_escape = __commonJS({
-  "../../../../src/ppt-editor/node_modules/entities/lib/escape.js"(exports) {
+  "node_modules/entities/lib/escape.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.escapeText = exports.escapeAttribute = exports.escapeUTF8 = exports.escape = exports.encodeXML = exports.getCodePoint = exports.xmlReplacer = void 0;
@@ -25389,9 +25389,9 @@ var require_escape = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/entities/lib/encode.js
+// node_modules/entities/lib/encode.js
 var require_encode = __commonJS({
-  "../../../../src/ppt-editor/node_modules/entities/lib/encode.js"(exports) {
+  "node_modules/entities/lib/encode.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -25444,9 +25444,9 @@ var require_encode = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/entities/lib/index.js
+// node_modules/entities/lib/index.js
 var require_lib5 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/entities/lib/index.js"(exports) {
+  "node_modules/entities/lib/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.decodeXMLStrict = exports.decodeHTML5Strict = exports.decodeHTML4Strict = exports.decodeHTML5 = exports.decodeHTML4 = exports.decodeHTMLAttribute = exports.decodeHTMLStrict = exports.decodeHTML = exports.decodeXML = exports.DecodingMode = exports.EntityDecoder = exports.encodeHTML5 = exports.encodeHTML4 = exports.encodeNonAsciiHTML = exports.encodeHTML = exports.escapeText = exports.escapeAttribute = exports.escapeUTF8 = exports.escape = exports.encodeXML = exports.encode = exports.decodeStrict = exports.decode = exports.EncodingMode = exports.EntityLevel = void 0;
@@ -25574,9 +25574,9 @@ var require_lib5 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/dom-serializer/lib/foreignNames.js
+// node_modules/dom-serializer/lib/foreignNames.js
 var require_foreignNames = __commonJS({
-  "../../../../src/ppt-editor/node_modules/dom-serializer/lib/foreignNames.js"(exports) {
+  "node_modules/dom-serializer/lib/foreignNames.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.attributeNames = exports.elementNames = void 0;
@@ -25687,9 +25687,9 @@ var require_foreignNames = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/dom-serializer/lib/index.js
+// node_modules/dom-serializer/lib/index.js
 var require_lib6 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/dom-serializer/lib/index.js"(exports) {
+  "node_modules/dom-serializer/lib/index.js"(exports) {
     "use strict";
     var __assign = exports && exports.__assign || function() {
       __assign = Object.assign || function(t) {
@@ -25887,9 +25887,9 @@ var require_lib6 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domutils/lib/stringify.js
+// node_modules/domutils/lib/stringify.js
 var require_stringify2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domutils/lib/stringify.js"(exports) {
+  "node_modules/domutils/lib/stringify.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -25945,9 +25945,9 @@ var require_stringify2 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domutils/lib/traversal.js
+// node_modules/domutils/lib/traversal.js
 var require_traversal = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domutils/lib/traversal.js"(exports) {
+  "node_modules/domutils/lib/traversal.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getChildren = getChildren;
@@ -26009,9 +26009,9 @@ var require_traversal = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domutils/lib/manipulation.js
+// node_modules/domutils/lib/manipulation.js
 var require_manipulation = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domutils/lib/manipulation.js"(exports) {
+  "node_modules/domutils/lib/manipulation.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.removeElement = removeElement;
@@ -26112,9 +26112,9 @@ var require_manipulation = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domutils/lib/querying.js
+// node_modules/domutils/lib/querying.js
 var require_querying = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domutils/lib/querying.js"(exports) {
+  "node_modules/domutils/lib/querying.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.filter = filter;
@@ -26209,9 +26209,9 @@ var require_querying = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domutils/lib/legacy.js
+// node_modules/domutils/lib/legacy.js
 var require_legacy = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domutils/lib/legacy.js"(exports) {
+  "node_modules/domutils/lib/legacy.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.testElement = testElement;
@@ -26327,9 +26327,9 @@ var require_legacy = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domutils/lib/helpers.js
+// node_modules/domutils/lib/helpers.js
 var require_helpers = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domutils/lib/helpers.js"(exports) {
+  "node_modules/domutils/lib/helpers.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DocumentPosition = void 0;
@@ -26419,9 +26419,9 @@ var require_helpers = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domutils/lib/feeds.js
+// node_modules/domutils/lib/feeds.js
 var require_feeds = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domutils/lib/feeds.js"(exports) {
+  "node_modules/domutils/lib/feeds.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getFeed = getFeed;
@@ -26559,9 +26559,9 @@ var require_feeds = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/domutils/lib/index.js
+// node_modules/domutils/lib/index.js
 var require_lib7 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/domutils/lib/index.js"(exports) {
+  "node_modules/domutils/lib/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -26610,9 +26610,9 @@ var require_lib7 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/boolbase/index.js
+// node_modules/boolbase/index.js
 var require_boolbase = __commonJS({
-  "../../../../src/ppt-editor/node_modules/boolbase/index.js"(exports, module) {
+  "node_modules/boolbase/index.js"(exports, module) {
     module.exports = {
       trueFunc: function trueFunc() {
         return true;
@@ -26624,9 +26624,9 @@ var require_boolbase = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-what/lib/commonjs/types.js
+// node_modules/css-what/lib/commonjs/types.js
 var require_types = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-what/lib/commonjs/types.js"(exports) {
+  "node_modules/css-what/lib/commonjs/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AttributeAction = exports.IgnoreCaseMode = exports.SelectorType = void 0;
@@ -26664,9 +26664,9 @@ var require_types = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-what/lib/commonjs/parse.js
+// node_modules/css-what/lib/commonjs/parse.js
 var require_parse2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-what/lib/commonjs/parse.js"(exports) {
+  "node_modules/css-what/lib/commonjs/parse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = exports.isTraversal = void 0;
@@ -26724,7 +26724,7 @@ var require_parse2 = __commonJS({
     function isWhitespace(c) {
       return c === 32 || c === 9 || c === 10 || c === 12 || c === 13;
     }
-    function parse5(selector) {
+    function parse6(selector) {
       var subselects = [];
       var endIndex = parseSelector(subselects, "".concat(selector), 0);
       if (endIndex < selector.length) {
@@ -26732,7 +26732,7 @@ var require_parse2 = __commonJS({
       }
       return subselects;
     }
-    exports.parse = parse5;
+    exports.parse = parse6;
     function parseSelector(subselects, selector, selectorIndex) {
       var tokens = [];
       function getName(offset) {
@@ -27019,9 +27019,9 @@ var require_parse2 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-what/lib/commonjs/stringify.js
+// node_modules/css-what/lib/commonjs/stringify.js
 var require_stringify3 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-what/lib/commonjs/stringify.js"(exports) {
+  "node_modules/css-what/lib/commonjs/stringify.js"(exports) {
     "use strict";
     var __spreadArray = exports && exports.__spreadArray || function(to, from, pack) {
       if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
@@ -27143,9 +27143,9 @@ var require_stringify3 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-what/lib/commonjs/index.js
+// node_modules/css-what/lib/commonjs/index.js
 var require_commonjs = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-what/lib/commonjs/index.js"(exports) {
+  "node_modules/css-what/lib/commonjs/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -27180,9 +27180,9 @@ var require_commonjs = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/sort.js
+// node_modules/css-select/lib/sort.js
 var require_sort = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/sort.js"(exports) {
+  "node_modules/css-select/lib/sort.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.isTraversal = void 0;
@@ -27253,9 +27253,9 @@ var require_sort = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/attributes.js
+// node_modules/css-select/lib/attributes.js
 var require_attributes = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/attributes.js"(exports) {
+  "node_modules/css-select/lib/attributes.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -27451,16 +27451,16 @@ var require_attributes = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/nth-check/lib/parse.js
+// node_modules/nth-check/lib/parse.js
 var require_parse3 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/nth-check/lib/parse.js"(exports) {
+  "node_modules/nth-check/lib/parse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.parse = void 0;
     var whitespace = /* @__PURE__ */ new Set([9, 10, 12, 13, 32]);
     var ZERO = "0".charCodeAt(0);
     var NINE = "9".charCodeAt(0);
-    function parse5(formula) {
+    function parse6(formula) {
       formula = formula.trim().toLowerCase();
       if (formula === "even") {
         return [2, 0];
@@ -27512,13 +27512,13 @@ var require_parse3 = __commonJS({
         }
       }
     }
-    exports.parse = parse5;
+    exports.parse = parse6;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/nth-check/lib/compile.js
+// node_modules/nth-check/lib/compile.js
 var require_compile = __commonJS({
-  "../../../../src/ppt-editor/node_modules/nth-check/lib/compile.js"(exports) {
+  "node_modules/nth-check/lib/compile.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -27587,9 +27587,9 @@ var require_compile = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/nth-check/lib/index.js
+// node_modules/nth-check/lib/index.js
 var require_lib8 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/nth-check/lib/index.js"(exports) {
+  "node_modules/nth-check/lib/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.sequence = exports.generate = exports.compile = exports.parse = void 0;
@@ -27615,9 +27615,9 @@ var require_lib8 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/filters.js
+// node_modules/css-select/lib/pseudo-selectors/filters.js
 var require_filters = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/filters.js"(exports) {
+  "node_modules/css-select/lib/pseudo-selectors/filters.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -27633,15 +27633,15 @@ var require_filters = __commonJS({
       };
     }
     exports.filters = {
-      contains: function(next, text, _a) {
+      contains: function(next, text2, _a) {
         var adapter = _a.adapter;
         return function contains(elem) {
-          return next(elem) && adapter.getText(elem).includes(text);
+          return next(elem) && adapter.getText(elem).includes(text2);
         };
       },
-      icontains: function(next, text, _a) {
+      icontains: function(next, text2, _a) {
         var adapter = _a.adapter;
-        var itext = text.toLowerCase();
+        var itext = text2.toLowerCase();
         return function icontains(elem) {
           return next(elem) && adapter.getText(elem).toLowerCase().includes(itext);
         };
@@ -27770,9 +27770,9 @@ var require_filters = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/pseudos.js
+// node_modules/css-select/lib/pseudo-selectors/pseudos.js
 var require_pseudos = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/pseudos.js"(exports) {
+  "node_modules/css-select/lib/pseudo-selectors/pseudos.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.verifyPseudoArgs = exports.pseudos = void 0;
@@ -27859,9 +27859,9 @@ var require_pseudos = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/aliases.js
+// node_modules/css-select/lib/pseudo-selectors/aliases.js
 var require_aliases = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/aliases.js"(exports) {
+  "node_modules/css-select/lib/pseudo-selectors/aliases.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.aliases = void 0;
@@ -27895,9 +27895,9 @@ var require_aliases = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/subselects.js
+// node_modules/css-select/lib/pseudo-selectors/subselects.js
 var require_subselects = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/subselects.js"(exports) {
+  "node_modules/css-select/lib/pseudo-selectors/subselects.js"(exports) {
     "use strict";
     var __spreadArray = exports && exports.__spreadArray || function(to, from, pack) {
       if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
@@ -27998,9 +27998,9 @@ var require_subselects = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/index.js
+// node_modules/css-select/lib/pseudo-selectors/index.js
 var require_pseudo_selectors = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/pseudo-selectors/index.js"(exports) {
+  "node_modules/css-select/lib/pseudo-selectors/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.compilePseudoSelector = exports.aliases = exports.pseudos = exports.filters = void 0;
@@ -28058,9 +28058,9 @@ var require_pseudo_selectors = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/general.js
+// node_modules/css-select/lib/general.js
 var require_general = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/general.js"(exports) {
+  "node_modules/css-select/lib/general.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.compileGeneralSelector = void 0;
@@ -28205,9 +28205,9 @@ var require_general = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/compile.js
+// node_modules/css-select/lib/compile.js
 var require_compile2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/compile.js"(exports) {
+  "node_modules/css-select/lib/compile.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -28337,9 +28337,9 @@ var require_compile2 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/css-select/lib/index.js
+// node_modules/css-select/lib/index.js
 var require_lib9 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/css-select/lib/index.js"(exports) {
+  "node_modules/css-select/lib/index.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -28454,9 +28454,9 @@ var require_lib9 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/back.js
+// node_modules/node-html-parser/dist/back.js
 var require_back = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/back.js"(exports) {
+  "node_modules/node-html-parser/dist/back.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function arr_back(arr) {
@@ -28466,9 +28466,9 @@ var require_back = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/matcher.js
+// node_modules/node-html-parser/dist/matcher.js
 var require_matcher = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/matcher.js"(exports) {
+  "node_modules/node-html-parser/dist/matcher.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -28573,9 +28573,9 @@ var require_matcher = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/void-tag.js
+// node_modules/node-html-parser/dist/void-tag.js
 var require_void_tag = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/void-tag.js"(exports) {
+  "node_modules/node-html-parser/dist/void-tag.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var VoidTag = class {
@@ -28605,9 +28605,9 @@ var require_void_tag = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/text.js
+// node_modules/node-html-parser/dist/nodes/text.js
 var require_text2 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/text.js"(exports) {
+  "node_modules/node-html-parser/dist/nodes/text.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -28632,8 +28632,8 @@ var require_text2 = __commonJS({
       /**
        * Set rawText and invalidate trimmed caches
        */
-      set rawText(text) {
-        this._rawText = text;
+      set rawText(text2) {
+        this._rawText = text2;
         this._trimmedRawText = void 0;
         this._trimmedText = void 0;
       }
@@ -28674,15 +28674,15 @@ var require_text2 = __commonJS({
       }
     };
     exports.default = TextNode;
-    function trimText(text) {
+    function trimText(text2) {
       let i = 0;
       let startPos;
       let endPos;
-      while (i >= 0 && i < text.length) {
-        if (/\S/.test(text[i])) {
+      while (i >= 0 && i < text2.length) {
+        if (/\S/.test(text2[i])) {
           if (startPos === void 0) {
             startPos = i;
-            i = text.length;
+            i = text2.length;
           } else {
             endPos = i;
             i = void 0;
@@ -28696,17 +28696,17 @@ var require_text2 = __commonJS({
       if (startPos === void 0)
         startPos = 0;
       if (endPos === void 0)
-        endPos = text.length - 1;
-      const hasLeadingSpace = startPos > 0 && /[^\S\r\n]/.test(text[startPos - 1]);
-      const hasTrailingSpace = endPos < text.length - 1 && /[^\S\r\n]/.test(text[endPos + 1]);
-      return (hasLeadingSpace ? " " : "") + text.slice(startPos, endPos + 1) + (hasTrailingSpace ? " " : "");
+        endPos = text2.length - 1;
+      const hasLeadingSpace = startPos > 0 && /[^\S\r\n]/.test(text2[startPos - 1]);
+      const hasTrailingSpace = endPos < text2.length - 1 && /[^\S\r\n]/.test(text2[endPos + 1]);
+      return (hasLeadingSpace ? " " : "") + text2.slice(startPos, endPos + 1) + (hasTrailingSpace ? " " : "");
     }
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/html.js
+// node_modules/node-html-parser/dist/nodes/html.js
 var require_html = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/nodes/html.js"(exports) {
+  "node_modules/node-html-parser/dist/nodes/html.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -28934,12 +28934,12 @@ var require_html = __commonJS({
             if (node.isWhitespace) {
               currentBlock.prependWhitespace = true;
             } else {
-              let text = node.trimmedText;
+              let text2 = node.trimmedText;
               if (currentBlock.prependWhitespace) {
-                text = ` ${text}`;
+                text2 = ` ${text2}`;
                 currentBlock.prependWhitespace = false;
               }
-              currentBlock.push(text);
+              currentBlock.push(text2);
             }
           }
         }
@@ -28962,7 +28962,7 @@ var require_html = __commonJS({
         }).join("");
       }
       set innerHTML(content) {
-        const r = parse5(content, this._parseOptions);
+        const r = parse6(content, this._parseOptions);
         const nodes = r.childNodes.length ? r.childNodes : [new text_1.default(content, this)];
         resetParent(nodes, this);
         resetParent(this.childNodes, null);
@@ -28973,7 +28973,7 @@ var require_html = __commonJS({
           content = [content];
         } else if (typeof content == "string") {
           options = Object.assign(Object.assign({}, this._parseOptions), options);
-          const r = parse5(content, options);
+          const r = parse6(content, options);
           content = r.childNodes.length ? r.childNodes : [new text_1.default(r.innerHTML, this)];
         }
         resetParent(this.childNodes, null);
@@ -28987,7 +28987,7 @@ var require_html = __commonJS({
           if (node instanceof node_1.default) {
             return [node];
           } else if (typeof node == "string") {
-            const r = parse5(node, this._parseOptions);
+            const r = parse6(node, this._parseOptions);
             return r.childNodes.length ? r.childNodes : [new text_1.default(node, this)];
           }
           return [];
@@ -29371,7 +29371,7 @@ var require_html = __commonJS({
         if (arguments.length < 2) {
           throw new Error("2 arguments required");
         }
-        const p = parse5(html, this._parseOptions);
+        const p = parse6(html, this._parseOptions);
         if (where === "afterend") {
           this.after(...p.childNodes);
         } else if (where === "afterbegin") {
@@ -29517,7 +29517,7 @@ var require_html = __commonJS({
       }
       /** Clone this Node */
       clone() {
-        return parse5(this.toString(), this._parseOptions).firstChild;
+        return parse6(this.toString(), this._parseOptions).firstChild;
       }
     };
     exports.default = HTMLElement2;
@@ -29603,8 +29603,8 @@ var require_html = __commonJS({
         const tagEndPos = kMarkupPattern.lastIndex;
         if (lastTextPos > -1) {
           if (lastTextPos + matchLength < tagEndPos) {
-            const text = data.substring(lastTextPos, tagStartPos);
-            currentParent.appendChild(new text_1.default(text, currentParent, createRange(lastTextPos, tagStartPos)));
+            const text2 = data.substring(lastTextPos, tagStartPos);
+            currentParent.appendChild(new text_1.default(text2, currentParent, createRange(lastTextPos, tagStartPos)));
           }
         }
         lastTextPos = kMarkupPattern.lastIndex;
@@ -29612,8 +29612,8 @@ var require_html = __commonJS({
           continue;
         if (matchText[1] === "!") {
           if (options.comment) {
-            const text = data.substring(tagStartPos + 4, tagEndPos - 3);
-            currentParent.appendChild(new comment_1.default(text, currentParent, createRange(tagStartPos, tagEndPos)));
+            const text2 = data.substring(tagStartPos + 4, tagEndPos - 3);
+            currentParent.appendChild(new comment_1.default(text2, currentParent, createRange(tagStartPos, tagEndPos)));
           }
           continue;
         }
@@ -29652,9 +29652,9 @@ var require_html = __commonJS({
             const closeIndex = lowerCaseTagName ? data.toLocaleLowerCase().indexOf(closeMarkup, kMarkupPattern.lastIndex) : data.indexOf(closeMarkup, kMarkupPattern.lastIndex);
             const textEndPos = closeIndex === -1 ? dataEndPos : closeIndex;
             if (element_should_be_ignore(tagName)) {
-              const text = data.substring(tagEndPos2, textEndPos);
-              if (text.length > 0 && /\S/.test(text)) {
-                currentParent.appendChild(new text_1.default(text, currentParent, createRange(tagEndPos2, textEndPos)));
+              const text2 = data.substring(tagEndPos2, textEndPos);
+              if (text2.length > 0 && /\S/.test(text2)) {
+                currentParent.appendChild(new text_1.default(text2, currentParent, createRange(tagEndPos2, textEndPos)));
               }
             }
             if (closeIndex === -1) {
@@ -29719,7 +29719,7 @@ var require_html = __commonJS({
       return stack;
     }
     exports.base_parse = base_parse;
-    function parse5(data, options = {}) {
+    function parse6(data, options = {}) {
       const stack = base_parse(data, options);
       const [root] = stack;
       while (stack.length > 1) {
@@ -29747,7 +29747,7 @@ var require_html = __commonJS({
       }
       return root;
     }
-    exports.parse = parse5;
+    exports.parse = parse6;
     function resolveInsertable(insertable) {
       return insertable.map((val) => {
         if (typeof val === "string") {
@@ -29766,9 +29766,9 @@ var require_html = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/parse.js
+// node_modules/node-html-parser/dist/parse.js
 var require_parse4 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/parse.js"(exports) {
+  "node_modules/node-html-parser/dist/parse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = void 0;
@@ -29779,9 +29779,9 @@ var require_parse4 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/valid.js
+// node_modules/node-html-parser/dist/valid.js
 var require_valid = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/valid.js"(exports) {
+  "node_modules/node-html-parser/dist/valid.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var html_1 = require_html();
@@ -29793,9 +29793,9 @@ var require_valid = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/node-html-parser/dist/index.js
+// node_modules/node-html-parser/dist/index.js
 var require_dist3 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/node-html-parser/dist/index.js"(exports) {
+  "node_modules/node-html-parser/dist/index.js"(exports) {
     "use strict";
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -29815,24 +29815,24 @@ var require_dist3 = __commonJS({
     var parse_1 = __importDefault(require_parse4());
     var valid_1 = __importDefault(require_valid());
     exports.valid = valid_1.default;
-    function parse5(data, options = {}) {
+    function parse6(data, options = {}) {
       return (0, parse_1.default)(data, options);
     }
-    exports.default = parse5;
-    exports.parse = parse5;
-    parse5.parse = parse_1.default;
-    parse5.HTMLElement = html_1.default;
-    parse5.CommentNode = comment_1.default;
-    parse5.valid = valid_1.default;
-    parse5.Node = node_1.default;
-    parse5.TextNode = text_1.default;
-    parse5.NodeType = type_1.default;
+    exports.default = parse6;
+    exports.parse = parse6;
+    parse6.parse = parse_1.default;
+    parse6.HTMLElement = html_1.default;
+    parse6.CommentNode = comment_1.default;
+    parse6.valid = valid_1.default;
+    parse6.Node = node_1.default;
+    parse6.TextNode = text_1.default;
+    parse6.NodeType = type_1.default;
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/util/constants.js
+// node_modules/adm-zip/util/constants.js
 var require_constants = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/util/constants.js"(exports, module) {
+  "node_modules/adm-zip/util/constants.js"(exports, module) {
     module.exports = {
       /* The local file header */
       LOCHDR: 30,
@@ -30049,9 +30049,9 @@ var require_constants = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/util/errors.js
+// node_modules/adm-zip/util/errors.js
 var require_errors = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/util/errors.js"(exports) {
+  "node_modules/adm-zip/util/errors.js"(exports) {
     var errors = {
       /* Header error messages */
       INVALID_LOC: "Invalid LOC header (bad signature)",
@@ -30109,9 +30109,9 @@ var require_errors = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/util/utils.js
+// node_modules/adm-zip/util/utils.js
 var require_utils4 = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/util/utils.js"(exports, module) {
+  "node_modules/adm-zip/util/utils.js"(exports, module) {
     var fsystem = __require("fs");
     var pth = __require("path");
     var Constants = require_constants();
@@ -30145,9 +30145,9 @@ var require_utils4 = __commonJS({
         fpath.split(self.sep).forEach(function(name) {
           if (!name || name.substr(-1, 1) === ":") return;
           resolvedPath += self.sep + name;
-          var stat4;
+          var stat5;
           try {
-            stat4 = self.fs.statSync(resolvedPath);
+            stat5 = self.fs.statSync(resolvedPath);
           } catch (e) {
             if (e.message && e.message.startsWith("ENOENT")) {
               self.fs.mkdirSync(resolvedPath);
@@ -30155,30 +30155,30 @@ var require_utils4 = __commonJS({
               throw e;
             }
           }
-          if (stat4 && stat4.isFile()) throw Errors.FILE_IN_THE_WAY(`"${resolvedPath}"`);
+          if (stat5 && stat5.isFile()) throw Errors.FILE_IN_THE_WAY(`"${resolvedPath}"`);
         });
       }
       mkdirSync(folder);
     };
-    Utils.prototype.writeFileTo = function(path8, content, overwrite, attr) {
+    Utils.prototype.writeFileTo = function(path10, content, overwrite, attr) {
       const self = this;
-      if (self.fs.existsSync(path8)) {
+      if (self.fs.existsSync(path10)) {
         if (!overwrite) return false;
-        var stat4 = self.fs.statSync(path8);
-        if (stat4.isDirectory()) {
+        var stat5 = self.fs.statSync(path10);
+        if (stat5.isDirectory()) {
           return false;
         }
       }
-      var folder = pth.dirname(path8);
+      var folder = pth.dirname(path10);
       if (!self.fs.existsSync(folder)) {
         self.makeDir(folder);
       }
       var fd;
       try {
-        fd = self.fs.openSync(path8, "w", 438);
+        fd = self.fs.openSync(path10, "w", 438);
       } catch (e) {
-        self.fs.chmodSync(path8, 438);
-        fd = self.fs.openSync(path8, "w", 438);
+        self.fs.chmodSync(path10, 438);
+        fd = self.fs.openSync(path10, "w", 438);
       }
       if (fd) {
         try {
@@ -30187,31 +30187,31 @@ var require_utils4 = __commonJS({
           self.fs.closeSync(fd);
         }
       }
-      self.fs.chmodSync(path8, attr || 438);
+      self.fs.chmodSync(path10, attr || 438);
       return true;
     };
-    Utils.prototype.writeFileToAsync = function(path8, content, overwrite, attr, callback) {
+    Utils.prototype.writeFileToAsync = function(path10, content, overwrite, attr, callback) {
       if (typeof attr === "function") {
         callback = attr;
         attr = void 0;
       }
       const self = this;
-      self.fs.exists(path8, function(exist) {
+      self.fs.exists(path10, function(exist) {
         if (exist && !overwrite) return callback(false);
-        self.fs.stat(path8, function(err, stat4) {
-          if (exist && stat4.isDirectory()) {
+        self.fs.stat(path10, function(err, stat5) {
+          if (exist && stat5.isDirectory()) {
             return callback(false);
           }
-          var folder = pth.dirname(path8);
+          var folder = pth.dirname(path10);
           self.fs.exists(folder, function(exists) {
             if (!exists) self.makeDir(folder);
-            self.fs.open(path8, "w", 438, function(err2, fd) {
+            self.fs.open(path10, "w", 438, function(err2, fd) {
               if (err2) {
-                self.fs.chmod(path8, 438, function() {
-                  self.fs.open(path8, "w", 438, function(err3, fd2) {
+                self.fs.chmod(path10, 438, function() {
+                  self.fs.open(path10, "w", 438, function(err3, fd2) {
                     self.fs.write(fd2, content, 0, content.length, 0, function() {
                       self.fs.close(fd2, function() {
-                        self.fs.chmod(path8, attr || 438, function() {
+                        self.fs.chmod(path10, attr || 438, function() {
                           callback(true);
                         });
                       });
@@ -30221,13 +30221,13 @@ var require_utils4 = __commonJS({
               } else if (fd) {
                 self.fs.write(fd, content, 0, content.length, 0, function() {
                   self.fs.close(fd, function() {
-                    self.fs.chmod(path8, attr || 438, function() {
+                    self.fs.chmod(path10, attr || 438, function() {
                       callback(true);
                     });
                   });
                 });
               } else {
-                self.fs.chmod(path8, attr || 438, function() {
+                self.fs.chmod(path10, attr || 438, function() {
                   callback(true);
                 });
               }
@@ -30236,7 +30236,7 @@ var require_utils4 = __commonJS({
         });
       });
     };
-    Utils.prototype.findFiles = function(path8) {
+    Utils.prototype.findFiles = function(path10) {
       const self = this;
       function findSync(dir, pattern, recursive) {
         if (typeof pattern === "boolean") {
@@ -30245,16 +30245,16 @@ var require_utils4 = __commonJS({
         }
         let files = [];
         self.fs.readdirSync(dir).forEach(function(file) {
-          const path9 = pth.join(dir, file);
-          const stat4 = self.fs.statSync(path9);
-          if (!pattern || pattern.test(path9)) {
-            files.push(pth.normalize(path9) + (stat4.isDirectory() ? self.sep : ""));
+          const path11 = pth.join(dir, file);
+          const stat5 = self.fs.statSync(path11);
+          if (!pattern || pattern.test(path11)) {
+            files.push(pth.normalize(path11) + (stat5.isDirectory() ? self.sep : ""));
           }
-          if (stat4.isDirectory() && recursive) files = files.concat(findSync(path9, pattern, recursive));
+          if (stat5.isDirectory() && recursive) files = files.concat(findSync(path11, pattern, recursive));
         });
         return files;
       }
-      return findSync(path8, void 0, true);
+      return findSync(path10, void 0, true);
     };
     Utils.prototype.findFilesAsync = function(dir, cb) {
       const self = this;
@@ -30265,11 +30265,11 @@ var require_utils4 = __commonJS({
         if (!list_length) return cb(null, results);
         list.forEach(function(file) {
           file = pth.join(dir, file);
-          self.fs.stat(file, function(err2, stat4) {
+          self.fs.stat(file, function(err2, stat5) {
             if (err2) return cb(err2);
-            if (stat4) {
-              results.push(pth.normalize(file) + (stat4.isDirectory() ? self.sep : ""));
-              if (stat4.isDirectory()) {
+            if (stat5) {
+              results.push(pth.normalize(file) + (stat5.isDirectory() ? self.sep : ""));
+              if (stat5.isDirectory()) {
                 self.findFilesAsync(file, function(err3, res) {
                   if (err3) return cb(err3);
                   results = results.concat(res);
@@ -30309,14 +30309,14 @@ var require_utils4 = __commonJS({
           return "UNSUPPORTED (" + method + ")";
       }
     };
-    Utils.canonical = function(path8) {
-      if (!path8) return "";
-      const safeSuffix = pth.posix.normalize("/" + path8.split("\\").join("/"));
+    Utils.canonical = function(path10) {
+      if (!path10) return "";
+      const safeSuffix = pth.posix.normalize("/" + path10.split("\\").join("/"));
       return pth.join(".", safeSuffix);
     };
-    Utils.zipnamefix = function(path8) {
-      if (!path8) return "";
-      const safeSuffix = pth.posix.normalize("/" + path8.split("\\").join("/"));
+    Utils.zipnamefix = function(path10) {
+      if (!path10) return "";
+      const safeSuffix = pth.posix.normalize("/" + path10.split("\\").join("/"));
       return pth.posix.join(".", safeSuffix);
     };
     Utils.findLast = function(arr, callback) {
@@ -30333,9 +30333,9 @@ var require_utils4 = __commonJS({
       prefix = pth.resolve(pth.normalize(prefix));
       var parts = name.split("/");
       for (var i = 0, l = parts.length; i < l; i++) {
-        var path8 = pth.normalize(pth.join(prefix, parts.slice(i, l).join(pth.sep)));
-        if (path8.indexOf(prefix) === 0) {
-          return path8;
+        var path10 = pth.normalize(pth.join(prefix, parts.slice(i, l).join(pth.sep)));
+        if (path10.indexOf(prefix) === 0) {
+          return path10;
         }
       }
       return pth.normalize(pth.join(prefix, pth.basename(name)));
@@ -30371,12 +30371,12 @@ var require_utils4 = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/util/fattr.js
+// node_modules/adm-zip/util/fattr.js
 var require_fattr = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/util/fattr.js"(exports, module) {
+  "node_modules/adm-zip/util/fattr.js"(exports, module) {
     var pth = __require("path");
-    module.exports = function(path8, { fs }) {
-      var _path = path8 || "", _obj = newAttr(), _stat = null;
+    module.exports = function(path10, { fs }) {
+      var _path = path10 || "", _obj = newAttr(), _stat = null;
       function newAttr() {
         return {
           directory: false,
@@ -30440,9 +30440,9 @@ var require_fattr = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/util/decoder.js
+// node_modules/adm-zip/util/decoder.js
 var require_decoder = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/util/decoder.js"(exports, module) {
+  "node_modules/adm-zip/util/decoder.js"(exports, module) {
     module.exports = {
       efs: true,
       encode: (data) => Buffer.from(data, "utf8"),
@@ -30451,9 +30451,9 @@ var require_decoder = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/util/index.js
+// node_modules/adm-zip/util/index.js
 var require_util = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/util/index.js"(exports, module) {
+  "node_modules/adm-zip/util/index.js"(exports, module) {
     module.exports = require_utils4();
     module.exports.Constants = require_constants();
     module.exports.Errors = require_errors();
@@ -30462,9 +30462,9 @@ var require_util = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/headers/entryHeader.js
+// node_modules/adm-zip/headers/entryHeader.js
 var require_entryHeader = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/headers/entryHeader.js"(exports, module) {
+  "node_modules/adm-zip/headers/entryHeader.js"(exports, module) {
     var Utils = require_util();
     var Constants = Utils.Constants;
     module.exports = function() {
@@ -30732,9 +30732,9 @@ var require_entryHeader = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/headers/mainHeader.js
+// node_modules/adm-zip/headers/mainHeader.js
 var require_mainHeader = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/headers/mainHeader.js"(exports, module) {
+  "node_modules/adm-zip/headers/mainHeader.js"(exports, module) {
     var Utils = require_util();
     var Constants = Utils.Constants;
     module.exports = function() {
@@ -30825,17 +30825,17 @@ var require_mainHeader = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/headers/index.js
+// node_modules/adm-zip/headers/index.js
 var require_headers = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/headers/index.js"(exports) {
+  "node_modules/adm-zip/headers/index.js"(exports) {
     exports.EntryHeader = require_entryHeader();
     exports.MainHeader = require_mainHeader();
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/methods/deflater.js
+// node_modules/adm-zip/methods/deflater.js
 var require_deflater = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/methods/deflater.js"(exports, module) {
+  "node_modules/adm-zip/methods/deflater.js"(exports, module) {
     module.exports = function(inbuf) {
       var zlib = __require("zlib");
       var opts = { chunkSize: (parseInt(inbuf.length / 1024) + 1) * 1024 };
@@ -30866,9 +30866,9 @@ var require_deflater = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/methods/inflater.js
+// node_modules/adm-zip/methods/inflater.js
 var require_inflater = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/methods/inflater.js"(exports, module) {
+  "node_modules/adm-zip/methods/inflater.js"(exports, module) {
     var version = +(process.versions ? process.versions.node : "").split(".")[0] || 0;
     module.exports = function(inbuf, expectedLength) {
       var zlib = __require("zlib");
@@ -30900,9 +30900,9 @@ var require_inflater = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/methods/zipcrypto.js
+// node_modules/adm-zip/methods/zipcrypto.js
 var require_zipcrypto = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/methods/zipcrypto.js"(exports, module) {
+  "node_modules/adm-zip/methods/zipcrypto.js"(exports, module) {
     "use strict";
     var { randomFillSync } = __require("crypto");
     var Errors = require_errors();
@@ -31016,18 +31016,18 @@ var require_zipcrypto = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/methods/index.js
+// node_modules/adm-zip/methods/index.js
 var require_methods = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/methods/index.js"(exports) {
+  "node_modules/adm-zip/methods/index.js"(exports) {
     exports.Deflater = require_deflater();
     exports.Inflater = require_inflater();
     exports.ZipCrypto = require_zipcrypto();
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/zipEntry.js
+// node_modules/adm-zip/zipEntry.js
 var require_zipEntry = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/zipEntry.js"(exports, module) {
+  "node_modules/adm-zip/zipEntry.js"(exports, module) {
     var Utils = require_util();
     var Headers = require_headers();
     var Constants = Utils.Constants;
@@ -31356,9 +31356,9 @@ var require_zipEntry = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/zipFile.js
+// node_modules/adm-zip/zipFile.js
 var require_zipFile = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/zipFile.js"(exports, module) {
+  "node_modules/adm-zip/zipFile.js"(exports, module) {
     var ZipEntry = require_zipEntry();
     var Headers = require_headers();
     var Utils = require_util();
@@ -31702,9 +31702,9 @@ var require_zipFile = __commonJS({
   }
 });
 
-// ../../../../src/ppt-editor/node_modules/adm-zip/adm-zip.js
+// node_modules/adm-zip/adm-zip.js
 var require_adm_zip = __commonJS({
-  "../../../../src/ppt-editor/node_modules/adm-zip/adm-zip.js"(exports, module) {
+  "node_modules/adm-zip/adm-zip.js"(exports, module) {
     var Utils = require_util();
     var pth = __require("path");
     var ZipEntry = require_zipEntry();
@@ -32495,37 +32495,126 @@ var require_adm_zip = __commonJS({
 // server/index.ts
 var import_express = __toESM(require_express2(), 1);
 import { createReadStream } from "node:fs";
-import { stat as stat3 } from "node:fs/promises";
-import path7 from "node:path";
+import { stat as stat4 } from "node:fs/promises";
+import path9 from "node:path";
 
 // server/deck-service.ts
-var import_node_html_parser2 = __toESM(require_dist3(), 1);
+var import_node_html_parser3 = __toESM(require_dist3(), 1);
 var import_adm_zip = __toESM(require_adm_zip(), 1);
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
-import { cp, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { existsSync as existsSync2, readFileSync } from "node:fs";
+import { cp, mkdir, readFile as readFile2, readdir as readdir2, rename, stat, writeFile } from "node:fs/promises";
+import path2 from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 // server/analyzer.ts
 var import_node_html_parser = __toESM(require_dist3(), 1);
 
 // server/html-utils.ts
+var RAW_DECLARATIONS_KEY = "\0raw-declarations";
+function isQuoteChar(char) {
+  return char === '"' || char === "'";
+}
+function splitStyleDeclarations(style) {
+  const declarations = [];
+  let current = "";
+  let depth = 0;
+  let quote = null;
+  for (let index = 0; index < style.length; index += 1) {
+    const char = style[index];
+    if (quote) {
+      current += char;
+      if (char === "\\" && index + 1 < style.length) {
+        current += style[index + 1];
+        index += 1;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (isQuoteChar(char)) {
+      quote = char;
+      current += char;
+      continue;
+    }
+    if (char === "(") {
+      depth += 1;
+      current += char;
+      continue;
+    }
+    if (char === ")") {
+      depth = Math.max(0, depth - 1);
+      current += char;
+      continue;
+    }
+    if (char === ";" && depth === 0) {
+      declarations.push(current);
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  declarations.push(current);
+  return declarations;
+}
+function findTopLevelColon(declaration) {
+  let depth = 0;
+  let quote = null;
+  for (let index = 0; index < declaration.length; index += 1) {
+    const char = declaration[index];
+    if (quote) {
+      if (char === "\\") {
+        index += 1;
+      } else if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (isQuoteChar(char)) {
+      quote = char;
+      continue;
+    }
+    if (char === "(") {
+      depth += 1;
+      continue;
+    }
+    if (char === ")") {
+      depth = Math.max(0, depth - 1);
+      continue;
+    }
+    if (char === ":" && depth === 0) {
+      return index;
+    }
+  }
+  return -1;
+}
 function parseStyleDeclaration(style) {
   if (!style) {
     return {};
   }
-  return style.split(";").map((item) => item.trim()).filter(Boolean).reduce((acc, declaration) => {
-    const [property, ...rest] = declaration.split(":");
-    if (!property || rest.length === 0) {
-      return acc;
+  const styles = {};
+  const rawDeclarations = [];
+  for (const declaration of splitStyleDeclarations(style)) {
+    const trimmed = declaration.trim();
+    if (!trimmed) {
+      continue;
     }
-    acc[property.trim()] = rest.join(":").trim();
-    return acc;
-  }, {});
+    const colonIndex = findTopLevelColon(trimmed);
+    const property = colonIndex > 0 ? trimmed.slice(0, colonIndex).trim() : "";
+    const value = colonIndex > 0 ? trimmed.slice(colonIndex + 1).trim() : "";
+    if (!property || !value) {
+      rawDeclarations.push(trimmed);
+      continue;
+    }
+    styles[property] = value;
+  }
+  if (rawDeclarations.length) {
+    styles[RAW_DECLARATIONS_KEY] = rawDeclarations.join("; ");
+  }
+  return styles;
 }
 function stringifyStyleDeclaration(styles) {
-  return Object.entries(styles).map(([property, value]) => `${property}: ${value}`).join("; ");
+  return Object.entries(styles).map(([property, value]) => property === RAW_DECLARATIONS_KEY ? value : `${property}: ${value}`).join("; ");
 }
 function setStyleProperty(element, property, value) {
   if (!element) {
@@ -32591,25 +32680,30 @@ function derivePreserveRules(type) {
   }
   return ["preserve-wrapper-contract"];
 }
-function validateSlideHtml(html) {
+function validateSlideHtml(html, options = {}) {
   const errors = [];
   const warnings = [];
   const root = (0, import_node_html_parser.parse)(html);
+  const format = options.deckFormat ?? "legacy-per-slide-html";
   const wrapper = root.querySelector(".wrapper");
-  const bg = root.querySelector("#bg");
-  const content = root.querySelector("#ct");
-  if (!wrapper) {
-    errors.push("Missing `.wrapper` root container.");
-  }
-  if (!bg) {
-    errors.push("Missing `#bg` background layer.");
-  }
-  if (!content) {
-    errors.push("Missing `#ct` content layer.");
-  }
-  const wrapperStyle = wrapper?.getAttribute("style") ?? "";
-  if (wrapper && (!wrapperStyle.includes("1600px") || !wrapperStyle.includes("900px"))) {
-    warnings.push("Wrapper does not explicitly declare a 1600x900 canvas.");
+  const slide = options.pageSelector ? root.querySelector(options.pageSelector) : root.querySelector(".slide");
+  if (format === "dynamic-html-v2") {
+    if (!root.querySelector(".deck")) errors.push("Missing `.deck` dynamic canvas.");
+    if (!root.querySelector(".stage")) errors.push("Missing `.stage` dynamic viewport.");
+    if (!root.querySelector("#bg-layer")) warnings.push("Missing `#bg-layer`; the shared dynamic background is unavailable.");
+    if (!slide) errors.push(`Missing dynamic page section: ${options.pageSelector ?? ".slide"}.`);
+  } else if (format === "static-html-v2") {
+    if (!slide) errors.push("Missing `.slide` root container.");
+  } else {
+    const bg = root.querySelector("#bg");
+    const content = root.querySelector("#ct");
+    if (!wrapper) errors.push("Missing `.wrapper` root container.");
+    if (!bg) errors.push("Missing `#bg` background layer.");
+    if (!content) errors.push("Missing `#ct` content layer.");
+    const wrapperStyle = wrapper?.getAttribute("style") ?? "";
+    if (wrapper && (!wrapperStyle.includes("1600px") || !wrapperStyle.includes("900px"))) {
+      warnings.push("Wrapper does not explicitly declare a 1600x900 canvas.");
+    }
   }
   for (const image of root.querySelectorAll("img")) {
     const source = image.getAttribute("src") ?? "";
@@ -32627,9 +32721,11 @@ function validateSlideHtml(html) {
     warnings
   };
 }
-function analyzeSlideHtml(html, pageNo) {
+function analyzeSlideHtml(html, pageNo, options = {}) {
   const root = (0, import_node_html_parser.parse)(html);
-  const declaredRegions = root.querySelectorAll('[data-editor-region="true"]');
+  const pageRoot = options.pageSelector ? root.querySelector(options.pageSelector) : options.deckFormat === "static-html-v2" ? root.querySelector(".slide") : root.querySelector(".wrapper") ?? root.querySelector("body");
+  const declaredRegions = pageRoot?.querySelectorAll('[data-editor-region="true"]') ?? [];
+  const canvas = options.canvas ?? { width: WRAPPER_WIDTH, height: WRAPPER_HEIGHT };
   const regions = declaredRegions.map((element) => {
     const style = element.getAttribute("style") ?? "";
     const id = element.getAttribute("data-region-id") ?? `page-${pageNo}-region`;
@@ -32643,8 +32739,8 @@ function analyzeSlideHtml(html, pageNo) {
       bounds: {
         x: readPx(style, "left"),
         y: readPx(style, "top"),
-        w: readPx(style, "width") || WRAPPER_WIDTH,
-        h: readPx(style, "height") || WRAPPER_HEIGHT
+        w: readPx(style, "width") || canvas.width,
+        h: readPx(style, "height") || canvas.height
       },
       editable: element.getAttribute("data-editable") !== "false",
       preserveRules: derivePreserveRules(type),
@@ -32653,14 +32749,14 @@ function analyzeSlideHtml(html, pageNo) {
     };
   });
   if (regions.length === 0) {
-    const content = root.querySelector("#ct");
+    const content = pageRoot?.querySelector(".slide-body") ?? pageRoot?.querySelector("#ct") ?? pageRoot;
     if (content) {
       regions.push({
         id: `page-${pageNo}-content`,
         type: "freeform",
         label: "Whole slide content",
-        selector: "#ct",
-        bounds: { x: 0, y: 0, w: WRAPPER_WIDTH, h: WRAPPER_HEIGHT },
+        selector: options.pageSelector ? `${options.pageSelector} .slide-body` : options.deckFormat === "static-html-v2" ? ".slide-body" : "#ct",
+        bounds: { x: 0, y: 0, w: canvas.width, h: canvas.height },
         editable: true,
         preserveRules: ["preserve-wrapper-contract"],
         textPreview: textContentPreview(content.textContent),
@@ -32671,7 +32767,239 @@ function analyzeSlideHtml(html, pageNo) {
   return {
     pageNo,
     regions,
-    validation: validateSlideHtml(html)
+    validation: validateSlideHtml(html, options)
+  };
+}
+
+// server/deck-format.ts
+var import_node_html_parser2 = __toESM(require_dist3(), 1);
+import { existsSync } from "node:fs";
+import { readFile, readdir } from "node:fs/promises";
+import path from "node:path";
+var legacyCanvas = { width: 1600, height: 900 };
+var dynamicCanvas = { width: 1280, height: 720 };
+function normalizedPath(filePath) {
+  return filePath.split(path.sep).join("/");
+}
+async function readOptionalJson(filePath) {
+  try {
+    return JSON.parse(await readFile(filePath, "utf8"));
+  } catch {
+    return void 0;
+  }
+}
+async function collectRelativeFiles(root, current = root) {
+  const entries = await readdir(current, { withFileTypes: true }).catch(() => []);
+  const files = [];
+  for (const entry of entries) {
+    if (entry.name === ".git" || entry.name === ".workbench" || entry.name === "node_modules") continue;
+    const absolutePath = path.join(current, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...await collectRelativeFiles(root, absolutePath));
+    } else {
+      files.push(normalizedPath(path.relative(root, absolutePath)));
+    }
+  }
+  return files;
+}
+function pageNumber(filePath, fallback) {
+  const match = /(?:page|slide)[_-]?(\d+)/i.exec(path.basename(filePath));
+  return match ? Number.parseInt(match[1], 10) : fallback;
+}
+function cleanText(value) {
+  return (value ?? "").replace(/\s+/g, " ").trim();
+}
+function parseOutlineMarkdown(markdown) {
+  const pages = /* @__PURE__ */ new Map();
+  const matches = [...markdown.matchAll(/^##\s+(?:第\s*)?(\d+)\s*(?:页|slide)?\s*[：:]\s*(.+)$/gim)];
+  for (let index = 0; index < matches.length; index += 1) {
+    const match = matches[index];
+    const pageNo = Number.parseInt(match[1], 10);
+    if (!Number.isFinite(pageNo) || pageNo < 1) continue;
+    const blockEnd = matches[index + 1]?.index ?? markdown.length;
+    const block = markdown.slice((match.index ?? 0) + match[0].length, blockEnd);
+    const intent = /###\s+(?:这一页要说明什么|what this slide says)\s*\r?\n+([^#]+)/i.exec(block)?.[1];
+    pages.set(pageNo, {
+      title: cleanText(match[2]) || `Page ${pageNo}`,
+      summary: cleanText(intent)
+    });
+  }
+  return pages;
+}
+function selectorForDynamicSection(id, dataSlide, pageNo) {
+  if (id && /^[A-Za-z_][\w-]*$/.test(id)) return `#${id}`;
+  if (id) return `[id="${id.replaceAll('"', '\\"')}"]`;
+  if (dataSlide) return `[data-slide="${dataSlide.replaceAll('"', '\\"')}"]`;
+  return `.slide:nth-of-type(${pageNo})`;
+}
+function outputKind(taskPack) {
+  const output = taskPack?.choices?.output;
+  if (typeof output === "string" && output.trim()) return output.trim();
+  const mode = taskPack?.ppt_mode;
+  if (mode === "dazzle") return "dynamic_html";
+  if (mode === "creative") return "creative";
+  if (mode === "native-pptx") return "native_pptx";
+  if (mode === "standard") return "static_html";
+  return void 0;
+}
+function expectedPageCount(taskPack, outline = /* @__PURE__ */ new Map()) {
+  const count = Number(taskPack?.params?.page_count);
+  if (Number.isFinite(count) && count > 0) return Math.floor(count);
+  if (outline.size) return Math.max(...outline.keys());
+  return void 0;
+}
+function completedDynamicPageNumbers(taskPack) {
+  const artifacts = taskPack?.state?.artifacts;
+  const value = artifacts && typeof artifacts === "object" ? artifacts.dynamic_pages_completed : void 0;
+  const result = /* @__PURE__ */ new Set();
+  if (!Array.isArray(value)) return result;
+  for (const item of value) {
+    const candidate = typeof item === "object" && item !== null ? item.pageNo ?? item.page : item;
+    const pageNo = Number(candidate);
+    if (Number.isInteger(pageNo) && pageNo > 0) result.add(pageNo);
+  }
+  return result;
+}
+function taskIsComplete(taskPack) {
+  const status = String(taskPack?.state?.status ?? "").trim().toLowerCase().replaceAll("-", "_");
+  return ["complete", "completed", "done", "ok", "success", "succeeded"].includes(status);
+}
+function dynamicSectionHasContent(section) {
+  const html = section.innerHTML.replace(/<!--\s*SLIDE\s+\d+\s*-->/gi, "").replace(/<(?:script|style)\b[^>]*>[\s\S]*?<\/(?:script|style)>/gi, "").trim();
+  return Boolean(cleanText(section.textContent) || /<(?:img|svg|canvas|video|table|ul|ol|figure)\b/i.test(html));
+}
+function inferFormat(kind, files, dynamicSectionCount) {
+  if (kind === "dynamic_html") return "dynamic-html-v2";
+  if (kind === "creative") return "creative-images-v2";
+  if (kind === "native_pptx") return "native-pptx-v2";
+  if (kind === "static_html") return "static-html-v2";
+  if (files.some((file) => /^slides\/slide[_-]?\d+\.html?$/i.test(file))) return "static-html-v2";
+  if (files.includes("deck.html") && dynamicSectionCount > 1) return "dynamic-html-v2";
+  if (files.some((file) => /^pages\/page[_-]?\d+\.(png|jpe?g|webp)$/i.test(file)) && !files.some((file) => /\.html?$/i.test(file))) {
+    return "creative-images-v2";
+  }
+  if (files.some((file) => /\.pptx$/i.test(file)) && !files.some((file) => /\.html?$/i.test(file))) return "native-pptx-v2";
+  return "legacy-per-slide-html";
+}
+function previewByPage(files) {
+  const candidates = files.filter((file) => /^(?:renders|shots|pages)\/(?:page|slide)[_-]?\d+\.(png|jpe?g|webp)$/i.test(file)).sort((left, right) => {
+    const priority = (file) => file.startsWith("renders/") ? 0 : file.startsWith("shots/") ? 1 : 2;
+    return priority(left) - priority(right) || left.localeCompare(right, void 0, { numeric: true });
+  });
+  const result = /* @__PURE__ */ new Map();
+  for (const candidate of candidates) {
+    const number = pageNumber(candidate, result.size + 1);
+    if (!result.has(number)) result.set(number, candidate);
+  }
+  return result;
+}
+async function inspectDeckFormat(deckDirectory) {
+  const files = await collectRelativeFiles(deckDirectory);
+  const taskPack = await readOptionalJson(path.join(deckDirectory, "task_pack.json"));
+  const outlineText = existsSync(path.join(deckDirectory, "outline.md")) ? await readFile(path.join(deckDirectory, "outline.md"), "utf8").catch(() => "") : "";
+  const outline = parseOutlineMarkdown(outlineText);
+  const deckHtml = files.includes("deck.html") ? await readFile(path.join(deckDirectory, "deck.html"), "utf8").catch(() => "") : "";
+  const dynamicRoot = deckHtml ? (0, import_node_html_parser2.parse)(deckHtml) : void 0;
+  const dynamicSections = dynamicRoot?.querySelectorAll("section.slide[data-slide], section.slide") ?? [];
+  const kind = outputKind(taskPack);
+  const format = inferFormat(kind, files, dynamicSections.length);
+  const count = expectedPageCount(taskPack, outline);
+  const previews = previewByPage(files);
+  const completedDynamicPages = completedDynamicPageNumbers(taskPack);
+  const dynamicTaskComplete = taskIsComplete(taskPack);
+  let pages;
+  if (format === "dynamic-html-v2") {
+    pages = dynamicSections.map((section, index) => {
+      const dataSlide = section.getAttribute("data-slide") ?? void 0;
+      const pageNo = Number.parseInt(dataSlide ?? "", 10) || index + 1;
+      const outlinePage = outline.get(pageNo);
+      const title = cleanText(section.querySelector('h1, h2, [data-text-role="title"]')?.textContent) || outlinePage?.title || `Page ${pageNo}`;
+      return {
+        pageNo,
+        title,
+        summary: outlinePage?.summary || cleanText(section.textContent).slice(0, 160),
+        documentPath: "deck.html",
+        pageSelector: selectorForDynamicSection(section.id || void 0, dataSlide, pageNo),
+        previewPath: previews.get(pageNo),
+        editable: true,
+        htmlReady: completedDynamicPages.has(pageNo) || Boolean(previews.get(pageNo)) || dynamicTaskComplete && dynamicSectionHasContent(section)
+      };
+    });
+  } else if (format === "static-html-v2") {
+    const htmlFiles = files.filter((file) => /^slides\/slide[_-]?\d+\.html?$/i.test(file)).sort((left, right) => left.localeCompare(right, void 0, { numeric: true }));
+    pages = htmlFiles.map((documentPath, index) => {
+      const pageNo = pageNumber(documentPath, index + 1);
+      const outlinePage = outline.get(pageNo);
+      return {
+        pageNo,
+        title: outlinePage?.title || `Page ${pageNo}`,
+        summary: outlinePage?.summary || "",
+        documentPath,
+        previewPath: previews.get(pageNo),
+        editable: true,
+        htmlReady: true
+      };
+    });
+  } else if (format === "legacy-per-slide-html") {
+    const htmlFiles = files.filter((file) => /\.html?$/i.test(file) && !/(^|\/)style_samples\//i.test(file));
+    const preferred = htmlFiles.filter((file) => /(^|\/)pages\/page[_-]?\d+\.html?$/i.test(file));
+    pages = (preferred.length ? preferred : htmlFiles).sort((left, right) => left.localeCompare(right, void 0, { numeric: true })).map((documentPath, index) => {
+      const pageNo = pageNumber(documentPath, index + 1);
+      const outlinePage = outline.get(pageNo);
+      return {
+        pageNo,
+        title: outlinePage?.title || `Page ${pageNo}`,
+        summary: outlinePage?.summary || "",
+        documentPath,
+        previewPath: previews.get(pageNo),
+        editable: true,
+        htmlReady: true
+      };
+    });
+  } else {
+    const pageTotal = Math.max(count ?? 0, previews.size);
+    pages = Array.from({ length: pageTotal }, (_, index) => {
+      const pageNo = index + 1;
+      const outlinePage = outline.get(pageNo);
+      return {
+        pageNo,
+        title: outlinePage?.title || `Page ${pageNo}`,
+        summary: outlinePage?.summary || "",
+        documentPath: "",
+        previewPath: previews.get(pageNo),
+        editable: false,
+        htmlReady: false
+      };
+    });
+  }
+  if (count && (format === "static-html-v2" || format === "dynamic-html-v2") && pages.length < count) {
+    const existingPageNos = new Set(pages.map((page) => page.pageNo));
+    for (let pageNo = 1; pageNo <= count; pageNo += 1) {
+      if (existingPageNos.has(pageNo)) continue;
+      const outlinePage = outline.get(pageNo);
+      pages.push({
+        pageNo,
+        title: outlinePage?.title || `Page ${pageNo}`,
+        summary: outlinePage?.summary || "",
+        documentPath: format === "dynamic-html-v2" ? "deck.html" : `slides/slide_${String(pageNo).padStart(2, "0")}.html`,
+        pageSelector: format === "dynamic-html-v2" ? `[data-slide="${pageNo}"]` : void 0,
+        previewPath: previews.get(pageNo),
+        editable: true,
+        htmlReady: false
+      });
+    }
+    pages.sort((left, right) => left.pageNo - right.pageNo);
+  }
+  const presentationPath = format === "dynamic-html-v2" ? "deck.html" : format === "static-html-v2" && files.includes("present.html") ? "present.html" : void 0;
+  return {
+    format,
+    canvas: format === "dynamic-html-v2" ? dynamicCanvas : legacyCanvas,
+    editable: format === "legacy-per-slide-html" || format === "static-html-v2" || format === "dynamic-html-v2",
+    outputKind: kind,
+    presentationPath,
+    expectedPageCount: count,
+    taskPack,
+    pages
   };
 }
 
@@ -32720,7 +33048,7 @@ function hiddenChromiumLaunchOptions(options = {}) {
 }
 
 // server/deck-service.ts
-var decksRoot = path.resolve(process.env.DECKS_ROOT?.trim() || path.join(process.cwd(), "data", "decks"));
+var decksRoot = path2.resolve(process.env.DECKS_ROOT?.trim() || path2.join(process.cwd(), "data", "decks"));
 var defaultThemeTokens = {
   accent: "#456bff",
   accentSoft: "#e6ecff",
@@ -32737,43 +33065,43 @@ async function launchHiddenChromium() {
 var maxChatAttachmentCount = 10;
 var maxChatAttachmentBytes = 10 * 1024 * 1024;
 function getDeckDirectory(deckId) {
-  return path.join(decksRoot, deckId);
+  return path2.join(decksRoot, deckId);
 }
 function getDeckJsonPath(deckId) {
-  return path.join(getDeckDirectory(deckId), "deck.json");
+  return path2.join(getDeckDirectory(deckId), "deck.json");
 }
 function getSlideFilePath(deckId, htmlPath) {
   const deckDirectory = getDeckContentDirectorySync(deckId);
-  const filePath = path.resolve(deckDirectory, htmlPath);
+  const filePath = path2.resolve(deckDirectory, htmlPath);
   if (!isWithinPath(deckDirectory, filePath)) {
     throw new Error("Slide file is outside the deck content directory.");
   }
   return filePath;
 }
 function getSlideMetaPath(deckId, pageNo) {
-  return path.join(getDeckDirectory(deckId), "slides", `page_${String(pageNo).padStart(3, "0")}.meta.json`);
+  return path2.join(getDeckDirectory(deckId), "slides", `page_${String(pageNo).padStart(3, "0")}.meta.json`);
 }
 function getSlideThumbnailRelativePath(pageNo) {
-  return path.join("thumbnails", `page_${String(pageNo).padStart(3, "0")}.png`);
+  return path2.join("thumbnails", `page_${String(pageNo).padStart(3, "0")}.png`);
 }
 function getSlideThumbnailFilePath(deckId, pageNo) {
-  return path.join(getDeckDirectory(deckId), getSlideThumbnailRelativePath(pageNo));
+  return path2.join(getDeckDirectory(deckId), getSlideThumbnailRelativePath(pageNo));
 }
 function getDeckContactSheetRelativePath(pageNo) {
-  return path.join("analysis", `deck_grounding_p${String(pageNo).padStart(3, "0")}.png`);
+  return path2.join("analysis", `deck_grounding_p${String(pageNo).padStart(3, "0")}.png`);
 }
 function getDeckContactSheetFilePath(deckId, pageNo) {
-  return path.join(getDeckDirectory(deckId), getDeckContactSheetRelativePath(pageNo));
+  return path2.join(getDeckDirectory(deckId), getDeckContactSheetRelativePath(pageNo));
 }
 function getPatchesDirectory(deckId) {
-  return path.join(getDeckDirectory(deckId), "patches");
+  return path2.join(getDeckDirectory(deckId), "patches");
 }
 function getExportsDirectory(deckId) {
-  return path.join(getDeckDirectory(deckId), "exports");
+  return path2.join(getDeckDirectory(deckId), "exports");
 }
 function isWithinPath(root, target) {
-  const relative = path.relative(root, target);
-  return Boolean(relative) && !relative.startsWith("..") && !path.isAbsolute(relative);
+  const relative = path2.relative(root, target);
+  return Boolean(relative) && !relative.startsWith("..") && !path2.isAbsolute(relative);
 }
 function toUrlPath(filePath) {
   return filePath.split(/[\\/]/).map(encodeURIComponent).join("/");
@@ -32782,7 +33110,7 @@ function getDeckFileUrl(deckId, filePath) {
   return `/api/decks/${encodeURIComponent(deckId)}/files/${toUrlPath(filePath)}`;
 }
 function classifyDeckFileKind(filePath) {
-  const extension = path.extname(filePath).toLowerCase();
+  const extension = path2.extname(filePath).toLowerCase();
   if (extension === ".html" || extension === ".htm") return "html";
   if ([".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico", ".bmp"].includes(extension)) return "image";
   if (extension === ".json") return "json";
@@ -32803,7 +33131,7 @@ function getExportUrl(deckId, fileName) {
   return `/api/decks/${encodeURIComponent(deckId)}/exports/${encodeURIComponent(fileName)}`;
 }
 async function readJsonFile(filePath) {
-  return JSON.parse(await readFile(filePath, "utf8"));
+  return JSON.parse(await readFile2(filePath, "utf8"));
 }
 async function readOptionalJsonFile(filePath) {
   try {
@@ -32813,11 +33141,24 @@ async function readOptionalJsonFile(filePath) {
   }
 }
 async function writeJsonFile(filePath, data) {
-  await mkdir(path.dirname(filePath), { recursive: true });
+  await mkdir(path2.dirname(filePath), { recursive: true });
   await writeFile(filePath, JSON.stringify(data, null, 2), "utf8");
 }
+async function writeTextFileAtomic(filePath, content) {
+  await mkdir(path2.dirname(filePath), { recursive: true });
+  const tempPath = `${filePath}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
+  await writeFile(tempPath, content, "utf8");
+  await rename(tempPath, filePath);
+}
+var documentWriteQueues = /* @__PURE__ */ new Map();
+function enqueueDocumentWrite(filePath, task) {
+  const previous = documentWriteQueues.get(filePath) ?? Promise.resolve();
+  const run = previous.then(() => task());
+  documentWriteQueues.set(filePath, run.then(() => void 0, () => void 0));
+  return run;
+}
 async function fileModifiedAt(filePath) {
-  if (!existsSync(filePath)) {
+  if (!existsSync2(filePath)) {
     return 0;
   }
   return (await stat(filePath)).mtimeMs;
@@ -32827,8 +33168,8 @@ function sanitizeSlug(value) {
   return normalized || "imported-deck";
 }
 function sanitizeUploadFileName(fileName, fallback) {
-  const extension = path.extname(fileName).toLowerCase().replace(/[^.\p{Letter}\p{Number}]+/gu, "");
-  const stem = path.basename(fileName, path.extname(fileName)).normalize("NFKD").replace(/[^\p{Letter}\p{Number}_-]+/gu, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+  const extension = path2.extname(fileName).toLowerCase().replace(/[^.\p{Letter}\p{Number}]+/gu, "");
+  const stem = path2.basename(fileName, path2.extname(fileName)).normalize("NFKD").replace(/[^\p{Letter}\p{Number}_-]+/gu, "-").replace(/^-+|-+$/g, "").slice(0, 80);
   return `${stem || fallback}${extension || ""}`;
 }
 function escapeHtml(value) {
@@ -32839,7 +33180,7 @@ async function createUniqueDeckId(seed) {
   const base = sanitizeSlug(seed);
   let candidate = base;
   let suffix = 1;
-  while (existsSync(getDeckDirectory(candidate))) {
+  while (existsSync2(getDeckDirectory(candidate))) {
     suffix += 1;
     candidate = `${base}-${suffix}`;
   }
@@ -32853,6 +33194,10 @@ function slideCatalogSignature(slides) {
     kind: slide.kind,
     status: slide.status,
     htmlPath: slide.htmlPath,
+    documentPath: slide.documentPath,
+    pageSelector: slide.pageSelector,
+    previewPath: slide.previewPath,
+    editable: slide.editable,
     htmlReady: slide.htmlReady
   })));
 }
@@ -32860,7 +33205,10 @@ function canReusePersistedDeck(existing, next) {
   if (!existing) {
     return false;
   }
-  return existing.title === next.title && existing.subtitle === next.subtitle && existing.sourcePath === next.sourcePath && existing.sourceMode === next.sourceMode && (existing.sourceType ?? "imported") === (next.sourceType ?? "imported") && slideCatalogSignature(existing.slides) === slideCatalogSignature(next.slides);
+  return existing.title === next.title && existing.subtitle === next.subtitle && existing.sourcePath === next.sourcePath && existing.sourceMode === next.sourceMode && (existing.sourceType ?? "imported") === (next.sourceType ?? "imported") && existing.deckFormat === next.deckFormat && JSON.stringify(existing.canvas) === JSON.stringify(next.canvas) && existing.editable === next.editable && existing.presentationPath === next.presentationPath && slideCatalogSignature(existing.slides) === slideCatalogSignature(next.slides);
+}
+function slideDocumentPath(slide) {
+  return slide.documentPath || slide.htmlPath;
 }
 function isIgnoredImportPath(filePath) {
   const normalized = filePath.replaceAll("\\", "/");
@@ -32879,19 +33227,19 @@ function readPersistedDeckSync(deckId) {
 function getDeckContentDirectorySync(deckId) {
   const persisted = readPersistedDeckSync(deckId);
   if (persisted?.sourceMode === "attached" && persisted.sourcePath) {
-    return path.resolve(persisted.sourcePath);
+    return path2.resolve(persisted.sourcePath);
   }
   return getDeckDirectory(deckId);
 }
 async function getDeckContentDirectory(deckId) {
   const persisted = await readJsonFile(getDeckJsonPath(deckId));
   if (persisted.sourceMode === "attached" && persisted.sourcePath) {
-    return path.resolve(persisted.sourcePath);
+    return path2.resolve(persisted.sourcePath);
   }
   return getDeckDirectory(deckId);
 }
 async function hasHtmlOrPages(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
+  const entries = await readdir2(directory, { withFileTypes: true });
   return entries.some((entry) => {
     return entry.name === "pages" || entry.isFile() && /\.html?$/i.test(entry.name);
   });
@@ -32900,9 +33248,9 @@ async function resolveImportDirectoryRoot(sourceDirectory) {
   if (await hasHtmlOrPages(sourceDirectory)) {
     return sourceDirectory;
   }
-  const entries = (await readdir(sourceDirectory, { withFileTypes: true })).filter((entry) => entry.isDirectory() && !isIgnoredImportPath(entry.name));
+  const entries = (await readdir2(sourceDirectory, { withFileTypes: true })).filter((entry) => entry.isDirectory() && !isIgnoredImportPath(entry.name));
   if (entries.length === 1) {
-    const candidate = path.join(sourceDirectory, entries[0].name);
+    const candidate = path2.join(sourceDirectory, entries[0].name);
     if (await hasHtmlOrPages(candidate)) {
       return candidate;
     }
@@ -32910,29 +33258,46 @@ async function resolveImportDirectoryRoot(sourceDirectory) {
   return sourceDirectory;
 }
 async function collectFiles(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
+  const entries = await readdir2(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
-    const absolutePath = path.join(directory, entry.name);
-    const relativePath = path.relative(directory, absolutePath);
+    const absolutePath = path2.join(directory, entry.name);
+    const relativePath = path2.relative(directory, absolutePath);
     if (isIgnoredImportPath(relativePath) || entry.name === "exports") {
       continue;
     }
     if (entry.isDirectory()) {
       const nestedFiles = await collectFiles(absolutePath);
-      files.push(...nestedFiles.map((nestedFile) => path.join(entry.name, nestedFile)));
+      files.push(...nestedFiles.map((nestedFile) => path2.join(entry.name, nestedFile)));
     } else {
       files.push(entry.name);
     }
   }
   return files;
 }
-async function captureSlideThumbnail(page, htmlFilePath, outputPath) {
-  await mkdir(path.dirname(outputPath), { recursive: true });
-  await page.setViewportSize({ width: 1600, height: 900 });
+async function captureSlideThumbnail(page, htmlFilePath, outputPath, options = {}) {
+  await mkdir(path2.dirname(outputPath), { recursive: true });
+  await page.setViewportSize({ width: options.width ?? 1600, height: options.height ?? 900 });
   await page.goto(pathToFileURL(htmlFilePath).href, { waitUntil: "networkidle" });
+  if (options.pageNo) {
+    const activationOptions = JSON.stringify({ pageNo: options.pageNo, pageSelector: options.pageSelector });
+    await page.evaluate(`(() => {
+      const options = ${activationOptions};
+      if (typeof window.__deckGo === 'function') {
+        window.__deckGo(options.pageNo - 1);
+        return;
+      }
+      const sections = Array.from(document.querySelectorAll('section.slide'));
+      const active = options.pageSelector ? document.querySelector(options.pageSelector) : sections[options.pageNo - 1];
+      const activeIndex = sections.indexOf(active);
+      sections.forEach((section, index) => {
+        section.classList.toggle('active', section === active);
+        section.classList.toggle('prev', activeIndex >= 0 && index < activeIndex);
+      });
+    })()`).catch(() => void 0);
+  }
   await page.evaluate("document.fonts ? document.fonts.ready : undefined");
-  const locator = page.locator(".wrapper, .slide.canvas, .slide").first();
+  const locator = page.locator(options.pageSelector || ".wrapper, .slide.canvas, .slide").first();
   if (await locator.count()) {
     await locator.screenshot({ path: outputPath });
     return;
@@ -32945,7 +33310,8 @@ async function renderMissingDeckThumbnails(deck) {
   }
   const staleSlides = [];
   for (const slide of deck.slides) {
-    const htmlPath = getSlideFilePath(deck.id, slide.htmlPath);
+    if (slide.previewPath || slide.editable === false || !slide.htmlReady) continue;
+    const htmlPath = getSlideFilePath(deck.id, slideDocumentPath(slide));
     const thumbnailPath = getSlideThumbnailFilePath(deck.id, slide.pageNo);
     const [htmlModifiedAt, thumbnailModifiedAt] = await Promise.all([
       fileModifiedAt(htmlPath),
@@ -32963,7 +33329,12 @@ async function renderMissingDeckThumbnails(deck) {
     browser = await launchHiddenChromium();
     const page = await browser.newPage();
     for (const item of staleSlides) {
-      await captureSlideThumbnail(page, item.htmlPath, item.thumbnailPath);
+      await captureSlideThumbnail(page, item.htmlPath, item.thumbnailPath, {
+        width: deck.canvas?.width,
+        height: deck.canvas?.height,
+        pageNo: deck.deckFormat === "dynamic-html-v2" ? item.slide.pageNo : void 0,
+        pageSelector: item.slide.pageSelector
+      });
     }
   } catch (error) {
     const detail = error instanceof Error ? error.message : "Unknown thumbnail render failure.";
@@ -32994,12 +33365,12 @@ async function shouldRenderDeckContactSheet(deck, outputPath) {
   return false;
 }
 async function renderDeckContactSheet(deck, focusedPageNo, outputPath) {
-  await mkdir(path.dirname(outputPath), { recursive: true });
+  await mkdir(path2.dirname(outputPath), { recursive: true });
   const cards = (await Promise.all(deck.slides.map(async (slide) => {
     const thumbnailPath = getSlideThumbnailFilePath(deck.id, slide.pageNo);
-    const hasThumbnail = existsSync(thumbnailPath);
+    const hasThumbnail = existsSync2(thumbnailPath);
     const current = slide.pageNo === focusedPageNo;
-    const src = hasThumbnail ? `data:image/png;base64,${(await readFile(thumbnailPath)).toString("base64")}` : "";
+    const src = hasThumbnail ? `data:image/png;base64,${(await readFile2(thumbnailPath)).toString("base64")}` : "";
     return [
       `<article class="slide-card${current ? " current" : ""}">`,
       `<div class="slide-frame">${hasThumbnail ? `<img src="${src}" alt="">` : '<div class="missing">No thumbnail</div>'}</div>`,
@@ -33067,15 +33438,26 @@ async function ensureDeckContactSheet(deckId, focusedPageNo) {
   return {
     path: outputPath,
     url: getDeckContactSheetUrl(deckId, focusedPageNo),
-    updatedAt: existsSync(outputPath) ? (await stat(outputPath)).mtime.toISOString() : void 0,
+    updatedAt: existsSync2(outputPath) ? (await stat(outputPath)).mtime.toISOString() : void 0,
     slideCount: deck.slides.length
   };
 }
-async function hydrateDeckThumbnails(deck) {
-  await renderMissingDeckThumbnails(deck);
+async function hydrateDeckThumbnails(deck, options = {}) {
+  if (options.renderMissing !== false) {
+    await renderMissingDeckThumbnails(deck);
+  }
+  const contentDirectory = await getDeckContentDirectory(deck.id);
   const slides = await Promise.all(deck.slides.map(async (slide) => {
+    if (slide.previewPath && existsSync2(path2.join(contentDirectory, slide.previewPath))) {
+      const previewPath = path2.join(contentDirectory, slide.previewPath);
+      return {
+        ...slide,
+        thumbnailUrl: getDeckFileUrl(deck.id, slide.previewPath),
+        thumbnailUpdatedAt: (await stat(previewPath)).mtime.toISOString()
+      };
+    }
     const thumbnailPath = getSlideThumbnailFilePath(deck.id, slide.pageNo);
-    if (!existsSync(thumbnailPath)) {
+    if (!existsSync2(thumbnailPath)) {
       return slide;
     }
     return {
@@ -33103,19 +33485,25 @@ async function hydrateDeckThumbnails(deck) {
   };
 }
 async function regenerateSlideThumbnail(deckId, slide) {
+  const deck = await loadDeck(deckId);
   const thumbnailPath = getSlideThumbnailFilePath(deckId, slide.pageNo);
   let browser = null;
   try {
     browser = await launchHiddenChromium();
     const page = await browser.newPage();
-    await captureSlideThumbnail(page, getSlideFilePath(deckId, slide.htmlPath), thumbnailPath);
+    await captureSlideThumbnail(page, getSlideFilePath(deckId, slideDocumentPath(slide)), thumbnailPath, {
+      width: deck.canvas?.width,
+      height: deck.canvas?.height,
+      pageNo: deck.deckFormat === "dynamic-html-v2" ? slide.pageNo : void 0,
+      pageSelector: slide.pageSelector
+    });
   } catch (error) {
     const detail = error instanceof Error ? error.message : "Unknown thumbnail render failure.";
     console.warn(`Slide ${slide.pageNo} thumbnail rendering skipped: ${detail}`);
   } finally {
     await browser?.close().catch(() => void 0);
   }
-  if (!existsSync(thumbnailPath)) {
+  if (!existsSync2(thumbnailPath)) {
     return slide;
   }
   return {
@@ -33123,18 +33511,6 @@ async function regenerateSlideThumbnail(deckId, slide) {
     thumbnailUrl: getSlideThumbnailUrl(deckId, slide.pageNo),
     thumbnailUpdatedAt: (await stat(thumbnailPath)).mtime.toISOString()
   };
-}
-async function collectHtmlFiles(deckDirectory) {
-  const files = (await collectFiles(deckDirectory)).filter((filePath) => /\.html?$/i.test(filePath)).map((filePath) => filePath.split(path.sep).join("/")).filter((filePath) => !/(^|\/)style_samples\//i.test(filePath));
-  const pageFiles = files.filter((filePath) => /(^|\/)pages\/page[_-]?\d+\.html?$/i.test(filePath));
-  return (pageFiles.length ? pageFiles : files).sort((left, right) => left.localeCompare(right, void 0, {
-    numeric: true,
-    sensitivity: "base"
-  }));
-}
-function derivePageNo(filePath, fallback) {
-  const matched = /(?:page[_-]?|slide[_-]?)(\d+)/i.exec(path.basename(filePath));
-  return matched ? Number.parseInt(matched[1], 10) : fallback;
 }
 function deriveKind(pageNo, totalPages, title) {
   const normalizedTitle = title.toLowerCase();
@@ -33153,12 +33529,12 @@ function deriveKind(pageNo, totalPages, title) {
   return "content";
 }
 function extractSlideTitle(html, pageNo) {
-  const root = (0, import_node_html_parser2.parse)(html);
+  const root = (0, import_node_html_parser3.parse)(html);
   const title = root.querySelector("title")?.textContent.trim() || root.querySelector("h1")?.textContent.trim() || root.querySelector('[data-text-role="title"]')?.textContent.trim();
   return title || `Page ${pageNo}`;
 }
-function artifactStringField(record, field) {
-  const value = typeof record === "object" && record !== null ? record[field] : void 0;
+function artifactStringField(record2, field) {
+  const value = typeof record2 === "object" && record2 !== null ? record2[field] : void 0;
   return typeof value === "string" ? value.trim() : "";
 }
 function outlinePageArrays(payload) {
@@ -33168,27 +33544,27 @@ function outlinePageArrays(payload) {
   if (typeof payload !== "object" || payload === null) {
     return [];
   }
-  const record = payload;
+  const record2 = payload;
   for (const key of ["pages", "slides", "outline"]) {
-    if (Array.isArray(record[key])) {
-      return record[key];
+    if (Array.isArray(record2[key])) {
+      return record2[key];
     }
   }
   return [];
 }
 async function collectOutlinePageSeeds(contentDirectory) {
-  const outline = await readOptionalJsonFile(path.join(contentDirectory, "outline.json"));
+  const outline = await readOptionalJsonFile(path2.join(contentDirectory, "outline.json"));
   return outlinePageArrays(outline).map((item, index) => {
     if (typeof item !== "object" || item === null) {
       return null;
     }
-    const record = item;
-    const pageNo = Number(record.page_no ?? record.pageNo ?? record.page ?? index + 1);
+    const record2 = item;
+    const pageNo = Number(record2.page_no ?? record2.pageNo ?? record2.page ?? index + 1);
     if (!Number.isFinite(pageNo) || pageNo < 1) {
       return null;
     }
-    const title = String(record.title ?? record.heading ?? `Page ${pageNo}`).trim() || `Page ${pageNo}`;
-    const summary = String(record.subtitle ?? record.summary ?? record.narrative ?? record.visual_hints ?? "").trim();
+    const title = String(record2.title ?? record2.heading ?? `Page ${pageNo}`).trim() || `Page ${pageNo}`;
+    const summary = String(record2.subtitle ?? record2.summary ?? record2.narrative ?? record2.visual_hints ?? "").trim();
     return {
       pageNo,
       title,
@@ -33198,10 +33574,10 @@ async function collectOutlinePageSeeds(contentDirectory) {
   }).filter((item) => Boolean(item)).sort((left, right) => left.pageNo - right.pageNo);
 }
 async function inferDeckTitle(contentDirectory, sourcePath, fallbackTitle) {
-  const taskPack = await readOptionalJsonFile(path.join(contentDirectory, "task_pack.json"));
+  const taskPack = await readOptionalJsonFile(path2.join(contentDirectory, "task_pack.json"));
   const taskRecord = typeof taskPack === "object" && taskPack !== null ? taskPack : {};
   const params = typeof taskRecord.params === "object" && taskRecord.params !== null ? taskRecord.params : void 0;
-  return artifactStringField(params, "title") || artifactStringField(params, "topic") || artifactStringField(taskRecord, "topic") || artifactStringField(taskRecord, "title") || fallbackTitle || path.basename(sourcePath, path.extname(sourcePath));
+  return artifactStringField(params, "title") || artifactStringField(params, "topic") || artifactStringField(taskRecord, "topic") || artifactStringField(taskRecord, "title") || fallbackTitle || path2.basename(sourcePath, path2.extname(sourcePath));
 }
 function buildMissingSlidePlaceholder(deck, slide) {
   return [
@@ -33233,32 +33609,50 @@ function buildMissingSlidePlaceholder(deck, slide) {
   ].join("");
 }
 async function buildImportedDeck(deckId, sourcePath, contentDirectory = getDeckDirectory(deckId), sourceMode = "copied") {
-  const htmlFiles = await collectHtmlFiles(contentDirectory);
-  const outlineSeeds = await collectOutlinePageSeeds(contentDirectory);
-  const outlineByPageNo = new Map(outlineSeeds.map((page) => [page.pageNo, page]));
-  const slideDrafts = await Promise.all(htmlFiles.map(async (htmlPath, index) => {
-    const pageNo = derivePageNo(htmlPath, index + 1);
-    const html = await readFile(path.join(contentDirectory, htmlPath), "utf8");
-    const title = extractSlideTitle(html, pageNo);
-    const analysis = analyzeSlideHtml(html, pageNo);
+  const descriptor = await inspectDeckFormat(contentDirectory);
+  const legacyOutlineSeeds = descriptor.format === "legacy-per-slide-html" ? await collectOutlinePageSeeds(contentDirectory) : [];
+  const outlineByPageNo = new Map(legacyOutlineSeeds.map((page) => [page.pageNo, page]));
+  const documentCache = /* @__PURE__ */ new Map();
+  const slideDrafts = await Promise.all(descriptor.pages.map(async (page) => {
+    const documentPath = page.documentPath;
+    const absoluteDocumentPath = documentPath ? path2.join(contentDirectory, documentPath) : "";
+    let html = "";
+    if (page.htmlReady && absoluteDocumentPath && existsSync2(absoluteDocumentPath)) {
+      html = documentCache.get(documentPath) ?? await readFile2(absoluteDocumentPath, "utf8");
+      documentCache.set(documentPath, html);
+    }
+    const extractedTitle = html ? extractSlideTitle(html, page.pageNo) : "";
+    const title = page.title && !/^Page \d+$/i.test(page.title) ? page.title : extractedTitle || page.title;
+    const analysis = html ? analyzeSlideHtml(html, page.pageNo, {
+      deckFormat: descriptor.format,
+      canvas: descriptor.canvas,
+      pageSelector: page.pageSelector
+    }) : void 0;
+    const htmlPath = documentPath || page.previewPath || `pages/page_${String(page.pageNo).padStart(3, "0")}.html`;
     return {
-      pageNo,
-      title,
-      summary: textContentPreview((0, import_node_html_parser2.parse)(html).textContent, 96),
+      pageNo: page.pageNo,
+      title: title || `Page ${page.pageNo}`,
+      summary: page.summary || (html ? textContentPreview((0, import_node_html_parser3.parse)(html).textContent, 96) : ""),
       kind: "content",
-      status: analysis.validation.ok ? "approved" : "issue",
+      status: !page.htmlReady ? "needs-polish" : analysis?.validation.ok === false ? "issue" : "approved",
       htmlPath,
-      htmlReady: true
+      documentPath: documentPath || void 0,
+      pageSelector: page.pageSelector,
+      previewPath: page.previewPath,
+      editable: page.editable,
+      htmlReady: page.htmlReady
     };
   }));
-  const htmlPageNos = new Set(slideDrafts.map((slide) => slide.pageNo));
-  const outlineOnlyDrafts = outlineSeeds.filter((seed) => !htmlPageNos.has(seed.pageNo)).map((seed) => ({
+  const discoveredPageNos = new Set(slideDrafts.map((slide) => slide.pageNo));
+  const outlineOnlyDrafts = legacyOutlineSeeds.filter((seed) => !discoveredPageNos.has(seed.pageNo)).map((seed) => ({
     pageNo: seed.pageNo,
     title: seed.title,
     summary: seed.summary,
     kind: "content",
     status: "needs-polish",
     htmlPath: seed.htmlPath,
+    documentPath: seed.htmlPath,
+    editable: true,
     htmlReady: false
   }));
   const slides = [...slideDrafts, ...outlineOnlyDrafts].sort((left, right) => left.pageNo - right.pageNo).map((slide, _index, all) => ({
@@ -33268,9 +33662,10 @@ async function buildImportedDeck(deckId, sourcePath, contentDirectory = getDeckD
     kind: deriveKind(slide.pageNo, all.length, slide.title)
   }));
   const existing = await readJsonFile(getDeckJsonPath(deckId)).catch(() => null);
-  const previousSlidesByPath = new Map((existing?.slides ?? []).map((slide) => [slide.htmlPath, slide]));
+  const slideIdentity = (slide) => `${slide.documentPath ?? slide.htmlPath}::${slide.pageSelector ?? slide.pageNo}`;
+  const previousSlidesByPath = new Map((existing?.slides ?? []).map((slide) => [slideIdentity(slide), slide]));
   const mergedSlides = slides.map((slide) => {
-    const previous = previousSlidesByPath.get(slide.htmlPath);
+    const previous = previousSlidesByPath.get(slideIdentity(slide));
     const preserveEditedStatus = previous?.pageNo === slide.pageNo && previous.status === "edited" && slide.status !== "needs-polish";
     return previous?.pageNo === slide.pageNo ? {
       ...slide,
@@ -33285,6 +33680,10 @@ async function buildImportedDeck(deckId, sourcePath, contentDirectory = getDeckD
     subtitle: "",
     activePageNo: existing?.activePageNo && mergedSlides.some((slide) => slide.pageNo === existing.activePageNo) ? existing.activePageNo : mergedSlides[0]?.pageNo ?? 1,
     themeTokens: defaultThemeTokens,
+    deckFormat: descriptor.format,
+    canvas: descriptor.canvas,
+    editable: descriptor.editable,
+    presentationPath: descriptor.presentationPath,
     slides: mergedSlides,
     sourceType: "imported",
     sourcePath,
@@ -33308,7 +33707,7 @@ function stripEditorBase(html) {
 }
 function injectEditorBase(deckId, htmlPath, html) {
   const stripped = stripEditorBase(html);
-  const directory = path.dirname(htmlPath).replaceAll("\\", "/");
+  const directory = path2.dirname(htmlPath).replaceAll("\\", "/");
   const baseFilePath = directory === "." ? "" : `${directory}/`;
   const baseHref = getDeckFileUrl(deckId, baseFilePath);
   const baseTag = `<base data-ppt-editor-base="true" href="${baseHref}">`;
@@ -33319,8 +33718,8 @@ ${stripped}`;
 async function buildDeckSummary(deckId) {
   const persisted = await readJsonFile(getDeckJsonPath(deckId));
   const deckJsonStat = await stat(getDeckJsonPath(deckId));
-  const thumbnailPath = path.join(decksRoot, deckId, "thumbnails", `page_${persisted.activePageNo}.png`);
-  const thumbnailUrl = existsSync(thumbnailPath) ? `/api/decks/${encodeURIComponent(deckId)}/files/thumbnails/page_${persisted.activePageNo}.png` : void 0;
+  const thumbnailPath = path2.join(decksRoot, deckId, "thumbnails", `page_${persisted.activePageNo}.png`);
+  const thumbnailUrl = existsSync2(thumbnailPath) ? `/api/decks/${encodeURIComponent(deckId)}/files/thumbnails/page_${persisted.activePageNo}.png` : void 0;
   return {
     id: persisted.id,
     title: persisted.title,
@@ -33334,27 +33733,27 @@ async function buildDeckSummary(deckId) {
 }
 async function findAttachedDeckIdBySourcePath(sourcePath) {
   await mkdir(decksRoot, { recursive: true });
-  const normalizedSource = path.resolve(sourcePath);
-  const entries = await readdir(decksRoot, { withFileTypes: true });
+  const normalizedSource = path2.resolve(sourcePath);
+  const entries = await readdir2(decksRoot, { withFileTypes: true });
   for (const entry of entries) {
     if (!entry.isDirectory()) {
       continue;
     }
     const persisted = await readJsonFile(getDeckJsonPath(entry.name)).catch(() => null);
-    if (persisted?.sourceMode === "attached" && persisted.sourcePath && path.resolve(persisted.sourcePath) === normalizedSource) {
+    if (persisted?.sourceMode === "attached" && persisted.sourcePath && path2.resolve(persisted.sourcePath) === normalizedSource) {
       return entry.name;
     }
   }
   return void 0;
 }
 async function attachDeckMetadataFromPath(sourcePath) {
-  const resolvedSourcePath = path.resolve(sourcePath);
+  const resolvedSourcePath = path2.resolve(sourcePath);
   const sourceStat = await stat(resolvedSourcePath);
   if (!sourceStat.isDirectory()) {
     throw new Error("Attached SenseNova workspaces must be directories.");
   }
   const logicalRoot = await resolveImportDirectoryRoot(resolvedSourcePath);
-  const deckId = await findAttachedDeckIdBySourcePath(logicalRoot) ?? await createUniqueDeckId(path.basename(logicalRoot));
+  const deckId = await findAttachedDeckIdBySourcePath(logicalRoot) ?? await createUniqueDeckId(path2.basename(logicalRoot));
   await mkdir(getDeckDirectory(deckId), { recursive: true });
   return buildImportedDeck(deckId, logicalRoot, logicalRoot, "attached");
 }
@@ -33368,7 +33767,10 @@ async function attachDeckFromPath(sourcePath) {
   };
 }
 async function loadDeckBundle(deckId) {
-  const deck = await hydrateDeckThumbnails(await loadDeck(deckId));
+  const storedDeck = await loadDeck(deckId);
+  const deck = await hydrateDeckThumbnails(storedDeck, {
+    renderMissing: storedDeck.deckFormat !== "dynamic-html-v2"
+  });
   const slides = await Promise.all(deck.slides.map((slide) => loadSlideDocument(deck.id, slide.pageNo)));
   return {
     deck,
@@ -33386,10 +33788,10 @@ async function loadDeck(deckId) {
 async function loadPatchHistory(deckId, pageNo) {
   const directory = getPatchesDirectory(deckId);
   await mkdir(directory, { recursive: true });
-  const entries = await readdir(directory);
+  const entries = await readdir2(directory);
   const matchingFiles = entries.filter((entry) => entry.includes(`-p${String(pageNo).padStart(3, "0")}-`) && entry.endsWith(".json")).sort();
   return Promise.all(
-    matchingFiles.map((entry) => readJsonFile(path.join(directory, entry)))
+    matchingFiles.map((entry) => readJsonFile(path2.join(directory, entry)))
   );
 }
 async function loadSlideDocument(deckId, pageNo) {
@@ -33398,10 +33800,15 @@ async function loadSlideDocument(deckId, pageNo) {
   if (!slide) {
     throw new Error(`Slide ${pageNo} was not found in deck ${deckId}.`);
   }
-  const htmlPath = getSlideFilePath(deckId, slide.htmlPath);
-  const rawHtml = existsSync(htmlPath) ? await readFile(htmlPath, "utf8") : buildMissingSlidePlaceholder(deck, slide);
-  const html = injectEditorBase(deckId, slide.htmlPath, rawHtml);
-  const analysis = analyzeSlideHtml(html, slide.pageNo);
+  const documentPath = slide.documentPath || (slide.editable === false ? "" : slide.htmlPath);
+  const htmlPath = documentPath ? getSlideFilePath(deckId, documentPath) : "";
+  const rawHtml = htmlPath && existsSync2(htmlPath) ? await readFile2(htmlPath, "utf8") : buildMissingSlidePlaceholder(deck, slide);
+  const html = injectEditorBase(deckId, documentPath || "index.html", rawHtml);
+  const analysis = analyzeSlideHtml(html, slide.pageNo, {
+    deckFormat: deck.deckFormat,
+    canvas: deck.canvas,
+    pageSelector: slide.pageSelector
+  });
   const history = await loadPatchHistory(deckId, slide.pageNo);
   await writeJsonFile(getSlideMetaPath(deckId, slide.pageNo), {
     pageNo: slide.pageNo,
@@ -33421,44 +33828,66 @@ async function persistSlideHtml(deckId, pageNo, html, status) {
   if (!slide) {
     throw new Error(`Slide ${pageNo} was not found in deck ${deckId}.`);
   }
-  const storedHtml = stripEditorBase(html);
-  const slideFilePath = getSlideFilePath(deckId, slide.htmlPath);
-  await mkdir(path.dirname(slideFilePath), { recursive: true });
-  await writeFile(slideFilePath, storedHtml, "utf8");
-  slide.status = status;
-  const updatedSlide = await regenerateSlideThumbnail(deckId, slide);
-  Object.assign(slide, updatedSlide);
-  deck.activePageNo = pageNo;
-  const persisted = await readJsonFile(getDeckJsonPath(deckId));
-  await writeJsonFile(getDeckJsonPath(deckId), {
-    id: deck.id,
-    title: deck.title,
-    subtitle: deck.subtitle,
-    activePageNo: deck.activePageNo,
-    themeTokens: deck.themeTokens,
-    slides: deck.slides,
-    sourceType: persisted.sourceType ?? (deck.id === "q3-growth" ? "fixture" : "imported"),
-    sourcePath: persisted.sourcePath,
-    sourceMode: persisted.sourceMode,
-    updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+  const slideFilePath = getSlideFilePath(deckId, slideDocumentPath(slide));
+  return enqueueDocumentWrite(slideFilePath, async () => {
+    const currentDeck = await loadDeck(deckId);
+    const currentSlide = currentDeck.slides.find((item) => item.pageNo === pageNo);
+    if (!currentSlide) {
+      throw new Error(`Slide ${pageNo} was not found in deck ${deckId}.`);
+    }
+    if (currentSlide.editable === false || currentDeck.editable === false) {
+      throw new Error(`Slide ${pageNo} belongs to a read-only ${currentDeck.deckFormat ?? "deck"} output.`);
+    }
+    const storedHtml = stripEditorBase(html);
+    await writeTextFileAtomic(slideFilePath, storedHtml);
+    currentSlide.status = status;
+    const updatedSlide = await regenerateSlideThumbnail(deckId, currentSlide);
+    Object.assign(currentSlide, updatedSlide);
+    currentDeck.activePageNo = pageNo;
+    const persisted = await readJsonFile(getDeckJsonPath(deckId));
+    await writeJsonFile(getDeckJsonPath(deckId), {
+      id: currentDeck.id,
+      title: currentDeck.title,
+      subtitle: currentDeck.subtitle,
+      activePageNo: currentDeck.activePageNo,
+      deckFormat: currentDeck.deckFormat,
+      canvas: currentDeck.canvas,
+      editable: currentDeck.editable,
+      presentationPath: currentDeck.presentationPath,
+      themeTokens: currentDeck.themeTokens,
+      slides: currentDeck.slides,
+      sourceType: persisted.sourceType ?? (currentDeck.id === "q3-growth" ? "fixture" : "imported"),
+      sourcePath: persisted.sourcePath,
+      sourceMode: persisted.sourceMode,
+      updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+    });
+    const analysis = analyzeSlideHtml(storedHtml, pageNo, {
+      deckFormat: currentDeck.deckFormat,
+      canvas: currentDeck.canvas,
+      pageSelector: currentSlide.pageSelector
+    });
+    await writeJsonFile(getSlideMetaPath(deckId, pageNo), {
+      pageNo,
+      updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
+      analysis
+    });
+    return currentDeck;
   });
-  const analysis = analyzeSlideHtml(storedHtml, pageNo);
-  await writeJsonFile(getSlideMetaPath(deckId, pageNo), {
-    pageNo,
-    updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
-    analysis
-  });
-  return deck;
 }
 async function persistPatchRecord(deckId, patch) {
   const directory = getPatchesDirectory(deckId);
   await mkdir(directory, { recursive: true });
   const fileName = `${patch.createdAt.replace(/[:.]/g, "-")}-p${String(patch.slidePageNo).padStart(3, "0")}-${patch.id}.json`;
-  await writeJsonFile(path.join(directory, fileName), patch);
+  await writeJsonFile(path2.join(directory, fileName), patch);
 }
 async function buildAuditSlide(deckId, slide) {
-  const html = await readFile(getSlideFilePath(deckId, slide.htmlPath), "utf8");
-  const validation = validateSlideHtml(html);
+  const deck = await loadDeck(deckId);
+  const html = await readFile2(getSlideFilePath(deckId, slideDocumentPath(slide)), "utf8");
+  const validation = validateSlideHtml(html, {
+    deckFormat: deck.deckFormat,
+    canvas: deck.canvas,
+    pageSelector: slide.pageSelector
+  });
   return {
     pageNo: slide.pageNo,
     title: slide.title,
@@ -33474,7 +33903,7 @@ async function auditDeck(deckId) {
     ok: slides.every((slide) => slide.validation.ok),
     slides
   };
-  const auditPath = path.join(getExportsDirectory(deckId), `${audit.createdAt.replace(/[:.]/g, "-")}-audit.json`);
+  const auditPath = path2.join(getExportsDirectory(deckId), `${audit.createdAt.replace(/[:.]/g, "-")}-audit.json`);
   await writeJsonFile(auditPath, audit);
   return {
     audit,
@@ -33482,18 +33911,18 @@ async function auditDeck(deckId) {
   };
 }
 async function addDirectoryToZip(zip, rootDirectory, currentDirectory, zipRootName) {
-  const entries = await readdir(currentDirectory, { withFileTypes: true });
+  const entries = await readdir2(currentDirectory, { withFileTypes: true });
   for (const entry of entries) {
     if (entry.name === "exports" || isIgnoredImportPath(entry.name)) {
       continue;
     }
-    const absolutePath = path.join(currentDirectory, entry.name);
-    const relativePath = path.relative(rootDirectory, absolutePath).split(path.sep).join("/");
+    const absolutePath = path2.join(currentDirectory, entry.name);
+    const relativePath = path2.relative(rootDirectory, absolutePath).split(path2.sep).join("/");
     const zipPath = `${zipRootName}/${relativePath}`;
     if (entry.isDirectory()) {
       await addDirectoryToZip(zip, rootDirectory, absolutePath, zipRootName);
     } else {
-      zip.addFile(zipPath, await readFile(absolutePath));
+      zip.addFile(zipPath, await readFile2(absolutePath));
     }
   }
 }
@@ -33504,7 +33933,7 @@ async function createHtmlArtifactZip(deckId) {
   await mkdir(exportsDirectory, { recursive: true });
   const createdAt = (/* @__PURE__ */ new Date()).toISOString().replace(/[:.]/g, "-");
   const fileName = `${createdAt}-${deck.id}-html.zip`;
-  const outputPath = path.join(exportsDirectory, fileName);
+  const outputPath = path2.join(exportsDirectory, fileName);
   const zip = new import_adm_zip.default();
   await addDirectoryToZip(zip, deckDirectory, deckDirectory, `${deck.id}-edited`);
   zip.writeZip(outputPath);
@@ -33518,22 +33947,22 @@ async function listDeckFiles(deckId) {
   const deckDirectory = await getDeckContentDirectory(deckId);
   const slidePageByPath = new Map(deck.slides.map((slide) => [slide.htmlPath.replaceAll("\\", "/"), slide.pageNo]));
   const files = await Promise.all((await collectFiles(deckDirectory)).map(async (relativePath) => {
-    const normalizedPath = relativePath.replaceAll("\\", "/");
-    const fileStat = await stat(path.join(deckDirectory, relativePath));
+    const normalizedPath2 = relativePath.replaceAll("\\", "/");
+    const fileStat = await stat(path2.join(deckDirectory, relativePath));
     return {
-      path: normalizedPath,
-      name: path.basename(normalizedPath),
-      directory: path.dirname(normalizedPath) === "." ? "" : path.dirname(normalizedPath).replaceAll("\\", "/"),
-      kind: classifyDeckFileKind(normalizedPath),
+      path: normalizedPath2,
+      name: path2.basename(normalizedPath2),
+      directory: path2.dirname(normalizedPath2) === "." ? "" : path2.dirname(normalizedPath2).replaceAll("\\", "/"),
+      kind: classifyDeckFileKind(normalizedPath2),
       size: fileStat.size,
       updatedAt: fileStat.mtime.toISOString(),
-      url: getDeckFileUrl(deckId, normalizedPath),
-      slidePageNo: slidePageByPath.get(normalizedPath)
+      url: getDeckFileUrl(deckId, normalizedPath2),
+      slidePageNo: slidePageByPath.get(normalizedPath2)
     };
   }));
   return {
     deckId,
-    rootName: path.basename(deckDirectory) || deck.id,
+    rootName: path2.basename(deckDirectory) || deck.id,
     files: files.sort((left, right) => left.path.localeCompare(right.path, void 0, { numeric: true }))
   };
 }
@@ -33542,7 +33971,7 @@ async function inferConvertedExportFormat(deckId, requested) {
     return requested;
   }
   try {
-    const taskPack = JSON.parse(await readFile(path.join(await getDeckContentDirectory(deckId), "task_pack.json"), "utf8"));
+    const taskPack = JSON.parse(await readFile2(path2.join(await getDeckContentDirectory(deckId), "task_pack.json"), "utf8"));
     return taskPack.params?.output_format === "pdf" ? "pdf" : "pptx";
   } catch {
     return "pptx";
@@ -33552,13 +33981,13 @@ function resolveBuiltinConverterPath(converterName) {
   const configuredConverterDir = process.env.WORKBENCH_CONVERTER_DIR?.trim();
   const candidateRoots = [
     configuredConverterDir,
-    path.resolve(process.cwd(), "converters", "export_pptx"),
-    path.resolve(process.cwd(), "..", "..", "skills", "sn-ppt-standard", "scripts", "export_pptx"),
-    path.resolve(process.cwd(), "..", "SenseNova-Skills", "skills", "sn-ppt-standard", "scripts", "export_pptx"),
-    path.resolve(process.cwd(), "..", "..", "SenseNova-Skills", "skills", "sn-ppt-standard", "scripts", "export_pptx")
+    path2.resolve(process.cwd(), "converters", "export_pptx"),
+    path2.resolve(process.cwd(), "..", "..", "skills", "sn-ppt-standard", "scripts", "export_pptx"),
+    path2.resolve(process.cwd(), "..", "SenseNova-Skills", "skills", "sn-ppt-standard", "scripts", "export_pptx"),
+    path2.resolve(process.cwd(), "..", "..", "SenseNova-Skills", "skills", "sn-ppt-standard", "scripts", "export_pptx")
   ].filter((candidate) => Boolean(candidate));
-  const candidatePaths = candidateRoots.map((root) => path.join(root, converterName));
-  return candidatePaths.find((candidate) => existsSync(candidate));
+  const candidatePaths = candidateRoots.map((root) => path2.join(root, converterName));
+  return candidatePaths.find((candidate) => existsSync2(candidate));
 }
 function resolveExportCommand(format) {
   if (process.env.PPTX_EXPORT_DISABLED === "1") {
@@ -33579,6 +34008,7 @@ function resolveExportCommand(format) {
   return converterPath ? `node "${converterPath}" --deck-dir "{deckDir}" --output-dir "{exportDir}" --force` : "";
 }
 async function exportDeckPngZip(deckId) {
+  const deck = await loadDeck(deckId);
   if (process.env.PPTX_EXPORT_DISABLED === "1") {
     return {
       format: "png",
@@ -33587,26 +34017,35 @@ async function exportDeckPngZip(deckId) {
     };
   }
   const screenshotPath = resolveBuiltinConverterPath("screenshot.mjs");
-  if (!screenshotPath) {
+  const contentDirectory = await getDeckContentDirectory(deckId);
+  const needsRenderer = deck.slides.some((slide) => !slide.previewPath || !existsSync2(path2.join(contentDirectory, slide.previewPath)));
+  if (!screenshotPath && needsRenderer) {
     return {
       format: "png",
       ok: false,
       note: "\u672A\u914D\u7F6E\u6216\u68C0\u6D4B\u5230 PNG \u8F6C\u6362\u5668\u3002\u53EF\u4F7F\u7528\u201C\u4E0B\u8F7D\u8D44\u4EA7\u201D\u83B7\u53D6\u7F16\u8F91\u540E\u7684 HTML ZIP\u3002"
     };
   }
-  const deck = await loadDeck(deckId);
   const exportDirectory = getExportsDirectory(deckId);
   const createdAt = (/* @__PURE__ */ new Date()).toISOString().replace(/[:.]/g, "-");
-  const pngDirectory = path.join(exportDirectory, `${createdAt}-${deck.id}-png`);
+  const pngDirectory = path2.join(exportDirectory, `${createdAt}-${deck.id}-png`);
   const zipFileName = `${createdAt}-${deck.id}-png.zip`;
-  const zipPath = path.join(exportDirectory, zipFileName);
+  const zipPath = path2.join(exportDirectory, zipFileName);
   await mkdir(pngDirectory, { recursive: true });
   try {
     for (const slide of deck.slides) {
       const outputName = `page_${String(slide.pageNo).padStart(3, "0")}.png`;
-      const htmlPath = getSlideFilePath(deckId, slide.htmlPath);
-      const outputPath = path.join(pngDirectory, outputName);
-      execSync(`node "${screenshotPath}" --html "${htmlPath}" --out "${outputPath}" --viewport 1600x900 --wait 500`, {
+      const outputPath = path2.join(pngDirectory, outputName);
+      if (slide.previewPath && existsSync2(path2.join(contentDirectory, slide.previewPath))) {
+        await cp(path2.join(contentDirectory, slide.previewPath), outputPath);
+        continue;
+      }
+      if (deck.deckFormat === "dynamic-html-v2") {
+        throw new Error(`Dynamic page ${slide.pageNo} has no generated shot; HTML conversion is intentionally disabled.`);
+      }
+      const htmlPath = getSlideFilePath(deckId, slideDocumentPath(slide));
+      const viewport = `${deck.canvas?.width ?? 1600}x${deck.canvas?.height ?? 900}`;
+      execSync(`node "${screenshotPath}" --html "${htmlPath}" --out "${outputPath}" --viewport ${viewport} --wait 500`, {
         ...hiddenProcessOptions,
         cwd: process.cwd(),
         stdio: "pipe"
@@ -33632,13 +34071,13 @@ async function exportDeckPngZip(deckId) {
   }
 }
 async function findLatestConvertedFile(directory, format) {
-  if (!existsSync(directory)) {
+  if (!existsSync2(directory)) {
     return void 0;
   }
-  const entries = await readdir(directory, { withFileTypes: true });
+  const entries = await readdir2(directory, { withFileTypes: true });
   const extensionPattern = format === "pdf" ? /\.pdf$/i : /\.pptx$/i;
   const convertedFiles = await Promise.all(entries.filter((entry) => entry.isFile() && extensionPattern.test(entry.name)).map(async (entry) => {
-    const filePath = path.join(directory, entry.name);
+    const filePath = path2.join(directory, entry.name);
     return {
       filePath,
       modifiedAt: (await stat(filePath)).mtimeMs
@@ -33648,8 +34087,16 @@ async function findLatestConvertedFile(directory, format) {
 }
 async function runConfiguredExport(deckId, requestedFormat) {
   const format = await inferConvertedExportFormat(deckId, requestedFormat);
+  const deck = await loadDeck(deckId);
   if (format === "png") {
     return exportDeckPngZip(deckId);
+  }
+  if (deck.deckFormat === "dynamic-html-v2") {
+    return {
+      format,
+      ok: false,
+      note: `\u52A8\u6001 HTML \u7684 ${format.toUpperCase()} \u8F6C\u6362\u5DF2\u7981\u7528\uFF0C\u907F\u514D\u628A\u7B2C\u4E00\u9875\u91CD\u590D\u5BFC\u51FA\u3002\u8BF7\u4E0B\u8F7D\u8D44\u4EA7\u6216\u4F7F\u7528\u5DF2\u751F\u6210\u7684 shots\u3002`
+    };
   }
   const commandTemplate = resolveExportCommand(format);
   const formatLabel = format.toUpperCase();
@@ -33670,7 +34117,7 @@ async function runConfiguredExport(deckId, requestedFormat) {
       format,
       ok: Boolean(artifactPath),
       artifactPath,
-      artifactUrl: artifactPath ? getExportUrl(deckId, path.basename(artifactPath)) : void 0,
+      artifactUrl: artifactPath ? getExportUrl(deckId, path2.basename(artifactPath)) : void 0,
       note: artifactPath ? `\u5DF2\u6210\u529F\u5C06 HTML \u5E7B\u706F\u7247\u8F6C\u6362\u4E3A ${formatLabel}\u3002` : `${formatLabel} \u8F6C\u6362\u5668\u5DF2\u8FD0\u884C\u4F46\u672A\u751F\u6210 ${formatLabel} \u6587\u4EF6\u3002`
     };
   } catch (error) {
@@ -33683,9 +34130,9 @@ async function runConfiguredExport(deckId, requestedFormat) {
   }
 }
 function resolveDeckFilePath(deckId, relativePath) {
-  const normalizedPath = relativePath.replaceAll("\\", "/");
-  const deckDirectory = normalizedPath.startsWith("thumbnails/") || normalizedPath.startsWith("slides/") || normalizedPath.startsWith("analysis/") ? getDeckDirectory(deckId) : getDeckContentDirectorySync(deckId);
-  const filePath = path.resolve(deckDirectory, relativePath);
+  const normalizedPath2 = relativePath.replaceAll("\\", "/");
+  const deckDirectory = normalizedPath2.startsWith("thumbnails/") || normalizedPath2.startsWith("slides/") || normalizedPath2.startsWith("analysis/") ? getDeckDirectory(deckId) : getDeckContentDirectorySync(deckId);
+  const filePath = path2.resolve(deckDirectory, relativePath);
   if (!isWithinPath(deckDirectory, filePath)) {
     throw new Error("Requested file is outside the deck directory.");
   }
@@ -33697,22 +34144,22 @@ async function persistDeckAsset(deckId, fileName, dataUrl) {
     throw new Error("Asset upload must use a base64 data URL.");
   }
   const mimeType = matched[1].toLowerCase();
-  const extension = path.extname(fileName).toLowerCase();
+  const extension = path2.extname(fileName).toLowerCase();
   const allowedExtensions = /* @__PURE__ */ new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"]);
   if (!allowedExtensions.has(extension) || !mimeType.startsWith("image/")) {
     throw new Error("Only image assets can be uploaded to a slide deck.");
   }
-  const safeBaseName = path.basename(fileName, extension).replace(/[^\p{Letter}\p{Number}_-]+/gu, "-").replace(/^-+|-+$/g, "") || "asset";
-  const assetDirectory = path.join(await getDeckContentDirectory(deckId), "assets");
-  const relativePath = path.join("assets", `${Date.now()}-${safeBaseName}${extension}`);
-  const outputPath = path.resolve(await getDeckContentDirectory(deckId), relativePath);
+  const safeBaseName = path2.basename(fileName, extension).replace(/[^\p{Letter}\p{Number}_-]+/gu, "-").replace(/^-+|-+$/g, "") || "asset";
+  const assetDirectory = path2.join(await getDeckContentDirectory(deckId), "assets");
+  const relativePath = path2.join("assets", `${Date.now()}-${safeBaseName}${extension}`);
+  const outputPath = path2.resolve(await getDeckContentDirectory(deckId), relativePath);
   if (!isWithinPath(await getDeckContentDirectory(deckId), outputPath)) {
     throw new Error("Asset path is outside the deck directory.");
   }
   await mkdir(assetDirectory, { recursive: true });
   await writeFile(outputPath, Buffer.from(matched[2], "base64"));
   return {
-    path: relativePath.split(path.sep).join("/"),
+    path: relativePath.split(path2.sep).join("/"),
     url: getDeckFileUrl(deckId, relativePath)
   };
 }
@@ -33726,7 +34173,7 @@ async function persistWorkbenchChatAttachments(deckId, attachments) {
   const contentDirectory = await getDeckContentDirectory(deckId);
   const uploadedAt = (/* @__PURE__ */ new Date()).toISOString();
   const batchId = uploadedAt.replace(/[:.]/g, "-");
-  const uploadDirectory = path.join(contentDirectory, "chat_uploads", batchId);
+  const uploadDirectory = path2.join(contentDirectory, "chat_uploads", batchId);
   await mkdir(uploadDirectory, { recursive: true });
   const persisted = [];
   for (const [index, attachment] of attachments.entries()) {
@@ -33739,21 +34186,21 @@ async function persistWorkbenchChatAttachments(deckId, attachments) {
       throw new Error(`${attachment.fileName || `\u9644\u4EF6 ${index + 1}`} \u8D85\u8FC7 10 MB\u3002`);
     }
     const safeName = sanitizeUploadFileName(attachment.fileName, `attachment-${index + 1}`);
-    const relativePath = path.join("chat_uploads", batchId, `${String(index + 1).padStart(2, "0")}-${safeName}`);
-    const outputPath = path.resolve(contentDirectory, relativePath);
+    const relativePath = path2.join("chat_uploads", batchId, `${String(index + 1).padStart(2, "0")}-${safeName}`);
+    const outputPath = path2.resolve(contentDirectory, relativePath);
     if (!isWithinPath(contentDirectory, outputPath)) {
       throw new Error("Attachment path is outside the deck directory.");
     }
     await writeFile(outputPath, data);
-    const normalizedPath = relativePath.split(path.sep).join("/");
+    const normalizedPath2 = relativePath.split(path2.sep).join("/");
     persisted.push({
       id: `${batchId}-${index + 1}`,
       fileName: attachment.fileName || safeName,
-      path: normalizedPath,
+      path: normalizedPath2,
       absolutePath: outputPath,
-      url: getDeckFileUrl(deckId, normalizedPath),
+      url: getDeckFileUrl(deckId, normalizedPath2),
       mimeType: attachment.mimeType || matched[1] || "application/octet-stream",
-      kind: classifyDeckFileKind(normalizedPath),
+      kind: classifyDeckFileKind(normalizedPath2),
       size: data.byteLength,
       uploadedAt
     });
@@ -33762,7 +34209,7 @@ async function persistWorkbenchChatAttachments(deckId, attachments) {
 }
 function resolveDeckExportPath(deckId, fileName) {
   const exportDirectory = getExportsDirectory(deckId);
-  const filePath = path.resolve(exportDirectory, fileName);
+  const filePath = path2.resolve(exportDirectory, fileName);
   if (!isWithinPath(exportDirectory, filePath)) {
     throw new Error("Requested export is outside the deck export directory.");
   }
@@ -33770,19 +34217,19 @@ function resolveDeckExportPath(deckId, fileName) {
 }
 
 // server/patch-service.ts
-var import_node_html_parser3 = __toESM(require_dist3(), 1);
-import { existsSync as existsSync4 } from "node:fs";
+var import_node_html_parser4 = __toESM(require_dist3(), 1);
+import { existsSync as existsSync5 } from "node:fs";
 
 // server/agent-service.ts
 import { execFile, spawn } from "node:child_process";
-import { mkdir as mkdir2, mkdtemp, readFile as readFile2, rm, writeFile as writeFile2 } from "node:fs/promises";
+import { mkdir as mkdir2, mkdtemp, readFile as readFile3, rm, writeFile as writeFile2 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import path3 from "node:path";
+import path4 from "node:path";
 import { promisify } from "node:util";
 
 // server/ai-settings-service.ts
-import { existsSync as existsSync2, readFileSync as readFileSync2 } from "node:fs";
-import path2 from "node:path";
+import { existsSync as existsSync3, readFileSync as readFileSync2 } from "node:fs";
+import path3 from "node:path";
 var editFallbacks = [
   "qwen3.6-max-preview",
   "gpt-5.4",
@@ -33794,10 +34241,10 @@ var visionFallbacks = [
   "gemini-3.1-pro-preview",
   "glm-4.6v"
 ];
-var envLocalPath = path2.resolve(process.cwd(), ".env.local");
+var envLocalPath = path3.resolve(process.cwd(), ".env.local");
 var validBackends = /* @__PURE__ */ new Set(["hermes", "direct", "pi-agent", "gateway"]);
 function parseEnvFile(filePath) {
-  if (!existsSync2(filePath)) {
+  if (!existsSync3(filePath)) {
     return {};
   }
   const entries = {};
@@ -33997,8 +34444,8 @@ async function chatJson(system, user, options = {}) {
       const hasImage = Boolean(options.imagePath);
       let messages;
       if (hasImage) {
-        const { readFile: readFile6 } = await import("node:fs/promises");
-        const imageBuffer = await readFile6(options.imagePath);
+        const { readFile: readFile8 } = await import("node:fs/promises");
+        const imageBuffer = await readFile8(options.imagePath);
         const base64Image = imageBuffer.toString("base64");
         const mimeType = options.imagePath.endsWith(".png") ? "image/png" : options.imagePath.endsWith(".jpg") || options.imagePath.endsWith(".jpeg") ? "image/jpeg" : "image/png";
         messages = [
@@ -34200,9 +34647,9 @@ async function ensureHermesProfileConfig() {
   }
   const configPath = await getHermesConfigPath();
   const expected = buildHermesProfileConfig();
-  const existing = await readFile2(configPath, "utf8").catch(() => "");
+  const existing = await readFile3(configPath, "utf8").catch(() => "");
   if (existing !== expected) {
-    await mkdir2(path3.dirname(configPath), { recursive: true });
+    await mkdir2(path4.dirname(configPath), { recursive: true });
     await writeFile2(configPath, expected, "utf8");
   }
   profileConfigVerified = true;
@@ -34247,8 +34694,8 @@ async function runHermesJson(prompt, model, imagePath, rules) {
     const startTime = Date.now();
     let stdout;
     if (prompt.length > MAX_ARG_LENGTH) {
-      tmpDir = await mkdtemp(path3.join(tmpdir(), "ppt-editor-"));
-      const promptFile = path3.join(tmpDir, "prompt.txt");
+      tmpDir = await mkdtemp(path4.join(tmpdir(), "ppt-editor-"));
+      const promptFile = path4.join(tmpDir, "prompt.txt");
       await writeFile2(promptFile, prompt, "utf8");
       const child = spawn(getResolvedAiConfig().hermesCommand, [
         ...getResolvedAiConfig().hermesProfile ? ["-p", getResolvedAiConfig().hermesProfile] : [],
@@ -34263,8 +34710,8 @@ async function runHermesJson(prompt, model, imagePath, rules) {
         stdio: ["pipe", "pipe", "pipe"],
         timeout: 18e4
       });
-      const { readFile: readFile6 } = await import("node:fs/promises");
-      const promptContent = await readFile6(promptFile, "utf8");
+      const { readFile: readFile8 } = await import("node:fs/promises");
+      const promptContent = await readFile8(promptFile, "utf8");
       child.stdin.write(promptContent);
       child.stdin.end();
       stdout = await new Promise((resolve, reject) => {
@@ -34551,9 +34998,9 @@ async function getActiveAgentHealth() {
 }
 
 // server/sensenova-context-service.ts
-import { existsSync as existsSync3 } from "node:fs";
-import { readFile as readFile3 } from "node:fs/promises";
-import path4 from "node:path";
+import { existsSync as existsSync4 } from "node:fs";
+import { readFile as readFile4 } from "node:fs/promises";
+import path5 from "node:path";
 var artifactNames = [
   "style_spec.json",
   "outline.json",
@@ -34564,12 +35011,12 @@ var artifactNames = [
 function asRecord(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? value : void 0;
 }
-function stringField(record, key) {
-  const value = record?.[key];
+function stringField(record2, key) {
+  const value = record2?.[key];
   return typeof value === "string" && value.trim() ? value.trim() : void 0;
 }
-function numberField(record, key) {
-  const value = record?.[key];
+function numberField(record2, key) {
+  const value = record2?.[key];
   return typeof value === "number" && Number.isFinite(value) ? value : void 0;
 }
 function clip(value, maxLength = 360) {
@@ -34578,13 +35025,13 @@ function clip(value, maxLength = 360) {
   }
   return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
 }
-async function readOptionalJson(root, fileName) {
-  const filePath = path4.join(root, fileName);
-  if (!existsSync3(filePath)) {
+async function readOptionalJson2(root, fileName) {
+  const filePath = path5.join(root, fileName);
+  if (!existsSync4(filePath)) {
     return void 0;
   }
   try {
-    return JSON.parse(await readFile3(filePath, "utf8"));
+    return JSON.parse(await readFile4(filePath, "utf8"));
   } catch {
     return void 0;
   }
@@ -34593,9 +35040,9 @@ function getOutlineItems(value) {
   if (Array.isArray(value)) {
     return value;
   }
-  const record = asRecord(value);
+  const record2 = asRecord(value);
   for (const key of ["pages", "slides", "outline"]) {
-    const candidate = record?.[key];
+    const candidate = record2?.[key];
     if (Array.isArray(candidate)) {
       return candidate;
     }
@@ -34604,21 +35051,21 @@ function getOutlineItems(value) {
 }
 function summarizeOutline(value) {
   const pages = getOutlineItems(value).map((item, index) => {
-    const record = asRecord(item);
+    const record2 = asRecord(item);
     return {
-      pageNo: numberField(record, "page_no") ?? numberField(record, "pageNo") ?? index + 1,
-      title: clip(stringField(record, "title"), 160),
-      subtitle: clip(stringField(record, "subtitle"), 160),
-      layout: stringField(record, "layout") ?? stringField(record, "layout_type") ?? stringField(record, "template"),
-      visualHints: clip(stringField(record, "visual_hints") ?? stringField(record, "visualHints")),
-      narrative: clip(stringField(record, "narrative") ?? stringField(record, "summary"))
+      pageNo: numberField(record2, "page_no") ?? numberField(record2, "pageNo") ?? index + 1,
+      title: clip(stringField(record2, "title"), 160),
+      subtitle: clip(stringField(record2, "subtitle"), 160),
+      layout: stringField(record2, "layout") ?? stringField(record2, "layout_type") ?? stringField(record2, "template"),
+      visualHints: clip(stringField(record2, "visual_hints") ?? stringField(record2, "visualHints")),
+      narrative: clip(stringField(record2, "narrative") ?? stringField(record2, "summary"))
     };
   }).slice(0, 40);
   return pages.length ? { pages } : void 0;
 }
 function getAssetPlanPages(value) {
-  const record = asRecord(value);
-  const pages = record?.pages;
+  const record2 = asRecord(value);
+  const pages = record2?.pages;
   if (Array.isArray(pages)) {
     return pages;
   }
@@ -34629,10 +35076,10 @@ function getAssetPlanPages(value) {
 }
 function summarizeAssetPlan(value) {
   const pages = getAssetPlanPages(value).map((item, index) => {
-    const record = asRecord(item);
-    const slots = Array.isArray(record?.slots) ? record.slots : [];
+    const record2 = asRecord(item);
+    const slots = Array.isArray(record2?.slots) ? record2.slots : [];
     return {
-      pageNo: numberField(record, "page_no") ?? numberField(record, "pageNo") ?? index + 1,
+      pageNo: numberField(record2, "page_no") ?? numberField(record2, "pageNo") ?? index + 1,
       slots: slots.map((slot) => {
         const slotRecord = asRecord(slot);
         const qualityReview = asRecord(slotRecord?.quality_review) ?? asRecord(slotRecord?.qualityReview);
@@ -34650,27 +35097,27 @@ function summarizeAssetPlan(value) {
   return pages.length ? { pages } : void 0;
 }
 function summarizeTaskPack(value) {
-  const record = asRecord(value);
-  if (!record) {
+  const record2 = asRecord(value);
+  if (!record2) {
     return void 0;
   }
-  const params = asRecord(record.params);
+  const params = asRecord(record2.params);
   return {
-    topic: clip(stringField(record, "topic") ?? stringField(record, "title") ?? stringField(params, "topic"), 160),
-    language: stringField(record, "language") ?? stringField(params, "language"),
-    audience: clip(stringField(record, "audience") ?? stringField(params, "audience"), 160),
-    purpose: clip(stringField(record, "purpose") ?? stringField(params, "purpose"), 240)
+    topic: clip(stringField(record2, "topic") ?? stringField(record2, "title") ?? stringField(params, "topic"), 160),
+    language: stringField(record2, "language") ?? stringField(params, "language"),
+    audience: clip(stringField(record2, "audience") ?? stringField(params, "audience"), 160),
+    purpose: clip(stringField(record2, "purpose") ?? stringField(params, "purpose"), 240)
   };
 }
 function summarizeInfoPack(value) {
-  const record = asRecord(value);
-  if (!record) {
+  const record2 = asRecord(value);
+  if (!record2) {
     return void 0;
   }
-  const digest = asRecord(record.document_digest) ?? asRecord(record.documentDigest);
+  const digest = asRecord(record2.document_digest) ?? asRecord(record2.documentDigest);
   return {
     documentDigest: clip(
-      stringField(digest, "summary") ?? stringField(digest, "executive_summary") ?? stringField(record, "summary"),
+      stringField(digest, "summary") ?? stringField(digest, "executive_summary") ?? stringField(record2, "summary"),
       700
     )
   };
@@ -34678,7 +35125,7 @@ function summarizeInfoPack(value) {
 async function loadSenseNovaDesignContext(deckId) {
   const root = await getDeckContentDirectory(deckId);
   const artifacts = Object.fromEntries(
-    await Promise.all(artifactNames.map(async (fileName) => [fileName, await readOptionalJson(root, fileName)]))
+    await Promise.all(artifactNames.map(async (fileName) => [fileName, await readOptionalJson2(root, fileName)]))
   );
   const context = {
     artifacts: Object.fromEntries(
@@ -34696,6 +35143,58 @@ async function loadSenseNovaDesignContext(deckId) {
   return Object.values(context.artifacts).some((artifact) => artifact.exists) ? context : void 0;
 }
 
+// shared/edit-geometry.ts
+var MIN_REASONABLE_BOUNDS_PX = 4;
+var protectedTagNames = /* @__PURE__ */ new Set(["html", "body", "canvas", "script"]);
+var protectedElementIds = /* @__PURE__ */ new Set(["bg", "ct", "bg-layer"]);
+var protectedClassNames = /* @__PURE__ */ new Set(["wrapper", "deck", "stage", "slide", "hud", "pageno"]);
+function resolveStageRoot(root, pageRoot) {
+  return pageRoot?.querySelector(".slide-body") ?? pageRoot ?? root?.querySelector("#ct") ?? root?.querySelector(".wrapper") ?? root?.querySelector(".slide-body") ?? root?.querySelector(".slide") ?? root?.querySelector("body") ?? null;
+}
+function isProtectedElement(element, root) {
+  if (root != null && element === root) {
+    return true;
+  }
+  if (protectedTagNames.has(element.tagName.toLowerCase())) {
+    return true;
+  }
+  if (element.id && protectedElementIds.has(element.id)) {
+    return true;
+  }
+  if (element.classList) {
+    for (const name of protectedClassNames) {
+      if (element.classList.contains(name)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+function boundsToStylePatch(bounds) {
+  return {
+    position: "absolute",
+    left: `${Math.round(bounds.x)}px`,
+    top: `${Math.round(bounds.y)}px`,
+    // Clear any authored right/bottom: with left/top + width/height governing,
+    // a leftover right/bottom would over-constrain the box. Empty string clears
+    // the property both via CSSStyleDeclaration assignment and server-side
+    // inline-style parsing (which deletes empty values).
+    right: "",
+    bottom: "",
+    width: `${Math.round(bounds.w)}px`,
+    height: `${Math.round(bounds.h)}px`,
+    margin: "0",
+    boxSizing: "border-box",
+    transform: "none"
+  };
+}
+function isDegenerateBounds(bounds) {
+  if (!Number.isFinite(bounds.x) || !Number.isFinite(bounds.y) || !Number.isFinite(bounds.w) || !Number.isFinite(bounds.h)) {
+    return true;
+  }
+  return bounds.w <= 0 || bounds.h <= 0 || bounds.w < MIN_REASONABLE_BOUNDS_PX || bounds.h < MIN_REASONABLE_BOUNDS_PX;
+}
+
 // server/patch-service.ts
 function findRegion(root, regionId) {
   if (!regionId) {
@@ -34708,11 +35207,14 @@ function elementChildren(element) {
     return child.nodeType === 1;
   });
 }
-function resolveDomPath(root, domPath) {
+function resolvePageRoot(root, slide) {
+  return slide.pageSelector ? root.querySelector(slide.pageSelector) : null;
+}
+function resolveDomPath(root, domPath, pageRoot) {
   if (!domPath?.length) {
     return null;
   }
-  let current = root.querySelector(".wrapper") ?? root.querySelector("body");
+  let current = pageRoot ?? root.querySelector(".wrapper") ?? root.querySelector("body");
   if (!current) {
     return null;
   }
@@ -34726,15 +35228,15 @@ function resolveDomPath(root, domPath) {
   }
   return current;
 }
-function resolveSelectionTarget(root, request) {
-  const fromPath = resolveDomPath(root, request.selection?.primaryDomPath);
+function resolveSelectionTarget(root, request, pageRoot) {
+  const fromPath = resolveDomPath(root, request.selection?.primaryDomPath, pageRoot);
   if (fromPath) {
     return fromPath;
   }
   const selector = request.selection?.primarySelector;
   if (selector) {
     try {
-      const fromSelector = root.querySelector(selector);
+      const fromSelector = pageRoot ? pageRoot.querySelector(selector) : root.querySelector(selector);
       if (fromSelector) {
         return fromSelector;
       }
@@ -34742,11 +35244,11 @@ function resolveSelectionTarget(root, request) {
       return null;
     }
   }
-  const fromConfirmedSelection = resolveConfirmedSelectionTarget(root, request);
+  const fromConfirmedSelection = resolveConfirmedSelectionTarget(root, request, pageRoot);
   if (fromConfirmedSelection) {
     return fromConfirmedSelection;
   }
-  return findRegion(root, request.selectedRegionId);
+  return findRegion(pageRoot ?? root, request.selectedRegionId);
 }
 function selectedConfirmedSelections(request) {
   const refs = new Set(
@@ -34756,26 +35258,21 @@ function selectedConfirmedSelections(request) {
   const referenced = refs.size ? selections.filter((selection) => refs.has(selection.number)) : selections;
   return referenced.filter((selection) => selection.pageNo === request.pageNo);
 }
-function resolveConfirmedSelectionTarget(root, request) {
+function resolveConfirmedSelectionTarget(root, request, pageRoot) {
   const confirmed = selectedConfirmedSelections(request)[0];
   const firstElement = confirmed?.elements[0];
   if (!firstElement) {
     return null;
   }
-  const fromPath = resolveDomPath(root, firstElement.domPath);
+  const fromPath = resolveDomPath(root, firstElement.domPath, pageRoot);
   if (fromPath) {
     return fromPath;
   }
   try {
-    return root.querySelector(firstElement.selector);
+    return (pageRoot ?? root).querySelector(firstElement.selector);
   } catch {
     return null;
   }
-}
-function isProtectedTarget(target) {
-  const tagName = target.tagName.toLowerCase();
-  const className = target.getAttribute("class") ?? "";
-  return tagName === "html" || tagName === "body" || target.getAttribute("id") === "bg" || target.getAttribute("id") === "ct" || className.split(/\s+/).includes("wrapper");
 }
 function escapeHtml2(value) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
@@ -34867,8 +35364,9 @@ function applyScopedHtmlPatch(slide, request) {
   if (request.scopedHtml === void 0) {
     return null;
   }
-  const root = (0, import_node_html_parser3.parse)(slide.html);
-  const target = resolveSelectionTarget(root, request);
+  const root = (0, import_node_html_parser4.parse)(slide.html);
+  const pageRoot = resolvePageRoot(root, slide);
+  const target = resolveSelectionTarget(root, request, pageRoot);
   const regionId = request.selection?.primaryElementId ?? request.selectedRegionId ?? "selected-element";
   const selector = request.selection?.primarySelector ?? (request.selectedRegionId ? `[data-region-id="${request.selectedRegionId}"]` : "#ct");
   const warnings = [];
@@ -34883,7 +35381,7 @@ function applyScopedHtmlPatch(slide, request) {
       editPlan: buildEditPlan("\u672A\u627E\u5230\u9009\u4E2D\u5143\u7D20\u3002", [], warnings)
     };
   }
-  if (isProtectedTarget(target)) {
+  if (isProtectedElement(target)) {
     warnings.push("\u5F53\u524D\u5143\u7D20\u53D7\u4FDD\u62A4\uFF0C\u4E0D\u80FD\u76F4\u63A5\u66FF\u6362 HTML\u3002");
     return {
       html: slide.html,
@@ -34938,7 +35436,7 @@ function resolveScopedTarget(root, selector, selectedRegionId) {
   return region.querySelector(selector);
 }
 function applyEditPlan(html, plan, selectedRegionId) {
-  let root = (0, import_node_html_parser3.parse)(html);
+  let root = (0, import_node_html_parser4.parse)(html);
   const warnings = [...plan.warnings];
   for (const operation of plan.operations) {
     if (operation.type === "set_css_variable") {
@@ -34947,7 +35445,7 @@ function applyEditPlan(html, plan, selectedRegionId) {
         continue;
       }
       html = updateCssVariable(serializeDocument(root.toString()), operation.name, operation.value);
-      root = (0, import_node_html_parser3.parse)(html);
+      root = (0, import_node_html_parser4.parse)(html);
       continue;
     }
     const selector = operation.target.selector;
@@ -35035,8 +35533,9 @@ async function tryAiEditPlan(slide, request) {
   if (process.env.AI_PATCH_DISABLED === "1" || !hasConfiguredAgent() || !request.instruction.trim()) {
     return null;
   }
-  const root = (0, import_node_html_parser3.parse)(slide.html);
-  const target = resolveSelectionTarget(root, request);
+  const root = (0, import_node_html_parser4.parse)(slide.html);
+  const pageRoot = resolvePageRoot(root, slide);
+  const target = resolveSelectionTarget(root, request, pageRoot);
   if (!target) {
     return null;
   }
@@ -35046,7 +35545,7 @@ async function tryAiEditPlan(slide, request) {
     slide,
     request,
     target.toString(),
-    existsSync4(thumbnailPath) ? thumbnailPath : void 0,
+    existsSync5(thumbnailPath) ? thumbnailPath : void 0,
     designContext
   );
   if (!aiResult.ok || !aiResult.data.operations?.length) {
@@ -35074,7 +35573,8 @@ async function tryAiEditPlan(slide, request) {
   };
 }
 function applyRuleBasedPatch(slide, request) {
-  const root = (0, import_node_html_parser3.parse)(slide.html);
+  const root = (0, import_node_html_parser4.parse)(slide.html);
+  const pageRoot = resolvePageRoot(root, slide);
   const selectedRegionId = request.selectedRegionId ?? slide.analysis.regions[0]?.id ?? "whole-slide";
   const instruction = request.instruction.toLowerCase();
   const warnings = [];
@@ -35082,7 +35582,7 @@ function applyRuleBasedPatch(slide, request) {
   const chartRegion = findRegion(root, "trend-chart");
   const insightRegion = findRegion(root, "insight-card");
   if (isListGapInstruction(request.instruction)) {
-    const scope = resolveSelectionTarget(root, request) ?? region ?? root.querySelector("#ct");
+    const scope = resolveSelectionTarget(root, request, pageRoot) ?? region ?? root.querySelector("#ct");
     const target = scope ? findListGapTarget(scope) : null;
     const gap = listGapValue(request.instruction);
     const regionId = scope?.getAttribute("data-region-id") ?? selectedRegionId;
@@ -35289,8 +35789,13 @@ async function previewPatch(slide, request) {
   const aiPatch = scopedHtmlPatch ? null : await tryAiEditPlan(slide, request);
   const resolvedPatch = scopedHtmlPatch ?? aiPatch ?? applyRuleBasedPatch(slide, request);
   const patchedHtml = applyControls(resolvedPatch.html, request);
-  const analysis = analyzeSlideHtml(patchedHtml, slide.pageNo);
-  const validation = validateSlideHtml(patchedHtml);
+  const analysisOptions = {
+    deckFormat: slide.pageSelector ? "dynamic-html-v2" : slide.documentPath?.startsWith("slides/") ? "static-html-v2" : "legacy-per-slide-html",
+    canvas: slide.pageSelector ? { width: 1280, height: 720 } : { width: 1600, height: 900 },
+    pageSelector: slide.pageSelector
+  };
+  const analysis = analyzeSlideHtml(patchedHtml, slide.pageNo, analysisOptions);
+  const validation = validateSlideHtml(patchedHtml, analysisOptions);
   const createdAt = (/* @__PURE__ */ new Date()).toISOString();
   return {
     provider: aiPatch ? "ai-compatible" : "rule-based",
@@ -35316,7 +35821,7 @@ async function previewPatch(slide, request) {
 }
 
 // server/direct-edit-service.ts
-var import_node_html_parser4 = __toESM(require_dist3(), 1);
+var import_node_html_parser5 = __toESM(require_dist3(), 1);
 var stageBounds = { x: 0, y: 0, w: 1600, h: 900 };
 var allowedStyleProperties = /* @__PURE__ */ new Set([
   "position",
@@ -35376,11 +35881,11 @@ function escapeAttribute(value) {
 function elementChildren2(element) {
   return element.childNodes.filter((child) => child.nodeType === 1);
 }
-function resolveDomPath2(root, domPath) {
+function resolveDomPath2(root, domPath, pageRoot) {
   if (!domPath?.length) {
     return null;
   }
-  let current = root.querySelector(".wrapper") ?? root.querySelector("body");
+  let current = pageRoot ?? root.querySelector(".wrapper") ?? root.querySelector(".slide") ?? root.querySelector("body");
   if (!current) {
     return null;
   }
@@ -35394,34 +35899,30 @@ function resolveDomPath2(root, domPath) {
   }
   return current;
 }
-function resolveTarget(root, target) {
+function resolveTarget(root, target, scope) {
   if (!target) {
     return null;
   }
+  const queryRoot = scope?.pageRoot ?? root;
   if (target.objectId) {
-    const byObjectId = root.querySelector(`[data-ppt-object-id="${target.objectId}"]`);
+    const byObjectId = queryRoot.querySelector(`[data-ppt-object-id="${target.objectId}"]`);
     if (byObjectId) {
       return byObjectId;
     }
   }
   if (target.selector) {
     try {
-      const bySelector = root.querySelector(target.selector);
+      const bySelector = queryRoot.querySelector(target.selector);
       if (bySelector) {
         return bySelector;
       }
     } catch {
     }
   }
-  return resolveDomPath2(root, target.domPath);
+  return resolveDomPath2(root, target.domPath, scope?.pageRoot);
 }
-function resolveTargets(root, operation) {
-  return (operation.targets ?? []).map((target) => resolveTarget(root, target)).filter((element) => Boolean(element));
-}
-function isProtectedTarget2(target) {
-  const tagName = target.tagName.toLowerCase();
-  const className = target.getAttribute("class") ?? "";
-  return tagName === "html" || tagName === "body" || target.getAttribute("id") === "bg" || target.getAttribute("id") === "ct" || className.split(/\s+/).includes("wrapper");
+function resolveTargets(root, operation, scope) {
+  return (operation.targets ?? []).map((target) => resolveTarget(root, target, scope)).filter((element) => Boolean(element));
 }
 function ensureObjectId(element, operation) {
   const objectId = operation.objectId ?? operation.target?.objectId ?? element.getAttribute("data-ppt-object-id") ?? `ppt-object-${operation.id}`;
@@ -35457,8 +35958,8 @@ function sanitizeStylePatch(operation, patch, warnings) {
   }
   return safePatch;
 }
-function resolveStageRoot(root) {
-  return root.querySelector(".wrapper") ?? root.querySelector("body");
+function resolveStageRoot2(root, scope) {
+  return resolveStageRoot(root, scope.pageRoot);
 }
 function ensureStageRootPositioned(root) {
   const styles = parseStyleDeclaration(root.getAttribute("style"));
@@ -35466,8 +35967,8 @@ function ensureStageRootPositioned(root) {
     updateInlineStyle(root, { position: "relative" });
   }
 }
-function placeholderStyle(operation) {
-  const bounds = normalizeBounds(operation.flowPlaceholder?.bounds ?? operation.bounds ?? { x: 0, y: 0, w: 1, h: 1 });
+function placeholderStyle(operation, scope) {
+  const bounds = normalizeBounds(operation.flowPlaceholder?.bounds ?? operation.bounds ?? { x: 0, y: 0, w: 1, h: 1 }, scope.bounds);
   return stringifyStyleDeclaration({
     display: "block",
     width: `${bounds.w}px`,
@@ -35482,7 +35983,7 @@ function placeholderStyle(operation) {
     ...operation.flowPlaceholder?.style ?? {}
   });
 }
-function ensureFlowPlaceholder(root, target, operation) {
+function ensureFlowPlaceholder(root, target, operation, scope) {
   if (!operation.flowPlaceholder) {
     return;
   }
@@ -35492,17 +35993,17 @@ function ensureFlowPlaceholder(root, target, operation) {
   }
   target.insertAdjacentHTML(
     "beforebegin",
-    `<div data-ppt-placeholder-for="${escapeAttribute(objectId)}" aria-hidden="true" style="${escapeAttribute(placeholderStyle(operation))}"></div>`
+    `<div data-ppt-placeholder-for="${escapeAttribute(objectId)}" aria-hidden="true" style="${escapeAttribute(placeholderStyle(operation, scope))}"></div>`
   );
 }
-function liftTargetToStage(root, target, operation) {
-  const stageRoot = resolveStageRoot(root);
+function liftTargetToStage(root, target, operation, scope) {
+  const stageRoot = resolveStageRoot2(root, scope);
   if (!stageRoot || target === stageRoot) {
     return target;
   }
   ensureObjectId(target, operation);
   ensureStageRootPositioned(stageRoot);
-  ensureFlowPlaceholder(root, target, operation);
+  ensureFlowPlaceholder(root, target, operation, scope);
   if (target.parentNode === stageRoot) {
     return target;
   }
@@ -35512,27 +36013,45 @@ function liftTargetToStage(root, target, operation) {
   stageRoot.insertAdjacentHTML("beforeend", html);
   return objectId ? stageRoot.querySelector(`[data-ppt-object-id="${objectId}"]`) ?? target : target;
 }
-function normalizeBounds(bounds) {
-  const x = Math.round(clamp(bounds.x, stageBounds.x - 400, stageBounds.w));
-  const y = Math.round(clamp(bounds.y, stageBounds.y - 400, stageBounds.h));
-  const w = Math.round(clamp(bounds.w, 4, stageBounds.w * 2));
-  const h = Math.round(clamp(bounds.h, 4, stageBounds.h * 2));
+function normalizeBounds(bounds, canvas = stageBounds) {
+  const x = Math.round(clamp(bounds.x, canvas.x - 400, canvas.w));
+  const y = Math.round(clamp(bounds.y, canvas.y - 400, canvas.h));
+  const w = Math.round(clamp(bounds.w, 4, canvas.w * 2));
+  const h = Math.round(clamp(bounds.h, 4, canvas.h * 2));
   return { x, y, w, h };
 }
-function applyBounds(root, target, operation, warnings) {
+function toCssStylePatch(patch) {
+  return Object.fromEntries(
+    Object.entries(patch).map(([property, value]) => [property.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`), value])
+  );
+}
+function applyBounds(root, target, operation, warnings, errors, scope) {
   if (!operation.bounds) {
     warnings.push(`Operation ${operation.id} skipped: bounds are required.`);
     return;
   }
-  if (isProtectedTarget2(target)) {
+  if (isProtectedElement(target)) {
     warnings.push(`Operation ${operation.id} skipped: protected target cannot be moved or resized.`);
     return;
   }
-  const bounds = normalizeBounds(operation.bounds);
+  if (isDegenerateBounds(operation.bounds)) {
+    errors.push(`Operation ${operation.id} rejected: degenerate bounds cannot describe a real slide object.`);
+    return;
+  }
   ensureObjectId(target, operation);
-  const liftedTarget = liftTargetToStage(root, target, operation);
+  const stylePatch = sanitizeStylePatch(operation, operation.style ?? {}, warnings);
+  if (operation.boundsSpace === "offsetParent") {
+    ensureFlowPlaceholder(root, target, operation, scope);
+    updateInlineStyle(target, {
+      ...stylePatch,
+      ...toCssStylePatch(boundsToStylePatch(operation.bounds))
+    });
+    return;
+  }
+  const bounds = normalizeBounds(operation.bounds, scope.bounds);
+  const liftedTarget = liftTargetToStage(root, target, operation, scope);
   updateInlineStyle(liftedTarget, {
-    ...sanitizeStylePatch(operation, operation.style ?? {}, warnings),
+    ...stylePatch,
     position: "absolute",
     left: `${bounds.x}px`,
     top: `${bounds.y}px`,
@@ -35545,7 +36064,7 @@ function applyBounds(root, target, operation, warnings) {
   });
 }
 function applyStyle(target, operation, warnings) {
-  if (isProtectedTarget2(target)) {
+  if (isProtectedElement(target)) {
     warnings.push(`Operation ${operation.id} skipped: protected target cannot be styled.`);
     return;
   }
@@ -35554,7 +36073,7 @@ function applyStyle(target, operation, warnings) {
   updateInlineStyle(target, sanitizeStylePatch(operation, patch, warnings));
 }
 function applyText(target, operation, warnings) {
-  if (isProtectedTarget2(target)) {
+  if (isProtectedElement(target)) {
     warnings.push(`Operation ${operation.id} skipped: protected target cannot edit text.`);
     return;
   }
@@ -35563,7 +36082,7 @@ function applyText(target, operation, warnings) {
 }
 function applyRichText(target, operation, warnings) {
   const html = operation.html ?? "";
-  if (isProtectedTarget2(target)) {
+  if (isProtectedElement(target)) {
     warnings.push(`Operation ${operation.id} skipped: protected target cannot edit rich text.`);
     return;
   }
@@ -35574,11 +36093,11 @@ function applyRichText(target, operation, warnings) {
   ensureObjectId(target, operation);
   target.set_content(html);
 }
-function resolveInsertionParent(root, operation) {
-  return resolveTarget(root, operation.target) ?? root.querySelector("#ct") ?? root.querySelector(".wrapper") ?? root.querySelector("body");
+function resolveInsertionParent(root, operation, scope) {
+  return resolveTarget(root, operation.target, scope) ?? scope.pageRoot?.querySelector(".slide-body") ?? scope.pageRoot ?? root.querySelector("#ct") ?? root.querySelector(".wrapper") ?? root.querySelector("body");
 }
-function objectStyle(bounds, extra = {}) {
-  const normalized = normalizeBounds(bounds ?? { x: 180, y: 160, w: 360, h: 120 });
+function objectStyle(bounds, extra, scope) {
+  const normalized = normalizeBounds(bounds ?? { x: 180, y: 160, w: 360, h: 120 }, scope.bounds);
   return stringifyStyleDeclaration({
     position: "absolute",
     left: `${normalized.x}px`,
@@ -35588,8 +36107,8 @@ function objectStyle(bounds, extra = {}) {
     ...extra
   });
 }
-function applyInsert(root, operation, warnings) {
-  const parent = resolveInsertionParent(root, operation);
+function applyInsert(root, operation, warnings, scope) {
+  const parent = resolveInsertionParent(root, operation, scope);
   if (!parent) {
     warnings.push(`Operation ${operation.id} skipped: insertion parent was not found.`);
     return;
@@ -35600,10 +36119,10 @@ function applyInsert(root, operation, warnings) {
   const style = operation.type === "insert_shape" && operation.kind === "line" ? objectStyle(operation.bounds, {
     "border-top": "4px solid #111111",
     height: "4px"
-  }) : objectStyle(operation.bounds);
+  }, scope) : objectStyle(operation.bounds, {}, scope);
   if (operation.type === "insert_textbox") {
-    const text = escapeHtml3(operation.text || "\u53CC\u51FB\u7F16\u8F91\u6587\u672C");
-    parent.insertAdjacentHTML("beforeend", `<div class="ppt-workbench-textbox" data-ppt-object-id="${escapedObjectId}" data-region-type="freeform" style="${style}; display: flex; align-items: center; padding: 12px 18px; font-size: 34px; line-height: 1.2; color: #111111;">${text}</div>`);
+    const text2 = escapeHtml3(operation.text || "\u53CC\u51FB\u7F16\u8F91\u6587\u672C");
+    parent.insertAdjacentHTML("beforeend", `<div class="ppt-workbench-textbox" data-ppt-object-id="${escapedObjectId}" data-region-type="freeform" style="${style}; display: flex; align-items: center; padding: 12px 18px; font-size: 34px; line-height: 1.2; color: #111111;">${text2}</div>`);
     return;
   }
   if (operation.type === "insert_shape") {
@@ -35630,7 +36149,7 @@ function removeFlowPlaceholder(root, target) {
   root.querySelector(`[data-ppt-placeholder-for="${objectId}"]`)?.remove();
 }
 function applyDelete(root, target, operation, warnings) {
-  if (isProtectedTarget2(target)) {
+  if (isProtectedElement(target)) {
     warnings.push(`Operation ${operation.id} skipped: protected target cannot be deleted.`);
     return;
   }
@@ -35638,7 +36157,7 @@ function applyDelete(root, target, operation, warnings) {
   target.remove();
 }
 function applyDuplicate(target, operation, warnings) {
-  if (isProtectedTarget2(target)) {
+  if (isProtectedElement(target)) {
     warnings.push(`Operation ${operation.id} skipped: protected target cannot be duplicated.`);
     return;
   }
@@ -35646,22 +36165,25 @@ function applyDuplicate(target, operation, warnings) {
   const cloneHtml = target.toString().replace(/\sdata-ppt-workbench-id="[^"]*"/g, "").replace(/\sdata-ppt-object-id="[^"]*"/g, ` data-ppt-object-id="${escapeAttribute(objectId)}"`);
   target.insertAdjacentHTML("afterend", /\sdata-ppt-object-id=/.test(cloneHtml) ? cloneHtml : cloneHtml.replace(/^(<\w+)/, `$1 data-ppt-object-id="${escapeAttribute(objectId)}"`));
 }
-function applyZOrder(root, target, operation, warnings) {
-  if (isProtectedTarget2(target)) {
+function applyZOrder(target, operation, warnings) {
+  if (isProtectedElement(target)) {
     warnings.push(`Operation ${operation.id} skipped: protected target cannot change z-order.`);
     return;
   }
-  const siblings = root.querySelectorAll("[style]");
-  const zIndexes = siblings.map((element) => Number.parseInt(parseStyleDeclaration(element.getAttribute("style"))["z-index"] ?? "0", 10)).filter((value) => Number.isFinite(value));
-  const current = Number.parseInt(parseStyleDeclaration(target.getAttribute("style"))["z-index"] ?? "0", 10) || 0;
-  const max = Math.max(0, ...zIndexes);
-  const min = Math.min(0, ...zIndexes);
+  const readZIndex = (element) => {
+    const value = Number.parseInt(parseStyleDeclaration(element.getAttribute("style"))["z-index"] ?? "", 10);
+    return Number.isFinite(value) ? value : 0;
+  };
+  const current = readZIndex(target);
+  const siblings = target.parentNode ? elementChildren2(target.parentNode).filter((sibling) => sibling !== target).map(readZIndex) : [];
+  const max = Math.max(current, ...siblings);
+  const min = Math.min(current, ...siblings);
   const next = operation.direction === "back" ? min - 1 : operation.direction === "backward" ? current - 1 : operation.direction === "forward" ? current + 1 : max + 1;
   ensureObjectId(target, operation);
   updateInlineStyle(target, { "z-index": String(next) });
 }
-function applyAlign(root, operation, warnings) {
-  const targets = resolveTargets(root, operation);
+function applyAlign(root, operation, warnings, errors, scope) {
+  const targets = resolveTargets(root, operation, scope);
   if (targets.length < 2 || !operation.align) {
     warnings.push(`Operation ${operation.id} skipped: align requires multiple targets.`);
     return;
@@ -35685,7 +36207,7 @@ function applyAlign(root, operation, warnings) {
     if (operation.align === "top") nextBounds.y = top;
     if (operation.align === "middle") nextBounds.y = centerY - box.bounds.h / 2;
     if (operation.align === "bottom") nextBounds.y = bottom - box.bounds.h;
-    applyBounds(root, box.target, { ...operation, bounds: nextBounds }, warnings);
+    applyBounds(root, box.target, { ...operation, bounds: nextBounds }, warnings, errors, scope);
   }
 }
 function readBounds(target) {
@@ -35702,38 +36224,70 @@ function readBounds(target) {
     h: read("height")
   };
 }
-function applyOperation(root, operation, warnings) {
+function describeEditTarget(target) {
+  if (target.selector) {
+    return `selector "${target.selector}"`;
+  }
+  if (target.objectId) {
+    return `object id "${target.objectId}"`;
+  }
+  return `DOM path [${(target.domPath ?? []).join(", ")}]`;
+}
+function applyOperation(root, operation, warnings, errors, scope) {
   if (operation.type === "insert_textbox" || operation.type === "insert_shape" || operation.type === "insert_image") {
-    applyInsert(root, operation, warnings);
+    applyInsert(root, operation, warnings, scope);
     return;
   }
   if (operation.type === "align") {
-    applyAlign(root, operation, warnings);
+    applyAlign(root, operation, warnings, errors, scope);
     return;
   }
-  const target = resolveTarget(root, operation.target);
+  const target = resolveTarget(root, operation.target, scope);
   if (!target) {
-    warnings.push(`Operation ${operation.id} skipped: target was not found.`);
+    if (scope.pageRoot && operation.target) {
+      errors.push(`Operation ${operation.id} rejected: ${describeEditTarget(operation.target)} was not found on the active page.`);
+    } else {
+      warnings.push(`Operation ${operation.id} skipped: target was not found.`);
+    }
     return;
   }
-  if (operation.type === "set_bounds") applyBounds(root, target, operation, warnings);
+  if (operation.type === "set_bounds") applyBounds(root, target, operation, warnings, errors, scope);
   if (operation.type === "set_transform") applyStyle(target, { ...operation, property: "transform", value: operation.value }, warnings);
   if (operation.type === "set_text") applyText(target, operation, warnings);
   if (operation.type === "set_rich_text") applyRichText(target, operation, warnings);
   if (operation.type === "set_style") applyStyle(target, operation, warnings);
   if (operation.type === "delete_node") applyDelete(root, target, operation, warnings);
   if (operation.type === "duplicate_node") applyDuplicate(target, operation, warnings);
-  if (operation.type === "z_order") applyZOrder(root, target, operation, warnings);
+  if (operation.type === "z_order") applyZOrder(target, operation, warnings);
 }
 async function previewDirectEdit(slide, request) {
-  const root = (0, import_node_html_parser4.parse)(slide.html);
+  const root = (0, import_node_html_parser5.parse)(slide.html, { comment: true });
   const warnings = [];
+  const errors = [];
+  const canvas = slide.pageSelector ? { width: 1280, height: 720 } : { width: 1600, height: 900 };
+  const analysisOptions = {
+    deckFormat: slide.pageSelector ? "dynamic-html-v2" : slide.documentPath?.startsWith("slides/") ? "static-html-v2" : "legacy-per-slide-html",
+    canvas,
+    pageSelector: slide.pageSelector
+  };
+  const scope = {
+    pageRoot: slide.pageSelector ? root.querySelector(slide.pageSelector) ?? void 0 : void 0,
+    bounds: { x: 0, y: 0, w: canvas.width, h: canvas.height },
+    analysis: analysisOptions
+  };
+  if (slide.pageSelector && !scope.pageRoot) {
+    throw new Error(`Dynamic page root was not found: ${slide.pageSelector}`);
+  }
   for (const operation of request.operations) {
-    applyOperation(root, operation, warnings);
+    applyOperation(root, operation, warnings, errors, scope);
   }
   const patchedHtml = serializeDocument(root.toString());
-  const validation = validateSlideHtml(patchedHtml);
-  const analysis = analyzeSlideHtml(patchedHtml, slide.pageNo);
+  const validation = validateSlideHtml(patchedHtml, scope.analysis);
+  if (errors.length > 0) {
+    validation.ok = false;
+    validation.errors.push(...errors);
+  }
+  const analysis = analyzeSlideHtml(patchedHtml, slide.pageNo, scope.analysis);
   const summary = request.summary || `\u5DF2\u5E94\u7528 ${request.operations.length} \u4E2A\u624B\u52A8\u7F16\u8F91\u64CD\u4F5C\u3002`;
   const patch = {
     id: `direct-${Date.now()}`,
@@ -35884,7 +36438,7 @@ async function reviewSlide(slide) {
 }
 
 // server/inspector-service.ts
-import { existsSync as existsSync5 } from "node:fs";
+import { existsSync as existsSync6 } from "node:fs";
 var severities = /* @__PURE__ */ new Set(["low", "medium", "high"]);
 function unavailableResponse(error, deckContext) {
   return {
@@ -35932,7 +36486,7 @@ async function buildDeckGrounding(deckId, slide) {
     deck,
     deckContext,
     designContext,
-    contactSheetPath: existsSync5(contactSheet.path) ? contactSheet.path : void 0
+    contactSheetPath: existsSync6(contactSheet.path) ? contactSheet.path : void 0
   };
 }
 async function inspectSlide(deckId, slide, selectedRegionId) {
@@ -36046,16 +36600,16 @@ function getMermaidVendorAsset() {
 }
 
 // server/workbench-service.ts
-import { existsSync as existsSync7 } from "node:fs";
+import { existsSync as existsSync9 } from "node:fs";
 import { createHash as createHash2 } from "node:crypto";
-import { mkdir as mkdir4, readdir as readdir2, readFile as readFile5, stat as stat2, writeFile as writeFile4 } from "node:fs/promises";
-import path6 from "node:path";
+import { mkdir as mkdir5, readdir as readdir3, readFile as readFile7, stat as stat3, writeFile as writeFile5 } from "node:fs/promises";
+import path8 from "node:path";
 
 // server/acp-client.ts
 import { spawn as spawn2 } from "node:child_process";
-import { existsSync as existsSync6 } from "node:fs";
-import { mkdir as mkdir3, readFile as readFile4, writeFile as writeFile3 } from "node:fs/promises";
-import path5 from "node:path";
+import { existsSync as existsSync7 } from "node:fs";
+import { mkdir as mkdir3, readFile as readFile5, writeFile as writeFile3 } from "node:fs/promises";
+import path6 from "node:path";
 function splitCommandLine(commandLine) {
   const tokens = [];
   let current = "";
@@ -36097,18 +36651,18 @@ function splitCommandLine(commandLine) {
 }
 function resolveSpawnCommand(command, platform = process.platform, env = process.env) {
   const trimmed = command.trim();
-  if (platform !== "win32" || !trimmed || path5.extname(trimmed)) {
+  if (platform !== "win32" || !trimmed || path6.extname(trimmed)) {
     return command;
   }
-  const delimiter = platform === "win32" ? ";" : path5.delimiter;
+  const delimiter = platform === "win32" ? ";" : path6.delimiter;
   const pathEntries = String(env.PATH ?? env.Path ?? "").split(delimiter).map((entry) => entry.trim()).filter(Boolean);
   const pathExts = String(env.PATHEXT || ".COM;.EXE;.BAT;.CMD").split(";").map((extension) => extension.trim()).filter(Boolean);
-  const commandBases = /[\\/]/.test(trimmed) ? [trimmed] : pathEntries.map((directory) => path5.join(directory, trimmed));
+  const commandBases = /[\\/]/.test(trimmed) ? [trimmed] : pathEntries.map((directory) => path6.join(directory, trimmed));
   for (const commandBase of commandBases) {
     for (const extension of pathExts) {
       const normalizedExtension = extension.startsWith(".") ? extension : `.${extension}`;
       const candidate = `${commandBase}${normalizedExtension}`;
-      if (existsSync6(candidate)) {
+      if (existsSync7(candidate)) {
         return candidate;
       }
     }
@@ -36139,11 +36693,11 @@ function extractAcpText(value) {
   if (typeof value === "string") return value;
   if (Array.isArray(value)) return value.map(extractAcpText).filter(Boolean).join("");
   if (!value || typeof value !== "object") return "";
-  const record = value;
-  if (typeof record.text === "string") return record.text;
-  if (typeof record.content === "string") return record.content;
-  if (record.content) return extractAcpText(record.content);
-  if (record.delta) return extractAcpText(record.delta);
+  const record2 = value;
+  if (typeof record2.text === "string") return record2.text;
+  if (typeof record2.content === "string") return record2.content;
+  if (record2.content) return extractAcpText(record2.content);
+  if (record2.delta) return extractAcpText(record2.delta);
   return "";
 }
 async function runAcpPrompt(options) {
@@ -36229,9 +36783,9 @@ var AcpStdioClient = class {
       cwd: this.cwd,
       mcpServers: []
     });
-    const record = this.asRecord(result);
-    const session = this.asRecord(record?.session);
-    return this.clean(String(record?.sessionId ?? record?.session_id ?? session?.id ?? session?.sessionId ?? session?.session_id ?? ""));
+    const record2 = this.asRecord(result);
+    const session = this.asRecord(record2?.session);
+    return this.clean(String(record2?.sessionId ?? record2?.session_id ?? session?.id ?? session?.sessionId ?? session?.session_id ?? ""));
   }
   readStdout(chunk) {
     this.buffer += chunk.replaceAll("\r\n", "\n");
@@ -36292,18 +36846,18 @@ var AcpStdioClient = class {
     }
   }
   async handleSessionUpdate(params) {
-    const record = this.asRecord(params);
-    const update = this.asRecord(record?.update) ?? this.asRecord(record?.sessionUpdate) ?? record;
+    const record2 = this.asRecord(params);
+    const update = this.asRecord(record2?.update) ?? this.asRecord(record2?.sessionUpdate) ?? record2;
     const kind = String(update?.sessionUpdate ?? update?.type ?? update?.kind ?? "session/update");
-    const text = extractAcpText(update?.content ?? update?.delta ?? update?.message ?? update);
+    const text2 = extractAcpText(update?.content ?? update?.delta ?? update?.message ?? update);
     this.eventCount += 1;
-    if (kind === "agent_message_chunk" && text) {
-      this.assistantMessage += text;
-      await this.onEvent?.({ type: "token", text });
+    if (kind === "agent_message_chunk" && text2) {
+      this.assistantMessage += text2;
+      await this.onEvent?.({ type: "token", text: text2 });
       return;
     }
-    if ((kind === "agent_message" || kind === "assistant_message") && text) {
-      this.assistantMessage += text;
+    if ((kind === "agent_message" || kind === "assistant_message") && text2) {
+      this.assistantMessage += text2;
     }
     await this.emitAgentEvent(kind, params);
   }
@@ -36328,28 +36882,28 @@ var AcpStdioClient = class {
     return null;
   }
   async readTextFile(params) {
-    const record = this.asRecord(params);
-    const filePath = this.resolveWorkspacePath(String(record?.path ?? record?.filePath ?? ""));
-    const text = await readFile4(filePath, "utf8");
-    const line = Number.isFinite(Number(record?.line)) ? Math.max(1, Number(record?.line)) : 1;
-    const limit = Number.isFinite(Number(record?.limit)) ? Math.max(1, Number(record?.limit)) : void 0;
+    const record2 = this.asRecord(params);
+    const filePath = this.resolveWorkspacePath(String(record2?.path ?? record2?.filePath ?? ""));
+    const text2 = await readFile5(filePath, "utf8");
+    const line = Number.isFinite(Number(record2?.line)) ? Math.max(1, Number(record2?.line)) : 1;
+    const limit = Number.isFinite(Number(record2?.limit)) ? Math.max(1, Number(record2?.limit)) : void 0;
     if (!limit) {
-      return { text };
+      return { text: text2 };
     }
-    return { text: text.split(/\r?\n/).slice(line - 1, line - 1 + limit).join("\n") };
+    return { text: text2.split(/\r?\n/).slice(line - 1, line - 1 + limit).join("\n") };
   }
   async writeTextFile(params) {
-    const record = this.asRecord(params);
-    const filePath = this.resolveWorkspacePath(String(record?.path ?? record?.filePath ?? ""));
-    const content = String(record?.content ?? record?.text ?? "");
-    await mkdir3(path5.dirname(filePath), { recursive: true });
+    const record2 = this.asRecord(params);
+    const filePath = this.resolveWorkspacePath(String(record2?.path ?? record2?.filePath ?? ""));
+    const content = String(record2?.content ?? record2?.text ?? "");
+    await mkdir3(path6.dirname(filePath), { recursive: true });
     await writeFile3(filePath, content, "utf8");
     return { ok: true };
   }
   resolveWorkspacePath(filePath) {
-    const resolved = path5.resolve(this.cwd, filePath);
-    const root = path5.resolve(this.cwd);
-    if (resolved !== root && !resolved.startsWith(`${root}${path5.sep}`)) {
+    const resolved = path6.resolve(this.cwd, filePath);
+    const root = path6.resolve(this.cwd);
+    if (resolved !== root && !resolved.startsWith(`${root}${path6.sep}`)) {
       throw new Error(`ACP file access is outside the workbench workspace: ${filePath}`);
     }
     return resolved;
@@ -36405,6 +36959,7 @@ function normalizeAgentProvider(value) {
   if (normalized === "openclaw" || normalized === "open-claw") return "openclaw";
   if (normalized === "codex" || normalized === "codex-cli" || normalized === "codex-acp") return "codex";
   if (normalized === "claude" || normalized === "claude-code" || normalized === "claude-agent") return "claude-code";
+  if (normalized === "box-agent" || normalized === "boxagent" || normalized === "box-agent-acp") return "box-agent";
   if (normalized === "workbuddy" || normalized === "work-buddy") return "workbuddy";
   return "unknown";
 }
@@ -36413,6 +36968,7 @@ function agentProviderLabel(provider, runtime) {
   if (provider === "openclaw") return "OpenClaw";
   if (provider === "codex") return "Codex";
   if (provider === "claude-code") return "Claude Code";
+  if (provider === "box-agent") return "Box Agent";
   if (provider === "workbuddy") return "WorkBuddy";
   return cleanAgentBridgeValue(runtime) ?? "Agent Companion";
 }
@@ -36435,7 +36991,7 @@ function inferAgentTransport(options) {
   if (explicit !== "none") {
     return explicit;
   }
-  if (options.acpCommand && (options.provider === "codex" || options.provider === "claude-code")) return "acp";
+  if (options.acpCommand && (options.provider === "codex" || options.provider === "claude-code" || options.provider === "box-agent")) return "acp";
   if (options.webuiBaseUrl) return "webui";
   if (options.agentBaseUrl) return "rest";
   if (options.gatewayBaseUrl) return options.provider === "hermes" ? "gateway" : "rest";
@@ -36455,12 +37011,12 @@ function resolveAgentBridgeConfig(env = process.env) {
   );
   const providerLabel = agentProviderLabel(provider, runtime);
   const explicitlyConfiguredProvider = normalizeAgentProvider(env.WORKBENCH_AGENT_PROVIDER);
-  const sourceSessionId = cleanAgentBridgeValue(env.WORKBENCH_AGENT_SOURCE_SESSION_ID) ?? cleanAgentBridgeValue(env.WORKBENCH_AGENT_SESSION_ID) ?? cleanAgentBridgeValue(env.OPENCLAW_SESSION_ID) ?? cleanAgentBridgeValue(env.OPENCLAW_SESSION_KEY) ?? cleanAgentBridgeValue(env.CODEX_SESSION_ID) ?? cleanAgentBridgeValue(env.CLAUDE_CODE_SESSION_ID) ?? cleanAgentBridgeValue(env.WORKBUDDY_SESSION_ID) ?? cleanAgentBridgeValue(env.WORKBUDDY_SESSION_KEY) ?? cleanAgentBridgeValue(env.HERMES_SESSION_KEY);
+  const sourceSessionId = cleanAgentBridgeValue(env.WORKBENCH_AGENT_SOURCE_SESSION_ID) ?? cleanAgentBridgeValue(env.WORKBENCH_AGENT_SESSION_ID) ?? cleanAgentBridgeValue(env.OPENCLAW_SESSION_ID) ?? cleanAgentBridgeValue(env.OPENCLAW_SESSION_KEY) ?? cleanAgentBridgeValue(env.CODEX_SESSION_ID) ?? cleanAgentBridgeValue(env.CLAUDE_CODE_SESSION_ID) ?? cleanAgentBridgeValue(env.BOX_AGENT_SESSION_ID) ?? cleanAgentBridgeValue(env.WORKBUDDY_SESSION_ID) ?? cleanAgentBridgeValue(env.WORKBUDDY_SESSION_KEY) ?? cleanAgentBridgeValue(env.HERMES_SESSION_KEY);
   const webuiBaseUrl = cleanAgentBridgeValue(env.WORKBENCH_WEBUI_BASE_URL) ?? cleanAgentBridgeValue(env.HERMES_WEBUI_BASE_URL);
   const gatewayBaseUrl = cleanAgentBridgeValue(env.WORKBENCH_GATEWAY_BASE_URL) ?? cleanAgentBridgeValue(env.HERMES_GATEWAY_BASE_URL);
   const agentBaseUrl = cleanAgentBridgeValue(env.WORKBENCH_AGENT_BASE_URL) ?? cleanAgentBridgeValue(env.OPENCLAW_GATEWAY_BASE_URL) ?? cleanAgentBridgeValue(env.OPENCLAW_BASE_URL);
   const agentApiKey = cleanAgentBridgeValue(env.WORKBENCH_AGENT_API_KEY) ?? cleanAgentBridgeValue(env.OPENCLAW_API_KEY) ?? cleanAgentBridgeValue(env.CODEX_API_KEY) ?? cleanAgentBridgeValue(env.ANTHROPIC_API_KEY);
-  const acpCommand = cleanAgentBridgeValue(env.WORKBENCH_ACP_COMMAND) ?? (provider === "codex" ? cleanAgentBridgeValue(env.CODEX_ACP_COMMAND) : void 0) ?? (provider === "claude-code" ? cleanAgentBridgeValue(env.CLAUDE_ACP_COMMAND) : void 0);
+  const acpCommand = cleanAgentBridgeValue(env.WORKBENCH_ACP_COMMAND) ?? (provider === "codex" ? cleanAgentBridgeValue(env.CODEX_ACP_COMMAND) : void 0) ?? (provider === "claude-code" ? cleanAgentBridgeValue(env.CLAUDE_ACP_COMMAND) : void 0) ?? (provider === "box-agent" ? cleanAgentBridgeValue(env.BOX_AGENT_ACP_COMMAND) ?? "box-agent-acp" : void 0);
   const transport = inferAgentTransport({
     explicitTransport: env.WORKBENCH_AGENT_TRANSPORT,
     provider,
@@ -36485,13 +37041,199 @@ function resolveAgentBridgeConfig(env = process.env) {
   };
 }
 
+// server/ppt-v2-progress.ts
+import { existsSync as existsSync8 } from "node:fs";
+import { mkdir as mkdir4, readFile as readFile6, stat as stat2, writeFile as writeFile4 } from "node:fs/promises";
+import path7 from "node:path";
+function record(value) {
+  return typeof value === "object" && value !== null ? value : void 0;
+}
+function text(value) {
+  return typeof value === "string" && value.trim() ? value.trim() : void 0;
+}
+function languageIsChinese(taskPack) {
+  return String(taskPack.params?.language ?? "").toLowerCase().startsWith("zh");
+}
+var stageLabels = {
+  entry: { zh: "\u51C6\u5907\u751F\u6210\u4EFB\u52A1", en: "Preparing the presentation task" },
+  story: { zh: "\u7EC4\u7EC7\u6F14\u793A\u53D9\u4E8B", en: "Building the presentation story" },
+  "output.static_html.plan": { zh: "\u89C4\u5212\u9759\u6001 HTML \u9875\u9762", en: "Planning Static HTML pages" },
+  "output.static_html.pages": { zh: "\u751F\u6210\u9759\u6001 HTML \u9875\u9762", en: "Generating Static HTML pages" },
+  "output.static_html.review": { zh: "\u68C0\u67E5\u9759\u6001 HTML \u9875\u9762", en: "Reviewing Static HTML pages" },
+  "output.dynamic_html.plan": { zh: "\u89C4\u5212\u52A8\u6001\u6F14\u793A", en: "Planning the Dynamic HTML deck" },
+  "output.dynamic_html.build": { zh: "\u6784\u5EFA\u52A8\u6001\u6F14\u793A", en: "Building the Dynamic HTML deck" },
+  "output.creative.plan": { zh: "\u751F\u6210\u521B\u610F\u56FE\u50CF\u9875\u9762", en: "Generating creative image slides" },
+  "output.native_pptx.plan": { zh: "\u751F\u6210\u539F\u751F PPTX", en: "Generating the native PPTX" },
+  complete: { zh: "\u6F14\u793A\u6587\u7A3F\u751F\u6210\u5B8C\u6210", en: "Presentation generation complete" }
+};
+function pptV2StageLabel(stage, taskPack) {
+  const label = stageLabels[stage];
+  return label ? label[languageIsChinese(taskPack) ? "zh" : "en"] : stage;
+}
+function normalizeTaskStatus(value, hasUsableOutput) {
+  const status = String(value ?? "").trim().toLowerCase().replaceAll("-", "_");
+  if (["complete", "completed", "done", "ok", "success", "succeeded"].includes(status)) return "ok";
+  if (["partial", "partially_completed", "partial_success"].includes(status)) return "partial";
+  if (["failed", "failure", "error"].includes(status)) return hasUsableOutput ? "partial" : "failed";
+  if (status === "skipped") return "skipped";
+  if (!status || ["idle", "created", "pending"].includes(status)) return "idle";
+  return "running";
+}
+function collectArtifactPaths(value, output = []) {
+  if (typeof value === "string") {
+    if (/[/\\]|\.[a-z0-9]{1,8}$/i.test(value)) output.push(value);
+    return output;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectArtifactPaths(item, output));
+    return output;
+  }
+  const valueRecord = record(value);
+  if (valueRecord) Object.values(valueRecord).forEach((item) => collectArtifactPaths(item, output));
+  return output;
+}
+function relativeArtifactPath(deckDir, artifactPath) {
+  const absolute = path7.isAbsolute(artifactPath) ? artifactPath : path7.resolve(deckDir, artifactPath);
+  const relative = path7.relative(deckDir, absolute);
+  if (!relative || relative.startsWith("..") || path7.isAbsolute(relative)) return void 0;
+  return relative.replaceAll("\\", "/");
+}
+function artifactStage(filePath, fallback) {
+  const normalized = filePath.toLowerCase();
+  if (normalized.endsWith("outline.md")) return "story";
+  if (/(^|\/)plan(\/|\.|$)/.test(normalized)) return fallback.includes("dynamic") ? "output.dynamic_html.plan" : "output.static_html.plan";
+  if (/slides\/slide[_-]?\d+\.html?$/.test(normalized)) return "output.static_html.pages";
+  if (normalized.endsWith("deck.html") || normalized.includes("shots/")) return "output.dynamic_html.build";
+  if (/pages\/page[_-]?\d+\.(png|jpe?g|webp)$/.test(normalized)) return "output.creative.plan";
+  if (normalized.endsWith(".pptx")) return "complete";
+  return fallback;
+}
+function observationKey(item) {
+  return [item.stage, item.status, item.artifact ?? "", item.pageNo ?? "", item.startPage ?? "", item.endPage ?? ""].join("|");
+}
+function mergeObservation(observations, item) {
+  const key = observationKey(item);
+  const previous = observations.get(key);
+  if (!previous || item.updatedAt > previous.updatedAt) {
+    observations.set(key, item);
+  }
+}
+async function readObservations(filePath) {
+  try {
+    const parsed = JSON.parse(await readFile6(filePath, "utf8"));
+    return {
+      schemaVersion: "ppt_v2_progress_observations_v1",
+      observations: Array.isArray(parsed.observations) ? parsed.observations : []
+    };
+  } catch {
+    return { schemaVersion: "ppt_v2_progress_observations_v1", observations: [] };
+  }
+}
+async function artifactObservation(deckDir, filePath, fallbackStage, taskPack) {
+  const relativePath = relativeArtifactPath(deckDir, filePath);
+  if (!relativePath) return void 0;
+  const absolutePath = path7.resolve(deckDir, relativePath);
+  if (!existsSync8(absolutePath)) return void 0;
+  const fileStat = await stat2(absolutePath).catch(() => void 0);
+  if (!fileStat?.isFile()) return void 0;
+  const pageMatch = /(?:page|slide)[_-]?(\d+)/i.exec(relativePath);
+  const stage = artifactStage(relativePath, fallbackStage);
+  return {
+    stage,
+    status: "ok",
+    artifact: relativePath,
+    pageNo: pageMatch ? Number.parseInt(pageMatch[1], 10) : void 0,
+    currentLabel: pptV2StageLabel(stage, taskPack),
+    updatedAt: fileStat.mtime.toISOString()
+  };
+}
+async function reconcileObservations(deckDir, taskPack, manifest, currentStage) {
+  const filePath = path7.join(deckDir, ".workbench", "progress-observations.json");
+  const persisted = await readObservations(filePath);
+  const observations = new Map(persisted.observations.map((item) => [observationKey(item), item]));
+  const now = (/* @__PURE__ */ new Date()).toISOString();
+  const completedStages = Array.isArray(taskPack.state?.completed_stages) ? taskPack.state?.completed_stages : [];
+  for (const value of completedStages) {
+    const stage = text(value);
+    if (!stage) continue;
+    const item = {
+      stage,
+      status: "ok",
+      currentLabel: pptV2StageLabel(stage, taskPack),
+      updatedAt: text(taskPack.state?.updated_at) ?? now
+    };
+    mergeObservation(observations, item);
+  }
+  const artifactPaths = [...new Set(collectArtifactPaths(taskPack.state?.artifacts))];
+  const artifactItems = await Promise.all(artifactPaths.map((artifact) => artifactObservation(
+    deckDir,
+    artifact,
+    currentStage,
+    taskPack
+  )));
+  for (const item of artifactItems) {
+    if (item) mergeObservation(observations, item);
+  }
+  for (const page of manifest.pages.filter((item) => item.exists)) {
+    const artifact = page.previewPath || page.documentPath || page.htmlPath;
+    const stage = artifactStage(artifact, currentStage);
+    const item = {
+      stage,
+      status: "ok",
+      artifact,
+      pageNo: page.pageNo,
+      currentLabel: pptV2StageLabel(stage, taskPack),
+      updatedAt: page.updatedAt ?? now
+    };
+    mergeObservation(observations, item);
+  }
+  const next = [...observations.values()].sort((left, right) => left.updatedAt.localeCompare(right.updatedAt));
+  if (JSON.stringify(next) !== JSON.stringify(persisted.observations)) {
+    await mkdir4(path7.dirname(filePath), { recursive: true });
+    await writeFile4(filePath, JSON.stringify({ schemaVersion: "ppt_v2_progress_observations_v1", observations: next }, null, 2), "utf8");
+  }
+  return next;
+}
+async function mapPptTaskV2Progress(deckDir, taskPack, manifest) {
+  if (taskPack.schema_version !== "ppt_task_v2") return void 0;
+  const state = taskPack.state ?? {};
+  const stage = text(state.current_stage) ?? "entry";
+  const hasUsableOutput = manifest.pages.some((page) => page.exists) || manifest.artifacts.some((artifact) => artifact.exists && /\.(pptx|zip)$/i.test(artifact.path));
+  const status = normalizeTaskStatus(state.status, hasUsableOutput);
+  const history = await reconcileObservations(deckDir, taskPack, manifest, stage);
+  const latest = history.at(-1);
+  const updatedAt = text(state.updated_at) ?? latest?.updatedAt ?? (/* @__PURE__ */ new Date()).toISOString();
+  const finishedAt = status === "ok" || status === "partial" || status === "failed" ? updatedAt : void 0;
+  return {
+    schemaVersion: "agent_generation_progress_v1",
+    workflow: "ppt-task-v2",
+    stage,
+    status,
+    artifact: latest?.artifact,
+    pageNo: latest?.pageNo,
+    currentLabel: pptV2StageLabel(stage, taskPack),
+    startedAt: text(taskPack.created_at),
+    updatedAt,
+    finishedAt,
+    error: text(state.last_error),
+    history
+  };
+}
+
 // server/workbench-service.ts
 var standardArtifactPaths = [
   "task_pack.json",
   "info_pack.json",
   "style_samples.json",
   "style_spec.json",
+  "outline.md",
   "outline.json",
+  "plan.md",
+  "plan/deck.md",
+  "base.css",
+  "deck.html",
+  "deck_manifest.json",
+  "shots/render.json",
   "asset_plan.json",
   "review.md"
 ];
@@ -36551,7 +37293,7 @@ function getInstanceId(deckDir) {
   if (configured) {
     return configured;
   }
-  return deckDir ? `ppt-${Buffer.from(path6.resolve(deckDir)).toString("base64url").slice(0, 12)}` : "ppt-workbench";
+  return deckDir ? `ppt-${Buffer.from(path8.resolve(deckDir)).toString("base64url").slice(0, 12)}` : "ppt-workbench";
 }
 function getConfiguredWorkbenchProduct() {
   const configured = cleanOptional(process.env.WORKBENCH_PRODUCT)?.toLowerCase();
@@ -36569,15 +37311,15 @@ function withWorkbenchRoute(url, routePath) {
   }
   try {
     const parsed = new URL(url);
-    const normalizedPath = parsed.pathname.replace(/\/+$/, "");
+    const normalizedPath2 = parsed.pathname.replace(/\/+$/, "");
     for (const knownRoute of workbenchRoutePaths) {
-      if (normalizedPath.endsWith(knownRoute)) {
-        const basePath = normalizedPath.slice(0, -knownRoute.length).replace(/\/+$/, "");
+      if (normalizedPath2.endsWith(knownRoute)) {
+        const basePath = normalizedPath2.slice(0, -knownRoute.length).replace(/\/+$/, "");
         parsed.pathname = `${basePath || ""}${routePath}`;
         return parsed.toString();
       }
     }
-    parsed.pathname = `${normalizedPath || ""}${routePath}`;
+    parsed.pathname = `${normalizedPath2 || ""}${routePath}`;
     return parsed.toString();
   } catch {
     const hashIndex = url.indexOf("#");
@@ -36632,15 +37374,15 @@ function buildGenerationUrl() {
   return withProgressRoute(port2 ? `http://127.0.0.1:${port2}` : void 0, progressRoute);
 }
 function companionSessionFilePath(deckDir) {
-  return path6.join(path6.resolve(deckDir), ".workbench", "agent-companion-session.json");
+  return path8.join(path8.resolve(deckDir), ".workbench", "agent-companion-session.json");
 }
 function legacyHermesCompanionSessionFilePath(deckDir) {
-  return path6.join(path6.resolve(deckDir), ".workbench", "hermes-companion-session.json");
+  return path8.join(path8.resolve(deckDir), ".workbench", "hermes-companion-session.json");
 }
 async function readPersistedCompanionSession(deckDir) {
   for (const filePath of [companionSessionFilePath(deckDir), legacyHermesCompanionSessionFilePath(deckDir)]) {
     try {
-      const parsed = JSON.parse(await readFile5(filePath, "utf8"));
+      const parsed = JSON.parse(await readFile7(filePath, "utf8"));
       if (parsed.targetSessionId && parsed.deckDir) {
         return {
           targetSessionId: parsed.targetSessionId,
@@ -36661,8 +37403,8 @@ async function readPersistedCompanionSession(deckDir) {
 }
 async function writePersistedCompanionSession(deckDir, session) {
   const filePath = companionSessionFilePath(deckDir);
-  await mkdir4(path6.dirname(filePath), { recursive: true });
-  await writeFile4(filePath, JSON.stringify(session, null, 2), "utf8");
+  await mkdir5(path8.dirname(filePath), { recursive: true });
+  await writeFile5(filePath, JSON.stringify(session, null, 2), "utf8");
 }
 function normalizeCompanionShapeValue(value) {
   return String(value ?? "").trim().toLowerCase().replaceAll("_", "-");
@@ -36676,7 +37418,7 @@ function isCompatiblePersistedCompanionSession(persisted, provider, transport) {
   return (!persistedProvider || persistedProvider === normalizeCompanionShapeValue(provider)) && (!persistedTransport || persistedTransport === normalizeCompanionShapeValue(transport));
 }
 function buildGatewayCompanionSessionId(deckDir) {
-  const digest = createHash2("sha1").update(path6.resolve(deckDir)).digest("hex").slice(0, 16);
+  const digest = createHash2("sha1").update(path8.resolve(deckDir)).digest("hex").slice(0, 16);
   return `ppt-${digest}`;
 }
 function extractSessionId(payload) {
@@ -36694,7 +37436,7 @@ async function createWebUiCompanionSession(baseUrl, session, sourceSessionId, ru
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       workspace: session.deckDir,
-      title: `PPT Workbench - ${deck?.title ?? path6.basename(session.deckDir)}`,
+      title: `PPT Workbench - ${deck?.title ?? path8.basename(session.deckDir)}`,
       ...process.env.WORKBENCH_AGENT_MODEL ? { model: process.env.WORKBENCH_AGENT_MODEL } : {},
       ppt_runtime: {
         source: "ppt-editor",
@@ -37007,22 +37749,22 @@ async function getActiveWorkbenchSession() {
   const baseSession = {
     instanceId: getInstanceId(deckDir),
     deckId: activeDeckId,
-    deckDir: path6.resolve(deckDir)
+    deckDir: path8.resolve(deckDir)
   };
   return buildActiveDeckSession(baseSession);
 }
 async function buildArtifact(root, relativePath) {
-  const filePath = path6.resolve(root, relativePath);
-  if (!existsSync7(filePath)) {
+  const filePath = path8.resolve(root, relativePath);
+  if (!existsSync9(filePath)) {
     return {
-      name: path6.basename(relativePath),
+      name: path8.basename(relativePath),
       path: relativePath.replaceAll("\\", "/"),
       exists: false
     };
   }
-  const fileStat = await stat2(filePath);
+  const fileStat = await stat3(filePath);
   return {
-    name: path6.basename(relativePath),
+    name: path8.basename(relativePath),
     path: relativePath.replaceAll("\\", "/"),
     exists: true,
     size: fileStat.size,
@@ -37030,18 +37772,18 @@ async function buildArtifact(root, relativePath) {
   };
 }
 function workbenchMetadataFilePath(deckDir, fileName) {
-  return path6.join(path6.resolve(deckDir), ".workbench", fileName);
+  return path8.join(path8.resolve(deckDir), ".workbench", fileName);
 }
 async function readOptionalJsonFile2(filePath) {
   try {
-    return JSON.parse(await readFile5(filePath, "utf8"));
+    return JSON.parse(await readFile7(filePath, "utf8"));
   } catch {
     return void 0;
   }
 }
 async function writeWorkbenchJsonFile(filePath, payload) {
-  await mkdir4(path6.dirname(filePath), { recursive: true });
-  await writeFile4(filePath, JSON.stringify(payload, null, 2), "utf8");
+  await mkdir5(path8.dirname(filePath), { recursive: true });
+  await writeFile5(filePath, JSON.stringify(payload, null, 2), "utf8");
 }
 function deckFileUrl(deckId, relativePath) {
   return `/api/decks/${encodeURIComponent(deckId)}/files/${relativePath.split(/[\\/]+/).map(encodeURIComponent).join("/")}`;
@@ -37053,14 +37795,14 @@ function extractDisplayText(value) {
   if (typeof value === "number") {
     return String(value);
   }
-  const record = asRecord2(value);
-  if (!record) {
+  const record2 = asRecord2(value);
+  if (!record2) {
     return void 0;
   }
   for (const key of ["label", "name", "title", "value", "hex", "name_zh", "name_en", "id"]) {
-    const text = extractDisplayText(record[key]);
-    if (text) {
-      return text;
+    const text2 = extractDisplayText(record2[key]);
+    if (text2) {
+      return text2;
     }
   }
   return void 0;
@@ -37074,9 +37816,9 @@ function findStylePreviewArtifact(artifacts, sampleId) {
   });
 }
 function normalizeStyleSamples(deckId, payload) {
-  const record = asRecord2(payload);
-  const rawSamples = Array.isArray(record?.samples) ? record.samples : [];
-  const preview = asRecord2(record?.preview);
+  const record2 = asRecord2(payload);
+  const rawSamples = Array.isArray(record2?.samples) ? record2.samples : [];
+  const preview = asRecord2(record2?.preview);
   const previewHtmlPath = extractDisplayText(preview?.html ?? preview?.index);
   return {
     previewUrl: extractDisplayText(preview?.url),
@@ -37108,7 +37850,7 @@ function normalizeStyleSamples(deckId, payload) {
   };
 }
 function normalizeProgressStatus(status) {
-  return status === "idle" || status === "running" || status === "ok" || status === "failed" || status === "skipped" ? status : void 0;
+  return status === "idle" || status === "running" || status === "partial" || status === "ok" || status === "failed" || status === "skipped" ? status : void 0;
 }
 function normalizeProgressHistory(history) {
   if (!Array.isArray(history)) {
@@ -37116,26 +37858,30 @@ function normalizeProgressHistory(history) {
   }
   const normalized = [];
   for (const item of history) {
-    const record = asRecord2(item);
-    const status = normalizeProgressStatus(record?.status);
-    if (!record?.stage || !status || typeof record.updatedAt !== "string") {
+    const record2 = asRecord2(item);
+    const status = normalizeProgressStatus(record2?.status);
+    if (!record2?.stage || !status || typeof record2.updatedAt !== "string") {
       continue;
     }
     normalized.push({
-      stage: String(record.stage),
+      stage: String(record2.stage),
       status,
-      artifact: typeof record.artifact === "string" ? record.artifact : void 0,
-      pageNo: typeof record.pageNo === "number" ? record.pageNo : void 0,
-      startPage: typeof record.startPage === "number" ? record.startPage : void 0,
-      endPage: typeof record.endPage === "number" ? record.endPage : void 0,
-      currentLabel: typeof record.currentLabel === "string" ? record.currentLabel : void 0,
-      updatedAt: record.updatedAt,
-      error: typeof record.error === "string" ? record.error : void 0
+      artifact: typeof record2.artifact === "string" ? record2.artifact : void 0,
+      pageNo: typeof record2.pageNo === "number" ? record2.pageNo : void 0,
+      startPage: typeof record2.startPage === "number" ? record2.startPage : void 0,
+      endPage: typeof record2.endPage === "number" ? record2.endPage : void 0,
+      currentLabel: typeof record2.currentLabel === "string" ? record2.currentLabel : void 0,
+      updatedAt: record2.updatedAt,
+      error: typeof record2.error === "string" ? record2.error : void 0
     });
   }
   return normalized;
 }
-async function readGenerationProgress(deckDir) {
+async function readGenerationProgress(deckDir, manifest) {
+  const taskPack = await readOptionalJsonFile2(path8.join(deckDir, "task_pack.json"));
+  if (taskPack?.schema_version === "ppt_task_v2" && manifest) {
+    return mapPptTaskV2Progress(deckDir, taskPack, manifest);
+  }
   const parsed = await readOptionalJsonFile2(workbenchMetadataFilePath(deckDir, "progress.json"));
   if (!parsed?.stage || !parsed.status) {
     return void 0;
@@ -37182,16 +37928,21 @@ function progressSignature(progress) {
   });
 }
 async function collectExportArtifacts(root) {
-  const entries = await readdir2(root, { withFileTypes: true }).catch(() => []);
+  const entries = await readdir3(root, { withFileTypes: true }).catch(() => []);
   return entries.filter((entry) => entry.isFile() && /\.(pptx|zip)$/i.test(entry.name)).map((entry) => entry.name);
 }
 async function getExpectedPageCount(root) {
-  const outlinePath = path6.join(root, "outline.json");
-  if (!existsSync7(outlinePath)) {
+  const taskPack = await readOptionalJsonFile2(path8.join(root, "task_pack.json"));
+  const taskPageCount = Number(taskPack?.params?.page_count);
+  if (Number.isFinite(taskPageCount) && taskPageCount > 0) {
+    return Math.floor(taskPageCount);
+  }
+  const outlinePath = path8.join(root, "outline.json");
+  if (!existsSync9(outlinePath)) {
     return void 0;
   }
   try {
-    const parsed = JSON.parse(await readFile5(outlinePath, "utf8"));
+    const parsed = JSON.parse(await readFile7(outlinePath, "utf8"));
     if (Array.isArray(parsed)) {
       return parsed.length || void 0;
     }
@@ -37206,7 +37957,7 @@ async function getExpectedPageCount(root) {
   }
   return void 0;
 }
-function deriveGenerationStage(pages, artifacts, expectedPageCount) {
+function deriveGenerationStage(pages, artifacts, expectedPageCount2) {
   if (artifacts.some((artifact) => artifact.exists && /\.pptx$/i.test(artifact.path))) {
     return "exported";
   }
@@ -37214,7 +37965,7 @@ function deriveGenerationStage(pages, artifacts, expectedPageCount) {
     return artifacts.some((artifact) => artifact.exists) ? "metadata" : "empty";
   }
   const existingPageCount = pages.filter((page) => page.exists).length;
-  if (expectedPageCount && existingPageCount < expectedPageCount || pages.some((page) => !page.exists)) {
+  if (expectedPageCount2 && existingPageCount < expectedPageCount2 || pages.some((page) => !page.exists)) {
     return "html-generating";
   }
   return "html-ready";
@@ -37274,11 +38025,13 @@ function reconcileProgressWithManifest(progress, manifest) {
   if (!progress) {
     return progress;
   }
+  const manifestComplete = manifest.generationStage === "exported" || manifest.generationStage === "html-ready";
+  const normalizedProgress = progress.status === "ok" && !manifestComplete ? { ...progress, status: "running", finishedAt: void 0 } : progress;
   const derived = deriveProgressFromManifest(manifest);
   const derivedUpdatedAt = timestampValue(derived?.updatedAt);
-  const progressUpdatedAt = timestampValue(progress.finishedAt ?? progress.updatedAt);
+  const progressUpdatedAt = timestampValue(normalizedProgress.finishedAt ?? normalizedProgress.updatedAt);
   if (!derived || derivedUpdatedAt === void 0 || progressUpdatedAt !== void 0 && derivedUpdatedAt <= progressUpdatedAt) {
-    return progress;
+    return normalizedProgress;
   }
   const historyItem = {
     stage: String(derived.stage),
@@ -37290,9 +38043,9 @@ function reconcileProgressWithManifest(progress, manifest) {
     currentLabel: derived.currentLabel,
     updatedAt: String(derived.updatedAt)
   };
-  const history = progress.history.some((item) => item.stage === historyItem.stage && item.status === historyItem.status && item.artifact === historyItem.artifact && item.updatedAt === historyItem.updatedAt) ? progress.history : [...progress.history, historyItem];
+  const history = normalizedProgress.history.some((item) => item.stage === historyItem.stage && item.status === historyItem.status && item.artifact === historyItem.artifact && item.updatedAt === historyItem.updatedAt) ? normalizedProgress.history : [...normalizedProgress.history, historyItem];
   return {
-    ...progress,
+    ...normalizedProgress,
     ...derived,
     workflow: progress.workflow ?? derived.workflow,
     error: void 0,
@@ -37300,13 +38053,13 @@ function reconcileProgressWithManifest(progress, manifest) {
     history
   };
 }
-function synthesizeMissingManifestPages(pages, expectedPageCount) {
-  if (!expectedPageCount || pages.length >= expectedPageCount) {
+function synthesizeMissingManifestPages(pages, expectedPageCount2) {
+  if (!expectedPageCount2 || pages.length >= expectedPageCount2) {
     return pages;
   }
   const existingPageNos = new Set(pages.map((page) => page.pageNo));
   const missingPages = [];
-  for (let pageNo = 1; pageNo <= expectedPageCount; pageNo += 1) {
+  for (let pageNo = 1; pageNo <= expectedPageCount2; pageNo += 1) {
     if (!existingPageNos.has(pageNo)) {
       missingPages.push({
         pageNo,
@@ -37327,13 +38080,21 @@ async function buildWorkbenchManifestForDeck(deckId, session) {
     [...standardArtifactPaths, ...exportArtifactPaths].map((artifactPath) => buildArtifact(contentDirectory, artifactPath))
   );
   const pageArtifacts = await Promise.all(deck.slides.map(async (slide) => {
-    const htmlPath = path6.resolve(contentDirectory, slide.htmlPath);
-    const fileExists = existsSync7(htmlPath);
-    const fileStat = fileExists ? await stat2(htmlPath) : void 0;
+    const documentPath = slide.documentPath || slide.htmlPath;
+    const absoluteDocumentPath = documentPath ? path8.resolve(contentDirectory, documentPath) : "";
+    const absolutePreviewPath = slide.previewPath ? path8.resolve(contentDirectory, slide.previewPath) : "";
+    const documentExists = Boolean(absoluteDocumentPath && existsSync9(absoluteDocumentPath) && slide.htmlReady !== false);
+    const previewExists = Boolean(absolutePreviewPath && existsSync9(absolutePreviewPath));
+    const fileExists = documentExists || previewExists;
+    const fileStat = fileExists ? await stat3(previewExists ? absolutePreviewPath : absoluteDocumentPath) : void 0;
     return {
       pageNo: slide.pageNo,
       title: slide.title,
       htmlPath: slide.htmlPath.replaceAll("\\", "/"),
+      documentPath: slide.documentPath?.replaceAll("\\", "/"),
+      pageSelector: slide.pageSelector,
+      previewPath: slide.previewPath?.replaceAll("\\", "/"),
+      editable: slide.editable,
       exists: fileExists,
       status: slide.status,
       thumbnailUrl: slide.thumbnailUrl,
@@ -37341,8 +38102,8 @@ async function buildWorkbenchManifestForDeck(deckId, session) {
       updatedAt: fileStat?.mtime.toISOString()
     };
   }));
-  const expectedPageCount = await getExpectedPageCount(contentDirectory);
-  const pages = synthesizeMissingManifestPages(pageArtifacts, expectedPageCount);
+  const expectedPageCount2 = await getExpectedPageCount(contentDirectory);
+  const pages = synthesizeMissingManifestPages(pageArtifacts, expectedPageCount2);
   const fallbackSession = {
     instanceId: getInstanceId(contentDirectory),
     deckId,
@@ -37358,8 +38119,12 @@ async function buildWorkbenchManifestForDeck(deckId, session) {
     deckId,
     deckDir: contentDirectory,
     title: deck.title,
-    totalPages: Math.max(deck.totalPages, expectedPageCount ?? 0),
-    generationStage: deriveGenerationStage(pages, artifacts, expectedPageCount),
+    deckFormat: deck.deckFormat,
+    canvas: deck.canvas,
+    editable: deck.editable,
+    presentationPath: deck.presentationPath,
+    totalPages: Math.max(deck.totalPages, expectedPageCount2 ?? 0),
+    generationStage: deriveGenerationStage(pages, artifacts, expectedPageCount2),
     pages,
     artifacts,
     updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
@@ -37379,7 +38144,7 @@ async function openSenseNovaWorkspace(sourcePath) {
   const baseSession = {
     instanceId: getInstanceId(sourcePath),
     deckId: activeDeckId,
-    deckDir: path6.resolve(sourcePath)
+    deckDir: path8.resolve(sourcePath)
   };
   const session = await buildActiveDeckSession(baseSession);
   return {
@@ -37390,18 +38155,20 @@ async function openSenseNovaWorkspace(sourcePath) {
 function manifestSignature(manifest) {
   return JSON.stringify({
     deckId: manifest.deckId,
+    deckFormat: manifest.deckFormat,
+    editable: manifest.editable,
     generationStage: manifest.generationStage,
     totalPages: manifest.totalPages,
-    pages: manifest.pages.map((page) => [page.pageNo, page.updatedAt, page.size]),
+    pages: manifest.pages.map((page) => [page.pageNo, page.documentPath, page.pageSelector, page.previewPath, page.updatedAt, page.size]),
     artifacts: manifest.artifacts.map((artifact) => [artifact.path, artifact.exists, artifact.updatedAt, artifact.size]),
     bridge: [manifest.session.agentBridge.mode, manifest.session.agentBridge.writable, manifest.session.agentBridge.managedByAgent]
   });
 }
 async function getWorkbenchGenerationProgress() {
   const session = await getActiveWorkbenchSession();
-  const progress = session.deckDir ? await readGenerationProgress(session.deckDir) : void 0;
   const manifest = session.deckId ? await buildWorkbenchManifestForDeck(session.deckId, session) : void 0;
-  const reconciledProgress = manifest ? reconcileProgressWithManifest(progress, manifest) : progress;
+  const progress = session.deckDir ? await readGenerationProgress(session.deckDir, manifest) : void 0;
+  const reconciledProgress = progress?.workflow === "ppt-task-v2" ? progress : manifest ? reconcileProgressWithManifest(progress, manifest) : progress;
   return {
     available: Boolean(reconciledProgress),
     progress: reconciledProgress,
@@ -37413,7 +38180,7 @@ async function getWorkbenchStyleSamples() {
   if (!session.deckDir || !session.deckId) {
     return { available: false, samples: [] };
   }
-  const payload = await readOptionalJsonFile2(path6.join(session.deckDir, "style_samples.json"));
+  const payload = await readOptionalJsonFile2(path8.join(session.deckDir, "style_samples.json"));
   if (!payload) {
     return { available: false, samples: [] };
   }
@@ -37446,14 +38213,14 @@ async function selectWorkbenchStyleSample(sampleId) {
   return getWorkbenchStyleSamples();
 }
 function deckAuditFilePath(deckDir) {
-  return path6.join(path6.resolve(deckDir), ".workbench", "deck-audit-v1.json");
+  return path8.join(path8.resolve(deckDir), ".workbench", "deck-audit-v1.json");
 }
 function deckAuditSignature(manifest) {
   const bridge = manifest.session.agentBridge;
   const payload = {
     schemaVersion: deckAuditSchemaVersion,
     deckId: manifest.deckId,
-    deckDir: path6.resolve(manifest.deckDir),
+    deckDir: path8.resolve(manifest.deckDir),
     totalPages: manifest.totalPages,
     pages: manifest.pages.map((page) => ({
       pageNo: page.pageNo,
@@ -37476,7 +38243,7 @@ function deckAuditSignature(manifest) {
 }
 async function readCachedDeckAudit(deckDir, signature) {
   try {
-    const parsed = JSON.parse(await readFile5(deckAuditFilePath(deckDir), "utf8"));
+    const parsed = JSON.parse(await readFile7(deckAuditFilePath(deckDir), "utf8"));
     if (parsed.schemaVersion === deckAuditSchemaVersion && parsed.signature === signature && parsed.summary) {
       return parsed;
     }
@@ -37486,8 +38253,8 @@ async function readCachedDeckAudit(deckDir, signature) {
 }
 async function writeCachedDeckAudit(deckDir, audit) {
   const filePath = deckAuditFilePath(deckDir);
-  await mkdir4(path6.dirname(filePath), { recursive: true });
-  await writeFile4(filePath, JSON.stringify(audit, null, 2), "utf8");
+  await mkdir5(path8.dirname(filePath), { recursive: true });
+  await writeFile5(filePath, JSON.stringify(audit, null, 2), "utf8");
 }
 function normalizeAuditPageNos(value) {
   if (!Array.isArray(value)) {
@@ -37503,51 +38270,51 @@ function normalizeAuditSeverity(value) {
   return "medium";
 }
 function sanitizeAuditAction(value, index, fallbackPageNos, prefix = "action") {
-  const record = asRecord2(value);
-  if (!record) {
+  const record2 = asRecord2(value);
+  if (!record2) {
     return void 0;
   }
-  const prompt = cleanOptional(String(record.prompt ?? record.instruction ?? record.message ?? ""));
+  const prompt = cleanOptional(String(record2.prompt ?? record2.instruction ?? record2.message ?? ""));
   if (!prompt) {
     return void 0;
   }
   return {
-    id: cleanOptional(String(record.id ?? "")) ?? `${prefix}-${index + 1}`,
-    label: cleanOptional(String(record.label ?? record.title ?? "")) ?? `\u5EFA\u8BAE ${index + 1}`,
+    id: cleanOptional(String(record2.id ?? "")) ?? `${prefix}-${index + 1}`,
+    label: cleanOptional(String(record2.label ?? record2.title ?? "")) ?? `\u5EFA\u8BAE ${index + 1}`,
     prompt,
-    pageNos: normalizeAuditPageNos(record.pageNos ?? record.pages) ?? fallbackPageNos
+    pageNos: normalizeAuditPageNos(record2.pageNos ?? record2.pages) ?? fallbackPageNos
   };
 }
 function sanitizeAuditFinding(value, index) {
-  const record = asRecord2(value);
-  if (!record) {
+  const record2 = asRecord2(value);
+  if (!record2) {
     return void 0;
   }
-  const title = cleanOptional(String(record.title ?? record.issue ?? "")) ?? `\u95EE\u9898 ${index + 1}`;
-  const detail = cleanOptional(String(record.detail ?? record.description ?? record.reason ?? "")) ?? title;
-  const pageNos = normalizeAuditPageNos(record.pageNos ?? record.pages);
-  const actions = Array.isArray(record.actions) ? record.actions.map((action, actionIndex) => sanitizeAuditAction(action, actionIndex, pageNos, `finding-${index + 1}-action`)).filter((action) => Boolean(action)) : [];
+  const title = cleanOptional(String(record2.title ?? record2.issue ?? "")) ?? `\u95EE\u9898 ${index + 1}`;
+  const detail = cleanOptional(String(record2.detail ?? record2.description ?? record2.reason ?? "")) ?? title;
+  const pageNos = normalizeAuditPageNos(record2.pageNos ?? record2.pages);
+  const actions = Array.isArray(record2.actions) ? record2.actions.map((action, actionIndex) => sanitizeAuditAction(action, actionIndex, pageNos, `finding-${index + 1}-action`)).filter((action) => Boolean(action)) : [];
   return {
-    id: cleanOptional(String(record.id ?? "")) ?? `finding-${index + 1}`,
-    severity: normalizeAuditSeverity(record.severity ?? record.importance ?? record.priority),
+    id: cleanOptional(String(record2.id ?? "")) ?? `finding-${index + 1}`,
+    severity: normalizeAuditSeverity(record2.severity ?? record2.importance ?? record2.priority),
     title,
     detail,
     pageNos,
-    evidence: cleanOptional(String(record.evidence ?? "")),
+    evidence: cleanOptional(String(record2.evidence ?? "")),
     actions
   };
 }
-function extractAuditJsonCandidate(text) {
-  const fenced = /```(?:json)?\s*([\s\S]*?)```/i.exec(text);
+function extractAuditJsonCandidate(text2) {
+  const fenced = /```(?:json)?\s*([\s\S]*?)```/i.exec(text2);
   if (fenced?.[1]) {
     return fenced[1].trim();
   }
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  return start >= 0 && end > start ? text.slice(start, end + 1) : void 0;
+  const start = text2.indexOf("{");
+  const end = text2.lastIndexOf("}");
+  return start >= 0 && end > start ? text2.slice(start, end + 1) : void 0;
 }
-function parseDeckAuditReport(text, signature) {
-  const trimmed = text.trim();
+function parseDeckAuditReport(text2, signature) {
+  const trimmed = text2.trim();
   const candidate = extractAuditJsonCandidate(trimmed);
   let parsed;
   try {
@@ -37555,8 +38322,8 @@ function parseDeckAuditReport(text, signature) {
   } catch {
     parsed = void 0;
   }
-  const record = asRecord2(parsed);
-  if (!record) {
+  const record2 = asRecord2(parsed);
+  if (!record2) {
     return {
       schemaVersion: deckAuditSchemaVersion,
       signature,
@@ -37568,24 +38335,28 @@ function parseDeckAuditReport(text, signature) {
       error: "Agent companion did not return structured audit JSON."
     };
   }
-  const findings = Array.isArray(record.findings) ? record.findings.map((finding, index) => sanitizeAuditFinding(finding, index)).filter((finding) => Boolean(finding)) : [];
-  const styleOptionCandidates = record.styleOptions ?? record.style_options;
+  const findings = Array.isArray(record2.findings) ? record2.findings.map((finding, index) => sanitizeAuditFinding(finding, index)).filter((finding) => Boolean(finding)) : [];
+  const styleOptionCandidates = record2.styleOptions ?? record2.style_options;
   const styleOptions = Array.isArray(styleOptionCandidates) ? styleOptionCandidates.map((action, index) => sanitizeAuditAction(action, index, void 0, "style-option")).filter((action) => Boolean(action)) : [];
   return {
     schemaVersion: deckAuditSchemaVersion,
     signature,
-    generatedAt: cleanOptional(String(record.generatedAt ?? record.generated_at ?? "")) ?? (/* @__PURE__ */ new Date()).toISOString(),
-    summary: cleanOptional(String(record.summary ?? "")) ?? "Agent companion completed the deck audit.",
+    generatedAt: cleanOptional(String(record2.generatedAt ?? record2.generated_at ?? "")) ?? (/* @__PURE__ */ new Date()).toISOString(),
+    summary: cleanOptional(String(record2.summary ?? "")) ?? "Agent companion completed the deck audit.",
     findings,
     styleOptions,
     rawText: trimmed
   };
 }
 async function buildDeckAuditPageContext(manifest, page) {
-  const absolutePath = path6.join(manifest.deckDir, page.htmlPath);
+  const absolutePath = path8.join(manifest.deckDir, page.documentPath || page.htmlPath);
   try {
-    const html = await readFile5(absolutePath, "utf8");
-    const validation = validateSlideHtml(html);
+    const html = await readFile7(absolutePath, "utf8");
+    const validation = validateSlideHtml(html, {
+      deckFormat: manifest.deckFormat,
+      canvas: manifest.canvas,
+      pageSelector: page.pageSelector
+    });
     const warnings = [...validation.warnings];
     if (!/<title>[\s\S]*?<\/title>/i.test(html)) {
       warnings.push("Missing <title> element.");
@@ -37628,7 +38399,7 @@ async function buildDeckAuditContext(manifest, relatedContext) {
   const pages = await Promise.all(manifest.pages.map((page) => buildDeckAuditPageContext(manifest, page)));
   const artifacts = manifest.artifacts.map((artifact) => ({
     ...artifact,
-    absolutePath: path6.join(manifest.deckDir, artifact.path)
+    absolutePath: path8.join(manifest.deckDir, artifact.path)
   }));
   return {
     source: "ppt-editor",
@@ -37751,14 +38522,14 @@ function appendContext(message, context, relatedContext, maxLength = 12e3) {
   ].join("\n");
 }
 async function readJsonResponse(response) {
-  const text = await response.text();
-  if (!text) {
+  const text2 = await response.text();
+  if (!text2) {
     return null;
   }
   try {
-    return JSON.parse(text);
+    return JSON.parse(text2);
   } catch {
-    return { text };
+    return { text: text2 };
   }
 }
 function assertSafeAgentBridgeUrl(rawUrl) {
@@ -37807,15 +38578,15 @@ function parseSseEventBlock(block) {
   }
   return { event: eventName, data };
 }
-function parseSseEvents(text) {
-  return text.replaceAll("\r\n", "\n").split(/\n\n+/).map(parseSseEventBlock).filter((event) => Boolean(event));
+function parseSseEvents(text2) {
+  return text2.replaceAll("\r\n", "\n").split(/\n\n+/).map(parseSseEventBlock).filter((event) => Boolean(event));
 }
 function asRecord2(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? value : void 0;
 }
 function extractSessionFromPayload(payload) {
-  const record = asRecord2(payload);
-  return record?.session ?? payload;
+  const record2 = asRecord2(payload);
+  return record2?.session ?? payload;
 }
 function extractMessageText(value) {
   if (typeof value === "string") {
@@ -37824,14 +38595,14 @@ function extractMessageText(value) {
   if (Array.isArray(value)) {
     return value.map(extractMessageText).filter(Boolean).join("");
   }
-  const record = asRecord2(value);
-  if (!record) {
+  const record2 = asRecord2(value);
+  if (!record2) {
     return "";
   }
-  if (typeof record.text === "string") return record.text;
-  if (typeof record.content === "string") return record.content;
-  if (typeof record.message === "string") return record.message;
-  if (record.content) return extractMessageText(record.content);
+  if (typeof record2.text === "string") return record2.text;
+  if (typeof record2.content === "string") return record2.content;
+  if (typeof record2.message === "string") return record2.message;
+  if (record2.content) return extractMessageText(record2.content);
   return "";
 }
 function extractAssistantMessage(events, sessionPayload) {
@@ -37841,8 +38612,8 @@ function extractAssistantMessage(events, sessionPayload) {
   const messages = asRecord2(session)?.messages;
   if (Array.isArray(messages)) {
     const assistant = [...messages].reverse().find((message) => {
-      const record = asRecord2(message);
-      return record?.role === "assistant";
+      const record2 = asRecord2(message);
+      return record2?.role === "assistant";
     });
     const content = extractMessageText(asRecord2(assistant)?.content);
     if (content.trim()) {
@@ -37900,7 +38671,7 @@ function compactSessionId(row) {
 }
 function compactSessionMatchesDeck(row, session, deckTitle) {
   const deckDir = session.deckDir?.replaceAll("\\", "/").toLowerCase();
-  const deckName = session.deckDir ? path6.basename(session.deckDir).toLowerCase() : "";
+  const deckName = session.deckDir ? path8.basename(session.deckDir).toLowerCase() : "";
   const title = String(row.title ?? "").toLowerCase();
   const workspace = String(row.workspace ?? row.cwd ?? "").replaceAll("\\", "/").toLowerCase();
   const pptRuntime = asRecord2(row.ppt_runtime);
@@ -37934,13 +38705,13 @@ function extractRelatedSessionExcerpts(sessionPayload, deckTitle, deckDir) {
   if (!Array.isArray(messages)) {
     return [];
   }
-  const deckName = deckDir ? path6.basename(deckDir).toLowerCase() : "";
+  const deckName = deckDir ? path8.basename(deckDir).toLowerCase() : "";
   const titleNeedle = deckTitle?.toLowerCase();
   const rows = messages.map((message) => {
-    const record = asRecord2(message);
-    const role = String(record?.role ?? "message");
-    const text = extractMessageText(record?.content).trim();
-    return text ? `${role}: ${text}` : "";
+    const record2 = asRecord2(message);
+    const role = String(record2?.role ?? "message");
+    const text2 = extractMessageText(record2?.content).trim();
+    return text2 ? `${role}: ${text2}` : "";
   }).filter(Boolean);
   const firstUser = rows.find((row) => row.startsWith("user:"));
   const matched = rows.filter((row) => {
@@ -38027,9 +38798,9 @@ function extractGatewayDelta(payload) {
     return "";
   }
   return choices.map((choice) => {
-    const record = asRecord2(choice);
-    const delta = asRecord2(record?.delta);
-    const message = asRecord2(record?.message);
+    const record2 = asRecord2(choice);
+    const delta = asRecord2(record2?.delta);
+    const message = asRecord2(record2?.message);
     return extractMessageText(delta?.content ?? message?.content);
   }).join("");
 }
@@ -38072,9 +38843,9 @@ async function streamWebUiChat(session, bridge, content, emit) {
       streamResponse,
       async (event) => {
         if (event.event === "token") {
-          const text = extractMessageText(event.data);
-          if (text) {
-            await emit({ type: "token", text });
+          const text2 = extractMessageText(event.data);
+          if (text2) {
+            await emit({ type: "token", text: text2 });
           }
           return;
         }
@@ -38143,10 +38914,10 @@ async function streamGatewayChat(bridge, content, emit) {
   await emit({ type: "start", bridge: publicBridge, status: `${bridge.providerLabel ?? "Agent"} Gateway companion \u4F1A\u8BDD\u5DF2\u5F00\u59CB\u5904\u7406\u3002` });
   let assistantMessage = "";
   const events = await streamSseResponse(response, async (event) => {
-    const text = extractGatewayDelta(event.data);
-    if (text) {
-      assistantMessage += text;
-      await emit({ type: "token", text });
+    const text2 = extractGatewayDelta(event.data);
+    if (text2) {
+      assistantMessage += text2;
+      await emit({ type: "token", text: text2 });
       return;
     }
     if (event.data !== "[DONE]") {
@@ -38222,10 +38993,10 @@ async function streamRestChat(bridge, content, emit) {
   await emit({ type: "start", bridge: publicBridge, status: `${bridge.providerLabel ?? "Agent"} REST companion \u5DF2\u5F00\u59CB\u5904\u7406\u3002` });
   let assistantMessage = "";
   const events = await streamSseResponse(response, async (event) => {
-    const text = extractGatewayDelta(event.data);
-    if (text) {
-      assistantMessage += text;
-      await emit({ type: "token", text });
+    const text2 = extractGatewayDelta(event.data);
+    if (text2) {
+      assistantMessage += text2;
+      await emit({ type: "token", text: text2 });
       return;
     }
     if (event.data !== "[DONE]") {
@@ -38799,8 +39570,8 @@ app.get(/^\/api\/decks\/([^/]+)\/files\/(.+)$/, async (request, response, next) 
     const deckId = decodeURIComponent(request.params[0]);
     const filePath = decodeURIComponent(request.params[1]);
     const resolvedPath = resolveDeckFilePath(deckId, filePath);
-    const fileStat = await stat3(resolvedPath);
-    response.type(path7.extname(resolvedPath) || "application/octet-stream");
+    const fileStat = await stat4(resolvedPath);
+    response.type(path9.extname(resolvedPath) || "application/octet-stream");
     response.setHeader("Content-Length", fileStat.size);
     createReadStream(resolvedPath).on("error", next).pipe(response);
   } catch (error) {
@@ -38811,7 +39582,11 @@ app.get(/^\/api\/decks\/([^/]+)\/exports\/([^/]+)$/, (request, response, next) =
   try {
     const deckId = decodeURIComponent(request.params[0]);
     const fileName = decodeURIComponent(request.params[1]);
-    response.download(resolveDeckExportPath(deckId, fileName));
+    const exportPath = resolveDeckExportPath(deckId, fileName);
+    response.attachment(path9.basename(exportPath));
+    response.sendFile(path9.basename(exportPath), { root: path9.dirname(exportPath) }, (error) => {
+      if (error) next(error);
+    });
   } catch (error) {
     next(error);
   }
@@ -38884,7 +39659,13 @@ app.post("/api/slides/edit/apply", async (request, response, next) => {
 app.post("/api/slides/apply", async (request, response, next) => {
   try {
     const payload = request.body;
-    const validation = validateSlideHtml(payload.patchedHtml);
+    const currentSlide = await loadSlideDocument(payload.deckId, payload.pageNo);
+    const analysisOptions = {
+      deckFormat: currentSlide.pageSelector ? "dynamic-html-v2" : currentSlide.documentPath?.startsWith("slides/") ? "static-html-v2" : "legacy-per-slide-html",
+      canvas: currentSlide.pageSelector ? { width: 1280, height: 720 } : { width: 1600, height: 900 },
+      pageSelector: currentSlide.pageSelector
+    };
+    const validation = validateSlideHtml(payload.patchedHtml, analysisOptions);
     if (!validation.ok) {
       response.status(422).json(validation);
       return;
@@ -38964,10 +39745,10 @@ app.post("/api/export/pptx", async (request, response, next) => {
     next(error);
   }
 });
-var distPath = path7.resolve(process.cwd(), "dist");
+var distPath = path9.resolve(process.cwd(), "dist");
 var spaRoutePaths = ["/editor", "/progress", "/ppt-editor", "/ppt-progress"];
 function sendSpaIndex(_request, response, next) {
-  const indexPath = path7.join(distPath, "index.html");
+  const indexPath = path9.join(distPath, "index.html");
   response.sendFile(indexPath, { dotfiles: "allow" }, (err) => {
     if (err) next(err);
   });

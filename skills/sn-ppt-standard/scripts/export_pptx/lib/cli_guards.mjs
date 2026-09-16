@@ -15,7 +15,7 @@ function readJsonIfExists(filePath) {
 
 function parsePageNumberFromFile(htmlFile) {
   const fileName = htmlFile.split('/').pop() || '';
-  return Number((/page_(\d+)\.html$/.exec(fileName) || [])[1]);
+  return Number((/(?:page|slide)_(\d+)\.html$/.exec(fileName) || [])[1]);
 }
 
 function listRealPhotoRequirements(page) {
@@ -210,7 +210,7 @@ function ensureVisibleTitles(deckDir, htmlFiles, opts = {}) {
 
   for (const htmlFile of htmlFiles) {
     const fileName = htmlFile.split('/').pop() || '';
-    const pageNumber = Number((/page_(\d+)\.html$/.exec(fileName) || [])[1]);
+    const pageNumber = Number((/(?:page|slide)_(\d+)\.html$/.exec(fileName) || [])[1]);
     const page = pages.get(pageNumber);
     if (!page) {
       continue;
@@ -465,12 +465,12 @@ export function ensureDeckPreconditions(deckDir, opts = {}) {
   }
 
   const htmlFiles = readdirSync(pagesDir)
-    .filter(f => /^page_\d+\.html$/.test(f))
+    .filter(f => /^(?:page|slide)_\d+\.html$/.test(f))
     .sort()
     .map(f => resolve(pagesDir, f));
 
   if (htmlFiles.length === 0) {
-    throw new Error(`pages 目录中没有 page_*.html 文件: ${pagesDir}`);
+    throw new Error(`页面目录中没有 page_*.html 或 slide_*.html 文件: ${pagesDir}`);
   }
 
   if (!opts.batch) {

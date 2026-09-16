@@ -1,0 +1,13 @@
+{
+  "user_query": "生成一份介绍 OpenClaw 的 PPT。fast 模式，page_count=4，image_source=none，chart_mode=echarts，output_format=pptx，语言=简体中文。",
+  "user_assets": {
+    "reference_images": [],
+    "reference_docs": [],
+    "reference_docs_failed": []
+  },
+  "document_digest": null,
+  "raw_document_excerpts": {
+    "enabled": false,
+    "path": null
+  }
+}

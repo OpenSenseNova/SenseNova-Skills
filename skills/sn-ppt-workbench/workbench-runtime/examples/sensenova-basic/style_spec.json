@@ -1,0 +1,28 @@
+{
+  "design_style": {
+    "id": 1,
+    "name_zh": "科技感",
+    "name_en": "Tech/Futuristic"
+  },
+  "color_tone": {
+    "id": 1,
+    "name_zh": "深色/暗色系",
+    "name_en": "Dark"
+  },
+  "primary_color": {
+    "id": 1,
+    "name_zh": "天蓝",
+    "name_en": "Sky Blue",
+    "hex": "#2196F3"
+  },
+  "palette": {
+    "primary": "#2196F3",
+    "accent": "#00BCD4",
+    "neutral": "#607D8B"
+  },
+  "typography": {
+    "heading_font": "Inter, 'Noto Sans SC', sans-serif",
+    "body_font": "Roboto, 'Noto Sans SC', sans-serif",
+    "base_size_px": 16
+  }
+}

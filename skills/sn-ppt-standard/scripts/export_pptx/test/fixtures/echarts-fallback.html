@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, body { margin: 0; width: 1280px; height: 720px; background: #111827; }
+    .slide { width: 1280px; height: 720px; display: flex; gap: 40px; padding: 60px; box-sizing: border-box; }
+    .chart { width: 560px; height: 600px; }
+  </style>
+  <script src="./missing-echarts.js"></script>
+</head>
+<body>
+  <section class="slide">
+    <div id="fallback-bar" class="chart"></div>
+    <div id="fallback-heatmap" class="chart"></div>
+  </section>
+  <script>
+    const bar = echarts.init(document.getElementById('fallback-bar'));
+    bar.setOption({
+      animation: false,
+      xAxis: { type: 'category', data: ['A', 'B'] },
+      yAxis: { type: 'value' },
+      series: [{ type: 'bar', data: [12, 20] }],
+    });
+
+    const heatmap = echarts.init(document.getElementById('fallback-heatmap'));
+    heatmap.setOption({
+      animation: false,
+      xAxis: { type: 'category', data: ['2025', '2026'] },
+      yAxis: { type: 'category', data: ['Alpha', 'Beta'] },
+      visualMap: { min: 0, max: 10, show: false },
+      series: [{ type: 'heatmap', data: [[0, 0, 2], [1, 0, 8], [0, 1, 5], [1, 1, 10]] }],
+    });
+  </script>
+</body>
+</html>

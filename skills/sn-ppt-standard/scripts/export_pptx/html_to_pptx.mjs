@@ -5,15 +5,49 @@
 import { existsSync, statSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
+import { pickBrowserExe } from './lib/browser_picker.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+/**
+ * 首次运行时自动安装依赖（npm install + playwright chromium）。
+ * 后续运行检测到 node_modules 和 chromium 已存在则跳过。
+ */
+function ensureDependencies() {
+  const nodeModules = resolve(__dirname, 'node_modules');
+  const pptxgenMarker = resolve(nodeModules, 'pptxgenjs');
+  const playwrightMarker = resolve(nodeModules, 'playwright');
+  const echartsMarker = resolve(nodeModules, 'echarts');
+
+  if (!existsSync(pptxgenMarker) || !existsSync(playwrightMarker) || !existsSync(echartsMarker)) {
+    console.error('[setup] 首次运行，正在安装 npm 依赖...');
+    try {
+      execSync('npm install --omit=dev', { cwd: __dirname, stdio: 'inherit' });
+    } catch (e) {
+      throw new Error(`npm install failed: ${e.message}. Headless browser environment unavailable.`);
+    }
+  }
+
+  // 浏览器检查改为 pickBrowserExe()：本地已有任何可用浏览器（期望版本或
+  // 本地扫描回退）就直接使用，不触发下载；只有完全没有任何可用路径时才安装。
+  const exe = pickBrowserExe();
+  if (exe && existsSync(exe)) {
+    return;
+  }
+  console.error('[setup] 本地无可用 Chromium，正在安装 Playwright Chromium...');
+  try {
+    execSync('npx playwright install chromium', { cwd: __dirname, stdio: 'inherit' });
+  } catch (e) {
+    throw new Error(`Chromium installation failed: ${e.message}. Cannot install headless browser in this environment.`);
+  }
+}
 
 // ensureDependencies() 移到 main() 中调用，避免模块加载时崩溃。
 // missing browser → 优雅跳过，不抛异常。
 
 // 依赖就绪后再 import 业务模块
-const { ensureDependencies } = await import('./lib/browser_setup.mjs');
 const { ensureDeckPreconditions } = await import('./lib/cli_guards.mjs');
 const { downloadRemoteImages } = await import('./lib/image_downloader.mjs');
 
@@ -50,7 +84,7 @@ async function main() {
   // 确保依赖安装（npm + playwright chromium）。
   // missing browser → 输出 JSON skip 状态，优雅退出（不崩溃）。
   try {
-    ensureDependencies(__dirname);
+    ensureDependencies();
   } catch (e) {
     const result = {
       status: "skipped",

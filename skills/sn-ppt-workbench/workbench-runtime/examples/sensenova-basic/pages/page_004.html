@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>立即体验 OpenClaw</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+:root {
+  --primary: #2196F3;
+  --primary-light: #4FC3F7;
+  --primary-dark: #1565C0;
+  --accent-cyan: #00BCD4;
+  --gray-light: #B0BEC5;
+  --gray-mid: #78909C;
+  --bg-dark1: #0B0F1E;
+  --bg-dark2: #1A2332;
+  --text-white: #FFFFFF;
+  --text-light: #CFD8DC;
+  --text-muted: #90A4AE;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  background: #0B0F1E;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.wrapper {
+  width: 1600px;
+  height: 900px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+#bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(ellipse at 50% 40%, #1A2A4A 0%, var(--bg-dark2) 50%, var(--bg-dark1) 100%);
+}
+
+#ct {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 60px 80px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* CTA button area */
+.cta-button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2196F3 0%, #00BCD4 100%);
+  padding: 42px 80px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(33,150,243,0.35);
+  text-align: center;
+  transition: transform 0.2s;
+  min-width: 680px;
+}
+
+.cta-button h1 {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  color: var(--text-white);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.cta-button .subtitle {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 4px;
+  border-top: 1px solid rgba(255,255,255,0.3);
+  padding-top: 12px;
+  width: 100%;
+}
+
+/* 三个卖点区域 */
+.features-row {
+  display: flex;
+  gap: 40px;
+  margin-top: 64px;
+  justify-content: center;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.feature-item {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  background: rgba(33,150,243,0.15);
+  border: 1px solid rgba(33,150,243,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: var(--primary-light);
+  transition: background 0.3s;
+}
+
+.feature-item:hover .feature-icon {
+  background: rgba(33,150,243,0.25);
+}
+
+.feature-title {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--text-white);
+  margin-bottom: 10px;
+}
+
+.feature-desc {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--text-light);
+  line-height: 1.6;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+/* 装饰分隔线（在图标上方？实际上不需要，我们会用伪元素做分隔点） */
+.feature-item::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  margin: 20px auto 0;
+  opacity: 0.5;
+}
+
+/* 结语 */
+.closing {
+  position: absolute;
+  bottom: 48px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  line-height: 1.6;
+  padding: 0 80px;
+}
+
+/* 装饰性光晕点缀 */
+#bg::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(33,150,243,0.08) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+  pointer-events: none;
+}
+
+#bg::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,188,212,0.06) 0%, transparent 70%);
+  bottom: -80px;
+  left: -80px;
+  pointer-events: none;
+}
+
+/* 小响应式调整确保不会溢出 */
+@media (max-width: 1600px) {
+  .wrapper { transform: scale(calc(100vw / 1600)); transform-origin: top left; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div id="bg"></div>
+  <div id="ct">
+    <!-- CTA 按钮 -->
+    <div class="cta-button">
+      <h1><span>立即体验 OpenClaw</span></h1>
+      <div class="subtitle"><span>开启智能自动化之旅</span></div>
+    </div>
+
+    <!-- 三个卖点 -->
+    <div class="features-row">
+      <div class="feature-item">
+        <div class="feature-icon">🔗</div>
+        <div class="feature-title"><span>开放API</span></div>
+        <div class="feature-desc"><span>提供RESTful API，轻松集成到现有系统</span></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎁</div>
+        <div class="feature-title"><span>免费试用</span></div>
+        <div class="feature-desc"><span>注册即可获得30天全功能试用</span></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title"><span>专业支持</span></div>
+        <div class="feature-desc"><span>专属技术团队提供架构咨询和部署指导</span></div>
+      </div>
+    </div>
+
+    <!-- 结语 -->
+    <div class="closing"><span>OpenClaw 致力于成为最易用的AI代理平台，现在就联系我们开始您的智能化之旅。</span></div>
+  </div>
+</div>
+</body>
+</html>

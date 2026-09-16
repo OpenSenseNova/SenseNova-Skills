@@ -1,0 +1,142 @@
+{
+  "pages": [
+    {
+      "page_no": 1,
+      "page_kind": "cover",
+      "title": "OpenClaw 产品介绍",
+      "subtitle": "智能AI代理平台",
+      "bullets": [
+        {
+          "head": "自主决策",
+          "detail": "基于大模型的智能决策引擎，无需人工干预即可完成复杂任务。"
+        },
+        {
+          "head": "多模型融合",
+          "detail": "整合多种AI模型，灵活切换，满足不同业务场景需求。"
+        },
+        {
+          "head": "企业级部署",
+          "detail": "支持私有化部署，保障数据安全与合规性。"
+        }
+      ],
+      "narrative": "OpenClaw 是一个新一代AI代理平台，融合大语言模型与自动化工具，帮助企业实现业务流程的智能化和自主化。",
+      "data_points": [],
+      "visual_hints": "深色科技感背景，大标题居中，下方三个核心亮点图标水平排列。",
+      "use_table": null,
+      "use_image": null,
+      "asset_slots": [
+        {
+          "slot_id": "hero",
+          "intent": "OpenClaw品牌标志或抽象科技图形",
+          "aspect_ratio": "16:9"
+        }
+      ]
+    },
+    {
+      "page_no": 2,
+      "page_kind": "section_header",
+      "title": "核心功能",
+      "subtitle": "开放、灵活、智能",
+      "bullets": [
+        {
+          "head": "任务编排",
+          "detail": "通过可视化Workflow串联多个AI能力，实现复杂的多步骤自动化。"
+        },
+        {
+          "head": "知识库集成",
+          "detail": "内置知识库管理，支持文档上传、检索增强生成（RAG）。"
+        },
+        {
+          "head": "实时监控",
+          "detail": "提供运行日志、性能指标和异常告警，确保系统稳定高效。"
+        }
+      ],
+      "narrative": "OpenClaw 的核心功能模块涵盖了从任务定义到执行监控的完整闭环，帮助用户快速构建AI原生应用。",
+      "data_points": [],
+      "visual_hints": "深色背景，左侧标题与要点，右侧一个抽象的功能模块示意图。",
+      "use_table": null,
+      "use_image": null,
+      "asset_slots": [
+        {
+          "slot_id": "module_illustration",
+          "intent": "功能模块示意图形",
+          "aspect_ratio": "1:1"
+        }
+      ]
+    },
+    {
+      "page_no": 3,
+      "page_kind": "content",
+      "title": "应用场景",
+      "subtitle": null,
+      "bullets": [
+        {
+          "head": "客户服务",
+          "detail": "智能客服机器人自动处理常见咨询，减少人工坐席负担。"
+        },
+        {
+          "head": "代码审查",
+          "detail": "接入代码仓库，自动分析代码质量并提供优化建议。"
+        },
+        {
+          "head": "文档生成",
+          "detail": "根据业务数据自动生成报告、文档和摘要。"
+        },
+        {
+          "head": "数据分析",
+          "detail": "通过自然语言查询数据库，快速获取洞察。"
+        }
+      ],
+      "narrative": "OpenClaw 可以广泛应用于客服、研发、运营等多个领域，帮助企业释放生产力。",
+      "data_points": [
+        {
+          "label": "适用行业",
+          "value": "金融、医疗、电商等",
+          "context": "典型落地行业"
+        }
+      ],
+      "visual_hints": "四宫格布局，每格一个场景图标和简要说明。",
+      "use_table": null,
+      "use_image": null,
+      "asset_slots": [
+        {
+          "slot_id": "scenario_grid",
+          "intent": "四个应用场景的图标网格",
+          "aspect_ratio": "1:1"
+        }
+      ]
+    },
+    {
+      "page_no": 4,
+      "page_kind": "closing",
+      "title": "立即体验 OpenClaw",
+      "subtitle": "开启智能自动化之旅",
+      "bullets": [
+        {
+          "head": "开放API",
+          "detail": "提供RESTful API，轻松集成到现有系统。"
+        },
+        {
+          "head": "免费试用",
+          "detail": "注册即可获得30天全功能试用。"
+        },
+        {
+          "head": "专业支持",
+          "detail": "专属技术团队提供架构咨询和部署指导。"
+        }
+      ],
+      "narrative": "OpenClaw 致力于成为最易用的AI代理平台，现在就联系我们开始您的智能化之旅。",
+      "data_points": [],
+      "visual_hints": "深色渐变背景，中心突出号召性用语按钮，下方三个要点。",
+      "use_table": null,
+      "use_image": null,
+      "asset_slots": [
+        {
+          "slot_id": "cta_background",
+          "intent": "行动号召背景或品牌标志",
+          "aspect_ratio": "16:9"
+        }
+      ]
+    }
+  ]
+}

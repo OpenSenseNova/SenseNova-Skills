@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>应用场景 · OpenClaw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2196F3;
+            --cyan: #00BCD4;
+            --grey: #607D8B;
+            --dark-bg: #0B0F1C;
+            --card-bg: rgba(18, 26, 45, 0.75);
+            --card-border: rgba(33, 150, 243, 0.25);
+            --text-main: #EAEEF5;
+            --text-secondary: #B0BEC5;
+            --glow: rgba(33, 150, 243, 0.15);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans SC', sans-serif;
+            background: #080B16;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .wrapper {
+            width: 1600px;
+            height: 900px;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            background: var(--dark-bg);
+        }
+
+        /* ===== 背景层 ===== */
+        #bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 70% 60% at 20% 30%, rgba(33, 150, 243, 0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 85% 80%, rgba(0, 188, 212, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 60% 10%, rgba(33, 150, 243, 0.04) 0%, transparent 50%);
+            background-color: #080B16;
+        }
+
+        /* 微网格线 */
+        #bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(33, 150, 243, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(33, 150, 243, 0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* ===== 内容层 ===== */
+        #ct {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            padding: 48px 64px 40px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ---- 标题区 ---- */
+        .page-head {
+            display: flex;
+            align-items: baseline;
+            gap: 24px;
+            margin-bottom: 36px;
+            position: relative;
+        }
+
+        .page-head::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--cyan), transparent);
+            border-radius: 2px;
+        }
+
+        .page-head h1 {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            font-weight: 800;
+            font-size: 42px;
+            letter-spacing: 2px;
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #FFFFFF 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .page-head .sub-title {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            font-weight: 500;
+            font-size: 18px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            background: rgba(33, 150, 243, 0.08);
+            padding: 4px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(33, 150, 243, 0.15);
+            backdrop-filter: blur(4px);
+        }
+
+        .page-head .sub-title span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* ---- 四宫格 2×2 ---- */
+        .grid-2x2 {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 24px;
+            min-height: 0;
+            margin-bottom: 18px;
+        }
+
+        /* ---- 卡片 ---- */
+        .scene-card {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 32px 30px 28px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .scene-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--cyan));
+            opacity: 0.7;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .scene-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.20), rgba(0, 188, 212, 0.08), transparent 60%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .scene-card:hover {
+            border-color: rgba(33, 150, 243, 0.50);
+            box-shadow: 0 8px 40px rgba(33, 150, 243, 0.10), inset 0 0 60px rgba(33, 150, 243, 0.02);
+        }
+
+        /* 卡片内光晕 */
+        .scene-card .glow-spot {
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(33, 150, 243, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            border-radius: 50%;
+        }
+
+        /* 图标行 */
+        .card-icon {
+            font-size: 44px;
+            line-height: 1;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon .icon-symbol {
+            display: inline-block;
+            width: 58px;
+            height: 58px;
+            line-height: 60px;
+            text-align: center;
+            font-size: 30px;
+            border-radius: 16px;
+            background: rgba(33, 150, 243, 0.10);
+            border: 1px solid rgba(33, 150, 243, 0.15);
+            color: var(--primary);
+            position: relative;
+        }
+
+        .card-icon .icon-symbol::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            opacity: 0.08;
+            z-index: -1;
+        }
+
+        .card-icon .icon-label {
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            color: #FFFFFF;
+            letter-spacing: 0.5px;
+        }
+
+        /* 卡片描述 */
+        .card-desc {
+            font-family: 'Roboto', 'Noto Sans SC', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            flex: 1;
+            margin-top: 2px;
+            max-width: 95%;
+        }
+
+        .card-desc strong {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* 卡片底部标签区（仅第四个卡片特殊，放行业指标） */
+        .card-footer-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(33, 150, 243, 0.08);
+        }
+
+        .tag-item {
+            font-family: 'Roboto', 'Noto Sans SC', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--cyan);
+            background: rgba(0, 188, 212, 0.08);
+            padding: 4px 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 188, 212, 0.12);
+            letter-spacing: 0.3px;
+        }
+
+        .tag-item.highlight {
+            color: #FFFFFF;
+            background: rgba(33, 150, 243, 0.15);
+            border-color: rgba(33, 150, 243, 0.25);
+        }
+
+        .tag-item .num {
+            color: var(--primary);
+            font-weight: 700;
+            margin-right: 4px;
+        }
+
+        /* 底部全局行业条 */
+        .bottom-industry {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 20px;
+            padding: 14px 24px;
+            background: rgba(18, 26, 45, 0.50);
+            border-radius: 16px;
+            border: 1px solid rgba(33, 150, 243, 0.10);
+            backdrop-filter: blur(4px);
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .bottom-industry .label {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .bottom-industry .label span {
+            color: var(--primary);
+        }
+
+        .bottom-industry .tags {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .bottom-industry .tags .pill {
+            font-family: 'Roboto', 'Noto Sans SC', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #FFFFFF;
+            background: rgba(33, 150, 243, 0.12);
+            padding: 4px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(33, 150, 243, 0.15);
+            backdrop-filter: blur(2px);
+            letter-spacing: 0.5px;
+        }
+
+        .bottom-industry .tags .pill.cyan {
+            background: rgba(0, 188, 212, 0.10);
+            border-color: rgba(0, 188, 212, 0.15);
+            color: var(--cyan);
+        }
+
+        .bottom-industry .tags .pill.grey {
+            background: rgba(96, 125, 139, 0.10);
+            border-color: rgba(96, 125, 139, 0.15);
+            color: var(--grey);
+        }
+
+        /* 辅助装饰线 */
+        .corner-deco {
+            position: absolute;
+            bottom: 24px;
+            right: 28px;
+            width: 40px;
+            height: 40px;
+            border-right: 2px solid rgba(33, 150, 243, 0.08);
+            border-bottom: 2px solid rgba(33, 150, 243, 0.08);
+            border-radius: 0 0 8px 0;
+            pointer-events: none;
+        }
+
+        /* 屏幕适配 */
+        @media (max-width: 1600px) {
+            .wrapper {
+                transform: scale(calc(100vw / 1600));
+                transform-origin: top left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div id="bg"></div>
+        <div id="ct">
+            <!-- 页面标题 -->
+            <div class="page-head">
+                <h1><span>应用场景</span></h1>
+                <div class="sub-title"><span>OpenClaw</span> · 释放生产力</div>
+            </div>
+
+            <!-- 四宫格 -->
+            <div class="grid-2x2">
+                <!-- 卡片 1: 客户服务 -->
+                <div class="scene-card">
+                    <div class="glow-spot"></div>
+                    <div class="card-icon">
+                        <span class="icon-symbol">💬</span>
+                        <span class="icon-label">客户服务</span>
+                    </div>
+                    <div class="card-desc">
+                        智能客服机器人自动处理常见咨询，减少人工坐席负担，<strong>7×24</strong> 小时在线响应，提升用户满意度与转化率。
+                    </div>
+                    <div class="corner-deco"></div>
+                </div>
+
+                <!-- 卡片 2: 代码审查 -->
+                <div class="scene-card">
+                    <div class="glow-spot"></div>
+                    <div class="card-icon">
+                        <span class="icon-symbol">🔍</span>
+                        <span class="icon-label">代码审查</span>
+                    </div>
+                    <div class="card-desc">
+                        基于语义理解的自动化代码审查，检测逻辑缺陷与安全漏洞，<strong>加速</strong> 研发迭代节奏，保障代码质量。
+                    </div>
+                    <div class="corner-deco"></div>
+                </div>
+
+                <!-- 卡片 3: 文档生成 -->
+                <div class="scene-card">
+                    <div class="glow-spot"></div>
+                    <div class="card-icon">
+                        <span class="icon-symbol">📄</span>
+                        <span class="icon-label">文档生成</span>
+                    </div>
+                    <div class="card-desc">
+                        从产品需求与对话记录中自动生成技术文档、用户手册，<strong>降低</strong> 撰写成本，保持内容一致与及时更新。
+                    </div>
+                    <div class="corner-deco"></div>
+                </div>
+
+                <!-- 卡片 4: 数据分析 -->
+                <div class="scene-card">
+                    <div class="glow-spot"></div>
+                    <div class="card-icon">
+                        <span class="icon-symbol">📊</span>
+                        <span class="icon-label">数据分析</span>
+                    </div>
+                    <div class="card-desc">
+                        自然语言驱动的数据查询与可视化，业务人员自助分析，<strong>实时</strong> 洞察趋势，辅助决策更敏捷。
+                    </div>
+                    <div class="card-footer-tags">
+                        <span class="tag-item highlight"><span class="num">▼</span> 典型落地</span>
+                        <span class="tag-item">金融</span>
+                        <span class="tag-item">医疗</span>
+                        <span class="tag-item">电商</span>
+                        <span class="tag-item">制造</span>
+                    </div>
+                    <div class="corner-deco"></div>
+                </div>
+            </div>
+
+            <!-- 底部行业信息条 -->
+            <div class="bottom-industry">
+                <div class="label"><span>✦</span> 适用行业</div>
+                <div class="tags">
+                    <span class="pill">金融</span>
+                    <span class="pill cyan">医疗</span>
+                    <span class="pill">电商</span>
+                    <span class="pill grey">教育</span>
+                    <span class="pill">制造</span>
+                    <span class="pill cyan">政务</span>
+                    <span class="pill">能源</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

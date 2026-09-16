@@ -7,8 +7,9 @@ Default output: <deck_dir>/<deck_id>.pptx (deck_id from task_pack.json).
 
 Behavior:
 - Reads task_pack.json for page_count and deck_id.
-- Reads outline.json (if present) to order pages by page_no; otherwise falls back
-  to lexical order of pages/page_*.png.
+- Reads a legacy outline.json (if present) to order old tasks by page_no;
+  otherwise uses task_pack page_count. Accepts both the current flat
+  pages/page_NNN.png layout and the legacy nested pages/page_NNN/page_NNN.png.
 - Missing PNGs are skipped with a warning line on stderr; they do NOT abort.
 - Each slide is 16:9 (13.333 x 7.5 inches). Images are stretched to fill the slide.
 - Emits a single JSON line on stdout summarizing the result.
@@ -36,13 +37,21 @@ def resolve_page_order(deck: Path, page_count: int) -> list[tuple[int, Path]]:
         data = json.loads(outline_path.read_text(encoding="utf-8"))
         for page in data.get("pages", []):
             n = int(page["page_no"])
-            png = pages_dir / f"page_{n:03d}.png"
+            png = resolve_page_png(pages_dir, n)
             ordered.append((n, png))
         ordered.sort(key=lambda x: x[0])
     else:
         for n in range(1, page_count + 1):
-            ordered.append((n, pages_dir / f"page_{n:03d}.png"))
+            ordered.append((n, resolve_page_png(pages_dir, n)))
     return ordered
+
+
+def resolve_page_png(pages_dir: Path, page_no: int) -> Path:
+    name = f"page_{page_no:03d}"
+    flat = pages_dir / f"{name}.png"
+    if flat.exists():
+        return flat
+    return pages_dir / name / f"{name}.png"
 
 
 def build(deck: Path, output: Path) -> dict:

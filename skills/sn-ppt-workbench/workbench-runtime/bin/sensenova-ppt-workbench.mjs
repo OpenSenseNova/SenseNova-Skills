@@ -52,7 +52,7 @@ function parseArgs(argv) {
 function usage() {
   return [
     'Usage:',
-    '  sensenova-ppt-workbench start --deck-dir "<path>" [--port 0] [--source-session-id "<id>"] [--agent-provider hermes|openclaw|codex|claude-code|workbuddy] [--agent-transport webui|gateway|rest|acp] [--agent-managed] [--gateway-api-key "<secret>"]',
+    '  sensenova-ppt-workbench start --deck-dir "<path>" [--port 0] [--source-session-id "<id>"] [--agent-provider hermes|openclaw|codex|claude-code|box-agent|workbuddy] [--agent-transport webui|gateway|rest|acp] [--agent-managed] [--gateway-api-key "<secret>"]',
     '  sensenova-ppt-workbench status --deck-dir "<path>"',
     '  sensenova-ppt-workbench stop --deck-dir "<path>"',
   ].join('\n')
@@ -299,6 +299,20 @@ function resolveAgentTransport(args) {
   return String(args['agent-transport'] || process.env.WORKBENCH_AGENT_TRANSPORT || '')
 }
 
+/** Resolves an explicit or provider-specific ACP adapter command. */
+function resolveAcpCommand(args, provider) {
+  const explicit = String(
+    args['acp-command']
+    || process.env.WORKBENCH_ACP_COMMAND
+    || (normalizeAgentShapeValue(provider) === 'codex' ? process.env.CODEX_ACP_COMMAND : '')
+    || (normalizeAgentShapeValue(provider) === 'claude-code' ? process.env.CLAUDE_ACP_COMMAND : '')
+    || (normalizeAgentShapeValue(provider) === 'box-agent' ? process.env.BOX_AGENT_ACP_COMMAND : '')
+    || '',
+  )
+  if (explicit) return explicit
+  return normalizeAgentShapeValue(provider) === 'box-agent' ? 'box-agent-acp' : ''
+}
+
 /** Normalizes simple provider/transport strings for reuse checks. */
 function normalizeAgentShapeValue(value) {
   return String(value || '').trim().toLowerCase().replaceAll('_', '-')
@@ -442,14 +456,15 @@ async function start(args) {
     args['source-session-id']
     || args['agent-session-id']
     || process.env.WORKBENCH_AGENT_SOURCE_SESSION_ID
+    || process.env.BOX_AGENT_SESSION_ID
     || process.env.HERMES_SESSION_KEY
     || '',
   )
   const agentProvider = resolveAgentProvider(args)
-  const agentTransport = resolveAgentTransport(args)
+  const acpCommand = resolveAcpCommand(args, agentProvider)
+  const agentTransport = resolveAgentTransport(args) || (acpCommand ? 'acp' : '')
   const agentBaseUrl = String(args['agent-base-url'] || process.env.WORKBENCH_AGENT_BASE_URL || process.env.OPENCLAW_GATEWAY_BASE_URL || process.env.OPENCLAW_BASE_URL || '')
   const agentApiKey = String(args['agent-api-key'] || process.env.WORKBENCH_AGENT_API_KEY || process.env.OPENCLAW_API_KEY || '')
-  const acpCommand = String(args['acp-command'] || process.env.WORKBENCH_ACP_COMMAND || process.env.CODEX_ACP_COMMAND || process.env.CLAUDE_ACP_COMMAND || '')
   const gatewayApiKey = String(
     args['gateway-api-key']
     || agentApiKey
@@ -473,6 +488,7 @@ async function start(args) {
       HOST: bindHost,
       WORKBENCH_HOST: bindHost,
       WORKBENCH_DECK_DIR: deckDir,
+      DECKS_ROOT: String(process.env.DECKS_ROOT || path.join(workbenchDir, 'decks')),
       WORKBENCH_PUBLIC_URL: url,
       WORKBENCH_PROGRESS_ROUTE: progressRoute,
       WORKBENCH_PRODUCT: product,

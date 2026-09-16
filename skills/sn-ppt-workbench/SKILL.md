@@ -1,21 +1,11 @@
 ---
 name: sn-ppt-workbench
-description: |
-  Open the AI PPT editing WebUI for previously generated SenseNova HTML slides.
-  Use when the user asks to preview, inspect, edit, or open an existing/generated
-  PPT deck in the WebUI/workbench without regenerating slides. Accepts an
-  explicit deck_dir or auto-detects the newest local ppt_decks entry containing
-  HTML pages. Does not run style/outline/page-html/export generation.
+description: Use when the user asks to open, preview, inspect, or visually edit an existing SenseNova HTML presentation in the PPT Workbench, using an explicit deck_dir or the latest deck in the current workspace.
 metadata:
   project: SenseNova-Skills
   tier: aux
   category: ppt
   user_visible: true
-triggers:
-  - "sn-ppt-workbench"
-  - "打开 PPT 工作台"
-  - "打开 PPT WebUI"
-  - "预览已生成 PPT"
 ---
 
 # sn-ppt-workbench
@@ -28,20 +18,25 @@ to `0.0.0.0` so remote users can reach the WebUI through the host network.
 ## Use Cases
 
 - The user already generated a deck and asks to open the WebUI/editor/workbench.
-- The user provides a `deck_dir` containing `pages/page_NNN.html` or root-level `.html` slides.
+- The user provides a `deck_dir` containing `task_pack.json`,
+  `slides/slide_NN.html`, `pages/page_NNN.html`, or a root-level HTML deck.
 - The user says to inspect or edit previously generated slides without regenerating them.
 
 ## Hard Rules
 
 1. Do not run `sn-ppt-entry`, `sn-ppt-standard`, `page-html`, `batch-page-html`, or `export`.
 2. Do not edit slide files directly. The WebUI handles user-visible editing.
-3. If `deck_dir` is missing, auto-detect the newest usable deck under:
-   - `$(pwd)/ppt_decks`
-   - `~/Downloads/ppt_decks`
-   - `~/Repository/ppt_decks`
+3. If `deck_dir` is missing, auto-detect only under `$(pwd)/ppt_decks`.
+   Other roots are considered only when the caller explicitly passes
+   `--search-root`; never scan home folders by default.
 4. If no usable deck is found, ask the user for the absolute `deck_dir`.
 5. Workbench startup is best-effort. If it skips or fails, report the reason and do not attempt generation as a fallback.
 6. Prefer a forwarded/canvas URL over localhost when the user may be on SSH, IM, or another remote device.
+7. When launched from the unified PPT flow, use the exact absolute
+   `task_pack.deck_dir`; opening the Workbench must not create or switch tasks.
+8. Treat `task_pack.json` as progress/resume state and `outline.md` as the
+   user-editable Story. Existing runtime builds may expose only part of these
+   artifacts; report compatibility gaps instead of regenerating the deck.
 
 ## Invocation
 
@@ -76,6 +71,12 @@ python3 $SKILL_DIR/scripts/open_workbench.py \
   --gateway-base-url "${HERMES_GATEWAY_BASE_URL:-}"
 ```
 
+`--agent-transport` may be omitted: the helper auto-selects `gateway` when the
+Hermes Gateway endpoint and key resolve (environment or Hermes `.env` files),
+then `webui` / `acp` / `rest` when only those details exist. Explicit flags and
+`WORKBENCH_AGENT_TRANSPORT` always win. With no resolvable bridge the bottom
+chat stays read-only by design.
+
 For non-Hermes interactive providers, pass structured bridge details instead of
 scraping CLI/TUI output:
 
@@ -94,7 +95,19 @@ python3 $SKILL_DIR/scripts/open_workbench.py \
   --agent-provider codex \
   --agent-transport acp \
   --acp-command "${WORKBENCH_ACP_COMMAND:-codex-acp}"
+
+python3 $SKILL_DIR/scripts/open_workbench.py \
+  --deck-dir "<deck_dir>" \
+  --agent-managed 1 \
+  --agent-provider box-agent \
+  --agent-transport acp \
+  --acp-command "${WORKBENCH_ACP_COMMAND:-${BOX_AGENT_ACP_COMMAND:-box-agent-acp}}"
 ```
+
+When this helper runs inside Box Agent, the exported `BOX_AGENT_PYTHON` or
+`BOX_AGENT_SKILL_TOOLS_ROOT` environment automatically selects `box-agent`,
+`acp`, and the installed `box-agent-acp` command. Explicit
+`WORKBENCH_AGENT_*` flags or environment variables still take precedence.
 
 For WorkBuddy, pass `--agent-provider workbuddy` only as provider identity. Tell
 the user clearly that WorkBuddy currently has no supported API or ACP interface
@@ -153,12 +166,14 @@ The helper locates the editor launcher in this order:
 
 1. `SENSENOVA_PPT_WORKBENCH_CLI`
 2. `PPT_WORKBENCH_CLI`
-3. `~/Repository/ppt-editor/src/ppt-editor/bin/sensenova-ppt-workbench.mjs`
-4. `~/Repository/ppt-editor/tools/ppt-editor/bin/sensenova-ppt-workbench.mjs`
-5. Legacy `~/Repository/ppt-editor/bin/sensenova-ppt-workbench.mjs`
-6. Common sibling repo layouts
+3. The runtime packaged beside this Skill
+4. The nearest `src/ppt-editor` source checkout or packaged release in the current worktree
+5. Common `~/Repository/ppt-editor` fallbacks
 
-If the editor is not built, the helper runs `npm run build` in the `ppt-editor` repo unless `--no-build` is provided.
+The helper does not build the editor during an end-user launch. Packaged Skills
+must include `workbench-runtime`; source checkouts must build `src/ppt-editor`
+explicitly before using its launcher. The repository-level `webui/` directory
+is a separate product and is not a launcher fallback for this Skill.
 
 Remote URL discovery order:
 
@@ -172,8 +187,10 @@ Remote URL discovery order:
 
 For writable interactive agent bridging (chat panel in workbench), Hermes keeps
 using the existing WebUI/Gateway protocol. OpenClaw should be exposed through a
-Gateway/REST-compatible HTTP endpoint. Codex and Claude Code should use ACP
-JSON-RPC adapters, configured with `--acp-command` or `WORKBENCH_ACP_COMMAND`.
+Gateway/REST-compatible HTTP endpoint. Codex, Claude Code, and Box Agent should
+use ACP JSON-RPC adapters, configured with `--acp-command` or
+`WORKBENCH_ACP_COMMAND`. Box Agent defaults to its installed `box-agent-acp`
+entry point.
 Never parse provider CLI/TUI output for chat synchronization.
 
 For writable Hermes Gateway bridging, the Gateway API server and workbench must
@@ -186,11 +203,12 @@ Key env vars:
 | `API_SERVER_KEY` | Gateway (.env) | Shared secret |
 | `WORKBENCH_GATEWAY_API_KEY` | Workbench env | Same as `API_SERVER_KEY`; preferred explicit bridge key |
 | `HERMES_GATEWAY_BASE_URL` | Workbench env | `http://127.0.0.1:8642` |
-| `WORKBENCH_AGENT_PROVIDER` | Workbench env | `hermes`, `openclaw`, `codex`, `claude-code`, or `workbuddy` |
+| `WORKBENCH_AGENT_PROVIDER` | Workbench env | `hermes`, `openclaw`, `codex`, `claude-code`, `box-agent`, or `workbuddy` |
 | `WORKBENCH_AGENT_TRANSPORT` | Workbench env | `webui`, `gateway`, `rest`, or `acp` |
 | `WORKBENCH_AGENT_BASE_URL` | Workbench env | OpenClaw/Gateway REST endpoint |
 | `WORKBENCH_AGENT_API_KEY` | Workbench env | REST provider bearer token |
 | `WORKBENCH_ACP_COMMAND` | Workbench env | ACP adapter command, e.g. `codex-acp` |
+| `BOX_AGENT_ACP_COMMAND` | Box Agent / Workbench env | Optional override for the default `box-agent-acp` adapter command |
 
 Quick steps:
 - Gateway: set `API_SERVER_KEY` in `.env`, restart gateway

@@ -1,0 +1,17 @@
+{
+  "deck_id": "OpenClaw介绍_20260706_235155",
+  "deck_dir": "C:\\Users\\chenhaodong\\.openclaw\\workspace\\ppt_decks\\OpenClaw介绍_20260706_235155",
+  "ppt_mode": "fast",
+  "params": {
+    "role": "OpenClaw 产品介绍人",
+    "audience": "对 AI 助手/自动化平台感兴趣的技术与产品受众",
+    "scene": "产品介绍与技术分享",
+    "page_count": 4,
+    "language": "zh-Hans",
+    "image_source": "none",
+    "infographic_source": "echarts",
+    "output_format": "pptx"
+  },
+  "created_at": "2026-07-06T23:51:55+08:00",
+  "skill_version": "0.1.0"
+}
