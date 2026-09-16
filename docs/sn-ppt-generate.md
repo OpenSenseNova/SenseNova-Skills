@@ -18,6 +18,10 @@ This document collects the PPT generation skills (`sn-ppt-entry`, `sn-ppt-story`
 | [`sn-ppt-doctor`](../skills/sn-ppt-doctor/SKILL.md) | PPT environment doctor | Checks local rendering/export dependencies (Python/Node Playwright, Chromium, PPTX exporter) and Bundled media config; reports only, never writes `.env` or modifies the task directory. |
 | [`sn-ppt-creative`](../skills/sn-ppt-creative/SKILL.md) | PPT creative mode | One full-page 16:9 PNG per slide generated from a per-page composed prompt; exports PPTX. |
 | [`sn-ppt-standard`](../skills/sn-ppt-standard/SKILL.md) | PPT standard mode | `style_spec` → outline → asset plan + per-slot images + VLM QA → per-page HTML → per-page review (optional rewrite) → summary `review.md` → PPTX export. |
+| sn-ppt-story | PPT outline (story) | Turns the query, all user materials, and completed research into the single editable outline.md; the mandatory mid-stage between the entry and the exit modes (standard / dazzle / creative) — must not be skipped or written by hand. |
+| sn-ppt-dazzle | PPT dynamic mode | Turns a prepared outline.md into a single-file 1280×720 dynamic HTML deck (motion, page transitions, keyboard navigation) for animated/interactive presentations. |
+| sn-ppt-tools | Bundled tool fallback | Provides the fallback (web search, image search, image generation, image download) when the host's native search/image tools are absent or fail; reads SN_PPT_* config from .env. |
+| sn-ppt-workbench | PPT edit workbench | Starts or reuses the AI PPT editing WebUI to preview and fine-tune a generated deck in the browser. |
 
 Model chat, vision, and image generation prefer the host Agent's native tools; when native tools are absent or fail, `sn-ppt-tools` provides the Bundled fallback (web search, image search, image generation).
 

@@ -18,6 +18,14 @@
 | [`sn-ppt-doctor`](../skills/sn-ppt-doctor/SKILL.md) | PPT 环境诊断 | 检查本地渲染/导出依赖（Python/Node Playwright、Chromium、PPTX exporter）与 Bundled 媒体配置；只报告，不写 `.env`、不修改任务目录。 |
 | [`sn-ppt-creative`](../skills/sn-ppt-creative/SKILL.md) | PPT 创意模式 | 每页一张 16:9 全图（PNG），按页面构图 prompt 出图后导出 PPTX。 |
 | [`sn-ppt-standard`](../skills/sn-ppt-standard/SKILL.md) | PPT 标准模式 | `style_spec` → 大纲 → 资产规划 + 分槽位图像 + VLM 质检 → 分页 HTML → 分页评审（可选重写）→ 汇总 `review.md` → 导出 PPTX。 |
+| sn-ppt-story | PPT 编排 | 将 query、全部用户材料与已完成 Research 编排为唯一可编辑的 outli
+ne.md；是入口到出口（standard / dazzle / creative）之间的强制中间环节，不得跳过或代写。 |
+| sn-ppt-dazzle | PPT 动态模式 | 将已备好的 outline.md 制作为 1280×720 单文件动态 HTML 演示
+文稿（动效、跨页过渡、键盘翻页），用于需要动态/交互效果的演示场景。 |
+| sn-ppt-tools | Bundled 工具回退 | 宿主原生搜索/生图工具缺失或失败时提供回退：普通搜索、图
+片搜索、图片生成与下载；读取 .env 中的 SN_PPT_* 配置。 |
+| sn-ppt-workbench | PPT 编辑工作台 | 启动或复用 AI PPT 编辑 WebUI，在浏览器中预览、在线微调
+已生成的 deck。 |
 
 模型对话、视觉理解与生图优先使用宿主 Agent 的原生工具；原生缺失或失败时由 `sn-ppt-tools` 提供 Bundled 回退（普通搜索、图片搜索、生图）。
 
