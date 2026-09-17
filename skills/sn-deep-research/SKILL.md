@@ -73,7 +73,7 @@ ${HERMES_SKILL_DIR}   ← Hermes
 
 所有产物落在**单一报告目录**下，子 agent 之间只经文件通信。命名为 `YYYY-MM-DD-{topic}-{hex4}`，其中 `{hex4}` 是随机 4 位十六进制运行号——**同一需求可能跑多次**，用它区分各次运行、避免目录互相覆盖。下文统一以 `{report_dir}` 指代解析后的绝对路径。
 
-**你起步先建报告目录**，随后写入 `request.md` 并启动进度页；其余文件由各阶段写入：
+**你起步先建报告目录**，随后写入 `request.md`；其余文件由各阶段写入：
 
 ```bash
 run=$(openssl rand -hex 2 2>/dev/null || printf '%04x' "$RANDOM")
@@ -87,8 +87,7 @@ echo "$report_dir"   # 记录为后续所有 payload 的 report_dir
 
 ```text
 {report_dir}/
-├── request.md     原始研究请求（启动进度页前必须存在）
-├── .workbench/progress.json   进度页实时状态
+├── request.md     原始研究请求与启动时间
 ├── briefing.json   [H]
 ├── plan.json   [N/H]
 ├── sub_reports/   每维度 dN：evidence.json · research/过程文件 · review.md[H] · perspectives/[H] · supplement_plan.json[H]
@@ -100,55 +99,9 @@ echo "$report_dir"   # 记录为后续所有 payload 的 report_dir
 └── report.md / citations.json   渲染终稿
 ```
 
-### 3.1 深度研究进度 WebUI（必须在研究开始时启动）
+### 3.1 初始化请求文件
 
-创建 `{report_dir}` 后、进入 §4 启动确认之前，你必须完成以下操作，不得等到研究产物生成后再启动：
-
-1. 写入 `{report_dir}/request.md`，内容包含原始用户需求与启动时间。该文件用于进度页在其他产物尚未出现时识别 Deep Research 工作区。
-2. 用共享进度事件脚本写入首个事件，并显式指定 `workflow=deep-research`：
-
-   ```bash
-   python3 {plugin_skills_dir}/sn-ppt-standard/scripts/progress_event.py \
-     --deck-dir "{report_dir}" \
-     --workflow deep-research \
-     --stage mode-selection \
-     --status running \
-     --artifact request.md \
-     --label "<使用 language 的简短状态>"
-   ```
-
-3. 立即启动或复用 Research Workbench。Deep Research 进度页使用独立的根路由 `/`：
-
-   ```bash
-   python3 {plugin_skills_dir}/sn-ppt-standard/scripts/launch_workbench.py \
-     --deck-dir "{report_dir}" \
-     --product research \
-     --progress-route / \
-     --source-session-id "${HERMES_SESSION_KEY:-}" \
-     --agent-managed 1 \
-     --require-webui \
-     --host 0.0.0.0
-   ```
-
-原生 Windows 环境若无 `python3`，改用 `python`。在 Windows 的 Git Bash / MSYS 下传递根路由 `/` 时，命令前加 `MSYS_NO_PATHCONV=1`，避免路径被改写。
-
-启动结果处理：
-
-- 若返回 `{"status":"ok", ...}`，立即使用请求级 `language` 向用户提供 `research_progress_url`；若该字段不存在，使用兼容字段 `generation_url`。URL 必须指向根路由 `/`，不要提供 PPT 编辑器或 PPT 进度页导航。
-- 因使用了 `--require-webui`，helper 不应返回 `skipped`。若返回 `failed` 或等价错误，暂停研究流程并处理 WebUI 启动问题，不要静默继续。
-- Deep Research 与 PPT 使用相互独立的进度页。Deep Research skill 只提供 Research Workbench 的根路由。
-
-后续每个主要阶段开始、完成或失败时，继续写入同一个进度文件：
-
-```bash
-python3 {plugin_skills_dir}/sn-ppt-standard/scripts/progress_event.py \
-  --deck-dir "{report_dir}" \
-  --workflow deep-research \
-  --stage mode-selection|scout|plan|research|review|report-planner|report-writer|finalizing|done \
-  --status running|ok|failed \
-  --artifact "<当前主要产物路径>" \
-  --label "<使用 language 的简短状态>"
-```
+创建 `{report_dir}` 后、进入 §4 启动确认之前，写入 `{report_dir}/request.md`，内容包含原始用户需求与启动时间。该文件是本次研究的初始请求记录。
 
 ## 4. 启动确认与档位选择
 
