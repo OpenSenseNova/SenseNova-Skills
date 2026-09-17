@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>核心功能 — 开放、灵活、智能</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Root Variables ===== */
+    :root {
+      --primary: #2196F3;
+      --primary-light: #64B5F6;
+      --accent: #00BCD4;
+      --accent-light: #4DD0E1;
+      --bg-deep: #070B14;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --border-card: rgba(33, 150, 243, 0.12);
+      --text-white: #F0F4F8;
+      --text-light: #C8D0DC;
+      --text-muted: #7A85A0;
+      --text-dim: #4E5670;
+      --glow-primary: rgba(33, 150, 243, 0.25);
+      --glow-accent: rgba(0, 188, 212, 0.20);
+      --font-display: 'Inter', 'Noto Sans SC', sans-serif;
+      --font-body: 'Inter', 'Noto Sans SC', sans-serif;
+    }
+
+    /* ===== Base Styles ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      background: #03050C;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .wrapper {
+      width: 1600px;
+      height: 900px;
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
+      background: var(--bg-deep);
+    }
+
+    #bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 40%, rgba(33, 150, 243, 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 80% 60%, rgba(0, 188, 212, 0.04) 0%, transparent 60%),
+        linear-gradient(165deg, #070B14 0%, #0C1222 45%, #070B14 100%);
+    }
+
+    #ct {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      padding: 0;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* ===== Left Content ===== */
+    .left-content {
+      flex: 0 0 720px;
+      padding: 60px 0 60px 80px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-label {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--primary);
+      opacity: 0.7;
+      margin-bottom: 28px;
+    }
+
+    .main-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 64px;
+      line-height: 1.08;
+      color: var(--text-white);
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+
+    .main-title .highlight {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 28px;
+      color: var(--primary-light);
+      letter-spacing: 2px;
+      margin-bottom: 36px;
+    }
+
+    .divider {
+      width: 72px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+      margin-bottom: 40px;
+      box-shadow: 0 0 20px var(--glow-primary);
+    }
+
+    /* ===== Feature Cards ===== */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .feature-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 20px 28px;
+      transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .feature-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(33, 150, 243, 0.3);
+      box-shadow: 0 0 30px rgba(33, 150, 243, 0.06);
+    }
+    .feature-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 22%;
+      bottom: 22%;
+      width: 3px;
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+      border-radius: 0 2px 2px 0;
+      box-shadow: 0 0 12px var(--glow-primary);
+    }
+    .feature-head {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 19px;
+      color: var(--text-white);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .feature-desc {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* ===== Right Illustration Area ===== */
+    .right-illustration {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+    .illustration-outer-glow {
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(33, 150, 243, 0.06) 0%, rgba(0, 188, 212, 0.03) 40%, transparent 70%);
+      position: absolute;
+      filter: blur(50px);
+      pointer-events: none;
+    }
+    .illustration-ring {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(33, 150, 243, 0.12);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .illustration-ring::before {
+      content: '';
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 188, 212, 0.1);
+    }
+    .illustration-ring::after {
+      content: '';
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(33, 150, 243, 0.04) 0%, transparent 70%);
+    }
+    .illustration-center {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(33, 150, 243, 0.08);
+      border: 1px solid rgba(33, 150, 243, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .illustration-center svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--primary);
+      stroke-width: 1.6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    /* Orbit dots */
+    .orbit-dot {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(0, 188, 212, 0.5);
+    }
+    .orbit-dot.d1 { top: 10%; left: 50%; transform: translateX(-50%); }
+    .orbit-dot.d2 { bottom: 10%; left: 50%; transform: translateX(-50%); }
+    .orbit-dot.d3 { top: 50%; right: 10%; transform: translateY(-50%); }
+    .orbit-dot.d4 { top: 50%; left: 10%; transform: translateY(-50%); }
+    /* 屏幕适配 */
+    @media (max-width: 1600px) {
+      .wrapper { transform: scale(calc(100vw / 1600)); transform-origin: top left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div id="bg"></div>
+    <div id="ct">
+      <!-- Left Content -->
+      <div class="left-content">
+        <div class="section-label">核心功能</div>
+        <div class="main-title">核心<span class="highlight">功能</span></div>
+        <div class="subtitle">开放、灵活、智能</div>
+        <div class="divider"></div>
+        <div class="feature-list">
+          <!-- Feature 1: 任务编排 -->
+          <div class="feature-item">
+            <div class="feature-head">任务编排</div>
+            <div class="feature-desc">通过可视化Workflow串联多个AI能力，实现复杂的多步骤自动化。</div>
+          </div>
+          <!-- Feature 2: 知识库集成 -->
+          <div class="feature-item">
+            <div class="feature-head">知识库集成</div>
+            <div class="feature-desc">内置知识库管理，支持文档上传、检索增强生成（RAG）。</div>
+          </div>
+          <!-- Feature 3: 实时监控 -->
+          <div class="feature-item">
+            <div class="feature-head">实时监控</div>
+            <div class="feature-desc">提供运行日志、性能指标和异常告警，确保系统稳定高效。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Illustration -->
+      <div class="right-illustration">
+        <div class="illustration-outer-glow"></div>
+        <div class="illustration-ring">
+          <div class="orbit-dot d1"></div>
+          <div class="orbit-dot d2"></div>
+          <div class="orbit-dot d3"></div>
+          <div class="orbit-dot d4"></div>
+          <div class="illustration-center">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7" rx="1.4"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1.4"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1.4"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1.4"></rect>
+              <line x1="10" y1="6.5" x2="14" y2="6.5"></line>
+              <line x1="10" y1="17.5" x2="14" y2="17.5"></line>
+              <line x1="6.5" y1="10" x2="6.5" y2="14"></line>
+              <line x1="17.5" y1="10" x2="17.5" y2="14"></line>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

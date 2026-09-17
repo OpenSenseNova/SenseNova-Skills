@@ -42,6 +42,27 @@ const NAMED_COLORS = {
   mint:    '98FF98',
 };
 
+function parseSrgbColor(cssColor) {
+  if (!cssColor) return null;
+  const number = '[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)';
+  const match = cssColor.trim().match(new RegExp(
+    `^color\\(\\s*srgb\\s+(${number})\\s+(${number})\\s+(${number})(?:\\s*\\/\\s*(${number}%?))?\\s*\\)$`,
+    'i',
+  ));
+  if (!match) return null;
+
+  const channels = match.slice(1, 4).map(value => {
+    const normalized = Math.max(0, Math.min(1, parseFloat(value)));
+    return Math.round(normalized * 255);
+  });
+  let alpha = 1;
+  if (match[4] !== undefined) {
+    alpha = match[4].endsWith('%') ? parseFloat(match[4]) / 100 : parseFloat(match[4]);
+    alpha = Math.max(0, Math.min(1, alpha));
+  }
+  return { channels, alpha };
+}
+
 // ---------------------------------------------------------------------------
 // isTransparent — 检测透明颜色值
 // ---------------------------------------------------------------------------
@@ -54,6 +75,8 @@ export function isTransparent(cssColor) {
   if (!cssColor) return false;
   const v = cssColor.trim().toLowerCase();
   if (v === 'transparent') return true;
+  const srgb = parseSrgbColor(v);
+  if (srgb && srgb.alpha === 0) return true;
   // rgba(r, g, b, 0) 形式
   const m = v.match(/^rgba\s*\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)$/);
   if (m && parseFloat(m[1]) === 0) return true;
@@ -80,6 +103,12 @@ export function cssColorToHex(cssColor) {
 
   // --- 命名颜色 ---
   if (NAMED_COLORS[lower]) return NAMED_COLORS[lower];
+
+  // Chromium resolves color-mix() to color(srgb r g b / alpha).
+  const srgb = parseSrgbColor(v);
+  if (srgb) {
+    return srgb.channels.map(n => n.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
 
   // --- #rrggbb 或 #rgb ---
   const hex6 = v.match(/^#([0-9a-fA-F]{6})$/);
@@ -495,6 +524,8 @@ export function parseFontFamily(cssValue) {
  */
 export function extractCssAlpha(cssColor) {
   if (!cssColor) return 1;
+  const srgb = parseSrgbColor(cssColor);
+  if (srgb) return srgb.alpha;
   const m = cssColor.match(/rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/);
   if (m) return parseFloat(m[1]);
   if (cssColor.trim().toLowerCase() === 'transparent') return 0;

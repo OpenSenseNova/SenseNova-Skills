@@ -150,7 +150,12 @@ function colorToHex(c) {
 function extractAxisStyle(option, axisName) {
   const ax = Array.isArray(option[axisName]) ? option[axisName][0] : option[axisName];
   if (!ax) return {};
-  const out = {};
+  const axisVisible = ax.show !== false;
+  const out = {
+    labelShown: axisVisible && ax.axisLabel?.show !== false,
+    lineShown: axisVisible && ax.axisLine?.show !== false,
+    splitShown: axisVisible && ax.splitLine?.show !== false,
+  };
   const labelColor = colorToHex(ax.axisLabel?.color);
   if (labelColor) out.labelColor = labelColor;
   const lineColor = colorToHex(ax.axisLine?.lineStyle?.color);
@@ -185,15 +190,27 @@ function extractDataLabelColor(series) {
  * ECharts 通常把 axisLabel.color/legend.textStyle.color 显式设成浅色（白/灰）；
  * pptxgenjs 默认 Office 主题（黑字白底），需要把这些显式颜色透传。
  */
-function applyChartTheme(options, option, series) {
-  const xAx = extractAxisStyle(option, 'xAxis');
-  const yAx = extractAxisStyle(option, 'yAxis');
-  if (xAx.labelColor) options.catAxisLabelColor = xAx.labelColor;
-  if (yAx.labelColor) options.valAxisLabelColor = yAx.labelColor;
-  if (xAx.lineColor) options.catAxisLineColor = xAx.lineColor;
-  if (yAx.lineColor) options.valAxisLineColor = yAx.lineColor;
-  if (xAx.splitColor) options.catGridLine = { color: xAx.splitColor, style: 'solid', size: 1 };
-  if (yAx.splitColor) options.valGridLine = { color: yAx.splitColor, style: 'solid', size: 1 };
+function applyChartTheme(options, option, series, axisNames = {}) {
+  const catAx = extractAxisStyle(option, axisNames.catAxis || 'xAxis');
+  const valAx = extractAxisStyle(option, axisNames.valAxis || 'yAxis');
+  if (catAx.labelColor) options.catAxisLabelColor = catAx.labelColor;
+  if (valAx.labelColor) options.valAxisLabelColor = valAx.labelColor;
+  if (catAx.labelShown === false) options.catAxisLabelPos = 'none';
+  if (valAx.labelShown === false) options.valAxisLabelPos = 'none';
+  if (catAx.lineColor) options.catAxisLineColor = catAx.lineColor;
+  if (valAx.lineColor) options.valAxisLineColor = valAx.lineColor;
+  if (catAx.lineShown === false) options.catAxisLineShow = false;
+  if (valAx.lineShown === false) options.valAxisLineShow = false;
+  if (catAx.splitShown === false) {
+    options.catGridLine = { style: 'none' };
+  } else if (catAx.splitColor) {
+    options.catGridLine = { color: catAx.splitColor, style: 'solid', size: 1 };
+  }
+  if (valAx.splitShown === false) {
+    options.valGridLine = { style: 'none' };
+  } else if (valAx.splitColor) {
+    options.valGridLine = { color: valAx.splitColor, style: 'solid', size: 1 };
+  }
   const legColor = extractLegendColor(option);
   if (legColor) options.legendColor = legColor;
   const dlColor = extractDataLabelColor(series);
@@ -234,12 +251,21 @@ function getDataItemColors(s) {
   if (!Array.isArray(s.data)) return [];
   return s.data.map(d => {
     if (d && typeof d === 'object' && d.itemStyle && typeof d.itemStyle.color === 'string') {
-      let c = d.itemStyle.color;
-      if (c.startsWith('#')) c = c.slice(1);
-      return /^[0-9a-fA-F]{6}$/.test(c) ? c.toUpperCase() : null;
+      return colorToHex(d.itemStyle.color);
     }
     return null;
   });
+}
+
+function getRepresentativeSeriesColor(series) {
+  const directColor = getSeriesColor(series);
+  if (directColor) return directColor;
+
+  const itemColors = getDataItemColors(series);
+  if (itemColors.length > 0 && itemColors.every(Boolean) && new Set(itemColors).size === 1) {
+    return itemColors[0];
+  }
+  return null;
 }
 
 /**
@@ -273,9 +299,11 @@ function extractDataLabelOptions(series) {
  * Legend options.
  */
 function extractLegendOptions(option, seriesCount) {
-  const showLegend = !!option.legend && (option.legend.show !== false) && seriesCount > 0;
-  if (!showLegend) return { showLegend: false };
   const leg = Array.isArray(option.legend) ? option.legend[0] : option.legend;
+  const hasLegendData = Array.isArray(leg?.data) && leg.data.length > 0;
+  const showLegend = !!leg && leg.show !== false && seriesCount > 0
+    && (seriesCount > 1 || hasLegendData);
+  if (!showLegend) return { showLegend: false };
   // Position
   let legendPos = 'b';
   if (leg) {
@@ -362,7 +390,7 @@ function mapBar(option, ChartType) {
     if (itemCols.length === labels.length && itemCols.every(Boolean)) chartColors = itemCols;
   }
   if (!chartColors) {
-    const seriesCols = series.map(getSeriesColor).filter(Boolean);
+    const seriesCols = series.map(getRepresentativeSeriesColor).filter(Boolean);
     if (seriesCols.length === series.length) chartColors = seriesCols;
   }
   if (!chartColors && Array.isArray(option.color)) {
@@ -380,7 +408,9 @@ function mapBar(option, ChartType) {
   };
   if (valFmt) options.valAxisLabelFormatCode = valFmt;
   if (catRotate != null) options.catAxisLabelRotate = catRotate;
-  applyChartTheme(options, option, series);
+  applyChartTheme(options, option, series, orient === 'horizontal'
+    ? { catAxis: 'yAxis', valAxis: 'xAxis' }
+    : undefined);
 
   return { chartType: ChartType.bar, data, options };
 }

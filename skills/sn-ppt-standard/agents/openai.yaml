@@ -1,0 +1,4 @@
+interface:
+  display_name: "sn-ppt-standard"
+  short_description: "Render a prepared outline as Static HTML and PPTX by default"
+  default_prompt: "Use $sn-ppt-standard only after Entry/Story provide DECK_DIR and outline.md; deliver per-slide HTML, present.html, speaker script, and Standard-owned PPTX unless the user explicitly requests HTML only."

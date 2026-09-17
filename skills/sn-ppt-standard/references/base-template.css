@@ -1,0 +1,494 @@
+/* ============================================================
+   base.css —— 设计系统 + 版式骨架(起手模板)
+   用法:编排器把本文件复制成工作区根目录的 base.css,只填标有 TODO
+   的 token(背景/文字/主色 hex/字体/系列色/状态色)。**结构类(.slide /
+   .slide-title / .slide-body / .slide-footer / 安全边距 / 栅格)保持不动**——
+   它们让全套每页的"固定框架"(标题位置、页脚、页码、留白边界、重心)一致,
+   不随 subagent 各自发挥而漂移。每种页型只在 .slide-body 里变布局,框架不动。
+
+   目录:
+   1. 字体与全局 token
+   2. 固定框架(.slide / .slide-title / .slide-body / .slide-footer)
+   3. 满铺 / 图上文字可读性 / 封面与结束页
+   4. .slide-body 常用布局 helper
+   5. arch-* 版式原型
+   6. 密度均衡 / 图表安全区 / matrix
+   ============================================================ */
+
+/* 字体仅来自 font_bundle.py 的 OFL-1.1 白名单。install.sh 可从官方项目补齐；
+   页面不写 @import/CDN/未登记本机字体。核心中文始终以 Noto Sans/Serif SC 兜底，
+   交付时写入 deck 自带 WOFF2、官方来源与许可证文件。 */
+
+:root{
+  /* —— 颜色 token(TODO:按风格决策填;只在这里定颜色,页面只引用 var())—— */
+  --bg:       #0d2137;            /* TODO 背景(按选定色调,别默认奶油/暖白) */
+  --ink:      #f5f7fa;            /* TODO 正文文字(与 --bg 高对比) */
+  --ink-dim:  #aab4c2;            /* TODO 次要/注释文字 */
+  --accent:   #c9a227;            /* TODO 主色 = 风格决策选定的那个 hex */
+  --accent-2: #5a7ca0;            /* TODO 辅助色 */
+  --line:     rgba(245,247,250,.14); /* 分隔线 / 描边 */
+  --panel:    rgba(245,247,250,.06); /* 卡片 / 面板底 */
+
+  /* —— 状态色(TODO:从主色/辅助色派生,别用直觉的大红大绿大粉)——
+     ⚠️ 涨色 ≠ 警示色;涨跌靠"深浅 + 箭头/正负号"双通道区分,不能只靠色相 */
+  --up:   #c9a227;   /* TODO 涨 / 正:用主色(亮) */
+  --down: #8a8f98;   /* TODO 跌 / 负:同色系压暗的中性,配 ↓/− 一起用,别用纯红 */
+  --warn: #5a7ca0;   /* TODO 警示 / 提示:辅助色(必须 ≠ --up) */
+  --note: var(--ink-dim);  /* 备注 / 免责:用次要文字色,别另起红/粉 */
+
+  /* —— 图表系列色(TODO:多系列 ECharts 从这里取)——
+     必须是**直接色值(hex)**,不要写成 var(...)/color-mix(...):ECharts 用
+     getComputedStyle 读,只能拿到直接色值,拿不到需级联解析的表达式。
+     用主色/辅助色的深浅 + 同色系冷暖偏移派生;别用调色板外色相,别和默认 ECharts 调色板。 */
+  --series-1: #c9a227;  /* TODO = 主色 */
+  --series-2: #5a7ca0;  /* TODO = 辅助色 */
+  --series-3: #e0c463;  /* TODO 主色提亮 */
+  --series-4: #3f5d7a;  /* TODO 辅助色压暗 */
+  --series-5: #9a7d1f;  /* TODO 主色压暗 */
+  --series-6: #86a6c4;  /* TODO 辅助色提亮 */
+
+  /* —— 字体 token —— */
+  --font-sans:  "Noto Sans SC", "IBM Plex Sans", system-ui, sans-serif;
+  --font-serif: "Noto Serif SC", "Spectral", serif;
+  --font-body:  var(--font-sans);
+  --font-title: var(--font-sans);   /* 标题:默认黑体;封面/hero 可换 serif/黑体/书法(见下) */
+  /* —— 展示 / 书法 / 手写体(封面·hero·金句·批注;仅使用已登记 OFL-1.1 字体)——
+     用法:封面/hero **常同屏多款各司其职**(书法主标题 + 超粗黑体大字 hero + 宋/楷小标签 + 手写批注);
+     正文/图表标注用 --font-sans；大 KPI/章节数字用 --font-number；技术编号才用 --font-mono。创作时使用本地栈；交付时 font_bundle.py 将实际角色映射为 Deck 自带 WOFF2。 */
+   --font-hei-heavy:     "Noto Sans SC", "Smiley Sans", sans-serif;      /* 默认 Noto 900；得意黑仅在明确选用且已装时使用，二者均 OFL */
+   --font-brush:         "Ma Shan Zheng", "Noto Serif SC", cursive;      /* 马善政毛笔:文旅/传统/人文 主标题·金句 */
+   --font-kai:           "Xiaolai", "LXGW WenKai", "Noto Serif SC", cursive; /* 清晰硬笔感章节、引言与人文标题；使用时须符合场景并显式声明 */
+   /* —— 手写体分两档：全部来自官方 OFL 项目，草书只留给大字 hero —— */
+   --font-write:         "Xiaolai", "LXGW WenKai", "Noto Serif SC", cursive; /* 工整清晰：批注、引语与短标题；不承担严肃信息正文 */
+   --font-write-cursive: "Liu Jian Mao Cao", "Long Cang", "Ma Shan Zheng", cursive; /* Google Fonts OFL 草书/行书，只用于大字 */
+   --font-playful:       "ZCOOL KuaiLe", "Noto Sans SC", sans-serif;     /* 站酷快乐体:活泼/消费/儿童/漫画 */
+   --font-round:         "ZCOOL QingKe HuangYou", "ZCOOL KuaiLe", "Noto Sans SC", sans-serif; /* Google Fonts OFL 圆润/趣味展示 */
+   --font-jotter:        "Xiaolai", "Zhi Mang Xing", "Long Cang", cursive; /* 清晰手账默认小赖；狂放字体仅作短促点缀 */
+   --font-display-serif: "Fraunces", "Noto Serif SC", serif;            /* Fraunces:编辑/杂志展示衬线 */
+  --font-grotesque:     "Archivo", "Noto Sans SC", sans-serif;         /* Archivo:现代无衬线展示 */
+  --font-geometric:     "Sora", "Montserrat", "Noto Sans SC", sans-serif; /* 几何科技/产品发布 */
+  --font-ui-clean:      "DM Sans", "Manrope", "Noto Sans SC", sans-serif; /* 克制产品/UI/商业 */
+  --font-tech-display:  "Space Grotesk", "Sora", "Noto Sans SC", sans-serif; /* 科技编辑展示 */
+  --font-condensed:     "Oswald", "Barlow Condensed", "Noto Sans SC", sans-serif; /* 海报、体育、纵向节奏 */
+  --font-condensed-xl:  "League Gothic", "Bebas Neue", "Noto Sans SC", sans-serif; /* 极窄大字；只做英文/数字主声部 */
+  --font-poster:        "Bebas Neue", "Oswald", "Noto Sans SC", sans-serif; /* 编辑海报 */
+  --font-display-wide:  "Unbounded", "Syne", "Noto Sans SC", sans-serif; /* 前沿、潮流、实验展示 */
+  --font-display-pop:   "Bungee", "ZCOOL KuaiLe", "Noto Sans SC", sans-serif; /* 活泼标题，克制使用 */
+  --font-editorial-serif:"Playfair Display", "Noto Serif SC", serif;   /* 时尚、杂志、奢华编辑 */
+  --font-classic-serif: "Cormorant Garamond", "Noto Serif SC", serif; /* 文艺、历史、精致拉丁展示 */
+  --font-cn-display-serif:"ZCOOL XiaoWei", "Noto Serif SC", serif;    /* 中文人文/文化展示 */
+   --font-hand-en:       "Patrick Hand", "Caveat", "Noto Sans SC", cursive;             /* 英文手写(工整):漫画/手账批注,可读 */
+   --font-hand-en-neat:  "Architects Daughter", "Patrick Hand", "Noto Sans SC", cursive;/* 英文手写(更工整):建筑师手写体,清楚 */
+   --font-hand-en-casual:"Indie Flower", "Caveat", "Noto Sans SC", cursive;            /* 英文手写(随性但清楚):便签/涂鸦感 */
+   --font-hand-en-script:"Dancing Script", "Sacramento", "Noto Sans SC", cursive;       /* 英文连笔签名字体:封面签名、短引语 */
+   --font-hand-en-marker:"Kalam", "Shadows Into Light", "Noto Sans SC", cursive;        /* 英文马克笔/板书:批注、教学、海报 */
+   /* ★ 拉丁角色的中文兜底(2026-08-11):拉丁展示/等宽/手写体都不含中文字形,中文落进来时
+      浏览器会回退到系统里任意 CJK 字体(worker 上可能是卡通/手写体)→ 卡通字 + 度量漂移溢出。
+      在 generic 关键字前显式钉 Noto,使中文回退确定落到 Noto,创作渲染与交付渲染一致。 */
+   --font-mono:          "IBM Plex Mono", "Noto Sans SC", monospace;     /* 等宽:纯拉丁代码/坐标/ID/编号,中文一律不用;中文兜底 Noto 只防意外落卡通体 */
+  --font-display:       var(--font-title);                              /* 封面/hero 大标题;按主题设为 brush/heavy/display-serif 等 */
+  --font-number:        var(--font-display);                            /* TODO 数字主声部:按 Style Lock 选 display/grotesque/serif/sans/mono；默认跟随本册展示字体 */
+
+  /* —— 字号阶梯(1600×900 画布)—— */
+  /* 字号阶梯 = 自信的层级:标题 ≥2.1× 正文、小标题 ≥1.45× 正文,层级一眼分明(治"标题不够大、密页上标题/正文/标签挤成一团")。
+     注意:标题加大后更要守"1–2 行短语",别让长标题溢出标题区。 */
+  --fs-display: 88px;   /* 封面 / hero 大标题 */
+  --fs-title:   56px;   /* 页标题(= 2.15× 正文) */
+  --fs-h2:      38px;   /* 小标题(= 1.46× 正文) */
+  --fs-body:    26px;   /* 正文(基准) */
+  --fs-caption: 20px;   /* 注释 / 来源 / 页码——最小档(≤0.8× 正文) */
+  --fs-min:     20px;   /* ⚠️ 最小可读字号(软约束:CSS 不强制,需渲染后看图核对;别让任何文字小于它) */
+
+  /* —— 排版精修 token(把"负字距 / 紧行高 / 单一圆角"从软提示变成锁定默认;6 家一线设计系统的收敛)—— */
+  --tracking-tight:   -0.01em;  /* 页标题默认微收(对 CJK 方块字安全;拉丁展示可再紧) */
+  --tracking-display: -0.02em;  /* 大展示 / 金句 / 拉丁大标题:更紧(≈字号 −2~3%) */
+  --tracking-caps:     0.08em;  /* ALL CAPS 眉签 / 标签(拉丁大写正字距 0.06–0.1em;中文不 uppercase) */
+  --tracking-cjk-label: 0.03em; /* 中文眉签 / 元数据：默认 0–0.03em，绝不套 ALL CAPS 的疏字距 */
+  --lh-display:        1.08;    /* 展示级大标题行高(display 收紧 1.0–1.15,正文才 1.5) */
+  --radius:            12px;    /* 单一圆角语言:全 deck 圆角都从它派生,别混多种半径 */
+
+  /* —— 间距阶梯(统一"层级 + 间距",治"密度不齐 / 间距随手";标题↔正文↔注释↔图表都从这取,别写裸 px 间距)—— */
+  --space-1: 8px;    /* 紧邻:标签↔值、图↔caption */
+  --space-2: 16px;   /* 小节内元素之间 */
+  --space-3: 28px;   /* 小节之间 */
+  --space-4: 48px;   /* 大块 / 分栏之间 */
+  --space-section: 96px; /* hero / 呼吸页大留白;封面标题上方气口上限也参照它(留白当基座) */
+  --card-min-h: 180px;  /* 统一卡片最小高度(治一排卡高矮不齐、密度视觉跳) */
+
+  /* —— 版式骨架(结构,别改:这几项保证全套框架一致)—— */
+  --canvas-w: 1600px;
+  --canvas-h: 900px;
+  --margin-x: 90px;     /* 左右安全边距 */
+  --margin-y: 60px;     /* 上下安全边距 */
+  --gutter:   32px;     /* 栅格间距 */
+  --title-h:  116px;    /* 标题区**最小**高度(下限固定;标题须控制在 1–2 行,排到 3 行+ 会顶高标题区、下推正文,破坏框架一致) */
+  --footer-h: 44px;     /* 页脚区高度(固定) */
+  --body-safe-bottom: 28px;  /* 正文区到底部家具的硬安全带(治下方溢出 / 内容压页脚) */
+  --footer-safe-top: 16px;   /* 页脚上方最小呼吸(给局部来源 / caption 让位) */
+  --decor-safe-inset: 72px;  /* 装饰元素离标题/正文/页脚文字的默认避让距离 */
+  --diagram-min-h: 520px;    /* Canvas / 图片结构图默认应吃满正文区,别缩成孤立小图 */
+  --diagram-label-min: 22px; /* 概念图 HTML 标签地板,投影可读 */
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+body{ margin:0; background:#000; background:var(--bg); }  /* 兜底:误露边时也是主色而非纯黑 */
+
+/* 画布:每页 HTML 的根容器,正好 1600×900 */
+.slide{
+  position: relative;
+  width:  var(--canvas-w);
+  height: var(--canvas-h);
+  padding: var(--margin-y) var(--margin-x);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  text-wrap: pretty;   /* 治「1–2 字寡行」:优化正文断行,末行不留零星几字 */
+  /* ⚠️ overflow:hidden 只是兜底——它会**静默裁掉**超出的内容,而不是露成白条黑条。
+     所以自检别指望"看到溢出";要主动核对页脚/页码是否完整、首末行有没有被切半。 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 固定框架 ①:标题区——全套同位置、同体例 */
+.slide-title{
+  flex: 0 0 auto;
+  min-height: var(--title-h);   /* 下限,不是定高:标题保持 1–2 行,过长会下推正文(见 --title-h 注释) */
+  font-family: var(--font-title);
+  font-size: var(--fs-title);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: var(--tracking-tight);   /* 标题默认带微负字距 = 最快的"设计过"信号(治全套零字距的松垮) */
+  text-wrap: balance;   /* 治标题「1–2 字寡行」:自动均衡各行长度;仍可手动 <br> 断行让每行都满 */
+}
+.slide-title .kicker{               /* 标题上方的小标签 / 章节名(过渡页、章节起始页用它,别自己另造结构) */
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  letter-spacing: var(--tracking-cjk-label);
+  text-transform: none;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+/* 固定框架 ②:正文区——每种页型在这里变布局。
+   默认从上方开始并撑满可用宽度。不要在共享骨架写 justify-content:center：
+   当页面把 body 改成 grid 时，该属性会改为横向收拢网格轨道，造成表格/矩阵挤在中间。
+   使用 normal 让 flex 主轴自然从头排、grid 轨道维持默认 stretch；
+   真正需要单焦点居中时显式添加 .is-centered。 */
+.slide-body{
+  flex: 1 1 auto;
+  min-height: 0;
+  /* 高度由 flex 独占管理。页面专属 CSS 只改内部布局，不给本元素再叠
+     height:100% / 固定高度；需要满高 stage 时放进 .slide-body 内层。 */
+  display: flex;
+  flex-direction: column;
+  justify-content: normal;
+  padding-bottom: var(--body-safe-bottom);
+}
+.slide-body.is-centered{ justify-content:center; }
+.slide-body.fill-width{ width:100%; align-self:stretch; justify-self:stretch; }
+
+/* 固定框架 ③:页脚 + 页码——全套同位置。
+   注意:.slide-footer 与 .page-no 是**骨架自带白名单**,不算"自创页脚/水印/日期";
+   页码由 slide subagent **手写**填入 .page-no(骨架不自动算页号;体例如 `07 / 24`,总页数取自 deck.md),全套统一;页脚体例(放什么)由 deck.md 全局约定一次、全套照用。 */
+.slide-footer{
+  flex: 0 0 var(--footer-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-caption);
+  color: var(--ink-dim);
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+  position: relative;
+  z-index: 3;
+}
+.slide-footer .page-no{ font-variant-numeric: tabular-nums; }
+
+/* 内容层与装饰层分开:装饰默认在内容后面,不能抢到标题/正文/页脚上方。
+   用法:漂浮形状/贴纸/水印/母题统一加 .decor/.doodle/.blob/.ornament/.watermark;若要压图叠字,走 scrim/text-plate。 */
+.slide > .slide-title,
+.slide > .slide-body{ position:relative; z-index:1; }
+.decor, .doodle, .blob, .ornament, .watermark{
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* 满铺 / 出血(封面、章节大图):整页满图的**唯一合规方式** —— 合法满铺不算"出血"硬伤。
+   用法:<section class="slide slide--bleed"> 内放 <div class="bleed"><img class="bleed-cover">,
+   再把 .slide-title / .slide-body 叠在上层,页脚单独抬到更高层防止被图/装饰压住。 */
+.slide--bleed{ padding: 0; }
+.bleed{ position:absolute; inset:0; z-index:0; }
+.bleed-cover{
+  width:100%; height:100%; object-fit:cover;
+  object-position:var(--img-focus-x, 50%) var(--img-focus-y, 50%);
+}
+.slide--bleed > .slide-title,
+.slide--bleed > .slide-body,
+.slide--bleed > .slide-footer{ position:relative; z-index:1; padding-left:var(--margin-x); padding-right:var(--margin-x); }
+.slide--bleed > .slide-title{ padding-top:var(--margin-y); }      /* 满铺页也保留上/下安全边,和非满铺页一致(标题不贴顶、页脚不贴底) */
+.slide--bleed > .slide-footer{ padding-bottom:var(--margin-y); z-index:3; }
+
+/* ── 图上文字可读性「工具」(可选)── 压不压图、怎么压由 slide 自主决定(图上叠字是好手法);
+   要用就用这些托住文字,别一律把整图压暗。scrim 作为 .bleed(图)之后、内容之前的一层放。 */
+.slide--bleed .scrim{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+.scrim--b{ background:linear-gradient(0deg,rgba(10,12,16,.66),rgba(10,12,16,.14) 42%,transparent 66%); }    /* 文字在下半 */
+.scrim--t{ background:linear-gradient(180deg,rgba(10,12,16,.60),transparent 44%); }                         /* 眉签/标题在上 */
+.scrim--l{ background:linear-gradient(90deg,rgba(10,12,16,.62),rgba(10,12,16,.12) 46%,transparent 72%); }   /* 文字在左侧 */
+.scrim--light{ background:linear-gradient(0deg,rgba(248,246,240,.74),transparent 60%); }                    /* 深色字压亮照片时反向 */
+/* 角落文字使用全画布径向退场，不要自建有限宽高的黑色矩形 scrim。
+   有限矩形的右/下边界会在照片上变成“黑带”。 */
+.scrim--tl{ background:radial-gradient(ellipse 88% 82% at 0 0,rgba(10,12,16,.68) 0,rgba(10,12,16,.38) 38%,rgba(10,12,16,.10) 66%,transparent 84%); }
+.scrim--tr{ background:radial-gradient(ellipse 88% 82% at 100% 0,rgba(10,12,16,.68) 0,rgba(10,12,16,.38) 38%,rgba(10,12,16,.10) 66%,transparent 84%); }
+.scrim--bl{ background:radial-gradient(ellipse 88% 82% at 0 100%,rgba(10,12,16,.68) 0,rgba(10,12,16,.38) 38%,rgba(10,12,16,.10) 66%,transparent 84%); }
+.scrim--br{ background:radial-gradient(ellipse 88% 82% at 100% 100%,rgba(10,12,16,.68) 0,rgba(10,12,16,.38) 38%,rgba(10,12,16,.10) 66%,transparent 84%); }
+/* 局部托板:只在这行小字后垫一块(比整幅 scrim 克制、保留照片);深/浅两版 */
+.text-plate{ background:rgba(10,12,16,.5); color:#fff; padding:.14em .5em; border-radius:3px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+.text-plate--light{ background:rgba(248,246,240,.84); color:var(--ink); }
+
+/* 封面 / 结束页:豁免正文页家具(治「封面 = 正文页 + 大标题 + 页码」的廉价感)——
+   排**一个统治性焦点**(巨字 or 满图)+ 大留白;⛔ 不放 .slide-footer / .page-no(页码是正文页家具,封面自己编号一眼廉价);
+   标题不锁固定槽、可自由定位放大。用法:<section class="slide slide--cover">(满图封面再叠 class="slide slide--bleed slide--cover")。 */
+.slide--cover{ gap:0; justify-content:center; }
+.slide--cover > .slide-title{ min-height:0; }   /* 标题脱离固定槽高,可自由排布 / 超大 */
+
+/* 结束页默认把“视觉锚点 + 收束主张 + 短支撑”作为一个整体做光学居中。
+   有明确 Hero / 图形配重时可在页面局部样式中改为非对称构图；不要用 flex-start、页码、页脚或总结卡片
+   把本应简洁的 closing 再做成一张普通内容页。 */
+.slide--closing{ gap:0; justify-content:center; }
+.slide--closing > .closing-stage{
+  flex:1 1 auto;
+  width:100%;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.slide--closing .closing-core{
+  width:min(1120px,100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:var(--space-3);
+  text-align:center;
+}
+
+/* —— .slide-body 内常用布局 helper(按页型选用,可变;难版式范例见 references/layout-patterns.md)—— */
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:var(--gutter); }
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:var(--gutter); }
+.row{ display:flex; gap:var(--gutter); }
+.split-media{ display:grid; grid-template-columns:1fr 1fr; gap:var(--gutter); align-items:center; }  /* 左文右图 / 左图右文 */
+.kpi-row{ display:flex; gap:var(--gutter); align-items:stretch; }
+.kpi-row > *{ flex:1; }              /* 一排数字指标(非卡片堆叠) */
+.panel{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:24px;
+        display:flex; flex-direction:column; }   /* 卡片纵向 flex,配 .foot 顶底对齐 */
+.panel.is-sparse{ justify-content:center; } /* 图标+标题+一行说明等稀疏卡：内容组垂直居中，避免顶端小团+底部死白 */
+.panel.is-sparse .panel-core{ display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; column-gap:22px; }
+.muted{ color:var(--ink-dim); }
+.accent{ color:var(--accent); }
+/* ⚠️ 一排卡片/栏"等高 + 基线对齐"(治"正文长短不一、栏底参差"):
+   行容器(.grid-2/.grid-3/.row/.kpi-row)默认已把子项拉**等高**;
+   每个卡片/栏做成纵向 flex(.panel 已是;裸列用 .col),把**末尾那行**(脚注/来源/标签/delta)放进 .foot,
+   `.foot{margin-top:auto}` 会把它**顶到卡片底**——于是多卡片的脚注行落在**同一条基线**,正文几行都不参差。
+   没有脚注就省略 .foot；不要用空占位行制造卡内死白。 */
+.col{ display:flex; flex-direction:column; height:100%; }
+.foot{ margin-top:auto; }
+.kpi-row > *{ display:flex; flex-direction:column; }
+/* 大数字 + 单位:单位降到 ~0.5× 数字大小、稍轻、留一点字距——别让"亿/%/美元/×"和数字一样大抢戏。
+   用法:<span class="num">2,523<span class="unit">亿美元</span></span>。数字用等宽数字位,扫一列时对齐。
+   ★对齐:.num 用 inline-flex + align-items:baseline 显式锁单位位置(别吃默认 baseline:大数字 line-height:1 会让
+   小单位视觉下沉/漂移;这与 arch-index 序号错位是同一类"大字+小字裸 baseline"陷阱)。 */
+.num{ display:inline-flex; align-items:baseline; font-family:var(--font-number); font-weight:900; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
+.num .unit{ font-size:.5em; font-weight:700; margin-left:.14em; opacity:.85; }
+
+/* 图片:默认 cover 居中保主体,别为排版严重裁切或拉伸变形 */
+img{ display:block; max-width:100%; }
+.img-cover{
+  width:100%; height:100%; object-fit:cover;
+  object-position:var(--img-focus-x, 50%) var(--img-focus-y, 50%);
+}
+.img-contain{
+  width:100%; height:100%; object-fit:contain;
+  object-position:var(--img-focus-x, 50%) var(--img-focus-y, 50%);
+}   /* 比例对不上槽位或主体必须完整时用它 + 主色填底,别强行 cover 大裁 */
+
+/* 图片形状库(治「配图全是同一个方框、单调」)——给 <img> / 图槽套一个形状,别每张都硬直角矩形。
+   都用 overflow:hidden 裁形、内层 img 用 .img-cover 保主体;形状是**版面节奏**,别一页混超过 1-2 种。
+   用法:<figure class="ph-shape ph-arch"><img class="img-cover" src=…></figure>  (ph = photo/placeholder) */
+.ph-shape{ overflow:hidden; display:block; width:100%; height:100%; }
+.ph-round{ border-radius:var(--radius); }                                   /* 圆角矩形(默认克制款) */
+.ph-round-lg{ border-radius:calc(var(--radius) * 2.4); }                    /* 大圆角,柔和 */
+.ph-circle{ border-radius:50%; aspect-ratio:1/1; }                         /* 正圆(人像 / 单主体最佳) */
+.ph-pill{ border-radius:999px; }                                          /* 胶囊(宽幅横图) */
+.ph-arch{ border-radius:999px 999px var(--radius) var(--radius); }         /* 拱门/门洞(编辑 / 文旅 / 封面常用) */
+.ph-arch-top{ border-radius:999px 999px 0 0; }                            /* 半拱(上圆下平) */
+.ph-angled{ clip-path:polygon(0 0, 100% 0, 100% 88%, 0 100%); }           /* 斜切下边(动感 / 发布会) */
+.ph-angled-r{ clip-path:polygon(0 0, 100% 0, 100% 100%, 0 88%); }         /* 斜切反向 */
+.ph-hex{ clip-path:polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); } /* 六边形(科技 / 徽章) */
+.ph-blob{ border-radius:42% 58% 63% 37% / 41% 44% 56% 59%; }              /* 有机不规则(活泼 / 生活) */
+/* 图框描边 / 卡纸(可叠加在形状上,给孤图存在感、避免"贴上去"的突兀) */
+.ph-frame{ box-shadow:0 0 0 1px var(--line), 0 12px 32px rgba(0,0,0,.10); }
+.ph-mat{ padding:10px; background:var(--panel); box-shadow:0 12px 32px rgba(0,0,0,.10); }  /* 相纸卡纸边 */
+
+/* ============================================================
+   版式原型库(arch-*)——治"跨页版式重复 / 模板感"。用**结构杠杆**提供视觉上
+   不同的 .slide-body 骨架；plan 按页面职责选型，相邻页若叙事不同就避免机械复用同一族；
+   卡片行/宫格只在平行信息确实适合扫描时使用，避免跨页机械重复。这些类**只定结构骨架**(布局/间距),配色字体一律
+   仍走 var() token——不碰设计系统,纯加法。
+   arch-* 类名只用于识别结构，不用类数替代对真实构图与像素节奏的判断。画布固定
+   1600×900，尺寸用固定 px。
+   ============================================================ */
+
+/* A. hero-stat:单焦点巨型数字/词 + 大留白(anchor/breathing;禁卡片) */
+.arch-hero-stat{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:24px; height:100%; }
+.arch-hero-stat .mega{ font-family:var(--font-hei-heavy); font-weight:900; font-size:280px; line-height:.88; letter-spacing:-.03em; color:var(--accent); }
+.arch-hero-stat .lead{ font-size:var(--fs-h2); max-width:28ch; color:var(--ink); }
+
+/* B. index-list:编辑式大序号清单(01/02/03…),非等权卡片行 */
+.arch-index{ display:flex; flex-direction:column; gap:20px; justify-content:center; height:100%; }
+/* 序号与右侧标题**顶端对齐**(align-items:start,不是 baseline——大号序号与小号标题基线对齐会让顶端错位) */
+.arch-index .item{ display:grid; grid-template-columns:auto 1fr; gap:32px; align-items:start; border-top:1px solid var(--line); padding-top:18px; }
+.arch-index .item .no{ font-family:var(--font-number); font-size:var(--fs-title); color:var(--accent); font-variant-numeric:tabular-nums; line-height:1.05; }  /* line-height 贴近标题行高,让序号顶端与标题首行顶端齐平 */
+
+/* C. sidebar:窄栏眉签/引子 + 宽内容区(打破全宽卡片行) */
+.arch-sidebar{ display:grid; grid-template-columns:300px 1fr; gap:48px; align-items:start; height:100%; }
+.arch-sidebar > .rail{ color:var(--ink-dim); border-right:1px solid var(--line); padding-right:32px; height:100%; }
+.arch-sidebar > .rail .rail-title{ font-family:var(--font-title); font-size:var(--fs-h2); color:var(--ink); }
+
+/* D. pull-quote:排版打断金句页(无卡/无框,靠尺度+留白;breathing) */
+.arch-quote{ display:flex; align-items:center; justify-content:flex-start; height:100%; }
+.arch-quote blockquote{ font-family:var(--font-display); font-size:64px; line-height:1.18; letter-spacing:var(--tracking-display); max-width:24ch; font-weight:700; border:0; }
+.arch-quote blockquote cite{ display:block; margin-top:28px; font-family:var(--font-sans); font-size:var(--fs-body); font-style:normal; color:var(--ink-dim); }
+
+/* E. timeline:横向时间轴(节点等距,阶段名+时间+产出三件套)
+   ★铺满到右安全线(matq5k a1bd 诊断:横向 timeline 靠左挤、右侧留空 → 视觉「右边少一块」)。
+   width:100% + 节点 flex:1 等分撑满 .slide-body 宽;最右节点去掉右 padding,内容右缘对齐右安全线。 */
+.arch-timeline{ display:flex; align-items:stretch; justify-content:space-between; gap:0; width:100%; height:100%; align-content:center; }
+.arch-timeline .node{ flex:1 1 0; min-width:0; position:relative; padding:44px 24px 0 0; }
+.arch-timeline .node:last-child{ padding-right:0; }   /* 末节点内容铺到右安全线(不再留右侧空档) */
+.arch-timeline .node::before{ content:""; position:absolute; top:6px; left:0; width:16px; height:16px; border-radius:50%; background:var(--accent); z-index:1; }
+.arch-timeline .node::after{ content:""; position:absolute; top:13px; left:16px; right:0; height:2px; background:var(--line); }
+/* 末节点也从它的点向右画线,伸到节点右缘(= 右安全线,与下方文字右缘对齐);别再 display:none 让它断在点上 */
+.arch-timeline .node:last-child::after{ right:0; }    /* 覆盖旧的 display:none:末节点线照画,伸到右缘对齐文字右侧 */
+
+/* F. diagram-frame:Canvas / 图片概念图框(大型 SVG 不作为新页面默认媒介) */
+.arch-diagram{ display:grid; grid-template-rows:1fr auto; gap:20px; place-items:stretch; height:100%; min-height:0; }
+.arch-diagram > canvas,
+.arch-diagram > img,
+.arch-diagram > svg,
+.arch-diagram > .diagram,
+.diagram-canvas{
+  width:100%;
+  height:100%;
+  max-width:100%;
+  min-height:min(var(--diagram-min-h), 100%);
+}
+.diagram-canvas{ display:grid; place-items:center; position:relative; }
+.diagram-canvas > canvas,
+.diagram-canvas > img{
+  width:100%;
+  height:100%;
+  min-height:min(var(--diagram-min-h), 100%);
+  max-width:100%;
+  object-fit:contain;
+}
+.diagram-label{
+  position:absolute;
+  z-index:2;
+  font-size:var(--diagram-label-min);
+  color:var(--ink);
+}
+/* 兼容旧 deck / 小型矢量资产；新大型示意图优先 Canvas 或图片 + HTML 标签。 */
+.diagram-canvas > svg,
+svg.svg-diagram{
+  width:100%;
+  height:100%;
+  min-height:min(var(--diagram-min-h), 100%);
+  max-width:100%;
+  overflow:visible;
+}
+.svg-diagram text,
+.diagram-canvas svg text{
+  font-size:var(--diagram-label-min);
+  paint-order:stroke;
+  stroke:var(--bg);
+  stroke-width:4px;
+  stroke-linejoin:round;
+}
+
+/* G. compare:并列 A|B,中缝分隔(对比页;非卡片堆叠) */
+.arch-compare{ display:grid; grid-template-columns:1fr 1px 1fr; gap:48px; align-items:start; height:100%; align-content:center; }
+.arch-compare .divider{ background:var(--line); width:1px; height:100%; }
+
+/* H. feature-media:非对称单主体(主图/主视觉占 ~62%,文字副栏;治"页页等分 split") */
+.arch-feature{ display:grid; grid-template-columns:1.62fr 1fr; gap:var(--gutter); align-items:center; height:100%; }
+.arch-feature.reverse{ grid-template-columns:1fr 1.62fr; }
+
+/* ============================================================
+   页内密度均衡 + 图表 safe-padding + 概念图补全。
+   治「同页/跨页密度不齐(上满下空 · 左挤右空)、图表标注贴边」(学术档尤其)。
+   解法走结构:等高铺满网格 / 统一卡尺寸 / 图文比例,不靠缩字号、不靠堆内容。
+   仍纯加法,配色字体全走 token。
+   ============================================================ */
+
+/* 页内密度均衡:让 .slide-body 的直接子块**等高铺满**竖向空间(治"上半满、下半空")。
+   用法:<div class="slide-body even"> —— 直接子项(小节/行/卡)自动等高填满,行距用 --space-4。 */
+.slide-body.even{ display:grid; grid-auto-rows:minmax(0,1fr); gap:var(--space-4); align-content:stretch; }
+.slide-body.even > *{ min-height:0; }
+.grid-2.even, .grid-3.even{ grid-auto-rows:minmax(0,1fr); align-content:stretch; height:100%; }
+/* 统一卡尺寸:一排/一格卡片给同一 min-height,治"卡片高矮不一、密度视觉跳" */
+.panel.uniform, .grid-2.even > .panel, .grid-3.even > .panel{ min-height:var(--card-min-h); }
+
+/* 图表页 safe-padding(治"图表标注贴边、说明文字挤边"):图表容器四周留固定安全内距,
+   caption 不贴边、不压轴、图表本身留够可读空间。
+   用法:<figure class="figure"><div class="chart">…ECharts 容器…</div><figcaption class="cap">…</figcaption></figure> */
+.figure{ display:grid; grid-template-rows:1fr auto; gap:var(--space-2); height:100%; padding:var(--space-2) 0; min-height:0; }
+.figure .chart{ width:100%; height:100%; min-height:0; }
+.figure .cap{ font-size:var(--fs-caption); color:var(--ink); padding:0 var(--space-2); }  /* caption 左右留白,别贴边 */
+
+/* I. matrix:2×2 定位矩阵(战略/竞品/优先级;4 象限 + 可选双轴标签,非等权卡片) */
+.arch-matrix{ display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:var(--space-3); height:100%; }
+.arch-matrix .quad{ border:1px solid var(--line); border-radius:var(--radius); padding:26px; display:flex; flex-direction:column; gap:var(--space-1); }
+.arch-matrix .quad .q-label{ font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--accent); letter-spacing:var(--tracking-cjk-label); }
+
+/* J. 过渡页 / 章节分隔页设计系统。
+   所有过渡页/章节分隔页统一使用标准的 .slide--section（字体角色、编号语法和内容层级）；
+   ⛔ 不要自造 .slide--divider / .slide--transition 等类——过渡页只用 .slide--section。
+   （计划里的 `dividers` 是负责过渡页的 Slide 页组名，不是 CSS 类。）
+   通过 left/right/center 三种同源构图改变重心，不复制死模板，也不每页另起语法。
+   用法:<section class="slide slide--cover slide--section">
+           <div class="slide-body">
+             <div class="sec-block">
+               <div class="sec-no">02</div>
+               <div class="sec-eyebrow">PART 02</div>        <!-- 可选眉签 -->
+               <div class="sec-name">现状与工序拆解</div>
+               <hr class="sec-rule">
+               <div class="sec-sub">从交付指标一路拆到具体工位</div>
+             </div>
+           </div>
+         </section>
+   满图过渡页:再加 .slide--bleed + 一层 .scrim,文字色用亮色(见 §6 图上文字)。 */
+.slide--section .slide-body{ display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+.slide--section .sec-block{ display:flex; flex-direction:column; align-items:flex-start; gap:18px; width:min(760px,62vw); max-width:100%; }
+/* 序号:固定字号 + line-height,顶端锚定;跨页恒定,不随章节名长短挪位 */
+.slide--section .sec-no{ font-family:var(--font-number); font-weight:700; font-size:160px; line-height:.9; letter-spacing:-.03em; color:var(--accent); }
+.slide--section .sec-eyebrow{ font-family:var(--font-sans); font-size:var(--fs-caption); letter-spacing:var(--tracking-cjk-label); text-transform:none; color:var(--ink-dim); }
+.is-latin-label,.is-tech-id{ font-family:var(--font-mono); letter-spacing:var(--tracking-caps); text-transform:uppercase; }
+.is-cjk-label{ font-family:var(--font-sans); letter-spacing:var(--tracking-cjk-label); text-transform:none; }
+.is-expressive-type{ /* 语义标记：仅在童趣/漫画/手作/板书/书法等合题场景显式使用 */ }
+/* 章节名:中等展示字号 + 舒适字距(别用 76px+ 紧字距硬压——粗大字挤;标题跟场合,克制场合用宋/黑直立) */
+.slide--section .sec-name{ font-family:var(--font-title); font-weight:800; font-size:60px; line-height:1.2; letter-spacing:.01em; color:var(--ink); max-width:100%; text-wrap:balance; }
+.slide--section .sec-rule{ width:min(480px,100%); height:1px; background:var(--line); border:0; margin:6px 0; align-self:stretch; }
+.slide--section .sec-sub{ font-family:var(--font-sans); font-size:var(--fs-h2); font-weight:400; line-height:1.4; color:var(--ink-dim); max-width:min(680px,100%); text-wrap:pretty; }
+.slide--section.section--right .slide-body{ align-items:flex-end; text-align:right; }
+.slide--section.section--right .sec-block{ align-items:flex-end; }
+.slide--section.section--center .slide-body{ align-items:center; text-align:center; }
+.slide--section.section--center .sec-block{ align-items:center; width:min(980px,76vw); }
+.slide--section.section--center .sec-rule{ width:min(640px,100%); }

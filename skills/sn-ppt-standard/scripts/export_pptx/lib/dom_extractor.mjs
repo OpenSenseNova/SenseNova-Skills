@@ -4,8 +4,21 @@
  * 将 HTML 幻灯片页面解析为中间表示（IR），供 PPTX builder 使用。
  */
 
+import { chromium } from 'playwright';
+import { pickBrowserExe } from './browser_picker.mjs';
 import path from 'node:path';
-import { hiddenChromiumLaunchOptions, installHiddenProcessHooks } from './browser_setup.mjs';
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { discoverEchartsInstances } from './echarts_discovery.mjs';
+
+const require = createRequire(import.meta.url);
+let bundledEchartsSource = null;
+try {
+  const bundledEchartsPath = require.resolve('echarts/dist/echarts.min.js');
+  bundledEchartsSource = readFileSync(bundledEchartsPath, 'utf8');
+} catch {
+  // Page-local ECharts remains usable when the bundled dependency is absent.
+}
 
 // ---------------------------------------------------------------------------
 // 浏览器端执行的 DOM 提取脚本
@@ -27,6 +40,7 @@ const BROWSER_EXTRACT_FN = () => {
     'opacity', 'text-align', 'line-height', 'letter-spacing',
     'text-decoration', 'display', 'overflow',
     'object-fit', 'vertical-align',
+    'list-style-type',
     'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
     'filter', 'backdrop-filter', 'text-shadow',
     '-webkit-background-clip', 'background-clip',
@@ -167,6 +181,36 @@ const BROWSER_EXTRACT_FN = () => {
       }
     }
     return hasText && hasElement;
+  }
+
+  /**
+   * Detect a block whose meaningful children are adjacent inline text runs.
+   * Keeping these children in one text box prevents independently measured
+   * spans from overlapping after PowerPoint applies its own font metrics.
+   */
+  function hasInlineTextRunChildren(el) {
+    const parentDisplay = window.getComputedStyle(el).getPropertyValue('display');
+    if (['flex', 'inline-flex', 'grid', 'inline-grid', 'table', 'list-item'].includes(parentDisplay)) {
+      return false;
+    }
+
+    let textBearingChildren = 0;
+    for (const child of el.children) {
+      if (child.tagName === 'BR') continue;
+      const display = window.getComputedStyle(child).getPropertyValue('display');
+      if (!['inline', 'inline-block', 'contents'].includes(display)) return false;
+      if (!(child.innerText || child.textContent || '').trim()) return false;
+      textBearingChildren += 1;
+    }
+    return textBearingChildren >= 2;
+  }
+
+  function hasCustomListMarker(listEl) {
+    for (const li of listEl.querySelectorAll(':scope > li')) {
+      const before = window.getComputedStyle(li, '::before').getPropertyValue('content');
+      if (before && before !== 'none' && before !== 'normal' && before !== '""') return true;
+    }
+    return false;
   }
 
   /**
@@ -546,21 +590,25 @@ underline: cs.getPropertyValue('text-decoration-line').includes('underline'),
       return node;
     }
 
-    // UL/OL: 提取 listData，不递归子节点
+    // UL/OL: 仅语义列表走 bullet 转换。list-style:none 常用于 flex/grid 布局，
+    // 此时递归保留每个子元素的实际位置，避免把一行键值对拆成多段 bullet。
     if (tag === 'UL' || tag === 'OL') {
-      node.listData = extractListData(el);
-      node.listType = tag === 'OL' ? 'ordered' : 'unordered';
-      // F-ii: 若 list bounds 被 flex 容器折叠（h < 4px），用 listData 估算高度。
-      // 否则 builder 会把列表节点当 0 高度跳过，导致整个项目符号列表消失。
-      if (node.bounds.h < 4 && node.listData.length > 0) {
-        const firstFs = parseFloat(node.listData[0].styles?.fontSize) || 16;
-        node.bounds = { ...node.bounds, h: node.listData.length * firstFs * 1.5 };
+      const listStyleType = cs.getPropertyValue('list-style-type');
+      if (listStyleType !== 'none' || hasCustomListMarker(el)) {
+        node.listData = extractListData(el);
+        node.listType = tag === 'OL' ? 'ordered' : 'unordered';
+        // F-ii: 若 list bounds 被 flex 容器折叠（h < 4px），用 listData 估算高度。
+        // 否则 builder 会把列表节点当 0 高度跳过，导致整个项目符号列表消失。
+        if (node.bounds.h < 4 && node.listData.length > 0) {
+          const firstFs = parseFloat(node.listData[0].styles?.fontSize) || 16;
+          node.bounds = { ...node.bounds, h: node.listData.length * firstFs * 1.5 };
+        }
+        return node;
       }
-      return node;
     }
 
     // 混合内容 → textRuns
-    if (hasMixedContent(el)) {
+    if (hasMixedContent(el) || hasInlineTextRunChildren(el)) {
       node.textRuns = extractTextRuns(el);
       // 装饰子元素（如 <span class="pill" style="background:yellow">01</span>）
       // 由独立 IR 节点处理，这样能输出独立 shape+text 双图层（pill 背景才不会丢）。
@@ -732,49 +780,52 @@ export async function extractPage(page, htmlPath) {
   });
   await page.waitForTimeout(200);
 
-  // Wait for ECharts to finish rendering, if any charts are on the page.
-  // The page contract (see prompts/page_html.md) is that each chart increments
-  // `window.__pptxChartsReady`. We count expected charts by looking for divs
-  // with id="chart_N" containing a canvas or svg child.
+  // Wait for actual ECharts instances instead of relying on a chart_* id or a
+  // page-managed readiness counter. Generated pages use many id conventions.
   await page.evaluate(async () => {
-    // wait up to 5 s for charts to finish rendering
     const start = Date.now();
     while (Date.now() - start < 5000) {
-      const expected = document.querySelectorAll('[id^="chart_"]').length;
-      if (expected === 0) return;  // no charts
-      const ready = (window.__pptxChartsReady || 0);
-      if (ready >= expected) return;
+      const candidates = [...document.querySelectorAll('[id]')]
+        .filter(el => /chart/i.test(el.id) && el.clientWidth > 0 && el.clientHeight > 0);
+      if (candidates.length === 0) return;
+
+      const hosts = [...document.querySelectorAll('[_echarts_instance_]')];
+      if (hosts.length > 0 && window.echarts) {
+        const finished = hosts.every(el => {
+          const instance = window.echarts.getInstanceByDom(el);
+          if (!instance) return false;
+          const animation = instance.getZr?.()?.animation;
+          return typeof animation?.isFinished !== 'function' || animation.isFinished();
+        });
+        if (finished) return;
+      }
       await new Promise(r => setTimeout(r, 100));
     }
   });
 
-  // Extract ECharts options from each chart_N container BEFORE the generic
-  // BROWSER_EXTRACT_FN walks the DOM. We attach them as a map keyed by
-  // the container's id (e.g. "chart_1") so the IR walker can pick them up.
-  const chartOptionsMap = await page.evaluate(() => {
-    // ECharts exposes echarts.getInstanceByDom(el) to recover the chart from
-    // its container. If echarts isn't loaded (no charts on this page), bail.
-    if (typeof window.echarts === 'undefined') return {};
-    const result = {};
-    const containers = document.querySelectorAll('[id^="chart_"]');
-    for (const el of containers) {
-      try {
-        const inst = window.echarts.getInstanceByDom(el);
-        if (!inst) continue;
-        const opt = inst.getOption();
-        result[el.id] = {
-          option: opt,
-          bounds: (() => {
-            const r = el.getBoundingClientRect();
-            return { x: r.left, y: r.top, w: r.width, h: r.height };
-          })(),
-        };
-      } catch (e) {
-        // ignore; extractor can still fall back to SVG-as-PNG for this chart
-      }
+  // Extract every live ECharts instance before the generic DOM walk. The
+  // generated HTML may use any container id (for example `barChart` or
+  // `bar-chart`), so discovery follows ECharts' own instance marker while
+  // retaining the legacy `chart_*` fallback.
+  const chartOptionsMap = await page.evaluate(discoverEchartsInstances);
+
+  // Keep a visual fallback for chart types that PowerPoint cannot represent
+  // natively (for example heatmap). Capture only the chart host, never the
+  // surrounding panel or the complete slide.
+  for (const [chartId, chartEntry] of Object.entries(chartOptionsMap)) {
+    let handle;
+    try {
+      handle = await page.evaluateHandle(id => document.getElementById(id), chartId);
+      const element = handle.asElement();
+      if (!element) continue;
+      const png = await element.screenshot({ type: 'png' });
+      chartEntry.pngData = `data:image/png;base64,${png.toString('base64')}`;
+    } catch {
+      // Native mapping or the existing DOM fallback may still preserve it.
+    } finally {
+      await handle?.dispose();
     }
-    return result;
-  });
+  }
 
   const ir = await page.evaluate(BROWSER_EXTRACT_FN);
 
@@ -829,9 +880,7 @@ function _attachSvgPngsToIR(_ir, _svgPngs) {
 export async function extractPages(htmlPaths) {
   let browser;
   try {
-    installHiddenProcessHooks();
-    const { chromium } = await import('playwright');
-    browser = await chromium.launch(hiddenChromiumLaunchOptions());
+    browser = await chromium.launch({ headless: true, executablePath: pickBrowserExe() });
   } catch (e) {
     // Browser unavailable — return null IR for every page.
     // pptx_builder handles null IR gracefully (blank slide + continue).
@@ -847,6 +896,18 @@ export async function extractPages(htmlPaths) {
 
   try {
     const page = await browser.newPage();
+
+    if (bundledEchartsSource) {
+      try {
+        await page.route(/echarts(?:\.min)?\.js(?:[?#].*)?$/i, route => route.fulfill({
+          status: 200,
+          contentType: 'application/javascript',
+          body: bundledEchartsSource,
+        }));
+      } catch (e) {
+        console.error(`[dom_extractor] Bundled ECharts routing unavailable: ${e.message}`);
+      }
+    }
 
     for (const htmlPath of htmlPaths) {
       try {

@@ -23,3 +23,6 @@ deep-research-reports/
 .env
 .env.*
 !.env.example
+
+# macOS
+.DS_Store

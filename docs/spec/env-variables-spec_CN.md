@@ -1,5 +1,9 @@
 # SenseNova-Skills 环境变量配置规范
 
+> 适用范围：本文档为 `sn-image-*` / `sn-infographic` 等以 `SN_*` 变量配置的技能规范；
+> `sn-ppt-*` PPT 套件使用独立的 `SN_PPT_*` 配置体系（Bundled 回退层），
+> 见 [`../sn-ppt-generate_cn.md`](../sn-ppt-generate_cn.md) 的 API Key 章节。
+
 > **TL;DR**：默认场景下，用户只需关注 4 个变量——`SN_BASE_URL`、`SN_API_KEY`、`SN_CHAT_MODEL`、`SN_IMAGE_GEN_MODEL`（其中后三者带有内置默认值，最少只需设 `SN_API_KEY`）；如需对某一类能力做更细粒度的覆盖，再额外设置 `SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 等专属/分组变量。
 
 ## 一、设计目标

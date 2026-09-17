@@ -16,7 +16,7 @@ def scan(deck: Path) -> dict:
     page_count = int(tp["params"]["page_count"])
 
     style = (deck / "style_spec.md").exists()
-    outline = (deck / "outline.json").exists()
+    outline = (deck / "outline.md").exists()
 
     pages = []
     for i in range(1, page_count + 1):

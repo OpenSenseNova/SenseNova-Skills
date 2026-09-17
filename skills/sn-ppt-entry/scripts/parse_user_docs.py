@@ -14,10 +14,9 @@ Output (stdout):
 
 Tables: each item = {"doc_index": int, "table_index": int, "rows": [[str, ...]]}
 Inherited images: each item = {"doc_index": int, "image_index": int, "path": str, "alt": str}
-                  (path is absolute; images embedded in docx/pdf are extracted
-                  to the same directory as the source doc under
-                  `<docname>_inherited/`; md image references are resolved relative
-                  to the md file's directory).
+                  (path is absolute; with --asset-dir, images embedded in
+                  docx/pdf are extracted under that deck-owned directory;
+                  md image references are resolved relative to the md file).
 
 No extra deps beyond stdlib + pypdf + python-docx. Markdown-first (table + image
 extraction), pdf/docx best-effort.
@@ -25,6 +24,7 @@ extraction), pdf/docx best-effort.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -33,18 +33,12 @@ from pathlib import Path
 from docx.opc.exceptions import PackageNotFoundError
 from pypdf.errors import PdfReadError
 
-MAX_CHARS = 20000
-
-
-# ---------------------------------------------------------------------------
-# Text truncation
-# ---------------------------------------------------------------------------
-
-
-def _truncate(text: str) -> str:
-    if len(text) <= MAX_CHARS:
-        return text
-    return text[:MAX_CHARS] + "\n[TRUNCATED]"
+def _asset_output_dir(path: Path, asset_root: Path | None) -> Path:
+    if asset_root is None:
+        return path.parent / f"{path.stem}_inherited"
+    digest = hashlib.sha1(str(path).encode("utf-8")).hexdigest()[:8]
+    safe_stem = re.sub(r"[^\w\u4e00-\u9fff-]+", "_", path.stem, flags=re.UNICODE).strip("_")
+    return asset_root / f"{safe_stem or 'document'}_{digest}"
 
 
 # ---------------------------------------------------------------------------
@@ -117,7 +111,7 @@ def parse_md_or_txt(path: Path) -> dict:
     return {
         "path": str(path),
         "type": ext,
-        "text": _truncate(raw),
+        "text": raw,
         "tables": tables,
         "inherited_images": images,
     }
@@ -128,7 +122,7 @@ def parse_md_or_txt(path: Path) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def parse_pdf(path: Path) -> dict:
+def parse_pdf(path: Path, asset_root: Path | None = None) -> dict:
     from pypdf import PdfReader
     try:
         reader = PdfReader(str(path))
@@ -141,7 +135,7 @@ def parse_pdf(path: Path) -> dict:
     # if it fails or there are none, we silently skip.
     images: list[dict] = []
     try:
-        out_dir = path.parent / f"{path.stem}_inherited"
+        out_dir = _asset_output_dir(path, asset_root)
         idx = 0
         for page_no, page in enumerate(reader.pages, start=1):
             try:
@@ -167,10 +161,11 @@ def parse_pdf(path: Path) -> dict:
     return {
         "path": str(path),
         "type": "pdf",
-        "text": _truncate(text),
+        "text": text,
         "pages": len(reader.pages),
         "tables": [],  # best-effort pdf table extraction out of scope (no pdfplumber)
         "inherited_images": images,
+        "page_visuals": []
     }
 
 
@@ -179,7 +174,7 @@ def parse_pdf(path: Path) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def parse_docx(path: Path) -> dict:
+def parse_docx(path: Path, asset_root: Path | None = None) -> dict:
     from docx import Document
     try:
         doc = Document(str(path))
@@ -200,7 +195,7 @@ def parse_docx(path: Path) -> dict:
     # Embedded images: iterate part.related_parts and save each `image/*` blob
     images: list[dict] = []
     try:
-        out_dir = path.parent / f"{path.stem}_inherited"
+        out_dir = _asset_output_dir(path, asset_root)
         for idx, (_, rel) in enumerate(doc.part.related_parts.items()):
             content_type = getattr(rel, "content_type", "") or ""
             if not content_type.startswith("image/"):
@@ -226,7 +221,7 @@ def parse_docx(path: Path) -> dict:
     return {
         "path": str(path),
         "type": "docx",
-        "text": _truncate(text),
+        "text": text,
         "paragraphs": len(paragraphs),
         "tables": tables,
         "inherited_images": images,
@@ -238,14 +233,14 @@ def parse_docx(path: Path) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def dispatch(path: Path) -> dict:
+def dispatch(path: Path, asset_root: Path | None = None) -> dict:
     ext = path.suffix.lower()
     if ext in (".md", ".txt"):
         return parse_md_or_txt(path)
     if ext == ".pdf":
-        return parse_pdf(path)
+        return parse_pdf(path, asset_root)
     if ext == ".docx":
-        return parse_docx(path)
+        return parse_docx(path, asset_root)
     raise ValueError(f"unsupported type: {ext}")
 
 
@@ -262,8 +257,20 @@ def main(argv: list[str] | None = None) -> int:
             "caller is an agent that may not reliably handle shell redirection."
         ),
     )
+    parser.add_argument(
+        "--asset-dir",
+        type=str,
+        default=None,
+        help=(
+            "Directory for images extracted from PDF/DOCX files. When omitted, "
+            "legacy behavior writes beside each source document."
+        ),
+    )
     args = parser.parse_args(argv)
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    asset_root = Path(args.asset_dir).expanduser().resolve() if args.asset_dir else None
+    if asset_root is not None:
+        asset_root.mkdir(parents=True, exist_ok=True)
 
     documents: list[dict] = []
     errors: list[dict] = []
@@ -276,7 +283,7 @@ def main(argv: list[str] | None = None) -> int:
             errors.append({"path": str(p), "error": "not a regular file"})
             continue
         try:
-            documents.append(dispatch(p))
+            documents.append(dispatch(p, asset_root))
         except Exception as exc:  # noqa: BLE001
             errors.append({"path": str(p), "error": f"{type(exc).__name__}: {exc}"})
 

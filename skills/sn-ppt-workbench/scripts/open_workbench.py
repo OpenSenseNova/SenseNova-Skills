@@ -62,8 +62,11 @@ def _is_html_deck(directory: Path) -> bool:
     if not directory.is_dir():
         return False
 
-    pages_dir = directory / "pages"
-    targets = [pages_dir] if pages_dir.is_dir() else [directory]
+    targets = [
+        target
+        for target in (directory / "slides", directory / "pages", directory)
+        if target.is_dir()
+    ]
     return any(
         item.is_file() and item.suffix.lower() in {".html", ".htm"}
         for target in targets
@@ -71,11 +74,17 @@ def _is_html_deck(directory: Path) -> bool:
     )
 
 
+def _is_workbench_deck(directory: Path) -> bool:
+    return _is_html_deck(directory) or (
+        directory.is_dir() and (directory / "task_pack.json").is_file()
+    )
+
+
 def _deck_mtime(directory: Path) -> float:
     candidates = [directory]
-    pages_dir = directory / "pages"
-    if pages_dir.is_dir():
-        candidates.extend(item for item in pages_dir.iterdir() if item.is_file())
+    for content_dir in (directory / "slides", directory / "pages"):
+        if content_dir.is_dir():
+            candidates.extend(item for item in content_dir.iterdir() if item.is_file())
 
     return max((item.stat().st_mtime for item in candidates if item.exists()), default=0.0)
 
@@ -84,8 +93,6 @@ def _search_roots(args: argparse.Namespace) -> list[Path]:
     roots: list[Path] = []
     roots.extend(Path(item).expanduser() for item in args.search_root)
     roots.append(Path.cwd() / "ppt_decks")
-    roots.append(Path.home() / "Downloads" / "ppt_decks")
-    roots.append(Path.home() / "Repository" / "ppt_decks")
 
     seen: set[Path] = set()
     unique: list[Path] = []
@@ -100,13 +107,13 @@ def _search_roots(args: argparse.Namespace) -> list[Path]:
 def _detect_deck_dir(args: argparse.Namespace) -> Path | None:
     if args.deck_dir:
         deck_dir = Path(args.deck_dir).expanduser().resolve()
-        return deck_dir if _is_html_deck(deck_dir) else None
+        return deck_dir if _is_workbench_deck(deck_dir) else None
 
     candidates: list[Path] = []
     for root in _search_roots(args):
         if not root.is_dir():
             continue
-        candidates.extend(child.resolve() for child in root.iterdir() if _is_html_deck(child))
+        candidates.extend(child.resolve() for child in root.iterdir() if _is_workbench_deck(child))
 
     return max(candidates, key=_deck_mtime, default=None)
 
@@ -120,12 +127,6 @@ def _launcher_candidates() -> Iterable[Path]:
     skill_dir = Path(__file__).resolve().parents[1]
     yield skill_dir / "workbench-runtime" / "bin" / "sensenova-ppt-workbench.mjs"
 
-    home = Path.home()
-    yield from _release_launcher_candidates(home / "Repository" / "ppt-editor" / "src" / "ppt-editor")
-    yield from _release_launcher_candidates(home / "Repository" / "ppt-editor")
-    yield home / "Repository" / "ppt-editor" / "src" / "ppt-editor" / "bin" / "sensenova-ppt-workbench.mjs"
-    yield home / "Repository" / "ppt-editor" / "bin" / "sensenova-ppt-workbench.mjs"
-
     here = Path(__file__).resolve()
     for parent in here.parents:
         yield from _release_launcher_candidates(parent)
@@ -137,6 +138,12 @@ def _launcher_candidates() -> Iterable[Path]:
         yield parent.parent / "ppt-editor" / "src" / "ppt-editor" / "bin" / "sensenova-ppt-workbench.mjs"
         yield parent / "ppt-editor" / "bin" / "sensenova-ppt-workbench.mjs"
         yield parent.parent / "ppt-editor" / "bin" / "sensenova-ppt-workbench.mjs"
+
+    home = Path.home()
+    yield from _release_launcher_candidates(home / "Repository" / "ppt-editor" / "src" / "ppt-editor")
+    yield from _release_launcher_candidates(home / "Repository" / "ppt-editor")
+    yield home / "Repository" / "ppt-editor" / "src" / "ppt-editor" / "bin" / "sensenova-ppt-workbench.mjs"
+    yield home / "Repository" / "ppt-editor" / "bin" / "sensenova-ppt-workbench.mjs"
 
 
 def _release_launcher_candidates(runtime_root: Path) -> Iterable[Path]:
@@ -374,8 +381,28 @@ def _default_agent_provider() -> str:
     return (
         os.environ.get("WORKBENCH_AGENT_PROVIDER")
         or os.environ.get("WORKBENCH_AGENT_RUNTIME")
+        or (
+            "box-agent"
+            if os.environ.get("BOX_AGENT_PYTHON")
+            or os.environ.get("BOX_AGENT_SKILL_TOOLS_ROOT")
+            else ""
+        )
         or "hermes"
     )
+
+
+def _default_acp_command(provider: str) -> str:
+    configured = os.environ.get("WORKBENCH_ACP_COMMAND")
+    if configured:
+        return configured
+    normalized = provider.strip().lower().replace("_", "-")
+    if normalized == "box-agent":
+        return os.environ.get("BOX_AGENT_ACP_COMMAND") or "box-agent-acp"
+    if normalized == "codex":
+        return os.environ.get("CODEX_ACP_COMMAND", "")
+    if normalized == "claude-code":
+        return os.environ.get("CLAUDE_ACP_COMMAND", "")
+    return ""
 
 
 def _ensure_runtime_artifacts(launcher: Path) -> tuple[bool, str]:
@@ -398,6 +425,20 @@ def _start_workbench(args: argparse.Namespace, deck_dir: Path, launcher: Path) -
     host = _resolve_host(args, public_url)
     gateway_api_key = _resolve_gateway_api_key(args)
     gateway_base_url = _resolve_gateway_base_url(args, gateway_api_key)
+    # The companion bridge stays read-only until a transport is selected.
+    # Default it from whichever endpoint actually resolved, so a detected
+    # Hermes Gateway (or WebUI/REST/ACP config) enables companion chat
+    # without requiring a manual --agent-transport flag.
+    agent_transport = args.agent_transport
+    if not agent_transport:
+        if gateway_base_url and gateway_api_key:
+            agent_transport = "gateway"
+        elif args.webui_base_url:
+            agent_transport = "webui"
+        elif args.acp_command:
+            agent_transport = "acp"
+        elif args.agent_base_url and args.agent_api_key:
+            agent_transport = "rest"
     command = [
         _node_command(),
         str(launcher),
@@ -417,8 +458,8 @@ def _start_workbench(args: argparse.Namespace, deck_dir: Path, launcher: Path) -
         "--agent-runtime",
         args.agent_runtime,
     ]
-    if args.agent_transport:
-        command.extend(["--agent-transport", args.agent_transport])
+    if agent_transport:
+        command.extend(["--agent-transport", agent_transport])
     if args.agent_base_url:
         command.extend(["--agent-base-url", args.agent_base_url])
     if args.agent_api_key:
@@ -468,17 +509,24 @@ def _start_workbench(args: argparse.Namespace, deck_dir: Path, launcher: Path) -
 
 def main() -> int:
     _hydrate_hermes_env()
+    default_agent_provider = _default_agent_provider()
     parser = argparse.ArgumentParser(description="Open PPT editor WebUI for an existing HTML deck.")
     parser.add_argument("--deck-dir", default="")
     parser.add_argument("--search-root", action="append", default=[])
-    parser.add_argument("--agent-session-id", default=os.environ.get("HERMES_SESSION_KEY", ""))
+    parser.add_argument(
+        "--agent-session-id",
+        default=os.environ.get(
+            "WORKBENCH_AGENT_SOURCE_SESSION_ID",
+            os.environ.get("BOX_AGENT_SESSION_ID", os.environ.get("HERMES_SESSION_KEY", "")),
+        ),
+    )
     parser.add_argument("--agent-managed", default=os.environ.get("WORKBENCH_AGENT_MANAGED", ""))
-    parser.add_argument("--agent-provider", default=_default_agent_provider())
+    parser.add_argument("--agent-provider", default=default_agent_provider)
     parser.add_argument("--agent-transport", default=os.environ.get("WORKBENCH_AGENT_TRANSPORT", ""))
-    parser.add_argument("--agent-runtime", default=os.environ.get("WORKBENCH_AGENT_RUNTIME", _default_agent_provider()))
+    parser.add_argument("--agent-runtime", default=os.environ.get("WORKBENCH_AGENT_RUNTIME", default_agent_provider))
     parser.add_argument("--agent-base-url", default=os.environ.get("WORKBENCH_AGENT_BASE_URL", os.environ.get("OPENCLAW_GATEWAY_BASE_URL", os.environ.get("OPENCLAW_BASE_URL", ""))))
     parser.add_argument("--agent-api-key", default=os.environ.get("WORKBENCH_AGENT_API_KEY", os.environ.get("OPENCLAW_API_KEY", "")))
-    parser.add_argument("--acp-command", default=os.environ.get("WORKBENCH_ACP_COMMAND", os.environ.get("CODEX_ACP_COMMAND", os.environ.get("CLAUDE_ACP_COMMAND", ""))))
+    parser.add_argument("--acp-command", default=_default_acp_command(default_agent_provider))
     parser.add_argument("--webui-base-url", default=os.environ.get("HERMES_WEBUI_BASE_URL", ""))
     parser.add_argument("--gateway-base-url", default=os.environ.get("HERMES_GATEWAY_BASE_URL", ""))
     parser.add_argument("--gateway-api-key", default=os.environ.get("WORKBENCH_GATEWAY_API_KEY", ""))

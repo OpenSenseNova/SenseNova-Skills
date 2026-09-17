@@ -513,6 +513,9 @@ function buildGradientSvg(gradient, wPx, hPx, opacity = 1, borderRadius = 0) {
 function buildRadialGradientSvg(gradient, wPx, hPx, opacity = 1, borderRadius = 0) {
   const w = Math.round(wPx);
   const h = Math.round(hPx);
+  const cx = Number.isFinite(gradient.cx) ? gradient.cx : 50;
+  const cy = Number.isFinite(gradient.cy) ? gradient.cy : 50;
+  const radius = 100;
   const stops = gradient.stops.map((s, i) => {
     const pos = s.position !== undefined ? s.position : Math.round(i * 100 / Math.max(gradient.stops.length - 1, 1));
     const alpha = s.isTransparent ? 0 : (s.rawColor ? extractCssAlpha(s.rawColor) : 1);
@@ -520,7 +523,7 @@ function buildRadialGradientSvg(gradient, wPx, hPx, opacity = 1, borderRadius = 
   }).join('');
 
   const rx = borderRadius > 0 ? ` rx="${borderRadius}" ry="${borderRadius}"` : '';
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs><radialGradient id="g" cx="50%" cy="50%" r="70%">${stops}</radialGradient></defs><rect width="${w}" height="${h}"${rx} fill="url(#g)"/></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs><radialGradient id="g" cx="${cx}%" cy="${cy}%" r="${radius}%">${stops}</radialGradient></defs><rect width="${w}" height="${h}"${rx} fill="url(#g)"/></svg>`;
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }
 
@@ -951,8 +954,9 @@ export function buildTextElement(node) {
   const padBottom = parseFloat(s.paddingBottom) || 0;
   const padLeft = parseFloat(s.paddingLeft) || 0;
   if (!textRuns && (padTop > 0 || padRight > 0 || padBottom > 0 || padLeft > 0)) {
+    // pptxgenjs uses [left, top, right, bottom], unlike CSS shorthand order.
     options.margin = [
-      pxToPt(padTop), pxToPt(padRight), pxToPt(padBottom), pxToPt(padLeft),
+      pxToPt(padLeft), pxToPt(padTop), pxToPt(padRight), pxToPt(padBottom),
     ];
   }
 
@@ -1522,6 +1526,74 @@ function buildBorderLines(node) {
 }
 
 /**
+ * Prefer an editable native PowerPoint chart and use the extractor's chart
+ * screenshot only when the ECharts type cannot be mapped.
+ */
+export function buildEchartsElements(node, entry, chartTypeEnum) {
+  const elements = [];
+  if (!entry?.option || !chartTypeEnum) return { handled: false, elements };
+
+  const mapped = echartsOptionToPptx(entry.option, chartTypeEnum);
+  const b = node.bounds;
+  if (mapped) {
+    elements.push({
+      type: 'chart',
+      data: {
+        chartType: mapped.chartType,
+        chartData: mapped.data,
+        x: pxToInch(b.x),
+        y: pxToInch(b.y),
+        w: pxToInch(b.w),
+        h: pxToInch(b.h),
+        options: mapped.options,
+      },
+    });
+
+    // C7: doughnut center label — overlay a centered textbox on top.
+    if (mapped.centerLabel && mapped.centerLabel.text) {
+      const cl = mapped.centerLabel;
+      const fs = cl.fontSize || 24;
+      const labelH = pxToInch(fs * 2);
+      const labelW = pxToInch(b.w * 0.6);
+      elements.push({
+        type: 'text',
+        data: {
+          text: cl.text,
+          options: {
+            x: pxToInch(b.x) + (pxToInch(b.w) - labelW) / 2,
+            y: pxToInch(b.y) + (pxToInch(b.h) - labelH) / 2,
+            w: labelW,
+            h: labelH,
+            fontSize: typeof fs === 'number' ? fs : pxToPt(parseFloat(fs) || 24),
+            color: (cl.color || '000000').replace('#', '').toUpperCase(),
+            align: 'center',
+            valign: 'middle',
+            bold: true,
+          },
+        },
+      });
+    }
+    return { handled: true, elements };
+  }
+
+  if (entry.pngData) {
+    elements.push({
+      type: 'image',
+      data: {
+        data: entry.pngData,
+        x: pxToInch(b.x),
+        y: pxToInch(b.y),
+        w: pxToInch(b.w),
+        h: pxToInch(b.h),
+      },
+    });
+    return { handled: true, elements };
+  }
+
+  return { handled: false, elements };
+}
+
+/**
  * 递归扁平化 IR 节点，生成 slide 元素列表
  */
 export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, parentBgColor = null) {
@@ -1534,6 +1606,36 @@ export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, paren
   // 容器装饰 → 形状（IMG 不需要容器形状）
   if (hasVisualDecoration(node) && tag !== 'IMG') {
     const shape = buildShapeElement(node);
+    let gradientImageApplied = false;
+
+    // Rectangular, off-center radial overlays are commonly used as corner masks.
+    // OOXML's radial fill cannot preserve their focal point, and the existing
+    // solid fallback turns the mask into a visible rectangle. Use a local SVG
+    // only for this narrow, borderless overlay case; other radial paths stay as-is.
+    if (s.backgroundImage?.includes('radial-gradient')) {
+      const radial = parseRadialGradient(s.backgroundImage);
+      const isOffCenter = radial && (Math.abs(radial.cx - 50) > 0.01 || Math.abs(radial.cy - 50) > 0.01);
+      const hasTransparency = radial?.stops.some(stop => extractCssAlpha(stop.rawColor) < 1);
+      const hasBorder = ['top', 'right', 'bottom', 'left'].some(
+        side => s[`border${side[0].toUpperCase()}${side.slice(1)}Style`] &&
+          s[`border${side[0].toUpperCase()}${side.slice(1)}Style`] !== 'none',
+      );
+      const hasShadow = s.boxShadow && s.boxShadow !== 'none';
+      if (radial && radial.stops.length >= 2 && isOffCenter && hasTransparency && !hasBorder && !hasShadow) {
+        const opacity = Number.isFinite(parseFloat(s.opacity)) ? parseFloat(s.opacity) : 1;
+        elements.push({
+          type: 'image',
+          data: {
+            data: buildRadialGradientSvg(radial, node.bounds.w, node.bounds.h, opacity, parseFloat(s.borderRadius) || 0),
+            x: pxToInch(node.bounds.x),
+            y: pxToInch(node.bounds.y),
+            w: pxToInch(node.bounds.w),
+            h: pxToInch(node.bounds.h),
+          },
+        });
+        gradientImageApplied = true;
+      }
+    }
 
     if (s.backgroundImage && s.backgroundImage !== 'none' && !isGradientText(node)) {
 
@@ -1577,7 +1679,7 @@ export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, paren
       }
     }
 
-    if (shape) {
+    if (shape && !gradientImageApplied) {
       elements.push({ type: 'shape', data: shape });
     }
 
@@ -1646,54 +1748,15 @@ export function flattenIRToElements(node, deckDir, parentBorderRadius = 0, paren
     }
   }
 
-  // ECharts chart container: <div id="chart_N"> with a captured option
-  if ((tag === 'DIV' || tag === 'SECTION') && node.id && /^chart_/.test(node.id)) {
+  // ECharts chart container with a captured option. The extractor keys this
+  // map by the actual host id, so generated pages are not required to use the
+  // legacy `chart_*` naming convention.
+  if (node.id && _currentChartOptions[node.id]) {
     const entry = _currentChartOptions[node.id];
-    if (entry && entry.option && _currentChartTypeEnum) {
-      const mapped = echartsOptionToPptx(entry.option, _currentChartTypeEnum);
-      if (mapped) {
-        const b = node.bounds;
-        elements.push({
-          type: 'chart',
-          data: {
-            chartType: mapped.chartType,  // may be 'combo' sentinel
-            chartData: mapped.data,
-            x: pxToInch(b.x),
-            y: pxToInch(b.y),
-            w: pxToInch(b.w),
-            h: pxToInch(b.h),
-            options: mapped.options,
-          },
-        });
-        // C7: doughnut center label — overlay a centered textbox on top.
-        if (mapped.centerLabel && mapped.centerLabel.text) {
-          const cl = mapped.centerLabel;
-          const fs = cl.fontSize || 24;
-          const labelH = pxToInch(fs * 2);
-          const labelW = pxToInch(b.w * 0.6);
-          elements.push({
-            type: 'text',
-            data: {
-              text: cl.text,
-              options: {
-                x: pxToInch(b.x) + (pxToInch(b.w) - labelW) / 2,
-                y: pxToInch(b.y) + (pxToInch(b.h) - labelH) / 2,
-                w: labelW,
-                h: labelH,
-                fontSize: typeof fs === 'number' ? fs : pxToPt(parseFloat(fs) || 24),
-                color: (cl.color || '000000').replace('#', '').toUpperCase(),
-                align: 'center',
-                valign: 'middle',
-                bold: true,
-              },
-            },
-          });
-        }
-        return elements;  // don't recurse into chart internals (svg children)
-      }
-      // unsupported chart type: fall through, the inner <svg> will be
-      // rasterized by buildSvgElement like before.
-    }
+    const chartResult = buildEchartsElements(node, entry, _currentChartTypeEnum);
+    elements.push(...chartResult.elements);
+    if (chartResult.handled) return elements;
+    // No native mapping and no captured image: keep the existing DOM fallback.
   }
 
   // SVG
@@ -1752,7 +1815,7 @@ export function buildSlideFromIR(pptx, ir, deckDir) {
     throw new Error(ir?.error || '页面 DOM 提取结果为空，无法构建可编辑 PPTX');
   }
   // Capture ECharts options for this page so flattenIRToElements can route
-  // <div id="chart_N"> nodes to addChart instead of addImage.
+  // each discovered chart host to addChart instead of dropping its canvas.
   _currentChartOptions = ir._chartOptions || {};
   _currentCanvasW = ir.canvasWidth || 1280;
   _currentCanvasH = ir.canvasHeight || 720;
