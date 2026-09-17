@@ -14,6 +14,8 @@ PMC 论文全文章节阅读器。
   python3 pmc_paper.py --pmid 38786024 --section method     # 从 PMID 出发
 """
 
+from __future__ import annotations
+
 import argparse
 import re
 import sys
