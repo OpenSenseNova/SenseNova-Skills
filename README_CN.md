@@ -218,7 +218,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### Autohand Code
 
-Autohand Code 也支持安装 SenseNova-Skills。从本仓库的本地克隆目录执行以下命令：
+[Autohand Code](https://github.com/autohandai/code-cli) 也支持安装 SenseNova-Skills。从本仓库的本地克隆目录执行以下命令：
 
 ```bash
 # 全局安装

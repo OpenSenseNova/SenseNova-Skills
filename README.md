@@ -219,7 +219,7 @@ Here are some community / third-party entry points.
 
 ### Autohand Code
 
-Autohand Code also supports installing SenseNova-Skills. From a local clone of this repository, use the following commands:
+[Autohand Code](https://github.com/autohandai/code-cli) also supports installing SenseNova-Skills. From a local clone of this repository, use the following commands:
 
 ```bash
 # Global install
