@@ -209,15 +209,17 @@ A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs
 
 ## Third-Party Integrations
 
-If you want to try a single skill before setting up the full local stack, here are some community / third-party entry points.
+Here are some community / third-party entry points.
 
 > These links are maintained outside this repository and are not part of the official SenseNova-Skills support surface. Availability, account requirements, and platform terms may vary by provider.
 
-- [`sn-infographic` on ClawMama (Telegram / WhatsApp)](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — a lightweight first run for the infographic workflow in an OpenClaw / Hermes-style agent.
+### Quick try
+
+- [`sn-infographic`](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) [on ClawMama (Telegram / WhatsApp)](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — a lightweight first run for the infographic workflow in an OpenClaw / Hermes-style agent.
 
 ### Autohand Code
 
-[Autohand Code](https://github.com/autohandai/code-cli) supports Agent Skills in a global directory or a project directory. Install the skills from this clone with:
+Autohand Code also supports installing SenseNova-Skills. From a local clone of this repository, use the following commands:
 
 ```bash
 # Global install

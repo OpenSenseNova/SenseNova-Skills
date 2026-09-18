@@ -208,15 +208,17 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ## 第三方集成
 
-如果你想先快速体验单个 skill、再决定是否搭建完整本地环境，也可以先试试下面这些社区 / 第三方入口。
+下面是一些社区 / 第三方提供的入口。
 
 > 这些链接并非由本仓库官方维护，不属于 SenseNova-Skills 的官方支持范围。具体可用性、账号要求与平台条款请以对应提供方为准。
 
-- [`sn-infographic`（ClawMama / Telegram / WhatsApp）](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — 适合先低门槛体验一次信息图生成工作流。
+### 快速体验
+
+- [`sn-infographic`](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) [ClawMama（Telegram / WhatsApp）](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — 适合在 OpenClaw / Hermes 风格的智能体中快速体验一次信息图生成工作流。
 
 ### Autohand Code
 
-[Autohand Code](https://github.com/autohandai/code-cli) 支持 Agent Skills，可安装到全局目录或项目目录。请从本仓库克隆目录执行：
+Autohand Code 也支持安装 SenseNova-Skills。从本仓库的本地克隆目录执行以下命令：
 
 ```bash
 # 全局安装
