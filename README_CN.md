@@ -167,11 +167,11 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 🔔 项目进展主动跟踪
 
-📖 详细使用指南：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)（安装、Hermes 接入、Web 工作台、数据目录与验收检查）。
+📖 安装与接入说明：[`sn-proactive-agent Skill`](skills/sn-proactive-agent/SKILL.md)（GitHub Release 运行包、Hermes / OpenClaw 接入与验收检查）。
 
 | 名称 | 标签 | 描述 |
 | --- | --- | --- |
-| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | 记录长期项目进展，维护可审计的 Project / Item / Event 状态，并在 Web 工作台展示下一步建议；用户接受后由原 Hermes Session 继续执行。 |
+| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | 记录长期项目进展，维护可审计的 Project / Item / Event 状态，并在 Web 工作台展示下一步建议；用户接受后由原 Session 继续执行。支持 Hermes 和 OpenClaw。 |
 
 
 ## 输出样例
