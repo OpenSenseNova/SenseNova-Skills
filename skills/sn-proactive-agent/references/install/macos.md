@@ -1,7 +1,7 @@
 # macOS 安装说明
 
 本文件只补充 macOS 的环境和命令差异。完整流程见 [安装与运行](overview.md)，
-Hermes 配置见 [接入说明](../connectors/hermes.md)。
+对话接入分别见 [Hermes](../connectors/hermes.md) 和 [OpenClaw](../connectors/openclaw.md)。
 
 ## 检查环境
 
@@ -53,10 +53,11 @@ SNPA_PYTHON="$(python3 -c 'import sys; print(sys.executable)')"
 
 以下是路径与变量写法，执行前必须把示例替换为已确认的真实路径。
 `SNPA_PACKAGE` 指向按通用流程下载并校验的 wheel；`SNPA_HERMES_ROOT` 指向当前 Hermes 实际使用的源码，
-不是配置目录。任一检查失败时停止，不自动新建或下载替代文件：
+不是配置目录。仅接入 OpenClaw 时跳过 `SNPA_HERMES_ROOT`、TUI 目录和 Hermes Session ID 检查，
+但仍需可用的 Hermes CLI 作为后台语义工作器。任一适用检查失败时停止，不自动新建或下载替代文件：
 
 ```bash
-SNPA_PACKAGE="/path/to/sn_proactive_agent-0.1.3-py3-none-any.whl"
+SNPA_PACKAGE="/path/to/sn_proactive_agent-0.1.4-py3-none-any.whl"
 test -f "$SNPA_PACKAGE"
 SNPA_HERMES_ROOT="/path/to/hermes-agent"
 test -d "$SNPA_HERMES_ROOT/ui-tui"
