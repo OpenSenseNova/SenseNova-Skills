@@ -1,7 +1,7 @@
 # 安装与运行
 
 本文件是 Agent 的共用执行流程。系统差异分别见 [macOS](macos.md) 和
-[Windows](windows.md)，Hermes 配置见 [接入说明](../connectors/hermes.md)。
+[Windows](windows.md)，对话接入见 [Hermes](../connectors/hermes.md) 或 [OpenClaw](../connectors/openclaw.md)。
 只读咨询不触发安装；执行变更前，确认用户已授权相应范围。
 
 ## 安装对象与版本
@@ -10,15 +10,16 @@
 - **运行包**：通过 `pipx` 安装 Core、Web 和 Connector 资源。
 - **用户数据**：保存在用户 Home 下的 `.sn-proactive-agent/`，不进入安装包。
 
-当前运行包是统一改名后的 `0.1.3`，包含 Web-only Connector 安装和按 Session
-的能力探测。`v0.1.3` 已发布到 GitHub Release，但尚未发布到 PyPI；不能直接按包名从索引安装。
-后续发布渠道为 [GitHub Releases](https://github.com/OpenSenseNova/SenseNova-Skills-ProactiveAgent/releases)。
+目标运行包版本为 `0.1.4`，支持 Hermes 和 OpenClaw；从
+[GitHub Releases](https://github.com/OpenSenseNova/SenseNova-Skills-ProactiveAgent/releases) 下载并校验指定版本。
+Hermes 提供安装与 Session 能力探测，OpenClaw 使用独立 Gateway 插件并按真实对话验收。
 已发布的 `v0.1.2` 保持旧包名 `proactive-memory-service`，不改写旧 Tag 或附件，
 也不把旧包当成新名称安装失败后的替代。
 
-仅在维护者完成发布后，确认 `v0.1.3` 已发布、不是草稿，并包含以下文件：
+安装前确认 `v0.1.4` 已发布、不是草稿，并包含以下文件：
 
-- `sn_proactive_agent-0.1.3-py3-none-any.whl`：运行包。
+- `sn_proactive_agent-0.1.4-py3-none-any.whl`：运行包。
+- `sn-proactive-agent-openclaw-0.1.4.tgz`：OpenClaw 接入时使用的插件。
 - `SHA256SUMS`：发布文件的 SHA-256 校验值。
 
 Release 不存在、无访问权限或校验失败时停止，报告具体原因，不改用 `main`、旧包或猜测地址。
@@ -40,13 +41,13 @@ Windows 必须先区分原生 PowerShell 与 WSL，保证服务和 Harness 处�
 
 ## 2. 安装运行包
 
-**以下下载命令是发布后的流程，目前不可当作已可用的下载入口。**
+**先确认 Release 状态和附件，再下载。**
 已有 GitHub CLI 且账号具有仓库读取权限时，先执行版本检查；确认 Release 与附件存在后，
 才在本次下载的空目录中执行下载命令：
 
 ```text
-gh release view v0.1.3 --repo OpenSenseNova/SenseNova-Skills-ProactiveAgent --json tagName,isDraft,isPrerelease,assets
-gh release download v0.1.3 --repo OpenSenseNova/SenseNova-Skills-ProactiveAgent --pattern sn_proactive_agent-0.1.3-py3-none-any.whl --pattern SHA256SUMS
+gh release view v0.1.4 --repo OpenSenseNova/SenseNova-Skills-ProactiveAgent --json tagName,isDraft,isPrerelease,assets
+gh release download v0.1.4 --repo OpenSenseNova/SenseNova-Skills-ProactiveAgent --pattern sn_proactive_agent-0.1.4-py3-none-any.whl --pattern SHA256SUMS
 ```
 
 不要使用 `--clobber` 覆盖现有文件，也不要把访问令牌写到命令或 URL 中。没有 GitHub CLI 时，
@@ -87,9 +88,10 @@ sn-proactive-agent doctor --json
 
 ## 3. 配置 Connector
 
-按实际 Harness 读取对应文件；当前提供 [Hermes](../connectors/hermes.md)。
-本步执行该文件的“接入前提”和“安装 Connector”。安装器只对显式指定且兼容的源码
-进行备份、接线和构建；前提不满足时停在这里，不手动强行打补丁或重装 Harness 来绕过。
+按实际 Harness 读取 [Hermes](../connectors/hermes.md) 或 [OpenClaw](../connectors/openclaw.md)。
+本步执行对应文件的“接入前提”和“安装 Connector”。Hermes 安装器只对显式指定且兼容的源码
+进行备份、接线和构建；OpenClaw 通过其插件管理器安装，无需修改 Harness 源码。
+前提不满足时停在这里，不手动强行打补丁或重装 Harness 来绕过。
 配置完成后继续第 4 步；仅安装观测资源的环境不能按完整接入验收。
 
 ## 4. 启动 Web 并检查
@@ -110,13 +112,14 @@ sn-proactive-agent doctor --url http://127.0.0.1:8080 --json
 Connector 必须指向同一个实际服务地址，不能遇到占用就停止不明进程。
 
 `--web-only` 关闭终端内建议展示，但不取消对话采集和获批续跑。
-没有可用的 Hermes 模型时，网页可能仍能显示已有记录；这不代表新对话能够被整理。
+当前 Core 的语义工作器使用 Hermes CLI，即使监听 OpenClaw，也需要安装并配置可用的 Hermes 模型。
+仅作为后台工作器时不需要安装 Hermes Connector。没有可用的 Hermes 模型时，网页可能仍能显示已有记录；这不代表新对话能够被整理。
 没有兼容桥接时只报告 Web 可用，不尝试接受建议来证明接入成功。
 
 ## 5. 对话与原 Session 续跑验收
 
-Web 可用且接入前提已满足后，执行 Connector 说明中的
-[真实对话验收](../connectors/hermes.md#真实对话验收)。需要用户同意使用的输入和模型服务，
+Web 可用且接入前提已满足后，执行对应 Connector 说明中的真实对话验收：
+[Hermes](../connectors/hermes.md#真实对话验收) 或 [OpenClaw](../connectors/openclaw.md#真实对话验收)。需要用户同意使用的输入和模型服务，
 检查完整 QA、状态更新、Web 决策、获批后原 Session 执行和结果回流。
 
 向用户分别报告安装版本、Harness、Web 地址、数据目录，以及安装、启动、对话采集和续跑各自的验证结果。

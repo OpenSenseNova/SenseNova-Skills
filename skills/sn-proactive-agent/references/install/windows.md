@@ -56,10 +56,12 @@ if ($LASTEXITCODE -ne 0) { throw "Python 3.11+ required" }
 不要复制 Bash 的 `export` 或反斜杠续行写法。
 
 安装已校验的 wheel 或 Connector 前，设置已经确认的实际文件与源码路径。以下仅为写法示例，
-执行前替换；`SNPA_HERMES_ROOT` 必须是当前 Hermes 实际使用的源码，不是配置目录：
+执行前替换；`SNPA_HERMES_ROOT` 必须是当前 Hermes 实际使用的源码，不是配置目录。
+仅接入 OpenClaw 时跳过 `SNPA_HERMES_ROOT`、TUI 目录和 Hermes Session ID 检查，改读
+[OpenClaw 接入](../connectors/openclaw.md)；后台语义工作器仍需可用的 Hermes CLI：
 
 ```powershell
-$SNPA_PACKAGE = "C:\path\to\sn_proactive_agent-0.1.3-py3-none-any.whl"
+$SNPA_PACKAGE = "C:\path\to\sn_proactive_agent-0.1.4-py3-none-any.whl"
 if (-not (Test-Path -LiteralPath $SNPA_PACKAGE -PathType Leaf)) { throw "Package not found" }
 $SNPA_HERMES_ROOT = "C:\path\to\hermes-agent"
 if (-not (Test-Path -LiteralPath (Join-Path $SNPA_HERMES_ROOT "ui-tui") -PathType Container)) { throw "Hermes source not found" }
@@ -120,10 +122,11 @@ SNPA_PYTHON="$(python3 -c 'import sys; print(sys.executable)')"
 
 检查失败或变量为空时停止安装；需要切换版本时使用已确认存在的解释器。
 在同一个 Linux 环境中继续 [通用流程第 2 步](overview.md#2-安装运行包)。
-安装已校验的 wheel 与 Connector 时，使用 WSL 内的实际路径；以下示例必须先替换，检查失败即停止：
+安装已校验的 wheel 与 Connector 时，使用 WSL 内的实际路径；以下示例必须先替换，检查失败即停止。
+仅接入 OpenClaw 时同样跳过 Hermes 源码与 Session 检查：
 
 ```bash
-SNPA_PACKAGE="/path/to/sn_proactive_agent-0.1.3-py3-none-any.whl"
+SNPA_PACKAGE="/path/to/sn_proactive_agent-0.1.4-py3-none-any.whl"
 test -f "$SNPA_PACKAGE"
 SNPA_HERMES_ROOT="/path/to/hermes-agent"
 test -d "$SNPA_HERMES_ROOT/ui-tui"

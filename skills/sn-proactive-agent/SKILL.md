@@ -21,12 +21,14 @@ description: 安装、启动和使用 Proactive Agent，记录项目进展并在
 | macOS | [install/macos.md](references/install/macos.md) |
 | Windows PowerShell 或 WSL | [install/windows.md](references/install/windows.md) |
 | Hermes 接入 | [connectors/hermes.md](references/connectors/hermes.md) |
+| OpenClaw 接入 | [connectors/openclaw.md](references/connectors/openclaw.md) |
 
 `install/` 负责操作系统、依赖和服务生命周期；`connectors/` 负责 Harness
-配置、对话采集与获批续跑。当前安装入口只支持 Hermes；其他 Harness 不能直接套用
-Hermes 的命令。当前运行包为已发布的 `0.1.3`，可安装指定 Hermes 基线的 Web-only 续跑桥，
-会检查源码兼容性、备份并构建；不覆盖未知版本或本地改动。固定版本与 GitHub Release
-下载前置检查见通用流程；目前通过 GitHub Release 安装，尚未发布到 PyPI。安装包验收不等于真实接入验收。
+配置、对话采集与获批续跑。支持 Hermes 和 OpenClaw，分别按对应说明安装，不能混用命令。
+目标运行包版本为 `0.1.4`，通过 GitHub Release 下载并校验；发布状态检查见通用流程。
+Hermes 使用 Web-only 续跑桥，OpenClaw 使用 Gateway 插件。当前 Core 的语义整理与判断仍依赖
+已配置模型的 Hermes CLI，即使只监听 OpenClaw，也需准备这个后台工作器。
+安装包验收不等于真实接入验收。
 Windows 说明是安装参考，不代表完整接入已验收。
 
 ## 命名与命令
