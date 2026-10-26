@@ -1,1 +1,1 @@
-Define the motion rendering, camera behavior, temporal consistency rules, and prohibited artifacts for this project's selected visual style.
+Define shared rendering, identity and temporal-consistency rules for the selected visual style. Put camera speed, trajectory and framing in individual scene or connector prompts; do not impose a global slow, locked or restrained camera.

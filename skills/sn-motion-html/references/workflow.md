@@ -15,6 +15,8 @@ Record these decisions in `docs/production-spec.md`:
 
 Preserve the continuous-camera page skeleton: one fixed media stage and one ordered route. Decide how panel material, header, navigation, typography, and text placement should express the subject without covering scene focal points. Treat these as proposals until the approval gates in section 4 are passed.
 
+Resolve the visual medium from the brief and approved references; ask only if it remains unclear. For later changes, follow the small-gate review in [style-presets.md](style-presets.md).
+
 ## 2. Research and outline
 
 For factual work, use primary or authoritative sources. Separate research notes from the concise display copy. Build:
@@ -26,11 +28,13 @@ For factual work, use primary or authoritative sources. Separate research notes 
 
 Each chapter needs: stable ID, short navigation label, eyebrow, title, optional subtitle, two or three compact paragraphs, tags, still path, and clip path.
 
+Resolve conflicting factual claims using authoritative sources, record uncertainty and omit unsupported precision. For real-place routes, distinguish literal travel from artistic compression and verify any geographic claims.
+
 ## 3. Establish visual continuity
 
 Create a single style preamble with medium, palette, materials, camera, light, composition, and negative constraints. For every recurring identity, create an immutable block describing face/form, silhouette, colors, clothing/packaging, signature object, and allowed changes.
 
-Define the shot plan alongside the style: for every chapter, specify the dominant visual event, framing and camera intent, focal subject, copy position, and the connector's legible start and destination. This is the content/shot-plan proposal, not yet an approved production manifest.
+For each chapter, propose its visual event, framing, camera intent and copy position. Plan connectors and compatible exit/entry frames using [prompting.md](prompting.md) before submitting the content/shot plan for approval.
 
 ## 4. Obtain creative approval
 
@@ -39,7 +43,7 @@ Present two explicit, separate approvals before producing the complete still set
 1. **Visual style approval:** show the style preamble and identity blocks. If an image-generation capability is available, include a small reference/gate set—normally opening, middle, and ending stills—for the user to inspect. If the capability is unavailable, report the blocker rather than substituting placeholders.
 2. **Content and shot-plan approval:** show the chapter sequence, display copy, dominant visual event, camera/framing intent, connector path, and copy position for every chapter.
 
-Wait for explicit user approval of each gate. If the user requests revisions, update the affected proposal and repeat that gate. Approval of the creative package does not authorize paid video generation.
+Record explicit approval of each gate. Reopen only the affected gate when revisions exceed existing authorization; see [SKILL.md](../SKILL.md). Creative approval does not authorize paid video generation.
 
 ## 5. Build the image set
 
@@ -51,6 +55,8 @@ Prefer editing from the reference images for recurring subjects. Keep key subjec
 
 Save lossless masters under `assets/images/scenes/`; create compressed web posters separately. Record accepted variants and the reason for selection in `docs/image-qa.md`.
 
+Check stills against approved identity and factual-fidelity requirements; correct affected assets within authorized scope under new IDs.
+
 ## 6. Build the video set
 
 Dry-run the manifest first. Generate one representative clip and validate account access, request schema, composition, and output parameters before the full paid batch. Immediately before the first paid video API request, obtain explicit user authorization covering the selected model, batch scope, expected cost, and retry risk. If authorization is absent, stop after the dry run.
@@ -59,7 +65,8 @@ Use two dependency phases:
 
 1. generate all dive clips concurrently;
 2. extract their actual first and last frames;
-3. generate connectors concurrently from adjacent boundary frames.
+3. generate representative connectors from adjacent boundary frames and apply the [first-clip gate](seedance.md#first-clip-gate);
+4. after those motion types pass, generate the remaining connectors with bounded concurrency and inspect each against its plan.
 
 Download temporary result URLs immediately. Normalize locally rather than assuming provider duration or codecs are exact. Resume safely by skipping valid existing outputs.
 

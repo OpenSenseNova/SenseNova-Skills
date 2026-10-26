@@ -8,14 +8,14 @@ The HTML preset supplies color and type defaults, not a fixed composition. A pro
 
 - HTML: warm paper-white background, ink-blue text, coral accent, rounded display type, crisp labels, lightly graphic shadows.
 - Still images: polished theatrical anime illustration, clean controlled linework, cel shading with selective soft gradients, expressive but identity-stable faces, designed color scripting, layered backgrounds, strong silhouette readability.
-- Video: preserve line weight, face proportions, costume colors, and cel boundaries frame to frame. Use restrained multiplane parallax, environmental loops, purposeful character gestures, and clean camera moves. Avoid line boil, face drift, flicker, extra fingers, and uncontrolled smear frames.
+- Video: preserve line weight, face proportions, costume colors, and cel boundaries frame to frame. Put parallax, environmental loops and gestures in individual scene prompts; connector camera paths follow the shot plan. Avoid line boil, face drift, flicker, extra fingers, and uncontrolled smear frames.
 - Best for: mythology, youth stories, explainers, stylized history, fantasy journeys, and character-led product worlds.
 
 ## Cinematic (`--style cinematic`)
 
 - HTML: restrained warm-neutral palette, serif display typography, dark compact controls, soft localized image gradients.
 - Still images: authored film still, believable production design, motivated practical lighting, cinematic dynamic range, natural lens behavior, controlled depth of field, atmospheric perspective, fictional casting rather than recognizable actors.
-- Video: physically plausible movement, stable wardrobe and props, motivated camera grammar, subtle handheld or dolly movement, consistent exposure and color grade. Avoid abrupt lens changes, glossy AI skin, temporal warping, excessive slow motion, and trailer-style cuts unless requested.
+- Video: physically plausible movement, stable wardrobe and props, motivated camera grammar, camera movement specified per clip, consistent exposure and color grade. Avoid abrupt lens changes, glossy AI skin, temporal warping, excessive slow motion, and trailer-style cuts unless requested.
 - Best for: historical narratives, documentaries, brand films, travel, architecture, and dramatic nonfiction.
 
 ## CGI (`--style cgi`)
@@ -28,3 +28,9 @@ The HTML preset supplies color and type defaults, not a fixed composition. A pro
 ## Customization
 
 Preserve the preset's consistency rules while changing palette, period, cultural references, or genre. Do not imitate a living artist by name; describe observable visual properties instead. Record deviations in the project production spec so image, video, and HTML layers stay aligned.
+
+For a mid-production style change, update shared prompts and review a small revised gate set first. Regenerate affected assets within the approved scope, reuse compatible assets, and record variants and consumed attempts in image QA. Editing prompts alone does not update existing media.
+
+## Shared rendering versus camera motion
+
+Follow [prompting.md](prompting.md): shared video rules preserve rendering and identity; individual clips specify camera motion.

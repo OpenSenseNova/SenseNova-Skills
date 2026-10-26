@@ -12,6 +12,20 @@ Render every media segment as an absolutely stacked child of one fixed, full-vie
 
 The bundled runtime fetches nearby clips as Blob URLs, keeps still posters visible until a sought frame paints, coalesces seeks, and supports reverse travel. A failed clip leaves the poster visible. Under `prefers-reduced-motion`, keep posters and cross-dissolve between them without loading video.
 
+Compute QA scroll positions from cumulative chapter `span` (default 4.6) and `connectorSpan` (default 1.2), multiplied by viewport height; stacked media elements share the same geometry. Verify full copy at known interior positions in each scene, forward and reverse. The chapter counter switches at the connector midpoint. Configure viewport and reduced-motion emulation before mounting the runtime, or reload after changing them.
+
+Scene `linger` controls a continuous slowdown near the middle of the shot, not a frozen-frame hold. Keep the progress mapping strictly increasing and update smoothing even while a previous seek is pending; coalesce only the seek writes. Chapter copy is fully visible upon entry and must not fade out again when scrolling resumes after a snapped landing.
+
+## Wheel snapping and connector timing
+
+Scenes remain scroll-scrubbed. With `meta.scrollSnap: true` (default), mouse wheel and keyboard input stop at the next connector boundary. Continue scrolling in the same gesture to accumulate `meta.snapThreshold` normalized pixels (default 160); then the connector completes automatically and lands on the adjacent scene with its full copy visible. Reversing the gesture before commitment releases the boundary. A gap over 240 ms resets uncommitted intent.
+
+Connector progress follows an elapsed-time clock at `meta.connectorPlaybackRate` (default 0.8, range 0.25–1), independent of wheel magnitude. A five-second clip takes about 6.25 seconds at the default rate. Do not use browser smooth-scroll duration or raw wheel deltas as the connector playback clock. Ignore additional wheel input during the transition and drain momentum before allowing another one. Missing media uses posters; reduced motion keeps native scrolling without fetching video.
+
+Chapter navigation is an explicit jump and cancels any in-flight connector; Escape or scrollbar navigation also cancels it. Preserve native zoom, dialog scrolling, and scrollable copy. Touch gestures retain native scrubbing. Use `scrollSnap: false` to opt back into direct scroll scrubbing for all segments.
+
+QA must verify both directions, below-threshold hold, completion after input stops, nearest-connector selection on large wheel bursts, momentum suppression, destination copy, navigation cancellation and reduced motion. The runtime cleans up its animation frame and input listeners on unmount.
+
 ## Interface presets
 
 All presets share the exact same stage and timeline. They change only page chrome and copy composition:
@@ -47,6 +61,10 @@ Avoid cloning distinctive decorative elements from a reference. Use new geometry
 - Preserve semantic headings, paragraphs, lists, and links in the generated copy layer.
 - Maintain readable contrast with an edge-free localized gradient, never an opaque full-screen cover or default solid copy card.
 - Prime loaded muted videos on the first user gesture for mobile browsers.
+
+## Copy language and localization
+
+Set `<html lang>` and localize interface text, accessible labels and errors in `index.html`, `src/app.js` and `src/motion-runtime.js`; story copy lives in `content/story.json`. Add language-appropriate fonts to `--mh-display` and `--mh-body` before generic fallbacks, such as `"Songti SC"` and `"PingFang SC"` for Simplified Chinese.
 
 ## Hosting safety
 
