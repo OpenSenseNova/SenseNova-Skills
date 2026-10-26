@@ -12,9 +12,7 @@ Render every media segment as an absolutely stacked child of one fixed, full-vie
 
 The bundled runtime fetches nearby clips as Blob URLs, keeps still posters visible until a sought frame paints, coalesces seeks, and supports reverse travel. A failed clip leaves the poster visible. Under `prefers-reduced-motion`, keep posters and cross-dissolve between them without loading video.
 
-Drive automated scroll QA from the segment math, not from element geometry: every segment is absolutely stacked at the top of the stage, so `offsetTop` and `getBoundingClientRect().top` read ~0 for all of them and a geometry-based `scrollTo` silently stays on the first chapter. Compute the target as cumulative `units` (chapter `span`, default 4.6; connector `connectorSpan`, default 1.2) × `viewportHeight`. While there, assert the chapter counter only after the midpoint of a connector — the runtime reports the departure chapter until local progress passes 0.5 by design.
-
-When segment math is not at hand, sweep the page in fixed steps (about a viewport-height per step) instead of guessing absolute offsets, and require every copy block to reach opacity ≥ 0.9 exactly once. Screenshots taken at guessed offsets usually land inside a connector, where copy is hidden by design, and read as missing content. Emulated states also need a reload: set `prefers-reduced-motion` or the device-metrics override through CDP first and then reload, or the check runs against the un-emulated page.
+Compute QA scroll positions from cumulative chapter `span` (default 4.6) and `connectorSpan` (default 1.2), multiplied by viewport height; stacked media elements share the same geometry. Verify full copy at known interior positions in each scene, forward and reverse. The chapter counter switches at the connector midpoint. Configure viewport and reduced-motion emulation before mounting the runtime, or reload after changing them.
 
 Scene `linger` controls a continuous slowdown near the middle of the shot, not a frozen-frame hold. Keep the progress mapping strictly increasing and update smoothing even while a previous seek is pending; coalesce only the seek writes. Chapter copy is fully visible upon entry and must not fade out again when scrolling resumes after a snapped landing.
 
@@ -26,7 +24,7 @@ Connector progress follows an elapsed-time clock at `meta.connectorPlaybackRate`
 
 Chapter navigation is an explicit jump and cancels any in-flight connector; Escape or scrollbar navigation also cancels it. Preserve native zoom, dialog scrolling, and scrollable copy. Touch gestures retain native scrubbing. Use `scrollSnap: false` to opt back into direct scroll scrubbing for all segments.
 
-QA must verify both directions, below-threshold hold, automatic completion after input stops, no fast-forward from a large wheel burst, no chained transition from momentum, destination copy visibility, navigation cancellation, and reduced-motion behavior. The template owns and cleans up its animation frame and input listeners on unmount.
+QA must verify both directions, below-threshold hold, completion after input stops, nearest-connector selection on large wheel bursts, momentum suppression, destination copy, navigation cancellation and reduced motion. The runtime cleans up its animation frame and input listeners on unmount.
 
 ## Interface presets
 
@@ -66,11 +64,7 @@ Avoid cloning distinctive decorative elements from a reference. Use new geometry
 
 ## Copy language and localization
 
-The template ships English interface chrome and Latin-first font stacks: the loading status in `index.html`, the sources-dialog labels, and in `src/motion-runtime.js` the source link, the navigation `aria-label`, the scroll hint, the per-chapter "Go to" `aria-label`, plus the `src/app.js` load-error message. When the story language is not English, replace every one of these strings and set `<html lang>` to match, otherwise the delivered site mixes languages around already-localized copy.
-
-Extend `--mh-display` and `--mh-body` in `styles.css` with scripts used by the copy language before the generic `serif` / `sans-serif` fallback — for Simplified Chinese, `"Songti SC"` / `"Noto Serif SC"` for display and `"PingFang SC"`, `"Hiragino Sans GB"`, `"Microsoft YaHei"`, `"Noto Sans SC"` for body. A Latin-only stack leaves CJK glyphs to platform fallback, which produces inconsistent weights and metrics across machines.
-
-Story text itself comes from `content/story.json`, so audit only the three chrome files (`index.html`, `src/app.js`, `src/motion-runtime.js`) for leftover source-language strings.
+Set `<html lang>` and localize interface text, accessible labels and errors in `index.html`, `src/app.js` and `src/motion-runtime.js`; story copy lives in `content/story.json`. Add language-appropriate fonts to `--mh-display` and `--mh-body` before generic fallbacks, such as `"Songti SC"` and `"PingFang SC"` for Simplified Chinese.
 
 ## Hosting safety
 

@@ -1,6 +1,8 @@
 # Prompting patterns
 
-Start from one of the coordinated presets in [style-presets.md](style-presets.md), or replace it with a user-defined art direction. Before generating any still, resolve the image capability exposed by the current environment: it may be a callable image tool, an image-generation skill, or both. The initializer writes the chosen image block to `prompts/style-preamble.txt` and the motion block to `prompts/style-motion.txt`. Keep style-motion.txt limited to rendering, identity and temporal consistency; place camera trajectory, speed and environmental actions in each clip prompt. Inspect the combined prompt before submission: remove shared slow/locked/restrained-camera instructions that contradict a connector. Existing projects retain their copied prompts; updating this skill does not migrate them.
+Use an approved [preset](style-presets.md) or custom direction and the available image-generation capability. The initializer writes shared image rules to `prompts/style-preamble.txt` and video rules to `prompts/style-motion.txt`.
+
+Shared video rules govern rendering, identity and temporal consistency; camera path, speed and environmental actions belong in each clip prompt. Inspect the combined prompt for conflicts before submission. Existing projects retain copied prompts and need explicit updates when these rules change.
 
 ## Style preamble
 
@@ -51,15 +53,7 @@ One still should communicate one dominant event. A montage is acceptable only wh
 
 ## Landmark fidelity
 
-For real buildings, verify each generated still field by field against the official form description (roof type, eave count, main tile colour versus edging colour, wall colour, podium material, and which structure stands in front of or behind which). Three failure modes recur, and each one silently falsifies the landmark:
-
-- The model paints the accent colour across the whole roof when the real form is a plain body colour with that colour only on ridges and eave edges. Name the split explicitly in the Subject sentence ("main surface plain grey barrel tiles, ridges and eave edges trimmed in green"), not only in the midground description.
-- The model drops a mid-depth building, so the real sequence compresses. Enumerate every building the depth must contain in order and end with "all of these must be present as separate, distinct buildings in depth".
-- A secondary landmark that really stands behind the main one on the same axis gets drawn beside it at a similar height. State the offset, the relative height, and the colour contrast between the two.
-
-Treat the official description as the authority when a detail is unverified or contested: draw the commonly published form and keep that detail out of the display copy.
-
-For distant real places, plan a legible spatial or temporal bridge (for example sky or foreground occlusion) and keep the landmarks distinct. Specify when the destination becomes visible and allow time to settle. Treat travel compression as an artistic choice, not a claim that the landmarks are neighbours. Do not force all destinations to appear only in the last instant.
+For factual places, verify required silhouettes, materials and spatial relationships against authoritative references. Record uncertainty and omit unsupported details from display copy. Stylization may change rendering without changing identifying geometry. Distinguish artistic travel compression from literal geography; use a legible bridge between distant places without implying false adjacency.
 
 ## Dive motion
 
@@ -67,7 +61,7 @@ Describe restrained movement that preserves the source image:
 
 ```text
 Use image 1 as the sole visual reference. Preserve identities, layout, palette, and materials.
-Four-second continuous shot. [Small environmental motion]. [One subtle character action].
+[Duration]-second continuous shot. [Small environmental motion]. [One subtle character action].
 Camera [locked / slow push / shallow orbit]. No cut, no redesign, no new character,
 no text, no logo, no sudden lighting change. End on a stable readable frame.
 ```
@@ -84,34 +78,31 @@ Choose the transition from the subject and the relationship between scenes, not 
 | Product details or changes of scale | Orbit/reveal or macro approach into an actual feature | Coherent scale change and preserved object identity |
 | Historical or abstract change | Designed environmental/time transformation | The chosen transformation is visible; use only when the brief permits it |
 
-A city travel story may mix pass-through and aerial transitions; a product or historical story may need different choices. Variety should serve the route, not force an arbitrary effect on every pair. Pass through openings or gaps, never solid architecture. Prefer one dominant camera event per connector; avoid stacking a tunnel, ascent, orbit and dive into a short shot.
+Choose one dominant event that serves the story and fits the duration. Pass through openings, never solid architecture.
 
-For each connector, record in the shot plan:
-- departure framing and exit direction; destination framing and entry direction;
-- dominant event, travel axis and height/scale changes;
-- the intermediate opening, obstruction or aerial view that makes movement legible;
-- reveal timing, acceleration/deceleration and intended duration;
-- visible success criteria and forbidden substitutes.
-
-Design adjacent scene endpoints for that path before generating them. A traveller may leave frame during an aerial move; preserving identity does not require keeping the figure fixed in the foreground. First/last conditioning constrains endpoints, not the intervening trajectory.
+Record departure/arrival framing, physical path and intermediate view, duration and reveal timing, and visible success criteria. Design adjacent endpoints for that path before generating them. First/last-frame conditioning constrains endpoints, not the intervening trajectory; identity continuity does not require a character to stay in frame throughout.
 
 Use a temporal prompt such as:
 
 ```text
-Image 1 is the departure boundary; image 2 is the destination boundary.
-One continuous shot of [duration] seconds; main event: [selected camera event].
-Opening phase: [starting viewpoint, orientation and acceleration].
-Middle phase: [physical path, foreground parallax or altitude change, intermediate view].
-Arrival phase: [destination reveal, approach direction, deceleration and final framing].
-Preserve [relevant identities and rendering style].
-Do not substitute [dissolve / landmark morph / static zoom / walking follow] for this event.
-No unrequested cut, text, logo or watermark.
+Image 1 is the departure; image 2 is the destination.
+One continuous [duration]-second shot:
+Opening: [viewpoint and exit direction].
+Middle: [physical path and visible intermediate event].
+Arrival: [reveal, approach and settling into image 2].
+Preserve the approved identities and rendering style as perspective changes.
+Follow the planned camera event; no unintended cut, morph, text or watermark.
 ```
 
-Allocate enough time to the middle and arrival; phase proportions are a planning aid, not an API control. Match the written duration to the manifest and simplify the move when it cannot fit. The bundled pipeline currently uses one global duration: per-item duration fields are not supported. If different durations are necessary, use separate manifests and output IDs or extend payload generation, normalization and validation together before submitting.
+Match duration to the manifest and allow time for both travel and settling. Phase timing is prompt guidance, not an API control. The pipeline uses one global duration; per-item durations are unsupported. For mixed durations, use separate manifests and output IDs or extend request generation, normalization and validation together.
 
-Keep slow environmental movement in scene clips when appropriate. In a dynamic connector, explicitly prioritize the planned camera event, with enough displacement to read clearly. Compare the final combined prompt with the shot plan rather than adding increasingly emphatic negative words to contradictory instructions.
+## Motion acceptance
+
+- Inspect the actual path and intermediate views against the table and approved plan; matching endpoints alone is insufficient.
+- Reject unplanned cuts or substitutes such as a dissolve or walking follow when camera travel was required. Legitimate foreground occlusion is allowed; a hidden discontinuous jump is not.
+- Require a readable destination and settling time appropriate to the planned duration. Record observed phases and timestamps in video QA.
+- If the move fails, simplify its path or revise its boundary framing/duration within authorized scope. Fix conflicting instructions before adding more negatives.
 
 ## Style drift from still to clip
 
-Video models re-render painted stills toward photographic or CG realism: detail sharpens, shadows harden, brushwork softens away. Verify by comparing the clip's first frame with its source still side by side and judging whether both still read as one style system. Accept a mild realism shift when composition, landmark form, and palette are preserved, and record it as a known deviation instead of re-rolling an otherwise correct clip.
+Compare the clip's first frame with its source still side by side. Record minor drift as acceptable only when it preserves the approved visual direction and fidelity requirements; otherwise revise or seek approval for the changed look.

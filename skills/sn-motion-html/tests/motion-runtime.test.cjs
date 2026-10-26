@@ -47,6 +47,33 @@ test('reverse traversal completes and stops on departure scene',()=>{
  f.advance(5100);assert.equal(f.root.dataset.transition,undefined);assert(Math.abs(f.ctx.scrollY-3311)<0.01);
  assert.equal(f.root.children[1].children[0].style.opacity,1);
 });
+test('large reverse input selects the nearest connector without skipping a scene', () => {
+  const f = fixture({media: true});
+  f.ctx.scrollTo({top: 8353});
+  f.wheel(-5000);
+  assert.equal(f.root.dataset.transition, 'playing');
+  assert(Math.abs(f.ctx.scrollY - 8353) < 0.01, 'hold at the B–C boundary');
+  f.advance(6400);
+  assert.equal(f.root.dataset.transition, undefined);
+  assert(Math.abs(f.ctx.scrollY - 7487) < 0.01, 'land at the end of scene B');
+  assert.equal(f.root.children[1].children[1].style.opacity, 1);
+  f.advance(7000);
+  assert(Math.abs(f.ctx.scrollY - 7487) < 0.01, 'do not queue the A–B connector');
+  f.destroy();
+});
+test('large forward input selects only the next connector from an idle scene', () => {
+  const f = fixture({media: true});
+  f.wheel(100000);
+  assert.equal(f.root.dataset.transition, 'playing');
+  assert(Math.abs(f.ctx.scrollY - 3311) < 0.01, 'hold at the A–B boundary');
+  f.advance(6400);
+  assert.equal(f.root.dataset.transition, undefined);
+  assert(Math.abs(f.ctx.scrollY - 4177) < 0.01, 'land at the start of scene B');
+  assert.equal(f.root.children[1].children[1].style.opacity, 1);
+  f.advance(7000);
+  assert(Math.abs(f.ctx.scrollY - 4177) < 0.01, 'do not queue the B–C connector');
+  f.destroy();
+});
 test('small separated gestures do not accumulate stale intent',()=>{
  const f=fixture();f.wheel(3312);f.wheel(100);f.advance(300);f.wheel(100);assert.equal(f.root.dataset.transition,undefined);
 });

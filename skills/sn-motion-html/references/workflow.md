@@ -15,7 +15,7 @@ Record these decisions in `docs/production-spec.md`:
 
 Preserve the continuous-camera page skeleton: one fixed media stage and one ordered route. Decide how panel material, header, navigation, typography, and text placement should express the subject without covering scene focal points. Treat these as proposals until the approval gates in section 4 are passed.
 
-Pin the visual language by name in this step and write it into the spec before generating anything: realistic photographic, illustrated/anime background art, and CGI are different products, not variants of one another. If the user has not named a medium, ask. The gate set is the cheapest place to learn it; a medium change after the gate set exists means re-rolling every still and every prompt written around the old one.
+Resolve the visual medium from the brief and approved references; ask only if it remains unclear. For later changes, follow the small-gate review in [style-presets.md](style-presets.md).
 
 ## 2. Research and outline
 
@@ -28,13 +28,13 @@ For factual work, use primary or authoritative sources. Separate research notes 
 
 Each chapter needs: stable ID, short navigation label, eyebrow, title, optional subtitle, two or three compact paragraphs, tags, still path, and clip path.
 
-When authoritative sources disagree on a figure — total area, street length, founding year, number of paintings — do not pick one and print it. Either adopt the most authoritative body's value and record the conflict in the research notes, or leave the precise number out of display copy. Government portals, competent authorities, site management, and UNESCO listings outrank wiki mirrors; wiki-derived figures stay out of display copy even when they are the only number available. For a route story, also record each stop's coordinates so "all stops lie on one line" is checked rather than assumed, and keep any self-calculated distance out of published copy unless it is labelled as an estimate.
+Resolve conflicting factual claims using authoritative sources, record uncertainty and omit unsupported precision. For real-place routes, distinguish literal travel from artistic compression and verify any geographic claims.
 
 ## 3. Establish visual continuity
 
 Create a single style preamble with medium, palette, materials, camera, light, composition, and negative constraints. For every recurring identity, create an immutable block describing face/form, silhouette, colors, clothing/packaging, signature object, and allowed changes.
 
-Define the shot plan alongside the style: for every chapter, specify the dominant visual event, framing and camera intent, focal subject and copy position. For each connector, select a subject-appropriate event and specify its path, intermediate view, timing and visible acceptance criteria using prompting.md. Design scene exit/entry frames to support that path. This is the content/shot-plan proposal, not yet an approved production manifest.
+For each chapter, propose its visual event, framing, camera intent and copy position. Plan connectors and compatible exit/entry frames using [prompting.md](prompting.md) before submitting the content/shot plan for approval.
 
 ## 4. Obtain creative approval
 
@@ -43,9 +43,7 @@ Present two explicit, separate approvals before producing the complete still set
 1. **Visual style approval:** show the style preamble and identity blocks. If an image-generation capability is available, include a small reference/gate set—normally opening, middle, and ending stills—for the user to inspect. If the capability is unavailable, report the blocker rather than substituting placeholders.
 2. **Content and shot-plan approval:** show the chapter sequence, display copy, dominant visual event, camera/framing intent, connector path, and copy position for every chapter.
 
-Wait for explicit user approval of each gate. If the user requests revisions, update the affected proposal and repeat that gate. Approval of the creative package does not authorize paid video generation.
-
-At the content gate, confirm whether the route is literal travel or artistic time/space compression, and whether it spans one day or several. Distant stops can connect through a clearly motivated sky, occlusion or other planned bridge; do not fuse landmarks or imply false adjacency. Review affected connectors when the route changes; recalculate the clip count only if the chapter or shot structure changes.
+Record explicit approval of each gate. Reopen only the affected gate when revisions exceed existing authorization; see [SKILL.md](../SKILL.md). Creative approval does not authorize paid video generation.
 
 ## 5. Build the image set
 
@@ -57,7 +55,7 @@ Prefer editing from the reference images for recurring subjects. Keep key subjec
 
 Save lossless masters under `assets/images/scenes/`; create compressed web posters separately. Record accepted variants and the reason for selection in `docs/image-qa.md`.
 
-Verify each still against the recorded official appearance facts with a vision pass before accepting it: roof form, tile colour, number of tiers, wall colour, orientation, and the presence and relative position of adjacent structures. Generic prompts yield a plausible-looking building that is factually wrong — a fully glazed roof where the real one is grey tile with a glazed edge, or an omitted gate that makes two structures look adjacent. Correct by naming the offending element explicitly in the prompt, then regenerate under a new image ID.
+Check stills against approved identity and factual-fidelity requirements; correct affected assets within authorized scope under new IDs.
 
 ## 6. Build the video set
 
@@ -67,7 +65,7 @@ Use two dependency phases:
 
 1. generate all dive clips concurrently;
 2. extract their actual first and last frames;
-3. generate representative connectors from available adjacent boundary frames and inspect their actual camera events using the first-clip gate in seedance.md;
+3. generate representative connectors from adjacent boundary frames and apply the [first-clip gate](seedance.md#first-clip-gate);
 4. after those motion types pass, generate the remaining connectors with bounded concurrency and inspect each against its plan.
 
 Download temporary result URLs immediately. Normalize locally rather than assuming provider duration or codecs are exact. Resume safely by skipping valid existing outputs.

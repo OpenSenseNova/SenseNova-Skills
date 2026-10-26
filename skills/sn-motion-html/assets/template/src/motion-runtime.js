@@ -179,7 +179,9 @@
       if (!direction) return;
       const y = scrollY;
       const proposed = clamp(y + delta, 0, totalUnits * viewportHeight);
-      const connector = segments.find((s) => s.kind === 'connector' && (
+      // Search in travel order so a large reverse gesture stops at the nearest connector.
+      const travelOrder = direction > 0 ? segments : [...segments].reverse();
+      const connector = travelOrder.find((s) => s.kind === 'connector' && (
         direction > 0 ? y < s.end - 1 && proposed >= s.start - 1
           : y > s.start + 1 && proposed <= s.end + 1
       ));

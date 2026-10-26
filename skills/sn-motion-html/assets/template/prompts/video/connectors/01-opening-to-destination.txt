@@ -1,7 +1,8 @@
-Image 1 is the departure boundary; image 2 is the destination boundary.
-Replace this template with the approved, subject-specific connector plan before generation.
-Duration: match the video manifest. Choose one dominant camera event appropriate to these scenes.
-Opening: define the exit viewpoint, direction and acceleration.
-Middle: define the physical route and a visible intermediate event, with foreground parallax or altitude/scale change as appropriate.
-Arrival: reveal the destination, approach from the planned direction and decelerate into image 2.
-Preserve identities and rendering style while perspective changes. Do not substitute a dissolve, landmark morph, static zoom or walking follow when the plan requires camera travel. No unrequested cut, text, logo or watermark.
+Replace placeholders with the approved shot plan; match duration to the manifest.
+Image 1 is the departure; image 2 is the destination.
+One continuous [duration]-second shot:
+Opening: [viewpoint and exit direction].
+Middle: [physical path and visible intermediate event].
+Arrival: [reveal, approach and settling into image 2].
+Preserve the approved identities and rendering style as perspective changes.
+Follow the planned camera event; no unintended cut, morph, text or watermark.
