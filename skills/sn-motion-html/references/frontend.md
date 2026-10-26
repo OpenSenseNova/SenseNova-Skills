@@ -12,6 +12,20 @@ Render every media segment as an absolutely stacked child of one fixed, full-vie
 
 The bundled runtime fetches nearby clips as Blob URLs, keeps still posters visible until a sought frame paints, coalesces seeks, and supports reverse travel. A failed clip leaves the poster visible. Under `prefers-reduced-motion`, keep posters and cross-dissolve between them without loading video.
 
+Drive automated scroll QA from the segment math, not from element geometry: every segment is absolutely stacked at the top of the stage, so `offsetTop` and `getBoundingClientRect().top` read ~0 for all of them and a geometry-based `scrollTo` silently stays on the first chapter. Compute the target as cumulative `units` (chapter `span`, default 4.6; connector `connectorSpan`, default 1.2) × `viewportHeight`. While there, assert the chapter counter only after the midpoint of a connector — the runtime reports the departure chapter until local progress passes 0.5 by design.
+
+When segment math is not at hand, sweep the page in fixed steps (about a viewport-height per step) instead of guessing absolute offsets, and require every copy block to reach opacity ≥ 0.9 exactly once. Screenshots taken at guessed offsets usually land inside a connector, where copy is hidden by design, and read as missing content. Emulated states also need a reload: set `prefers-reduced-motion` or the device-metrics override through CDP first and then reload, or the check runs against the un-emulated page.
+
+## Wheel snapping and connector timing
+
+Scenes remain scroll-scrubbed. With `meta.scrollSnap: true` (default), mouse wheel and keyboard input stop at the next connector boundary. Continue scrolling in the same gesture to accumulate `meta.snapThreshold` normalized pixels (default 160); then the connector completes automatically and lands on the adjacent scene with its full copy visible. Reversing the gesture before commitment releases the boundary. A gap over 240 ms resets uncommitted intent.
+
+Connector progress follows an elapsed-time clock at `meta.connectorPlaybackRate` (default 0.8, range 0.25–1), independent of wheel magnitude. A five-second clip takes about 6.25 seconds at the default rate. Do not use browser smooth-scroll duration or raw wheel deltas as the connector playback clock. Ignore additional wheel input during the transition and drain momentum before allowing another one. Missing media uses posters; reduced motion keeps native scrolling without fetching video.
+
+Chapter navigation is an explicit jump and cancels any in-flight connector; Escape or scrollbar navigation also cancels it. Preserve native zoom, dialog scrolling, and scrollable copy. Touch gestures retain native scrubbing. Use `scrollSnap: false` to opt back into direct scroll scrubbing for all segments.
+
+QA must verify both directions, below-threshold hold, automatic completion after input stops, no fast-forward from a large wheel burst, no chained transition from momentum, destination copy visibility, navigation cancellation, and reduced-motion behavior. The template owns and cleans up its animation frame and input listeners on unmount.
+
 ## Interface presets
 
 All presets share the exact same stage and timeline. They change only page chrome and copy composition:
@@ -47,6 +61,14 @@ Avoid cloning distinctive decorative elements from a reference. Use new geometry
 - Preserve semantic headings, paragraphs, lists, and links in the generated copy layer.
 - Maintain readable contrast with an edge-free localized gradient, never an opaque full-screen cover or default solid copy card.
 - Prime loaded muted videos on the first user gesture for mobile browsers.
+
+## Copy language and localization
+
+The template ships English interface chrome and Latin-first font stacks: the loading status in `index.html`, the sources-dialog labels, and in `src/motion-runtime.js` the source link, the navigation `aria-label`, the scroll hint, the per-chapter "Go to" `aria-label`, plus the `src/app.js` load-error message. When the story language is not English, replace every one of these strings and set `<html lang>` to match, otherwise the delivered site mixes languages around already-localized copy.
+
+Extend `--mh-display` and `--mh-body` in `styles.css` with scripts used by the copy language before the generic `serif` / `sans-serif` fallback — for Simplified Chinese, `"Songti SC"` / `"Noto Serif SC"` for display and `"PingFang SC"`, `"Hiragino Sans GB"`, `"Microsoft YaHei"`, `"Noto Sans SC"` for body. A Latin-only stack leaves CJK glyphs to platform fallback, which produces inconsistent weights and metrics across machines.
+
+Story text itself comes from `content/story.json`, so audit only the three chrome files (`index.html`, `src/app.js`, `src/motion-runtime.js`) for leftover source-language strings.
 
 ## Hosting safety
 

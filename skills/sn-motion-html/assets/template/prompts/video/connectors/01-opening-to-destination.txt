@@ -1,1 +1,7 @@
-Image 1 is the departure boundary and image 2 is the destination boundary. Create a continuous four-second journey between them through an environment appropriate to this story. Preserve recurring identities, palette, and material language. No cut, text, extra subject, violent morph, or camera roll. Keep the first and last moments stable.
+Image 1 is the departure boundary; image 2 is the destination boundary.
+Replace this template with the approved, subject-specific connector plan before generation.
+Duration: match the video manifest. Choose one dominant camera event appropriate to these scenes.
+Opening: define the exit viewpoint, direction and acceleration.
+Middle: define the physical route and a visible intermediate event, with foreground parallax or altitude/scale change as appropriate.
+Arrival: reveal the destination, approach from the planned direction and decelerate into image 2.
+Preserve identities and rendering style while perspective changes. Do not substitute a dissolve, landmark morph, static zoom or walking follow when the plan requires camera travel. No unrequested cut, text, logo or watermark.

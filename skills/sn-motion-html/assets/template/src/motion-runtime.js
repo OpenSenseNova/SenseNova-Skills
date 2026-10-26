@@ -123,7 +123,9 @@
       button.setAttribute('aria-label', `Go to ${chapter.label || chapter.title || `chapter ${index + 1}`}`);
       button.addEventListener('click', () => {
         const target = sceneSegments[index]?.start || 0;
-        scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' });
+        cancelTransition();
+        restingScene = index;
+        setPosition(target);
       });
       navigation.appendChild(button);
       navButtons.push(button);
@@ -135,7 +137,132 @@
     let readQueued = false;
     let activeChapter = -1;
 
+    // Wheel input scrubs scenes, but a connector has its own media clock.
+    const snapThreshold = Math.max(40, Number(config.snapThreshold) || 160);
+    const connectorRate = clamp(Number(config.connectorPlaybackRate) || 0.8, 0.25, 1);
+    let transition = null;
+    let wheelIntent = 0;
+    let intentConnector = null;
+    let lastWheel = -Infinity;
+    let cooldownUntil = 0;
+    let restingScene = null;
+    let destroyed = false;
+    let animationFrame = 0;
+    let lastFrame = 0;
+    let expectedScroll = scrollY;
+
+    function setPosition(y) {
+      expectedScroll = y;
+      scrollTo({ top: y, behavior: 'instant' });
+      read();
+    }
+
+    function cancelTransition() {
+      transition = null;
+      wheelIntent = 0;
+      intentConnector = null;
+      delete container.dataset.transition;
+    }
+
+    function startTransition(segment, direction) {
+      wheelIntent = 0;
+      intentConnector = null;
+      restingScene = null;
+      loadClip(segment);
+      transition = { segment, direction, progress: clamp((scrollY - segment.start) / (segment.end - segment.start)), waited: 0 };
+      container.dataset.transition = 'playing';
+    }
+
+    function moveBy(delta, now) {
+      if (transition || now < cooldownUntil) return;
+      const direction = Math.sign(delta);
+      if (!direction) return;
+      const y = scrollY;
+      const proposed = clamp(y + delta, 0, totalUnits * viewportHeight);
+      const connector = segments.find((s) => s.kind === 'connector' && (
+        direction > 0 ? y < s.end - 1 && proposed >= s.start - 1
+          : y > s.start + 1 && proposed <= s.end + 1
+      ));
+      if (!connector) {
+        wheelIntent = 0;
+        intentConnector = null;
+        restingScene = null;
+        setPosition(proposed);
+        return;
+      }
+      const boundary = direction > 0 ? connector.start : connector.end;
+      const inside = y > connector.start + 1 && y < connector.end - 1;
+      const push = inside ? Math.abs(delta) : Math.max(0, Math.abs(delta) - Math.abs(boundary - y));
+      if (intentConnector !== connector || Math.sign(wheelIntent) !== direction) wheelIntent = 0;
+      intentConnector = connector;
+      wheelIntent += direction * push;
+      // Hold on the departure boundary until the gesture has enough intent.
+      if (!inside) {
+        restingScene = direction > 0 ? connector.chapterIndex : connector.chapterIndex + 1;
+        setPosition(boundary + (direction > 0 ? -1 : 1));
+      }
+      if (Math.abs(wheelIntent) >= snapThreshold) startTransition(connector, direction);
+    }
+
+    function handlesInput(event) {
+      if (reduced || config.scrollSnap === false || event.ctrlKey || event.metaKey) return false;
+      if (document.querySelector('dialog[open]')) return false;
+      if (event.target?.closest?.('input, textarea, select, [contenteditable="true"]')) return false;
+      // Let long mobile copy and other nested scrolling surfaces scroll normally.
+      for (let el = event.target; el && el !== container && el !== document.body; el = el.parentElement) {
+        const delta = event.deltaY || 0;
+        const canScroll = !delta || (delta > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0);
+        if (canScroll && el.scrollHeight > el.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(el).overflowY)) return false;
+      }
+      return true;
+    }
+
+    function onWheel(event) {
+      if (!handlesInput(event) || Math.abs(event.deltaX) > Math.abs(event.deltaY) || !event.deltaY) return;
+      event.preventDefault();
+      const now = performance.now();
+      const gap = now - lastWheel;
+      lastWheel = now;
+      if (transition || now < cooldownUntil) {
+        cooldownUntil = now + 260; // Drain momentum; never queue the next connector.
+        return;
+      }
+      if (gap > 240) wheelIntent = 0;
+      const multiplier = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewportHeight : 1;
+      moveBy(event.deltaY * multiplier, now);
+    }
+
+    function onKey(event) {
+      if (event.key === 'Escape') { cancelTransition(); return; }
+      if (!handlesInput(event) || event.target?.closest?.('button, a')) return;
+      const delta = { ArrowDown: 80, ArrowUp: -80, PageDown: viewportHeight * 0.8,
+        PageUp: -viewportHeight * 0.8, ' ': viewportHeight * (event.shiftKey ? -0.8 : 0.8) }[event.key];
+      if (delta === undefined) return;
+      event.preventDefault();
+      moveBy(delta, performance.now());
+    }
+
+    function tickTransition(dt, now) {
+      if (!transition || document.hidden) return;
+      const t = transition;
+      const segment = t.segment;
+      t.waited += dt;
+      // Start only after the media is decoded; missing media uses the poster after a bounded wait.
+      if (!segment.ready && !segment.failed && segment.clip && t.waited < 8000) return;
+      const seconds = Number.isFinite(segment.video?.duration) ? segment.video.duration : 4;
+      t.progress = clamp(t.progress + t.direction * dt * connectorRate / (Math.max(0.1, seconds) * 1000));
+      setPosition(segment.start + t.progress * (segment.end - segment.start));
+      if ((t.direction > 0 && t.progress >= 1) || (t.direction < 0 && t.progress <= 0)) {
+        restingScene = segment.chapterIndex + (t.direction > 0 ? 1 : 0);
+        const destination = t.direction > 0 ? segment.end + 1 : segment.start - 1;
+        cancelTransition();
+        cooldownUntil = now + 350;
+        setPosition(destination);
+      }
+    }
+
     function layout() {
+      cancelTransition();
       viewportHeight = innerHeight;
       viewportWidth = innerWidth;
       let offset = 0;
@@ -155,15 +282,19 @@
       fetch(segment.clip)
         .then((response) => response.ok ? response.blob() : Promise.reject(new Error(String(response.status))))
         .then((blob) => {
+          if (destroyed) return;
           const video = node('video', 'mh-shot__video');
           video.muted = true;
           video.playsInline = true;
           video.preload = 'auto';
           video.src = URL.createObjectURL(blob);
-          video.addEventListener('loadedmetadata', () => {
+          video.addEventListener('loadeddata', () => {
+            if (destroyed) return;
             segment.ready = true;
+            shotReady(segment);
             scheduleRead();
           });
+          video.addEventListener('error', () => { segment.failed = true; segment.ready = false; });
           video.addEventListener('seeked', () => shotReady(segment), { once: true });
           segment.shot.appendChild(video);
           segment.video = video;
@@ -190,6 +321,7 @@
     }
 
     function read() {
+      if (destroyed) return;
       const y = scrollY;
       const fadeDistance = Math.max(1, viewportHeight * 0.14);
       let currentSegment = segments[0];
@@ -213,8 +345,8 @@
         const enter = index === 0 ? 1 : smooth(local / 0.09);
         const leave = index === chapters.length - 1 ? 1 : smooth((1 - local) / 0.09);
         const opacity = inside ? Math.min(enter, leave) : (index === chapters.length - 1 && y > scene.end ? 1 : 0);
-        copies[index].style.opacity = opacity;
-        copies[index].style.pointerEvents = opacity > 0.7 ? 'auto' : 'none';
+        copies[index].style.opacity = restingScene === index ? 1 : opacity;
+        copies[index].style.pointerEvents = (restingScene === index || opacity > 0.7) ? 'auto' : 'none';
       });
 
       const localChapter = currentSegment.kind === 'scene'
@@ -237,20 +369,34 @@
       readQueued = false;
     }
 
+    function onScroll() {
+      if (Math.abs(scrollY - expectedScroll) > 2) {
+        cancelTransition();
+        restingScene = null;
+      }
+      expectedScroll = scrollY;
+      scheduleRead();
+    }
+
     function scheduleRead() {
       if (readQueued) return;
       readQueued = true;
       requestAnimationFrame(read);
     }
 
-    function animate() {
+    function animate(now) {
+      if (destroyed) return;
+      const dt = lastFrame ? Math.min(50, now - lastFrame) : 0;
+      lastFrame = now;
+      tickTransition(dt, now);
       segments.forEach((segment) => {
         if (!segment.visible || !segment.ready || !segment.video || segment.video.seeking) return;
-        segment.current += (segment.target - segment.current) * 0.2;
+        if (segment.kind === 'connector') segment.current = segment.target;
+        else segment.current += (segment.target - segment.current) * (1 - Math.exp(-dt / 80));
         const targetTime = clamp(segment.current, 0, 0.999) * (segment.video.duration || 1);
         if (Math.abs(segment.video.currentTime - targetTime) > 0.01) segment.video.currentTime = targetTime;
       });
-      requestAnimationFrame(animate);
+      animationFrame = requestAnimationFrame(animate);
     }
 
     function primeVideos() {
@@ -266,15 +412,24 @@
       layout();
     }
 
-    addEventListener('scroll', scheduleRead, { passive: true });
+    addEventListener('wheel', onWheel, { passive: false });
+    addEventListener('keydown', onKey);
+    addEventListener('scroll', onScroll, { passive: true });
     addEventListener('resize', onResize);
     addEventListener('touchstart', primeVideos, { once: true, passive: true });
     addEventListener('pointerdown', primeVideos, { once: true, passive: true });
     layout();
-    requestAnimationFrame(animate);
+    animationFrame = requestAnimationFrame(animate);
 
     return function destroy() {
-      removeEventListener('scroll', scheduleRead);
+      destroyed = true;
+      cancelAnimationFrame(animationFrame);
+      cancelTransition();
+      removeEventListener('wheel', onWheel);
+      removeEventListener('keydown', onKey);
+      removeEventListener('touchstart', primeVideos);
+      removeEventListener('pointerdown', primeVideos);
+      removeEventListener('scroll', onScroll);
       removeEventListener('resize', onResize);
       segments.forEach((segment) => {
         if (segment.video?.src.startsWith('blob:')) URL.revokeObjectURL(segment.video.src);
