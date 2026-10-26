@@ -311,13 +311,10 @@
     }
 
     function remapWithLinger(progress, amount) {
-      if (!amount) return progress;
-      const hold = clamp(amount, 0, 0.6) * 0.38;
-      const left = 0.5 - hold;
-      const right = 0.5 + hold;
-      if (progress < left) return progress * (0.5 / left);
-      if (progress > right) return 0.5 + (progress - right) * (0.5 / (1 - right));
-      return 0.5;
+      // A strictly increasing easing curve: reading slows the shot, never freezes it.
+      const p = clamp(progress);
+      const strength = clamp(Number(amount) || 0, 0, 0.6);
+      return p + strength * Math.sin(2 * Math.PI * p) / (2 * Math.PI);
     }
 
     function read() {
@@ -342,7 +339,7 @@
         const scene = sceneSegments[index];
         const local = clamp((y - scene.start) / Math.max(1, scene.end - scene.start));
         const inside = y >= scene.start && y <= scene.end;
-        const enter = index === 0 ? 1 : smooth(local / 0.09);
+        const enter = 1; // A landed chapter stays readable when scrolling resumes.
         const leave = index === chapters.length - 1 ? 1 : smooth((1 - local) / 0.09);
         const opacity = inside ? Math.min(enter, leave) : (index === chapters.length - 1 && y > scene.end ? 1 : 0);
         copies[index].style.opacity = restingScene === index ? 1 : opacity;
@@ -390,11 +387,11 @@
       lastFrame = now;
       tickTransition(dt, now);
       segments.forEach((segment) => {
-        if (!segment.visible || !segment.ready || !segment.video || segment.video.seeking) return;
+        if (!segment.visible || !segment.ready || !segment.video) return;
         if (segment.kind === 'connector') segment.current = segment.target;
         else segment.current += (segment.target - segment.current) * (1 - Math.exp(-dt / 80));
         const targetTime = clamp(segment.current, 0, 0.999) * (segment.video.duration || 1);
-        if (Math.abs(segment.video.currentTime - targetTime) > 0.01) segment.video.currentTime = targetTime;
+        if (!segment.video.seeking && Math.abs(segment.video.currentTime - targetTime) > 0.01) segment.video.currentTime = targetTime;
       });
       animationFrame = requestAnimationFrame(animate);
     }

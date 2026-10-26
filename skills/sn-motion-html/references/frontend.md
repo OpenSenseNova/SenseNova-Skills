@@ -16,6 +16,8 @@ Drive automated scroll QA from the segment math, not from element geometry: ever
 
 When segment math is not at hand, sweep the page in fixed steps (about a viewport-height per step) instead of guessing absolute offsets, and require every copy block to reach opacity ≥ 0.9 exactly once. Screenshots taken at guessed offsets usually land inside a connector, where copy is hidden by design, and read as missing content. Emulated states also need a reload: set `prefers-reduced-motion` or the device-metrics override through CDP first and then reload, or the check runs against the un-emulated page.
 
+Scene `linger` controls a continuous slowdown near the middle of the shot, not a frozen-frame hold. Keep the progress mapping strictly increasing and update smoothing even while a previous seek is pending; coalesce only the seek writes. Chapter copy is fully visible upon entry and must not fade out again when scrolling resumes after a snapped landing.
+
 ## Wheel snapping and connector timing
 
 Scenes remain scroll-scrubbed. With `meta.scrollSnap: true` (default), mouse wheel and keyboard input stop at the next connector boundary. Continue scrolling in the same gesture to accumulate `meta.snapThreshold` normalized pixels (default 160); then the connector completes automatically and lands on the adjacent scene with its full copy visible. Reversing the gesture before commitment releases the boundary. A gap over 240 ms resets uncommitted intent.

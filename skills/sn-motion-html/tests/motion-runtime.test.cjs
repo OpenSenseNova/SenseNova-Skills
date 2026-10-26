@@ -3,7 +3,7 @@ const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
 const source = fs.readFileSync(require('node:path').join(__dirname, '../assets/template/src/motion-runtime.js'), 'utf8');
-function fixture({reduced=false, snap=true, media=false}={}) {
+function fixture({reduced=false, snap=true, media=false, linger=0.35}={}) {
   const listeners = new Map(), frames = new Map(); let now=0,id=0;
   class Element {
     constructor(tag='div'){this.tagName=tag;this.duration=5;this.currentTime=0;this.children=[];this.dataset={};this.style={setProperty(){}};this.events={};this.classList={add(){},toggle(){}};this.scrollHeight=0;this.clientHeight=0;this.scrollTop=0;this.parentElement=null;this.attrs={};}
@@ -25,7 +25,7 @@ function fixture({reduced=false, snap=true, media=false}={}) {
   ctx.window=ctx;ctx.scrollTo=({top})=>{ctx.scrollY=top;listeners.get('scroll')?.();};
   vm.runInNewContext(source,ctx);
   const destroy=ctx.mountMotionHTML(root,{scrollSnap:snap,connectorSpan:1.2,connectorPlaybackRate:0.8,snapThreshold:160,
-    chapters:[{title:'A',span:4.6},{title:'B',span:4.6},{title:'C',span:4.6}],connectors:['connector-1','connector-2']});
+    chapters:[{title:'A',span:4.6,clip:'scene-a',linger},{title:'B',span:4.6,clip:'scene-b',linger},{title:'C',span:4.6,clip:'scene-c',linger}],connectors:['connector-1','connector-2']});
   // Fixture fetches resolve locally; no network or generated media is needed.
   function wheel(delta,options={}){let prevented=false;listeners.get('wheel')?.({deltaY:delta,deltaX:0,deltaMode:0,target:root,preventDefault:()=>prevented=true,...options});return prevented;}
   function advance(ms){for(let left=ms;left>0;){let step=Math.min(16,left);left-=step;now+=step;const callbacks=[...frames.values()];frames.clear();callbacks.forEach(cb=>cb(now));}}
@@ -73,4 +73,51 @@ test('navigation cancels animation and makes destination copy readable',()=>{
 test('a five-second decoded connector takes 6.25 seconds at 0.8x, not wheel speed',()=>{
  const f=fixture({media:true});f.wheel(5000);f.advance(5000);assert.equal(f.root.dataset.transition,'playing');
  assert(f.ctx.scrollY<4176);f.advance(1350);assert.equal(f.root.dataset.transition,undefined);assert(Math.abs(f.ctx.scrollY-4177)<0.01);
+});
+
+
+test('reading slowdown keeps the video advancing through the middle in both directions', () => {
+  for (const linger of [0, 0.35, 0.6]) {
+    const f = fixture({media: true, snap: false, linger});
+    const video = f.root.children[0].children[0].children.at(-1);
+    let previous;
+    for (let step = 15; step <= 35; step++) {
+      f.ctx.scrollTo({top: (step / 50) * 3312});
+      f.advance(800);
+      if (previous !== undefined) assert(video.currentTime > previous + 0.025, 'forward scrubbing must not freeze');
+      previous = video.currentTime;
+    }
+    for (let step = 34; step >= 15; step--) {
+      f.ctx.scrollTo({top: (step / 50) * 3312});
+      f.advance(800);
+      assert(video.currentTime < previous - 0.025, 'reverse scrubbing must not freeze');
+      previous = video.currentTime;
+    }
+    f.destroy();
+  }
+});
+
+test('copy stays visible when scrolling resumes after a snapped landing', () => {
+  const f = fixture({media: true});
+  f.wheel(5000);
+  f.advance(6400);
+  assert.equal(f.root.dataset.transition, undefined);
+  assert.equal(f.root.children[1].children[1].style.opacity, 1);
+  f.advance(400);
+  f.wheel(50);
+  assert.equal(f.root.children[1].children[1].style.opacity, 1);
+  f.destroy();
+});
+
+test('pending decoding coalesces seek writes without stalling progress smoothing', () => {
+  const f = fixture({media: true});
+  const video = f.root.children[0].children[0].children.at(-1);
+  video.seeking = true;
+  f.ctx.scrollTo({top: 1656});
+  f.advance(1000);
+  assert.equal(video.currentTime, 0, 'do not issue another seek while decoding');
+  video.seeking = false;
+  f.advance(16);
+  assert(Math.abs(video.currentTime - 2.5) < 0.03, 'catch up on the first frame after decoding');
+  f.destroy();
 });
