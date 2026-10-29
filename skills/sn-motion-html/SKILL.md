@@ -90,3 +90,9 @@ Before delivery:
 4. Test a fresh browser session, reverse and forward progress, chapter navigation, transition boundaries, missing-video fallback, and reduced motion.
 5. Inspect a midpoint contact sheet. Prioritize correct identities, key objects, and scene meaning over incidental generative details unless the user asks for stricter fidelity.
 6. Report the preview URL, project path, media directories, model configuration, QA result, and any remaining external blocker.
+
+## Acknowledgments
+
+The design of `sn-motion-html` was inspired by [Scroll World](https://github.com/oso95/scroll-world)
+by [oso95](https://github.com/oso95), particularly the idea of scroll-driven, continuous-camera
+web storytelling. We thank the author for sharing this creative approach.
