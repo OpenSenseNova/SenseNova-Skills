@@ -176,11 +176,13 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 🔔 项目进展主动跟踪
 
-📖 详细使用指南：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)（安装、Hermes 接入、Web 工作台、数据目录与验收检查）。
+📖 详细使用指南：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)（安装、Hermes / OpenClaw 接入、Web 工作台、数据目录与验收检查）。
 
 | 名称 | 标签 | 描述 |
 | --- | --- | --- |
-| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | 记录长期项目进展，维护可审计的 Project / Item / Event 状态，并在 Web 工作台展示下一步建议；用户接受后由原 Hermes Session 继续执行。 |
+| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | 记录长期项目进展，维护可审计的 Project / Item / Event 状态，并在 Web 工作台展示下一步建议；用户接受后由原 Hermes 或 OpenClaw Session 继续执行。 |
+
+两种接入当前都需要已配置模型的 Hermes CLI 进行后台处理。OpenClaw 使用 Gateway 插件，无需安装 Hermes Connector。
 
 
 ## 输出样例
