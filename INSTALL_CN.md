@@ -358,6 +358,7 @@ cp -r skills/* ~/.hermes/skills/
 - 演示文稿：[`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md)
 - 数据分析：[`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md)
 - 深度研究 / 搜索：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) 与 [`docs/sn-deepresearch-cli_cn.md`](docs/sn-deepresearch-cli_cn.md)
+- 代码视频创作：[`docs/sn-code-video_cn.md`](docs/sn-code-video_cn.md)（FFmpeg、项目内浏览器渲染环境与可选声音依赖）
 - HTML 与网页体验：[`docs/sn-motion-html_cn.md`](docs/sn-motion-html_cn.md)
 - 团队协作：[`docs/sn-team-harness_cn.md`](docs/sn-team-harness_cn.md)
 - 项目进展主动跟踪：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)

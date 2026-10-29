@@ -18,7 +18,7 @@ The SenseNova model family plugs directly into agent runtimes such as [OpenClaw]
 
 In this repository each skill lives in its own directory and declares triggers, capabilities, and execution flow through a `SKILL.md` file, following the [Agent Skills](https://agentskills.io/) convention.
 
-The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, **deep research**, **HTML experiences**, **team collaboration**, and **proactive project tracking** — usable standalone or composed into end-to-end workflows.
+The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, **deep research**, **code-driven video creation**, **HTML experiences**, **team collaboration**, and **proactive project tracking** — usable standalone or composed into end-to-end workflows.
 
 > 🎨 **Want to see what it can do?** Check out our   [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their **prompt designs**  !
 
@@ -145,6 +145,15 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | [`sn-search-code`](skills/sn-search-code/SKILL.md)           | Developer Search       | GitHub (repo / code / issue) / Stack Overflow / Hacker News / HuggingFace (models / datasets / spaces), aggregated.                        |
 | [`sn-search-social-cn`](skills/sn-search-social-cn/SKILL.md) | Chinese Social Search  | Bilibili / Zhihu / Douyin search; some platforms require cookie auth.                                                                      |
 | [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | English Social Search  | Reddit / Twitter (X) / YouTube search.                                                                                                     |
+
+
+### 🎬 Code-driven Video Creation
+
+📖 Full guide: [`docs/sn-code-video.md`](docs/sn-code-video.md) (requirements, setup, rendering, sound, and verification).
+
+| Name | Label | Description |
+| --- | --- | --- |
+| [`sn-code-video`](skills/sn-code-video/SKILL.md) | Code Video | Creates and revises code-driven MP4 videos with deterministic frame rendering, eight craft guides, optional sound and narration, contact-sheet review, and final-file verification. |
 
 
 ### 🌐 HTML & Web Experiences

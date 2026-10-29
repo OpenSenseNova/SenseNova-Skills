@@ -360,6 +360,7 @@ Some skills need extra Python deps, API keys, or runtime tools. Check the releva
 - Presentations: [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md)
 - Data analysis: [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md)
 - Deep research / search: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) and [`docs/sn-deepresearch-cli.md`](docs/sn-deepresearch-cli.md)
+- Code-driven video creation: [`docs/sn-code-video.md`](docs/sn-code-video.md) (FFmpeg, project-local browser renderer, and optional audio dependencies)
 - HTML & web experiences: [`docs/sn-motion-html.md`](docs/sn-motion-html.md)
 - Team collaboration: [`docs/sn-team-harness.md`](docs/sn-team-harness.md)
 - Proactive project tracking: [`docs/sn-proactive-agent.md`](docs/sn-proactive-agent.md)
