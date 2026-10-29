@@ -76,3 +76,9 @@ python scripts/serve_project.py . --port 8080
 Before handoff, validate media dimensions, frame rate, codec, duration, browser navigation,
 reverse and forward progress, missing-video fallback, and reduced-motion behavior. Deliver the
 preview URL, project path, media directories, provider settings, and any remaining blocker.
+
+## Acknowledgments
+
+The design of `sn-motion-html` was inspired by [Scroll World](https://github.com/oso95/scroll-world)
+by [oso95](https://github.com/oso95), particularly the idea of scroll-driven, continuous-camera
+web storytelling. We thank the author for sharing this creative approach.
