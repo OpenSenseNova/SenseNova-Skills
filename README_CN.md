@@ -19,7 +19,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
-技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**、**HTML 网页体验**、**团队协作**与**项目进展主动跟踪**等场景，可独立使用，也可组合成端到端工作流。
+技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**、**代码视频创作**、**HTML 网页体验**、**团队协作**与**项目进展主动跟踪**等场景，可独立使用，也可组合成端到端工作流。
 
 > 🎨 **想看它到底能干啥？** [**点击逛 sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便 “ 偷师 ”一下  **Prompt**  应该怎么写！
 
@@ -144,6 +144,15 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | [`sn-search-code`](skills/sn-search-code/SKILL.md)           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
 | [`sn-search-social-cn`](skills/sn-search-social-cn/SKILL.md) | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
 | [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
+
+
+### 🎬 代码视频创作
+
+📖 详细使用指南：[`docs/sn-code-video_cn.md`](docs/sn-code-video_cn.md)（环境要求、安装、渲染、声音制作与验收）。
+
+| 名称 | 标签 | 描述 |
+| --- | --- | --- |
+| [`sn-code-video`](skills/sn-code-video/SKILL.md) | 代码视频 | 制作与修改由代码绘制的 MP4 视频，提供确定性逐帧渲染、8 份创作指南、可选音效与旁白、联系表画面检查及最终文件验证。 |
 
 
 ### 🌐 HTML 与网页体验
