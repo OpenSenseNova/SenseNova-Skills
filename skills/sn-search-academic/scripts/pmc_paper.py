@@ -23,6 +23,59 @@ from typing import Any
 
 from search_utils import get_client, print_json
 
+
+def _safe_fromstring(text: str) -> ET.Element:
+    """Parse XML from an untrusted remote response without XXE risk.
+
+    ``ET.fromstring`` resolves internal/external entities and can be coerced
+    into expanding entities (billion-laughs) or reading local files / making
+    outbound requests via external DTDs. PMC eFetch returns third-party
+    authored JATS XML, so the response must be treated as untrusted.
+
+    ``XMLParser`` does not resolve entities by default, and the expat
+    handlers below reject any DTD outright, so entity declarations never get
+    a chance to expand. Prefers ``defusedxml`` when it is installed: it
+    refuses DTDs, entities, and external references by policy.
+    """
+    try:
+        from defusedxml.ElementTree import fromstring as _dx_fromstring
+    except ImportError:
+        _dx_fromstring = None
+
+    if _dx_fromstring is not None:
+        return _dx_fromstring(text)
+
+    # Stdlib fallback. Legitimate PMC/JATS responses DO carry a DOCTYPE
+    # (an external DTD reference), so a blanket DTD ban breaks normal
+    # parsing. What makes XML dangerous is *entity* declarations: XXE file
+    # reads and billion-laughs both require <!ENTITY>. Block those outright,
+    # and strip the external-DTD URL so expat never fetches or resolves it.
+    # Internal entities declared without <!ENTITY> cannot exist, so this
+    # leaves well-formed JATS untouched.
+    if "<!ENTITY" in text:
+        raise ValueError("拒绝解析包含 ENTITY 声明的 XML（潜在 XXE 攻击）")
+
+    text = _strip_external_dtd(text)
+    return ET.fromstring(text)
+
+
+# DOCTYPE with an external subset: <!DOCTYPE name PUBLIC "..." "..."> or SYSTEM "..."
+_EXTERNAL_DTD_RE = re.compile(
+    r"<!DOCTYPE\s+[^\[>]*?(?:PUBLIC\s*(?:\"[^\"]*\"\s*'[^']*'|\"[^\"]*\"|'[^']*')"
+    r"|SYSTEM\s*(?:\"[^\"]*\"|'[^']*'))\s*>",
+    re.IGNORECASE,
+)
+
+
+def _strip_external_dtd(text: str) -> str:
+    """Drop the external DTD reference from a DOCTYPE, keeping the document valid.
+
+    An external DTD is what turns a parser into an SSRF / local-file-read
+    vector. Removing the system identifier leaves a bare DOCTYPE (harmless)
+    and lets the remaining content parse normally.
+    """
+    return _EXTERNAL_DTD_RE.sub("", text)
+
 EFETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 ELINK_URL  = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi"
 
@@ -75,7 +128,7 @@ def fetch_pmc_xml(pmc_num: str, api_key: str | None = None) -> ET.Element:
         resp = client.get(EFETCH_URL, params=params)
         resp.raise_for_status()
 
-    root = ET.fromstring(resp.text)
+    root = _safe_fromstring(resp.text)
 
     # 检查是否找到论文
     article = root.find(".//article")
