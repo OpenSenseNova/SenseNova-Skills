@@ -373,7 +373,9 @@ Start the agent and ask:
 
 > List the available skills, with a one-line description for each.
 
-If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, `sn-deep-research`, `sn-motion-html`, `sn-team-harness`, and `sn-proactive-agent` from this repo, the LLM and skill setup is good to go. `sn-deepresearch-cli` additionally requires the standalone CLI installation described in its guide. `sn-proactive-agent` additionally requires the runtime package and Hermes integration described in its guide.
+If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, `sn-deep-research`, `sn-motion-html`, `sn-team-harness`, and `sn-proactive-agent` from this repo, skill discovery is working; this does not verify each skill's runtime dependencies or integrations. `sn-deepresearch-cli` additionally requires the standalone CLI installation described in its guide.
+
+For `sn-proactive-agent`, install the runtime package and the Hermes Connector or OpenClaw Gateway plugin following [its guide](docs/sn-proactive-agent.md). Both paths currently require a model-configured Hermes CLI for background processing; OpenClaw-only use does not require the Hermes Connector. Verify conversation capture, an accepted suggestion running in the original session, and result feedback. A healthy Web service alone does not confirm the integration works.
 
 ---
 

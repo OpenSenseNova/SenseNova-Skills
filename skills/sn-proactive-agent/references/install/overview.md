@@ -96,11 +96,20 @@ sn-proactive-agent doctor --json
 
 ## 4. 启动 Web 并检查
 
-当前使用前台服务，在单独终端执行：
+当前使用前台服务。仅接入 Hermes 时，在单独终端执行：
 
 ```text
 sn-proactive-agent serve --web-only
 ```
+
+接入 OpenClaw（包括同时接入两个 Harness）时，改用下列启动方式；Gateway 地址须与实际实例一致，不要同时启动两个 Core 服务：
+
+```text
+sn-proactive-agent serve --web-only --openclaw-gateway-url http://127.0.0.1:18789
+```
+
+按 [OpenClaw 启动与启用监听说明](../connectors/openclaw.md#启动与启用监听)配置 Gateway 鉴权，
+并在 Web 设置中启用 OpenClaw。只监听 OpenClaw 时可关闭 Hermes 监听；这不会移除后台 Hermes CLI 依赖。
 
 在另一个终端检查服务：
 

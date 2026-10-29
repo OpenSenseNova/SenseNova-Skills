@@ -177,11 +177,13 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ### 🔔 Proactive Project Tracking
 
-📖 Full guide: [`docs/sn-proactive-agent.md`](docs/sn-proactive-agent.md) (installation, Hermes integration, Web workbench, data layout, and acceptance checks).
+📖 Full guide: [`docs/sn-proactive-agent.md`](docs/sn-proactive-agent.md) (installation, Hermes / OpenClaw integration, Web workbench, data layout, and acceptance checks).
 
 | Name | Label | Description |
 | --- | --- | --- |
-| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | Tracks long-running project progress, keeps auditable Project / Item / Event records, and presents next-step suggestions in a Web workbench; accepted suggestions resume the original Hermes session. |
+| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | Tracks long-running project progress, keeps auditable Project / Item / Event records, and presents next-step suggestions in a Web workbench; accepted suggestions resume the original Hermes or OpenClaw session. |
+
+Both integrations currently require a model-configured Hermes CLI for background processing. OpenClaw uses a Gateway plugin and does not require the Hermes Connector.
 
 
 ## Sample Outputs
