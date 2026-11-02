@@ -13,7 +13,7 @@ The defining experience is one continuous camera journey controlled by page prog
 
 1. Resolve the story goal, audience, factual fidelity, chapter scale, visual language, copy language, target devices, sound policy, and available API credentials. Make reasonable defaults only for low-risk implementation details.
 2. For factual or source-based stories, research before outlining and record sources separately from display copy.
-3. Produce a chapter blueprint, shot/connector plan, and character/object bible before generating the full media set.
+3. Plan chapters, recurring identities and connector paths before generating their boundary images; use [references/prompting.md](references/prompting.md) for shot planning and acceptance criteria.
 4. Detect the image-generation capability available in the current environment before generating any stills. The capability may be a callable image tool, a skill that exposes or instructs an image workflow, or both. Use the available capability when present; if no suitable capability is available, report that blocker to the user before continuing past the still-generation stage.
 5. Prepare a review package containing the proposed visual style and the content/shot arrangement. When an image capability is available, generate only the small reference/gate set needed for review.
 6. Obtain the user's explicit approval at both approval gates below. After approval, generate the complete still set and inspect it before any paid video batch.
@@ -22,7 +22,9 @@ The defining experience is one continuous camera journey controlled by page prog
 
 ## Required user approval gates
 
-Do not silently infer approval from an unanswered message or from a prior general instruction. If the user requests changes, revise the package and present the affected gate again.
+Record explicit approvals; an unanswered message is not approval. Apply existing authorization to revisions within its scope; present the affected gate again when a change exceeds that scope.
+
+When chapters change, reuse accepted assets with stable IDs and preserve superseded variants as alternatives. Identify newly paid work and request clarification only if its scope or budget is unclear or exceeds existing authorization; reordering chapters does not require renaming masters.
 
 1. **Visual style approval:** present the style preamble and identity blocks, including medium, palette, materials, lighting, camera grammar, composition, negative constraints, and recurring character/product treatment. When image generation is available, include a small reference/gate set (normally opening, middle, and ending stills). Do not generate the complete still set until the user explicitly approves the visual direction.
 2. **Content and shot-plan approval:** present the chapter order, each chapter's dominant visual event and display copy, scene framing/camera intent, connector start and destination, and per-scene copy position. Do not generate the complete still set or write the final video manifest until the user explicitly approves this arrangement.
@@ -65,7 +67,7 @@ python scripts/serve_project.py . --port 8080
 
 - Keep narrative data in `content/story.json`; do not hardcode chapter copy into the runtime.
 - Keep each chapter's complete, concise copy visible together. Do not rotate paragraphs within one clip unless explicitly requested.
-- Maintain a single style preamble and immutable identity blocks for recurring characters or products.
+- Share rendering and identity rules; put camera paths and speed in each clip prompt.
 - Require explicit user approval of the visual style and the content/shot plan before generating the complete still set or final video manifest. Run a small still-image consistency gate before generating the full set. The gate requires an available image-generation capability (callable tool, applicable skill workflow, or both); do not silently substitute placeholder stills when that capability is absent.
 - Use one fixed full-viewport media stage. Ordered scene and connector clips together form one virtual continuous take.
 - Scene clips and every adjacent connector are required unless the user explicitly accepts a visible cut.
@@ -84,6 +86,7 @@ Before delivery:
 
 1. Validate JSON, JavaScript, shell, and Python syntax.
 2. Run `scripts/verify_media.py PROJECT_ROOT`; require the declared count, dimensions, frame rate, codec, and exact duration.
-3. Test a fresh browser session, reverse and forward progress, chapter navigation, transition boundaries, missing-video fallback, and reduced motion.
-4. Inspect a midpoint contact sheet. Prioritize correct identities, key objects, and scene meaning over incidental generative details unless the user asks for stricter fidelity.
-5. Report the preview URL, project path, media directories, model configuration, QA result, and any remaining external blocker.
+3. Validate each connector's actual path against its approved shot plan using [references/seedance.md](references/seedance.md); record failures and revise affected clips within authorized scope.
+4. Test a fresh browser session, reverse and forward progress, chapter navigation, transition boundaries, missing-video fallback, and reduced motion.
+5. Inspect a midpoint contact sheet. Prioritize correct identities, key objects, and scene meaning over incidental generative details unless the user asks for stricter fidelity.
+6. Report the preview URL, project path, media directories, model configuration, QA result, and any remaining external blocker.

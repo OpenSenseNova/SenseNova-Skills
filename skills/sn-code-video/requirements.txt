@@ -1,0 +1,7 @@
+# system: ffmpeg (libx264, aac, libmp3lame; filters loudnorm, ebur128, silencedetect, astats)
+numpy
+scipy
+soundfile
+librosa          # beat tracking and audio features for music-driven films
+edge-tts         # default TTS (needs network access to speech.platform.bing.com)
+faster-whisper   # narration check; pre-download models: Systran/faster-whisper-base.en, Systran/faster-whisper-small

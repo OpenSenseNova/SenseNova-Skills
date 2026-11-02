@@ -360,6 +360,7 @@ Some skills need extra Python deps, API keys, or runtime tools. Check the releva
 - Presentations: [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md)
 - Data analysis: [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md)
 - Deep research / search: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) and [`docs/sn-deepresearch-cli.md`](docs/sn-deepresearch-cli.md)
+- Code-driven video creation: [`docs/sn-code-video.md`](docs/sn-code-video.md) (FFmpeg, project-local browser renderer, and optional audio dependencies)
 - HTML & web experiences: [`docs/sn-motion-html.md`](docs/sn-motion-html.md)
 - Team collaboration: [`docs/sn-team-harness.md`](docs/sn-team-harness.md)
 - Proactive project tracking: [`docs/sn-proactive-agent.md`](docs/sn-proactive-agent.md)
@@ -372,7 +373,9 @@ Start the agent and ask:
 
 > List the available skills, with a one-line description for each.
 
-If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, `sn-deep-research`, `sn-motion-html`, `sn-team-harness`, and `sn-proactive-agent` from this repo, the LLM and skill setup is good to go. `sn-deepresearch-cli` additionally requires the standalone CLI installation described in its guide. `sn-proactive-agent` additionally requires the runtime package and Hermes integration described in its guide.
+If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, `sn-deep-research`, `sn-motion-html`, `sn-team-harness`, and `sn-proactive-agent` from this repo, skill discovery is working; this does not verify each skill's runtime dependencies or integrations. `sn-deepresearch-cli` additionally requires the standalone CLI installation described in its guide.
+
+For `sn-proactive-agent`, install the runtime package and the Hermes Connector or OpenClaw Gateway plugin following [its guide](docs/sn-proactive-agent.md). Both paths currently require a model-configured Hermes CLI for background processing; OpenClaw-only use does not require the Hermes Connector. Verify conversation capture, an accepted suggestion running in the original session, and result feedback. A healthy Web service alone does not confirm the integration works.
 
 ---
 

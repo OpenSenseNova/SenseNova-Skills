@@ -23,6 +23,9 @@
       chapters: story.chapters,
       connectors: story.connectors,
       connectorSpan: story.meta.connectorSpan || 1.2,
+      scrollSnap: story.meta.scrollSnap !== false,
+      snapThreshold: story.meta.snapThreshold,
+      connectorPlaybackRate: story.meta.connectorPlaybackRate,
     });
 
     document.getElementById('adaptation-note').textContent = story.meta.note || '';

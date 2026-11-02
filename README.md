@@ -18,7 +18,7 @@ The SenseNova model family plugs directly into agent runtimes such as [OpenClaw]
 
 In this repository each skill lives in its own directory and declares triggers, capabilities, and execution flow through a `SKILL.md` file, following the [Agent Skills](https://agentskills.io/) convention.
 
-The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, **deep research**, **HTML experiences**, **team collaboration**, and **proactive project tracking** — usable standalone or composed into end-to-end workflows.
+The skills cover **image generation & visualization**, **slide-deck (PPT) generation**, **Excel data analysis**, **deep research**, **code-driven video creation**, **HTML experiences**, **team collaboration**, and **proactive project tracking** — usable standalone or composed into end-to-end workflows.
 
 > 🎨 **Want to see what it can do?** Check out our   [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their **prompt designs**  !
 
@@ -147,6 +147,15 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | English Social Search  | Reddit / Twitter (X) / YouTube search.                                                                                                     |
 
 
+### 🎬 Code-driven Video Creation
+
+📖 Full guide: [`docs/sn-code-video.md`](docs/sn-code-video.md) (requirements, setup, rendering, sound, and verification).
+
+| Name | Label | Description |
+| --- | --- | --- |
+| [`sn-code-video`](skills/sn-code-video/SKILL.md) | Code Video | Creates and revises code-driven MP4 videos with deterministic frame rendering, eight craft guides, optional sound and narration, contact-sheet review, and final-file verification. |
+
+
 ### 🌐 HTML & Web Experiences
 
 📖 Full guide: [`docs/sn-motion-html.md`](docs/sn-motion-html.md) (continuous-shot stories, media generation, project setup, and browser QA).
@@ -168,11 +177,13 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 ### 🔔 Proactive Project Tracking
 
-📖 Full guide: [`docs/sn-proactive-agent.md`](docs/sn-proactive-agent.md) (installation, Hermes integration, Web workbench, data layout, and acceptance checks).
+📖 Full guide: [`docs/sn-proactive-agent.md`](docs/sn-proactive-agent.md) (installation, Hermes / OpenClaw integration, Web workbench, data layout, and acceptance checks).
 
 | Name | Label | Description |
 | --- | --- | --- |
-| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | Tracks long-running project progress, keeps auditable Project / Item / Event records, and presents next-step suggestions in a Web workbench; accepted suggestions resume the original Hermes session. |
+| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | Tracks long-running project progress, keeps auditable Project / Item / Event records, and presents next-step suggestions in a Web workbench; accepted suggestions resume the original Hermes or OpenClaw session. |
+
+Both integrations currently require a model-configured Hermes CLI for background processing. OpenClaw uses a Gateway plugin and does not require the Hermes Connector.
 
 
 ## Sample Outputs

@@ -19,7 +19,7 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 本项目每个技能位于独立目录中，通过 `SKILL.md` 声明触发条件、能力边界和执行方式，遵循 [Agent Skills](https://agentskills.io/) 规范。
 
-技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**、**HTML 网页体验**、**团队协作**与**项目进展主动跟踪**等场景，可独立使用，也可组合成端到端工作流。
+技能覆盖 **图像生成与可视化**、**演示文稿生成**、**Excel 数据分析**、**深度研究**、**代码视频创作**、**HTML 网页体验**、**团队协作**与**项目进展主动跟踪**等场景，可独立使用，也可组合成端到端工作流。
 
 > 🎨 **想看它到底能干啥？** [**点击逛 sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便 “ 偷师 ”一下  **Prompt**  应该怎么写！
 
@@ -146,6 +146,15 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | [`sn-search-social-en`](skills/sn-search-social-en/SKILL.md) | 英文社交搜索 | Reddit / Twitter (X) / YouTube 三个英文社交平台搜索。                                                  |
 
 
+### 🎬 代码视频创作
+
+📖 详细使用指南：[`docs/sn-code-video_cn.md`](docs/sn-code-video_cn.md)（环境要求、安装、渲染、声音制作与验收）。
+
+| 名称 | 标签 | 描述 |
+| --- | --- | --- |
+| [`sn-code-video`](skills/sn-code-video/SKILL.md) | 代码视频 | 制作与修改由代码绘制的 MP4 视频，提供确定性逐帧渲染、8 份创作指南、可选音效与旁白、联系表画面检查及最终文件验证。 |
+
+
 ### 🌐 HTML 与网页体验
 
 📖 详细使用指南：[`docs/sn-motion-html_cn.md`](docs/sn-motion-html_cn.md)（连续镜头故事、媒体生成、项目初始化与浏览器验收）。
@@ -167,11 +176,13 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 ### 🔔 项目进展主动跟踪
 
-📖 详细使用指南：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)（安装、Hermes 接入、Web 工作台、数据目录与验收检查）。
+📖 详细使用指南：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)（安装、Hermes / OpenClaw 接入、Web 工作台、数据目录与验收检查）。
 
 | 名称 | 标签 | 描述 |
 | --- | --- | --- |
-| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | 记录长期项目进展，维护可审计的 Project / Item / Event 状态，并在 Web 工作台展示下一步建议；用户接受后由原 Hermes Session 继续执行。 |
+| [`sn-proactive-agent`](skills/sn-proactive-agent/SKILL.md) | Proactive Agent | 记录长期项目进展，维护可审计的 Project / Item / Event 状态，并在 Web 工作台展示下一步建议；用户接受后由原 Hermes 或 OpenClaw Session 继续执行。 |
+
+两种接入当前都需要已配置模型的 Hermes CLI 进行后台处理。OpenClaw 使用 Gateway 插件，无需安装 Hermes Connector。
 
 
 ## 输出样例

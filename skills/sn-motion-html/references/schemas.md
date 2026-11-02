@@ -12,7 +12,10 @@
     "note": "Optional adaptation note",
     "style": "anime | cinematic | cgi",
     "ui": "folio | caption | graphic",
-    "connectorSpan": 1.2
+    "connectorSpan": 1.2,
+    "scrollSnap": true,
+    "snapThreshold": 160,
+    "connectorPlaybackRate": 0.8
   },
   "chapters": [
     {

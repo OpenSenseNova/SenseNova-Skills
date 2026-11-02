@@ -72,3 +72,9 @@ python scripts/serve_project.py . --port 8080
 
 交付前检查媒体尺寸、帧率、编码、时长、浏览器导航、正向与反向滚动、视频缺失回退和
 reduced-motion 行为，并提供预览地址、项目路径、媒体目录、服务商配置和剩余阻塞项。
+
+## 灵感来源与致谢
+
+`sn-motion-html` 的设计思路受到 [oso95](https://github.com/oso95) 的
+[Scroll World](https://github.com/oso95/scroll-world) 启发，尤其是通过滚动推进连续镜头
+网页叙事的交互方式。感谢作者分享这一创意与实践。

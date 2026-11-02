@@ -358,6 +358,7 @@ cp -r skills/* ~/.hermes/skills/
 - 演示文稿：[`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md)
 - 数据分析：[`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md)
 - 深度研究 / 搜索：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) 与 [`docs/sn-deepresearch-cli_cn.md`](docs/sn-deepresearch-cli_cn.md)
+- 代码视频创作：[`docs/sn-code-video_cn.md`](docs/sn-code-video_cn.md)（FFmpeg、项目内浏览器渲染环境与可选声音依赖）
 - HTML 与网页体验：[`docs/sn-motion-html_cn.md`](docs/sn-motion-html_cn.md)
 - 团队协作：[`docs/sn-team-harness_cn.md`](docs/sn-team-harness_cn.md)
 - 项目进展主动跟踪：[`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md)
@@ -370,7 +371,9 @@ cp -r skills/* ~/.hermes/skills/
 
 > 列出当前可用的 skill，并给出每个 skill 的一句话说明。
 
-如果 agent 能列出 `sn-infographic`、`sn-ppt-entry`、`sn-deep-research`、`sn-motion-html`、`sn-team-harness`、`sn-proactive-agent` 等本仓库的 skill，说明 LLM 与 skill 都已就绪。`sn-deepresearch-cli` 还需要按照对应指南额外安装独立 CLI；`sn-proactive-agent` 还需要按照对应指南安装运行包并完成 Hermes 接入。
+如果 agent 能列出 `sn-infographic`、`sn-ppt-entry`、`sn-deep-research`、`sn-motion-html`、`sn-team-harness`、`sn-proactive-agent` 等本仓库的 skill，说明技能发现机制正常，但不代表每个 skill 的运行依赖或接入均已验证。`sn-deepresearch-cli` 还需要按照对应指南额外安装独立 CLI。
+
+`sn-proactive-agent` 需按照[对应指南](docs/sn-proactive-agent_cn.md)安装运行包，并选择 Hermes Connector 或 OpenClaw Gateway 插件完成接入。两种方式当前都需要已配置模型的 Hermes CLI 进行后台处理；仅接入 OpenClaw 时无需安装 Hermes Connector。还需验证真实对话采集、接受建议后原会话执行及结果回流，不能仅凭 Web 服务健康判断接入成功。
 
 ---
 
