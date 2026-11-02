@@ -80,7 +80,7 @@ SN_VISION_*  ┘                     ├─►  SN_*（全局）  ─►  内置
 | API Key | `SN_IMAGE_GEN_API_KEY` → `SN_API_KEY` |
 | Base URL | `SN_IMAGE_GEN_BASE_URL` → `SN_BASE_URL` → `https://token.sensenova.cn/v1` |
 | Model | `SN_IMAGE_GEN_MODEL` → `sensenova-u1.5-lite` |
-| 协议类型 | `SN_IMAGE_GEN_MODEL_TYPE` → `sensenova` |
+| 协议类型 | `SN_IMAGE_GEN_MODEL_TYPE` → `sensenova`（可选 `nano-banana` / `openai-image` / `atlas-cloud`） |
 
 ## 五、用户视角的两套配置面
 

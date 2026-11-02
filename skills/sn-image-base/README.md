@@ -106,6 +106,8 @@ To use non-default image generation models, please:
     SN_IMAGE_GEN_MODEL_TYPE="nano-banana"
     # For OpenAI's image generation API
     SN_IMAGE_GEN_MODEL_TYPE="openai-image"
+    # For Atlas Cloud's task-based image generation API
+    SN_IMAGE_GEN_MODEL_TYPE="atlas-cloud"
     ```
 
 2. Set `SN_IMAGE_GEN_BASE_URL` to the base URL for the image generation API. For example:
@@ -117,6 +119,8 @@ To use non-default image generation models, please:
     SN_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"
     # For OpenAI's image generation API
     SN_IMAGE_GEN_BASE_URL="https://api.openai.com/v1"
+    # For Atlas Cloud
+    SN_IMAGE_GEN_BASE_URL="https://api.atlascloud.ai/api/v1"
     ```
 
 3. Set `SN_IMAGE_GEN_MODEL` to the model name provided by the model type. For example:
@@ -130,6 +134,8 @@ To use non-default image generation models, please:
     SN_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"
     # For OpenAI's image generation API
     SN_IMAGE_GEN_MODEL="gpt-image-2"
+    # For Atlas Cloud
+    SN_IMAGE_GEN_MODEL="bytedance/seedream-v5.0-lite"
     ```
 
 4. If image generation uses a different key than the global key, set `SN_IMAGE_GEN_API_KEY`. If `SN_API_KEY` already works for image generation, skip this.
