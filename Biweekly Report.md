@@ -7,6 +7,51 @@
 > 💡 Note: Bi-weekly updates are listed in reverse chronological order.
 ---
 
+## 2026.9.27-11.1
+
+### PPT Creation Workflow Improvements
+
+#### `sn-ppt-*`: From story development to finished visuals
+
+The `sn-ppt-*` suite has been rebuilt around a clear separation between story development and visual production. It now uses a shared, editable outline.md as the source of truth, so every PPT output format is built on the same content foundation.
+
+At the entry point, users can choose the research depth, output format, and design intensity. Depending on those choices, the system can gather supporting material and shape the narrative before turning the same outline into a static deck, an animated presentation, or a creative visual deck. This reduces duplicated research and content drift, making the path from an initial idea to a finished deck more predictable and consistent.
+
+Key benefits:
+- One shared narrative: `sn-ppt-story` defines the page count, sequence, titles, key takeaways, and on-slide content limits. The downstream outputs focus on presentation and visual execution.
+- Flexible generation depth: Choose between a quick concept draft, targeted research, or a full deep-research workflow based on the time available and the complexity of the topic.
+- Multiple presentation formats: Generate static HTML decks, browser-based animated presentations, or full-page visual slides for briefings, launches, explainers, courses, and creative pitches.
+- More reliable delivery: The static workflow now separates asset gathering, slide production, and full-deck review, with style constraints, render checks, and content validation built into the process.
+- A smoother editing workflow: The upgraded Workbench supports start, status, stop, and resume flows, making it easier to preview and continue working on a deck. The diagnostic tool now reports issues without changing the user’s environment.
+  
+Three output modes:
+- `sn-ppt-standard`: Produces static HTML slides, a presentation page, speaker notes, and a PPTX file. Best suited to formal briefings, sales and fundraising materials, and information-heavy presentations.
+- `sn-ppt-dazzle`: Produces a single-file, browser-based animated presentation with animated backgrounds, page entrances, and transitions. Designed for launches, explainers, classroom content, and other presentation-led experiences.
+- `sn-ppt-creative`: Produces full-page PNG visuals, with optional PPTX output. A good fit for brand concepts, creative pitches, and content where visual impact is central.
+  
+The workflow has already been used for a mountain retreat lodging pitch, a joint esports and AI hardware fundraising deck, a black-hole explainer, and an elementary-school solar-system lesson.
+
+### Code2Video: Generate videos directly from code
+
+#### `sn-code-video`: Turn ideas into editable videos with code
+
+`sn-code-video` turns ideas, scripts, and educational content into playable, editable animated videos. It covers the full process from breaking down the brief and planning scenes to sound design, voiceover, frame-by-frame rendering, and final checks. It can be used for explainers, product videos, motion graphics, 3D scenes, music videos, and other creative productions.
+
+Describe what you want to communicate, the visual direction, and the video requirements. The system can then break down the script, design the shots, build the animation, and render the final piece while preserving the source code and validation records. The result is ready to watch, easy to revise, and reusable for future versions.
+
+Key benefits: 
+- A broad range of creative uses: Includes eight focused production guides covering knowledge visualization, stylized visuals, character motion, physics simulations, 3D scenes, beat-synced music, and more.
+- Frame-level control: Code controls text, graphics, data, camera movement, and motion timing. Deterministic frame-by-frame rendering makes results easier to reproduce and refine.
+- Sound and picture stay in sync: Programmatic music, sound effects, and voiceover can share the same event timeline as the visuals, making it easier to keep the edit in sync.
+- Built-in delivery checks: Keyframes, thumbnail overviews, and full playback reviews are used to verify dimensions, frame rate, duration, encoding, and audio settings.
+- Editable and reusable by design: The source code and commands needed to reproduce the render are preserved, so you can revise the copy, visual style, pacing, and shots without starting over.
+  
+Each production can be delivered with an MP4 file, editable source code, and validation records, making the workflow suitable for projects that need iteration, reproducibility, and long-term reuse.
+
+💡 Now available on ClawHub: [sn-code-video](https://clawhub.ai/sensenova-skills/skills/sn-code-video).
+
+---
+
 ## 2026.8.10-9.13
 
 ### Deep Research
