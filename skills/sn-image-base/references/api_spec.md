@@ -55,6 +55,32 @@ python sn_agent_runner.py sn-image-generate \
 
 `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `1:1`, `16:9`, `9:16`, `21:9`, `9:21`
 
+### Atlas Cloud Backend
+
+Set `SN_IMAGE_GEN_MODEL_TYPE=atlas-cloud` to use the Atlas Cloud asynchronous
+Media API. The existing `sn-image-generate` CLI contract is unchanged.
+
+```bash
+SN_IMAGE_GEN_MODEL_TYPE=atlas-cloud \
+SN_IMAGE_GEN_BASE_URL=https://api.atlascloud.ai/api/v1 \
+SN_IMAGE_GEN_MODEL=bytedance/seedream-v5.0-lite \
+SN_IMAGE_GEN_API_KEY=... \
+python sn_agent_runner.py sn-image-generate \
+    --prompt "A product portrait" \
+    --image-size 2k \
+    --aspect-ratio 3:4
+```
+
+The client submits `POST /model/generateImage`, polls
+`GET /model/prediction/{task_id}`, downloads the completed output without forwarding
+the API authorization header to the signed output URL, and validates the PNG
+signature before saving it. Seedream v5.0 Lite accepts only a fixed list of
+`size` presets, so `2k` maps to its 2K tier and `4k` to its largest (3K) tier;
+the supported aspect ratios are `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `3:2`,
+`2:3` and `21:9`. Other ratios (`4:5`, `5:4`, `9:21`) fail with a `ValueError`
+instead of being sent as a size the API rejects. The built-in `sensenova`
+default remains unchanged.
+
 ### Output Path
 
 Default output: `/tmp/openclaw-sn-image/t2i_<timestamp>.png`
