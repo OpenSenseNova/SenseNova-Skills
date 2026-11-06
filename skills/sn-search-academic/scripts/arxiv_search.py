@@ -112,10 +112,14 @@ def build_search_query(
         parts = [query]
     else:
         field = "ti" if title_only else "all"
-        parts = [f"{field}:{query}"]
+        parts = [f"{field}:{_quote_if_multiword(query)}"]
 
     if author:
-        author_terms = [f"au:{name.strip()}" for name in author.split(",") if name.strip()]
+        author_terms = [
+            f"au:{_quote_if_multiword(name)}"
+            for name in author.split(",")
+            if name.strip()
+        ]
         if author_terms:
             parts.append(f"({' OR '.join(author_terms)})")
 
@@ -123,6 +127,17 @@ def build_search_query(
         parts.append(f"cat:{category}")
 
     return " AND ".join(parts)
+
+
+def _quote_if_multiword(term: str) -> str:
+    """Quote a phrase before attaching it to an arXiv field prefix."""
+    term = term.strip()
+    if not any(character.isspace() for character in term):
+        return term
+    if term.startswith('"') and term.endswith('"'):
+        return term
+    escaped = term.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
 
 
 def _has_arxiv_field_prefix(query: str) -> bool:
