@@ -201,6 +201,12 @@ class SensenovaText2ImageClient(T2IBaseClient):
             timestamp = time.strftime("%Y%m%d_%H%M%S")
             output_path = OUTPUT_DIR / f"{filename_prefix}_{timestamp}.png"
         output_path = ensure_output_path(output_path)
+        # Honour an explicit suffix on the caller-supplied path. The API always
+        # returns the payload encoded in ``output_format`` (currently PNG), but
+        # silently rewriting ``cover.jpg`` to ``cover.png`` breaks callers that
+        # later reference the path they asked for. Convert after download when
+        # the requested suffix differs from the encoded format.
+        requested_suffix = output_path.suffix.lower()
         client = await self._get_client()
         try:
             create_response = await client.post(
@@ -240,10 +246,13 @@ class SensenovaText2ImageClient(T2IBaseClient):
                     "error_type": "EmptyResponse",
                     "error": "No image generated from the model",
                 }
+            encoded_path = output_path.with_suffix(f".{output_format}")
             saved_path = await download_image(
                 url=images_urls[-1],
-                save_path=output_path.with_suffix(f".{output_format}"),
+                save_path=encoded_path,
             )
+            if requested_suffix and requested_suffix != f".{output_format}":
+                saved_path = _convert_image_suffix(saved_path, requested_suffix)
             return {
                 "status": "ok",
                 "output": str(saved_path),
@@ -424,6 +433,33 @@ class SensenovaText2ImageClient(T2IBaseClient):
             if isinstance(url, str) and url:
                 images_urls.append(url)
         return {"images_urls": images_urls}
+
+
+def _convert_image_suffix(path: Path, suffix: str) -> Path:
+    """Re-encode ``path`` into ``suffix`` and return the new path.
+
+    Used when the caller asked for a specific extension (e.g. ``cover.jpg``)
+    but the backend encodes its payload in a different format (PNG). The
+    original file is removed so the caller only sees the path it requested.
+    """
+    suffix = suffix.lower()
+    if not suffix.startswith("."):
+        suffix = f".{suffix}"
+    target = path.with_suffix(suffix)
+    try:
+        with Image.open(path) as img:
+            if suffix in {".jpg", ".jpeg"}:
+                img.convert("RGB").save(target, format="JPEG", quality=92, optimize=True)
+            elif suffix == ".webp":
+                img.save(target, format="WEBP", quality=92, method=6)
+            else:
+                img.save(target, format=suffix.lstrip(".").upper())
+    except Exception:
+        # Fall back to the encoded file rather than losing the image.
+        return path
+    if target != path and path.exists():
+        path.unlink(missing_ok=True)
+    return target
 
 
 async def download_image(
