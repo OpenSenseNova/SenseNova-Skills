@@ -1,0 +1,5 @@
+httpx>=0.25.0
+pillow>=11.3.0
+python-dotenv>=1.0.0
+# ACP SDK requires Python >= 3.10. Direct image calls do not import the SDK.
+agent-client-protocol==0.12.1

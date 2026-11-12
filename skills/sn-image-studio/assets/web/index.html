@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f2">
+  <meta name="description" content="Image Studio — 从一张灵感开始，用 SenseNova U1.5 Lite 创作属于你的图像。" data-i18n-content="description">
+  <title>image—studio · SenseNova</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="Image Studio 首页" data-i18n-aria-label="brandHome">
+      <span class="brand-mark sensetime-mark" role="img" aria-label="商汤 SenseTime" data-i18n-aria-label="senseTime"></span>
+      <span>image<span class="brand-dash">—</span><em>studio</em></span>
+      <span class="brand-by">by SenseNova</span>
+    </a>
+    <nav aria-label="主导航" data-i18n-aria-label="mainNav"><a class="nav-link active" href="#inspiration" data-i18n="navExamples">灵感样例</a><a class="nav-link" href="#workspace" data-i18n="navWorkspace">创作空间</a></nav>
+    <div class="header-end"><div class="language-switch" role="group" aria-label="界面语言" data-i18n-aria-label="language"><button type="button" data-language="zh-CN" lang="zh-CN" aria-pressed="true">中文</button><span aria-hidden="true">/</span><button type="button" data-language="en" lang="en" aria-label="English" aria-pressed="false">EN</button></div><button class="model-pill" id="model-settings" title="配置 SenseNova U1.5 Lite" data-i18n-title="configTitle"><span class="status-dot"></span><span class="model-pill-name">SenseNova U1.5 Lite ·</span><span data-i18n="configureModel">配置</span></button><button class="icon-button help-button" data-action="help" aria-label="使用指南" data-i18n-aria-label="help" data-icon="help"></button></div>
+  </header>
+
+  <main>
+    <section class="intro" id="inspiration">
+      <div><div class="eyebrow"><span class="tiny-line"></span> <span data-i18n="heroEyebrow">留一处给想象</span></div><h1><span data-i18n="heroFirst">从一点灵感，</span><span data-i18n="heroSecond">到你的作品。</span></h1></div>
+      <p><span data-i18n="heroExamples">选一张样例，改成你的想法。</span><br><span data-i18n="heroRewrite">自己写，或让 AI 帮你改。</span><span class="intro-spark sensetime-mark" aria-hidden="true"></span></p>
+    </section>
+
+    <section class="gallery-section" aria-labelledby="generate-heading">
+      <div class="section-heading">
+        <div class="heading-group"><span class="section-number">01</span><h2 id="generate-heading" data-i18n="generation">图像生成</h2><span class="section-note" data-i18n="generationNote">从喜欢的风格开始</span></div>
+        <div class="gallery-navigation">
+          <span class="gallery-count" id="generation-count">01 — 06</span><button class="icon-button arrow-button" data-carousel="generation" data-step="-1" aria-label="上一组生图样例" data-i18n-aria-label="prevGeneration" data-icon="left"></button><button class="icon-button arrow-button" data-carousel="generation" data-step="1" aria-label="下一组生图样例" data-i18n-aria-label="nextGeneration" data-icon="right"></button>
+        </div>
+      </div>
+      <div class="carousel" id="generation-gallery" aria-label="图像生成风格样例，可左右滑动" data-i18n-aria-label="generationGallery" tabindex="0"></div>
+    </section>
+
+    <section class="gallery-section editing-section" aria-labelledby="edit-heading">
+      <div class="section-heading">
+        <div class="heading-group"><span class="section-number">02</span><h2 id="edit-heading" data-i18n="editing">图片编辑</h2><span class="section-note" data-i18n="editingNote">让已有画面，多一种可能</span></div>
+        <div class="gallery-navigation">
+          <span class="gallery-count" id="editing-count">01 — 06</span><button class="icon-button arrow-button" data-carousel="editing" data-step="-1" aria-label="上一组编辑样例" data-i18n-aria-label="prevEditing" data-icon="left"></button><button class="icon-button arrow-button" data-carousel="editing" data-step="1" aria-label="下一组编辑样例" data-i18n-aria-label="nextEditing" data-icon="right"></button>
+        </div>
+      </div>
+      <div class="carousel" id="editing-gallery" aria-label="图片编辑前后对比样例，可左右滑动" data-i18n-aria-label="editingGallery" tabindex="0"></div>
+    </section>
+
+    <section class="workspace-section" id="workspace" aria-labelledby="workspace-heading">
+      <div class="workspace-label"><div class="heading-group"><span class="section-number">03</span><h2 id="workspace-heading" data-i18n="workspace">你的创作空间</h2><span class="section-note" data-i18n="workspaceNote">灵感已经就位，现在轮到你了</span></div><button class="text-button" id="new-session"><span data-icon="plus"></span><span data-i18n="newSession">新建创作</span></button></div>
+      <div class="workspace">
+        <section class="conversation" aria-label="提示词编辑与需求对话" data-i18n-aria-label="promptWorkspace">
+          <div class="conversation-header"><div class="conversation-title"><span class="assistant-mark sensetime-mark" aria-hidden="true"></span><span data-i18n="workspaceTitle">把灵感写下来</span></div><span class="workspace-kind" id="workspace-kind" data-i18n="generation">图像生成</span></div>
+          <div class="reference-strip"><img id="reference-thumb" src="assets/u15_nature_heals_poster.webp" alt="已选样例" data-i18n-alt="selectedExample"><div><span class="reference-label" data-i18n="currentTemplate">当前模板</span><strong id="reference-name"></strong></div></div>
+          <p class="case-guidance" id="case-guidance"></p>
+          <section class="prompt-editor-section" aria-labelledby="editor-heading">
+            <div class="prompt-editor-heading"><div><h3 id="editor-heading" data-i18n="currentPrompt">当前提示词</h3><span id="draft-revision" class="revision-label"></span></div><button class="small-text-button" id="compare-prompt"><span data-i18n="compareOriginal">对照原文</span> <span data-icon="columns"></span></button></div>
+            <label class="sr-only" for="prompt-editor" data-i18n="editFullPrompt">编辑当前完整提示词</label>
+            <textarea id="prompt-editor" spellcheck="false" rows="9" placeholder="正在加载完整 Prompt…" data-i18n-placeholder="loadingPrompt" aria-describedby="draft-status"></textarea>
+            <div class="editor-footer"><span id="draft-status" data-i18n="initialDraft">原始 Prompt · 可直接编辑</span><div class="editor-controls"><button id="undo-prompt" class="mini-button" aria-label="撤销提示词修改" data-i18n-aria-label="undoPrompt" title="撤销修改" data-i18n-title="undo"><span data-icon="undo"></span></button><button id="restore-prompt" class="mini-button" title="恢复样例原始提示词" data-i18n-title="restoreOriginalPrompt" data-i18n="restoreOriginal">恢复原文</button><button id="copy-prompt" class="mini-button" title="复制当前提示词" data-i18n-title="copyCurrentPrompt"><span data-icon="copy"></span><span data-i18n="copy">复制</span></button></div></div>
+          </section>
+          <section class="rewrite-section" aria-label="通过对话改写提示词" data-i18n-aria-label="rewriteSection">
+            <div class="rewrite-heading"><span data-i18n="tellAI">也可以，把想法告诉 AI</span><span class="rewrite-hint" id="agent-connection" data-i18n="connectingService">正在连接改写服务…</span></div>
+            <div class="messages" id="messages" role="log" aria-live="polite" aria-label="对话记录" data-i18n-aria-label="messageLog"></div>
+            <div id="rewrite-candidate" class="rewrite-candidate" hidden><strong data-i18n="candidateTitle">改写已返回，你的当前稿也有新修改。</strong><p data-i18n="candidateHint">已保留当前输入，可以先对比这次改写。</p><div><button type="button" id="compare-candidate" data-i18n="compareRewrite">对比改写</button><button type="button" id="apply-candidate" data-i18n="applyRewrite">采用改写</button><button type="button" id="dismiss-candidate" data-i18n="keepDraft">保留当前稿</button></div></div>
+            <form id="prompt-form"><label class="sr-only" for="prompt-input" data-i18n="describeRewrite">描述提示词修改需求</label><textarea id="prompt-input" rows="2" maxlength="3000" placeholder="比如：把主题换成秋日西湖，保留纸张质感，色调更温暖…" data-i18n-placeholder="rewritePlaceholder"></textarea><div class="rewrite-tools"><label class="preserve-style"><input type="checkbox" id="preserve-style" checked> <span data-i18n="preserveStyle">保留原有风格</span></label><div class="rewrite-actions"><button class="rewrite-button" id="rewrite-button" type="submit" data-i18n="rewriteOnly">只改提示词</button><button class="rewrite-button primary-rewrite" id="rewrite-generate-button" type="submit"><span data-icon="sparkles"></span><span data-i18n="rewriteGenerate">改写并生图</span></button></div></div></form><p class="rewrite-welcome" data-i18n="rewriteWelcome">按提交时的需求和素材执行。关闭网页后仍会继续；后续编辑用于下一次创作。</p>
+          </section>
+          <div class="generation-area"><div class="generation-settings"><button type="button" class="upload-text-button" id="upload-button"><span data-icon="imagePlus"></span><span data-i18n="addImages">添加图片</span></button><label class="ratio-select"><span data-icon="ratio"></span><select id="ratio" aria-label="图片比例" data-i18n-aria-label="imageRatio"><option value="auto" data-i18n="ratioAuto">样例比例</option><option value="1:1" data-i18n="ratioSquare">1:1 方形</option><option value="3:4" data-i18n="ratioPortrait">3:4 竖版</option><option value="16:9" data-i18n="ratioLandscape">16:9 横版</option></select></label><span id="input-hint" class="input-hint" data-i18n="noRequiredInputs">此模板无需输入图片</span></div><div id="upload-list" class="upload-list" aria-label="已添加图片" data-i18n-aria-label="addedImages"></div><button class="generate-button" id="generate-button"><span id="generate-label" data-i18n="generateCurrent">按当前提示词生成</span><span data-icon="upRight"></span></button><p class="prototype-note" id="service-note" data-i18n="configNeeded">开始前请先配置 SenseNova U1.5 Lite</p></div>
+          <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+        </section>
+
+        <section class="result-panel" aria-label="图片展示" data-i18n-aria-label="imageDisplay">
+          <div class="result-toolbar"><div class="result-heading"><span data-icon="canvas"></span><span data-i18n="canvas">画布</span><span class="preview-badge" data-i18n="samplePreview">样例预览</span><span class="image-dimensions" id="result-dimensions"></span></div><div class="result-actions"><button class="icon-button" id="expand-result" aria-label="放大查看图片" data-i18n-aria-label="expandImage" title="放大查看" data-i18n-title="expand" data-icon="expand"></button><button class="icon-button" id="download-result" aria-label="下载当前图片" data-i18n-aria-label="downloadImage" title="下载图片" data-i18n-title="download" data-icon="download"></button></div></div>
+          <div class="canvas" id="canvas">
+            <div class="canvas-corner top-left"></div><div class="canvas-corner top-right"></div><div class="canvas-corner bottom-left"></div><div class="canvas-corner bottom-right"></div>
+            <div class="canvas-image-wrap" id="canvas-image-wrap">
+              <div class="canvas-originals" id="case-originals" hidden></div>
+              <span class="edit-arrow" id="canvas-edit-arrow" data-icon="right" aria-hidden="true" hidden></span>
+              <figure class="canvas-result"><img id="result-image" src="assets/u15_nature_heals_poster.webp" alt=""><figcaption class="edit-label after" id="case-result-label" hidden data-i18n="after">编辑后</figcaption></figure>
+            </div>
+            <div class="canvas-caption"><span class="canvas-live-dot"></span><span id="canvas-caption">NATURE, REIMAGINED.</span></div><div class="canvas-loading" id="canvas-loading" hidden><span class="loader"></span><span data-i18n="updatingPreview">更新样例预览</span></div>
+          </div>
+          <div class="result-bottom"><div><h3 id="result-title"></h3><p id="result-subtitle"></p></div><button class="detail-button" id="view-details" title="查看样例与参考说明" data-i18n-title="exampleDetails"><span data-i18n="details">样例说明</span><span data-icon="upRight"></span></button></div>
+          <div class="result-filmstrip" id="result-filmstrip" aria-label="已生成的作品" data-i18n-aria-label="generatedImages"></div>
+          <div class="task-receipt" id="task-receipt"><div><span class="receipt-dot"></span><span id="task-status" data-i18n="taskEmpty">这里将展示你的生成结果</span></div><button id="cancel-task" class="small-text-button" hidden data-i18n="cancelTask">取消任务</button><button id="export-task" class="small-text-button" hidden><span data-i18n="exportTask">导出任务</span> <span data-icon="download"></span></button></div>
+        </section>
+      </div>
+    </section>
+    <footer><span class="footer-wordmark" data-i18n="footerWordmark">源于想象。</span><span data-i18n="footer">从精选案例开始，用 SenseNova U1.5 Lite 创作</span></footer>
+  </main>
+
+  <dialog id="image-dialog" class="image-dialog"><button class="dialog-close icon-button" aria-label="关闭大图" data-i18n-aria-label="closeImage" data-close-dialog="image-dialog" data-icon="close"></button><div class="image-viewer-toolbar"><button id="image-size-toggle" type="button" aria-pressed="false" data-i18n="fullSize">查看原始尺寸</button><span class="image-dimensions" id="expanded-dimensions"></span></div><div class="image-viewport" id="image-viewport" tabindex="0" aria-label="图片查看区域，可滚动查看原图" data-i18n-aria-label="imageViewport"><div class="image-stage"><img id="expanded-image" alt="放大的图片" data-i18n-alt="expandedImage"></div></div><p id="expanded-caption"></p></dialog>
+  <dialog id="info-dialog" class="info-dialog"><button class="dialog-close icon-button" aria-label="关闭说明" data-i18n-aria-label="closeInfo" data-close-dialog="info-dialog" data-icon="close"></button><div class="eyebrow">IMAGE STUDIO</div><h2 id="info-title"></h2><div id="info-content"></div><button class="dark-button" data-close-dialog="info-dialog"><span data-i18n="ok">知道了</span> <span data-icon="right"></span></button></dialog>
+  <dialog id="configuration-dialog" class="info-dialog configuration-dialog"><button class="dialog-close icon-button" aria-label="关闭模型 ID配置" data-i18n-aria-label="closeConfig" data-close-dialog="configuration-dialog" data-icon="close"></button><div class="config-heading"><div class="eyebrow" data-i18n="configEyebrow">连接创作模型 ID</div></div><h2 data-i18n="connectSenseNova">连接 SenseNova U1.5 Lite。</h2><p class="config-intro" data-i18n="configIntro">配置一次，即可开始创作。已有的 SN_API_KEY / SN_BASE_URL 会自动复用。</p><form id="configuration-form"><label>API Key <span>SN_IMAGE_GEN_API_KEY → SN_API_KEY</span><input type="password" id="config-key" autocomplete="off" spellcheck="false" placeholder="在本地输入 API Key" data-i18n-placeholder="keyPlaceholder"></label><label>API Base URL <span>SN_IMAGE_GEN_BASE_URL → SN_BASE_URL</span><input type="url" id="config-base-url" required spellcheck="false" value="https://token.sensenova.cn/v1"></label><label><span class="config-field-label" data-i18n="model">模型 ID</span> <span>SN_IMAGE_GEN_MODEL</span><input type="text" id="config-model" required spellcheck="false" value="sensenova-u1.5-lite"></label><p class="config-hint" data-i18n="configHint">默认使用 SenseNova U1.5 Lite，其他可用型号以账号权限为准。Key 仅写入本地 .env，不保存在浏览器缓存中。</p><p id="config-error" role="alert"></p><button class="dark-button" id="save-configuration" type="submit"><span data-i18n="saveConfig">保存配置，开始创作</span> <span data-icon="right"></span></button></form></dialog>
+  <dialog id="compare-dialog" class="compare-dialog"><button class="dialog-close icon-button" aria-label="关闭原文对照" data-i18n-aria-label="closeCompare" data-close-dialog="compare-dialog" data-icon="close"></button><div class="eyebrow" data-i18n="compareEyebrow">把样例变成自己的创意</div><h2 id="compare-title" data-i18n="compareTitle">从原始灵感，到当前想法。</h2><p class="compare-subtitle" id="compare-summary"></p><div class="compare-grid"><label><span id="compare-left-label" data-i18n="exampleOriginal">样例原文</span><textarea id="original-prompt" readonly spellcheck="false" aria-label="样例原始提示词" data-i18n-aria-label="originalPrompt"></textarea></label><label><span id="compare-right-label" data-i18n="draftCurrent">当前稿</span><textarea id="current-prompt" readonly spellcheck="false" aria-label="当前提示词对照" data-i18n-aria-label="comparisonPrompt"></textarea></label></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

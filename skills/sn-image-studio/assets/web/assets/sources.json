@@ -1,0 +1,23 @@
+{
+  "source": "https://github.com/OpenSenseNova/SenseNova-U1/blob/main/docs/u1.5_best_practices_CN.md",
+  "assets": {
+    "u15_papercut_mountain.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/t2i_gallery/u15_papercut_mountain.webp",
+    "u15_cafe_lifestyle.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/t2i_gallery/u15_cafe_lifestyle.webp",
+    "u15_no_rewind_poster.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/t2i_gallery/u15_no_rewind_poster.webp",
+    "u15_sky_dragon.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/t2i_gallery/u15_sky_dragon.webp",
+    "u15_nature_heals_poster.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/t2i_gallery/u15_nature_heals_poster.webp",
+    "u15_carrot_fashion.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/t2i_gallery/u15_carrot_fashion.webp",
+    "u15_official_case01_input01.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case01_input01.webp",
+    "u15_official_case01_result.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case01_result.webp",
+    "u15_official_case02_input01.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case02_input01.webp",
+    "u15_official_case02_result.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case02_result.webp",
+    "u15_official_case04_input01.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case04_input01.webp",
+    "u15_official_case04_result.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case04_result.webp",
+    "u15_official_case05_input01.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case05_input01.webp",
+    "u15_official_case05_result.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case05_result.webp",
+    "u15_official_case06_input01.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case06_input01.webp",
+    "u15_official_case06_result.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case06_result.webp",
+    "u15_official_case08_input01.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case08_input01.webp",
+    "u15_official_case08_result.webp": "https://raw.githubusercontent.com/OpenSenseNova/SenseNova-U1/main/docs/assets/showcases/editing_gallery/u15_official_case08_result.webp"
+  }
+}
