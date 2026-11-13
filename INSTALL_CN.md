@@ -4,7 +4,9 @@
 
 本文档引导你在 Windows / macOS / Linux 上安装 [OpenClaw](https://openclaw.ai/) 或 [hermes-agent](https://github.com/NousResearch/hermes-agent)，对接 SenseNova 大模型，并加载 `SenseNova-Skills` 中的技能，得到完整可用的 skill-driven agent。
 
-> 两个 agent 任选其一。OpenClaw 与 hermes-agent 均遵循 [Agent Skills](https://agentskills.io/) 规范，本仓库的 skill 在两边都能直接使用。
+> 下方通用安装流程可任选一个 Agent。OpenClaw 与 hermes-agent 均遵循 [Agent Skills](https://agentskills.io/) 规范；额外运行依赖与支持的接入方式请以各技能指南为准。
+
+使用 Image Studio 请参考其[独立安装指南](docs/sn-image-studio_cn.md)。直接生图无需安装上述 Agent；按需求改写提示词时，选择 Codex、Claude Code 或 Hermes 的 ACP 服务。
 
 ---
 
@@ -355,6 +357,7 @@ cp -r skills/* ~/.hermes/skills/
 部分 skill 有自己的 Python 依赖、API key 或运行时要求，请按需查阅对应的使用指南：
 
 - 图像与可视化：[`docs/sn-image-generate.md`](docs/sn-image-generate.md)
+- Image Studio：[`docs/sn-image-studio_cn.md`](docs/sn-image-studio_cn.md)（Python 3.10+、独立生图依赖、SenseNova 生图凭据，以及可选的 Codex / Claude Code / Hermes ACP 接入）
 - 演示文稿：[`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md)
 - 数据分析：[`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md)
 - 深度研究 / 搜索：[`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) 与 [`docs/sn-deepresearch-cli_cn.md`](docs/sn-deepresearch-cli_cn.md)
@@ -372,6 +375,8 @@ cp -r skills/* ~/.hermes/skills/
 > 列出当前可用的 skill，并给出每个 skill 的一句话说明。
 
 如果 agent 能列出 `sn-infographic`、`sn-ppt-entry`、`sn-deep-research`、`sn-motion-html`、`sn-team-harness`、`sn-proactive-agent` 等本仓库的 skill，说明技能发现机制正常，但不代表每个 skill 的运行依赖或接入均已验证。`sn-deepresearch-cli` 还需要按照对应指南额外安装独立 CLI。
+
+`sn-image-studio` 需按照[对应指南](docs/sn-image-studio_cn.md)安装自身 Python 依赖、配置生图凭据并打开网页。直接生图无需 ACP Agent；按需求改写提示词需明确选择 Codex、Claude Code 或 Hermes，准备其 ACP 服务和认证。OpenClaw 当前不是 Studio 支持的 ACP 选项。`doctor` 只检查配置与本地依赖，不代表服务商认证或实际生图已成功。
 
 `sn-proactive-agent` 需按照[对应指南](docs/sn-proactive-agent_cn.md)安装运行包，并选择 Hermes Connector 或 OpenClaw Gateway 插件完成接入。两种方式当前都需要已配置模型的 Hermes CLI 进行后台处理；仅接入 OpenClaw 时无需安装 Hermes Connector。还需验证真实对话采集、接受建议后原会话执行及结果回流，不能仅凭 Web 服务健康判断接入成功。
 

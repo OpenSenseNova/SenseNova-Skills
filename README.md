@@ -22,6 +22,12 @@ The skills cover **image generation & visualization**, **slide-deck (PPT) genera
 
 > 🎨 **Want to see what it can do?** Check out our   [**sn-infographic Gallery**](docs/sn-infographic-examples.md) to explore nearly 100 stunning generation cases and steal their **prompt designs**  !
 
+## News
+
+- **2026-11-13**: [Image Studio](docs/sn-image-studio.md) is now available: browse bilingual style cases, edit prompts, and generate or edit U1.5 images, with optional ACP-assisted prompt adaptation through Codex, Claude Code, or Hermes.
+- **2026-10-29**: [Code Video](docs/sn-code-video.md) adds code-driven MP4 creation with sound, frame review, and output verification.
+- **2026-10-09**: [Proactive Agent](docs/sn-proactive-agent.md) adds OpenClaw Gateway integration alongside Hermes, with accepted suggestions continuing in the original session.
+
 ## 🦝 Available out-of-the-box in Raccoon
 
 The latest SenseNova models and the full Cowork-Skill suite in this repo are bundled into [**Raccoon**](https://office.xiaohuanxiong.com/home), with enterprise-grade security and a zero-setup experience — if you'd rather not provision env, API keys, and runtimes yourself, you can use these capabilities directly through Raccoon. Free trial available — no payment required to get started.
@@ -81,6 +87,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 📖 Full guide: [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md) (prerequisites, Quick Start, API config, and invocation samples).
 
+Image Studio has its own [setup and usage guide](docs/sn-image-studio.md) for the bilingual Web UI, standalone image client, and optional ACP integration with Codex, Claude Code, or Hermes.
 
 | Name                                               | Label                          | Description                                                                                                                                                       |
 | -------------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -89,6 +96,7 @@ Per-category Python dependencies, API keys, and invocation examples are document
 | [`sn-infographic`](skills/sn-infographic/SKILL.md) | Infographic Generation (Tier 1) | Auto prompt-quality scoring, layout/style selection (87 layouts / 66 styles), multi-round generation with VLM review and quality ranking, producing publication-ready infographics. Supports SenseNova U1.5 Lite, including native 4K output. |
 | [`sn-image-imitate`](skills/sn-image-imitate/SKILL.md) | Image Imitation (Tier 1) | Given one reference image and a target content prompt, generates a new image that imitates the reference. |
 | [`sn-image-resume`](skills/sn-image-resume/SKILL.md) | Resume Image Generation (Tier 1) | Given resume information, generates a resume image. |
+| [`sn-image-studio`](skills/sn-image-studio/SKILL.md) | Image Studio | Bilingual Web workbench for style cases, editable prompts, uploaded inputs, and SenseNova U1.5 image generation/editing. Supports direct generation, ACP-assisted prompt adaptation, and publishing supplied cases. |
 
 
 ### 📊 Presentations (PPT)

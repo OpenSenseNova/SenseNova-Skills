@@ -4,7 +4,9 @@ English | [简体中文](INSTALL_CN.md)
 
 This guide walks you through installing [OpenClaw](https://openclaw.ai/) or [hermes-agent](https://github.com/NousResearch/hermes-agent) on Windows / macOS / Linux, wiring it up to SenseNova, and loading the skills in this repository — giving you a fully working skill-driven agent.
 
-> Pick **either** agent. Both OpenClaw and hermes-agent follow the [Agent Skills](https://agentskills.io/) convention, so the skills in this repo work in either runtime without modification.
+> Pick **either** agent for the general installation flow below. Both follow the [Agent Skills](https://agentskills.io/) convention; check each skill's guide for additional runtime dependencies and supported integrations.
+
+For Image Studio, follow its [standalone setup guide](docs/sn-image-studio.md). Direct image generation does not require either Agent; prompt adaptation uses a selected Codex, Claude Code, or Hermes ACP server.
 
 ---
 
@@ -356,7 +358,8 @@ Swap "OpenClaw" and the path for `hermes-agent` / `~/.hermes/skills/` to use thi
 
 Some skills need extra Python deps, API keys, or runtime tools. Check the relevant guide:
 
-- Image & visualization: [`docs/sn-image-generate.md`](docs/sn-image-generate.md)
+- Image & visualization: [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md)
+- Image Studio: [`docs/sn-image-studio.md`](docs/sn-image-studio.md) (Python 3.10+, standalone image dependencies, SenseNova image credentials, and optional Codex / Claude Code / Hermes ACP setup)
 - Presentations: [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md)
 - Data analysis: [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md)
 - Deep research / search: [`docs/sn-deep-research.md`](docs/sn-deep-research.md) and [`docs/sn-deepresearch-cli.md`](docs/sn-deepresearch-cli.md)
@@ -374,6 +377,8 @@ Start the agent and ask:
 > List the available skills, with a one-line description for each.
 
 If the agent enumerates skills like `sn-infographic`, `sn-ppt-entry`, `sn-deep-research`, `sn-motion-html`, `sn-team-harness`, and `sn-proactive-agent` from this repo, skill discovery is working; this does not verify each skill's runtime dependencies or integrations. `sn-deepresearch-cli` additionally requires the standalone CLI installation described in its guide.
+
+For `sn-image-studio`, follow [its guide](docs/sn-image-studio.md) to install its own Python dependencies, configure image credentials, and open the Web UI. Direct image generation does not need an ACP Agent. Requirement-based prompt adaptation needs an explicitly selected Codex, Claude Code, or Hermes ACP server and its authentication; OpenClaw is not a supported Studio ACP profile. `doctor` checks configuration and local dependencies, not successful provider authentication or image generation.
 
 For `sn-proactive-agent`, install the runtime package and the Hermes Connector or OpenClaw Gateway plugin following [its guide](docs/sn-proactive-agent.md). Both paths currently require a model-configured Hermes CLI for background processing; OpenClaw-only use does not require the Hermes Connector. Verify conversation capture, an accepted suggestion running in the original session, and result feedback. A healthy Web service alone does not confirm the integration works.
 

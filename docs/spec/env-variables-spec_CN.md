@@ -4,13 +4,13 @@
 > `sn-ppt-*` PPT 套件使用独立的 `SN_PPT_*` 配置体系（Bundled 回退层），
 > 见 [`../sn-ppt-generate_cn.md`](../sn-ppt-generate_cn.md) 的 API Key 章节。
 
-> **TL;DR**：默认场景下，用户只需关注 4 个变量——`SN_BASE_URL`、`SN_API_KEY`、`SN_CHAT_MODEL`、`SN_IMAGE_GEN_MODEL`（其中后三者带有内置默认值，最少只需设 `SN_API_KEY`）；如需对某一类能力做更细粒度的覆盖，再额外设置 `SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 等专属/分组变量。
+> **TL;DR**：默认场景下，用户只需关注 4 个变量——`SN_BASE_URL`、`SN_API_KEY`、`SN_CHAT_MODEL`、`SN_IMAGE_GEN_MODEL`（除 `SN_API_KEY` 外，其余三项带有内置默认值）；如需对某一类能力做更细粒度的覆盖，再额外设置 `SN_TEXT_*`、`SN_VISION_*`、`SN_CHAT_*` 等专属/分组变量。API Key 仍需具备所选模型的调用权限，其他运行依赖和 Agent 登录按各技能指南配置。
 
 ## 一、设计目标
 
 让用户在最常见的场景下"几乎不需要配置"，同时保留按能力维度精细覆盖的能力。整套体系围绕三条原则：
 
-1. **必需变量最少化**：用户只需要设置 1 个变量就能让所有 skill 跑起来。
+1. **必需变量最少化**：在默认网关、模型与权限适用时，`SN_*` 模型配置最少只需设置 `SN_API_KEY`；各技能的运行依赖和 Agent 认证仍需单独准备。
 2. **默认值放在语义上最高的层级**：能在外层兜底的就不在内层重复，避免同一份默认值散落在多个变量上。
 3. **覆盖关系清晰可预测**：从专属变量逐级回退到共享变量，最终回退到内置默认值，沿途使用第一个非空值。
 
@@ -81,6 +81,18 @@ SN_VISION_*  ┘                     ├─►  SN_*（全局）  ─►  内置
 | Base URL | `SN_IMAGE_GEN_BASE_URL` → `SN_BASE_URL` → `https://token.sensenova.cn/v1` |
 | Model | `SN_IMAGE_GEN_MODEL` → `sensenova-u1.5-lite` |
 | 协议类型 | `SN_IMAGE_GEN_MODEL_TYPE` → `sensenova` |
+
+### 4.4 Image Studio 的配置边界
+
+`sn-image-studio` 使用独立的 `scripts/images.py`，不经过 `sn-image-base` runner，但沿用上面的图生回退链。
+默认模型是 `sensenova-u1.5-lite`，协议为 `sensenova`；客户端仅接受 U1.5 系列模型，实际可用性取决于账号权限。
+
+- 默认读取启动命令当前目录的 `.env`；使用其他配置文件时，为 `doctor`、`serve` 和直接生图命令传入一致的 `--env-file` 绝对路径。
+- 先以所选 `.env` 中的同名值覆盖进程环境，再按图生回退链取第一个非空值；图生专属变量优先于共享变量。
+- 网页配置表单保存 `SN_IMAGE_GEN_*` 覆盖值并保留其他配置，不会自动读取宿主 Agent 的登录凭据作为生图 Key。
+- ACP Agent 使用所选 Codex、Claude Code 或 Hermes 自身的认证和模型配置，不由 `SN_CHAT_*` 配置其登录或模型。直接生图不需要 ACP Agent；按需求改写需额外准备对应 ACP 服务及认证。
+
+完整步骤与两地区 Base URL 见 [Image Studio 使用指南](../sn-image-studio_cn.md)。
 
 ## 五、用户视角的两套配置面
 
