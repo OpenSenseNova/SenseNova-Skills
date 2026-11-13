@@ -108,6 +108,8 @@ SN_CHAT_MODEL="sensenova-6.8-flash-lite"
     SN_IMAGE_GEN_MODEL_TYPE="nano-banana"
     # 用于 OpenAI 图像生成 API
     SN_IMAGE_GEN_MODEL_TYPE="openai-image"
+    # 用于 Atlas Cloud 的任务式图像生成 API
+    SN_IMAGE_GEN_MODEL_TYPE="atlas-cloud"
     ```
 
 2. 设置 `SN_IMAGE_GEN_BASE_URL` 为图像生成 API 的基础 URL，例如：
@@ -119,6 +121,8 @@ SN_CHAT_MODEL="sensenova-6.8-flash-lite"
     SN_IMAGE_GEN_BASE_URL="https://generativelanguage.googleapis.com"
     # 用于 OpenAI 图像生成 API
     SN_IMAGE_GEN_BASE_URL="https://api.openai.com/v1"
+    # 用于 Atlas Cloud
+    SN_IMAGE_GEN_BASE_URL="https://api.atlascloud.ai/api/v1"
     ```
 
 3. 设置 `SN_IMAGE_GEN_MODEL` 为对应类型下的模型名，例如：
@@ -132,6 +136,8 @@ SN_CHAT_MODEL="sensenova-6.8-flash-lite"
     SN_IMAGE_GEN_MODEL="gemini-3.1-flash-image-preview"
     # 用于 OpenAI 图像生成 API
     SN_IMAGE_GEN_MODEL="gpt-image-2"
+    # 用于 Atlas Cloud
+    SN_IMAGE_GEN_MODEL="bytedance/seedream-v5.0-lite"
     ```
 
 4. 如果图像生成使用不同于全局 key 的密钥，再设置 `SN_IMAGE_GEN_API_KEY`。如果 `SN_API_KEY` 已可用于图像生成，则无需设置。
