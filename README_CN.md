@@ -140,6 +140,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 | 名称                                                     | 标签     | 描述                                                                                          |
 | ------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------- |
+| [`sn-search-web`](skills/sn-search-web/SKILL.md) | 通用网页搜索 | 可选的 Parallel Search MCP 网页搜索与页面摘录；无需 API Key，通过独立 Python CLI 调用。 |
 | [`sn-search-academic`](skills/sn-search-academic/SKILL.md)   | 学术搜索   | ArXiv（含 HTML 全文按章节读）/ Semantic Scholar（含引用数）/ PubMed（含 PMC 开放获取全文）/ Wikipedia 四平台聚合。        |
 | [`sn-search-code`](skills/sn-search-code/SKILL.md)           | 开发者搜索  | GitHub（仓库 / 代码 / Issue）/ Stack Overflow / Hacker News / HuggingFace（模型 / 数据集 / Space）四平台聚合。 |
 | [`sn-search-social-cn`](skills/sn-search-social-cn/SKILL.md) | 中文社交搜索 | B 站 / 知乎 / 抖音 三个中文社交平台搜索；部分平台需 cookie 认证。                                                   |
