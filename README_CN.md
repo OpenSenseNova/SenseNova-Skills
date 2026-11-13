@@ -23,6 +23,12 @@ SenseNova 系列模型可直接接入 [OpenClaw](https://openclaw.ai/)、[hermes
 
 > 🎨 **想看它到底能干啥？** [**点击逛 sn-infographic 案例画廊**](docs/sn-infographic-examples_CN.md)，探索近 100 个有趣生成案例，顺便 “ 偷师 ”一下  **Prompt**  应该怎么写！
 
+## News · 最新动态
+
+- **2026-11-13**：[Image Studio](docs/sn-image-studio_cn.md) 上线，支持双语风格案例浏览、提示词编辑和 U1.5 生图 / 改图，也可通过 Codex、Claude Code 或 Hermes 的 ACP 接入按需求改写提示词。
+- **2026-10-29**：[代码视频](docs/sn-code-video_cn.md)上线，用代码制作 MP4，支持声音制作、逐帧审阅和成片验证。
+- **2026-10-09**：[Proactive Agent](docs/sn-proactive-agent_cn.md) 在 Hermes 之外新增 OpenClaw Gateway 接入，接受建议后可在原会话继续执行。
+
 ## 🦝 在小浣熊中开箱即用
 
 本仓库的最新模型与全系 Cowork-Skill，已整体集成进 [**小浣熊**](https://office.xiaohuanxiong.com/home)，提供企业级安全防护与开箱即用的丝滑体验——如果你不想自己搭环境、配 API key，可以直接通过小浣熊使用这些能力。支持免费试用，无需付费即可上手体验。
@@ -80,6 +86,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 
 📖 详细使用指南：[`docs/sn-image-generate.md`](docs/sn-image-generate.md)（环境要求、Quick Start、API 配置与调用样例）。
 
+Image Studio 的[独立使用指南](docs/sn-image-studio_cn.md)介绍双语网页、独立生图客户端，以及可选的 Codex、Claude Code 或 Hermes ACP 接入。
 
 | 名称                                                 | 标签            | 描述                                                                                              |
 | -------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
@@ -88,6 +95,7 @@ Hermes 把目录换成 `~/.hermes/skills/` 即可。
 | [`sn-infographic`](skills/sn-infographic/SKILL.md) | 信息图生成（Tier 1） | 自动评估提示词、从 87 种布局 / 66 种风格中选型，多轮生成 + VLM 评审 + 质量排序，输出专业级信息图。支持 SenseNova U1.5 Lite，包括原生 4K 输出。 |
 | [`sn-image-imitate`](skills/sn-image-imitate/SKILL.md) | 图像风格模仿（Tier 1） | 给定一张参考图像和目标内容描述，模仿其风格生成新图像。 |
 | [`sn-image-resume`](skills/sn-image-resume/SKILL.md) | 简历图片生成（Tier 1） | 给定一份简历信息，生成简历图片。 |
+| [`sn-image-studio`](skills/sn-image-studio/SKILL.md) | 图片工作台 | 双语网页工作台，支持风格案例浏览、提示词编辑、输入图上传与 SenseNova U1.5 生图 / 改图；可直接生成、通过 ACP 按需求改写提示词，或发布已有案例。 |
 
 
 ### 📊 演示文稿（PPT）
