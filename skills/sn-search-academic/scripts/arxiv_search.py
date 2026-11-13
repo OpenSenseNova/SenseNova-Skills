@@ -108,11 +108,17 @@ def build_search_query(
     title_only: bool = False,
 ) -> str:
     """构建 arXiv 查询字符串。"""
+    has_field, has_boolean_syntax = _arxiv_query_features(query)
     if _has_arxiv_field_prefix(query):
-        parts = [query]
+        base_query = query
+    elif has_field or has_boolean_syntax:
+        field = "ti" if title_only else "all"
+        base_query = f"{field}:{query.strip()}"
     else:
         field = "ti" if title_only else "all"
-        parts = [f"{field}:{_quote_if_multiword(query)}"]
+        base_query = f"{field}:{_quote_if_multiword(query)}"
+
+    parts = [base_query]
 
     if author:
         author_terms = [
@@ -121,9 +127,13 @@ def build_search_query(
             if name.strip()
         ]
         if author_terms:
+            if has_boolean_syntax:
+                parts[0] = f"({parts[0]})"
             parts.append(f"({' OR '.join(author_terms)})")
 
     if category:
+        if has_boolean_syntax and len(parts) == 1:
+            parts[0] = f"({parts[0]})"
         parts.append(f"cat:{category}")
 
     return " AND ".join(parts)
@@ -143,6 +153,52 @@ def _quote_if_multiword(term: str) -> str:
 def _has_arxiv_field_prefix(query: str) -> bool:
     fields = ("all", "ti", "au", "abs", "co", "jr", "cat", "rn", "id")
     return query.lstrip().lower().startswith(tuple(f"{field}:" for field in fields))
+
+
+def _arxiv_query_features(query: str) -> tuple[bool, bool]:
+    """Return whether a query has a field or Boolean/grouping syntax outside quotes."""
+    fields = {"all", "ti", "au", "abs", "co", "jr", "cat", "rn", "id"}
+    operators = {"AND", "OR", "ANDNOT"}
+    has_field = False
+    has_boolean_syntax = False
+    in_quotes = False
+    escaped = False
+    index = 0
+
+    while index < len(query):
+        character = query[index]
+        if in_quotes:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                in_quotes = False
+            index += 1
+            continue
+
+        if character == '"':
+            in_quotes = True
+            index += 1
+            continue
+        if character in "()":
+            has_boolean_syntax = True
+            index += 1
+            continue
+        if character.isalpha():
+            end = index + 1
+            while end < len(query) and (query[end].isalnum() or query[end] in "_-"):
+                end += 1
+            token = query[index:end]
+            if token.upper() in operators:
+                has_boolean_syntax = True
+            if token.lower() in fields and end < len(query) and query[end] == ":":
+                has_field = True
+            index = end
+            continue
+        index += 1
+
+    return has_field, has_boolean_syntax
 
 
 def fetch_by_ids(id_list: list[str], limit: int) -> list[dict[str, Any]]:
