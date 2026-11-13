@@ -1,0 +1,4 @@
+interface:
+  display_name: "sn-image-studio"
+  short_description: "Adapt an example style and generate images with SenseNova U1.5"
+  default_prompt: "Use $sn-image-studio to open the local studio, adapt a selected example prompt to my needs, and generate an image with SenseNova U1.5."
