@@ -41,7 +41,7 @@ python sn_agent_runner.py sn-image-generate \
 | `--api-key` | string | No | `SN_IMAGE_GEN_API_KEY` -> `SN_API_KEY` | API Key (CLI takes precedence; raises `MissingApiKeyError` if all are empty) |
 | `--base-url` | string | No | `SN_IMAGE_GEN_BASE_URL` -> `SN_BASE_URL` | API base URL (CLI takes precedence) |
 | `--negative-prompt` | string | No | `""` | Negative prompt |
-| `--image-size` | string | No | `"2k"` | Image size (case-insensitive). Recommended: `2k`. `sensenova-u1.5-lite` also supports `4k`; `sensenova-u1-fast` remains limited to `1k`/`2k`. Other values → `ValueError` (see Error Handling). |
+| `--image-size` | string | No | `"2k"` | Image size (case-insensitive). Recommended: `2k`. `sensenova-u1.6-lite` also supports `4k`; `sensenova-u1-fast` remains limited to `1k`/`2k`. Other values → `ValueError` (see Error Handling). |
 | `--aspect-ratio` | string | No | `"16:9"` | Aspect ratio |
 | `--seed` | int | No | `None` | Random seed (for reproducibility) |
 | `--unet-name` | string | No | `None` | UNet model name |
@@ -124,7 +124,7 @@ Error: API key is required but was not provided. Set SN_API_KEY, or set SN_IMAGE
 
 ## sn-image-edit
 
-Edits one or more reference images with SenseNova U1.5 Lite through `/images/edits`.
+Edits one or more reference images with SenseNova U1.6 Lite through `/images/edits`.
 
 ```bash
 python sn_agent_runner.py sn-image-edit \

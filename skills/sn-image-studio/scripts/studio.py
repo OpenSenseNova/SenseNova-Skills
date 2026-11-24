@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Harness-neutral prompt tasks and scripted SenseNova U1.5 image calls."""
+"""Harness-neutral prompt tasks and scripted SenseNova U1.6 image calls."""
 from __future__ import annotations
 
 import argparse

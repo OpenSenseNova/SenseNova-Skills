@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Standalone SenseNova U1.5 generation/editing client for Image Studio."""
+"""Standalone SenseNova U1.6 generation/editing client for Image Studio."""
 from __future__ import annotations
 
 import argparse
@@ -28,8 +28,8 @@ def pixel_size(aspect_ratio, image_size, model):
     width, height = map(int, aspect_ratio.split(":"))
     if width > 3 * height or height > 3 * width:
         raise ValueError("图片比例须介于 1:3 与 3:1 之间。")
-    if image_size not in RESOLUTION_EDGES or (image_size == "4k" and model.lower() != "sensenova-u1.5-lite"):
-        raise ValueError("支持 2k；sensenova-u1.5-lite 还支持 4k。")
+    if image_size not in RESOLUTION_EDGES or (image_size == "4k" and model.lower() != "sensenova-u1.6-lite"):
+        raise ValueError("支持 2k；sensenova-u1.6-lite 还支持 4k。")
     # API size rules: each edge is 512..4096 in multiples of 32; ratio 1:3..3:1.
     # Preserve the sample's ratio instead of snapping it to a small preset list.
     # Start from the resolution's square pixel budget, then cap the longest edge.

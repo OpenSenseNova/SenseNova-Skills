@@ -44,7 +44,7 @@ def test_empty_sn_image_gen_model_resolves_built_in_default(monkeypatch) -> None
     # ``.env.example`` ships ``SN_IMAGE_GEN_MODEL=`` (empty). A verbatim copy
     # of that file must not clobber the built-in default model.
     monkeypatch.setenv("SN_IMAGE_GEN_MODEL", "")
-    assert Configs().SN_IMAGE_GEN_MODEL == "sensenova-u1.5-lite"
+    assert Configs().SN_IMAGE_GEN_MODEL == "sensenova-u1.6-lite"
 
 
 def test_non_empty_sn_image_gen_model_wins(monkeypatch) -> None:

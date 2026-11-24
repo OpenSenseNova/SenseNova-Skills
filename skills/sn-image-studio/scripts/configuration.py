@@ -11,12 +11,12 @@ from urllib.parse import urlsplit
 from studio_errors import StudioError
 
 DEFAULT_BASE_URL = "https://token.sensenova.cn/v1"
-DEFAULT_MODEL = "sensenova-u1.5-lite"
+DEFAULT_MODEL = "sensenova-u1.6-lite"
 
 
-def is_u15_model(model):
+def is_u16_model(model):
     value = model.lower()
-    return re.fullmatch(r"sensenova-u1\.5(?:-[a-z0-9._-]+)?", value) is not None
+    return re.fullmatch(r"sensenova-u1\.6(?:-[a-z0-9._-]+)?", value) is not None
 
 
 def read_env_file(path):
@@ -74,8 +74,8 @@ class Configuration:
         parts = urlsplit(value["base_url"])
         if parts.scheme not in {"https", "http"} or not parts.netloc or parts.username or parts.password:
             missing.append("有效的 SN_BASE_URL（或 SN_IMAGE_GEN_BASE_URL）")
-        if not is_u15_model(value["model"]):
-            missing.append("SN_IMAGE_GEN_MODEL 必须属于 sensenova-u1.5 系列")
+        if not is_u16_model(value["model"]):
+            missing.append("SN_IMAGE_GEN_MODEL 必须属于 sensenova-u1.6 系列")
         if value["protocol"] != "sensenova":
             missing.append("SN_IMAGE_GEN_MODEL_TYPE=sensenova")
         dependencies = [name for name in ("httpx", "PIL", "dotenv")
@@ -102,8 +102,8 @@ class Configuration:
         parts = urlsplit(base_url)
         if parts.scheme not in {"http", "https"} or not parts.netloc or parts.username or parts.password or parts.query or parts.fragment:
             raise StudioError("invalidBaseURL", "请填写不含凭据、查询参数的 API Base URL。")
-        if not is_u15_model(model) or len(model) > 120:
-            raise StudioError("invalidModel", "模型名须属于 sensenova-u1.5 系列，具体型号以账号可用项为准。")
+        if not is_u16_model(model) or len(model) > 120:
+            raise StudioError("invalidModel", "模型名须属于 sensenova-u1.6 系列，具体型号以账号可用项为准。")
         updates = {"SN_IMAGE_GEN_BASE_URL": base_url, "SN_IMAGE_GEN_MODEL": model,
                    "SN_IMAGE_GEN_MODEL_TYPE": "sensenova"}
         if key:

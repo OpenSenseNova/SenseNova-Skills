@@ -13,7 +13,7 @@
 该技能提供以下子命令：
 
 - `sn-image-generate`：图像生成
-- `sn-image-edit`：图像编辑（SenseNova U1.5 Lite）
+- `sn-image-edit`：图像编辑（SenseNova U1.6 Lite）
 - `sn-image-recognize`：图像识别（VLM）
 - `sn-text-optimize`：文本优化（LLM）
 
@@ -45,7 +45,7 @@ SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_API_KEY="<sensenova-token-plan-api-key>"
 
 # 可选模型覆盖
-SN_IMAGE_GEN_MODEL="sensenova-u1.5-lite"   # 或 sensenova-u1-fast，或 Token Plan 中的其他图像生成模型
+SN_IMAGE_GEN_MODEL="sensenova-u1.6-lite"   # 或 sensenova-u1-fast，或 Token Plan 中的其他图像生成模型
 SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
@@ -89,7 +89,7 @@ SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 | `SN_BASE_URL` | 所有能力共用的全局基础 URL | `""` |
 | `SN_IMAGE_GEN_API_KEY` | 可选的图像生成专用 API key 覆盖 | `SN_API_KEY` |
 | `SN_IMAGE_GEN_MODEL_TYPE` | 图像生成模型类型 | `"sensenova"` |
-| `SN_IMAGE_GEN_MODEL` | 图像生成模型名 | `"sensenova-u1.5-lite"` |
+| `SN_IMAGE_GEN_MODEL` | 图像生成模型名 | `"sensenova-u1.6-lite"` |
 | `SN_IMAGE_GEN_BASE_URL` | 图像生成 API 的基础 URL | `SN_BASE_URL`，然后 `"https://token.sensenova.cn/v1"` |
 
 默认值适用于 [SenseNova](https://platform.sensenova.cn/)。
@@ -129,7 +129,7 @@ SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 
     ```ini
     # （默认）用于 [SenseNova](https://platform.sensenova.cn/)
-    SN_IMAGE_GEN_MODEL="sensenova-u1.5-lite"
+    SN_IMAGE_GEN_MODEL="sensenova-u1.6-lite"
     # 或使用 SenseNova U1 Fast：
     # SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
     # 用于 Google Nano Banana 模型 API

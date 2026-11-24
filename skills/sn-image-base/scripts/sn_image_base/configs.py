@@ -107,7 +107,7 @@ class Configs:
         Literal["sensenova", "nano-banana", "openai-image", "atlas-cloud"],
         Field("SN_IMAGE_GEN_MODEL_TYPE"),
     ] = "sensenova"
-    SN_IMAGE_GEN_MODEL: Annotated[str, Field("SN_IMAGE_GEN_MODEL")] = "sensenova-u1.5-lite"
+    SN_IMAGE_GEN_MODEL: Annotated[str, Field("SN_IMAGE_GEN_MODEL")] = "sensenova-u1.6-lite"
 
     # chat runtime shared by text and vision commands; command-specific
     # SN_TEXT_* / SN_VISION_* values override these defaults.

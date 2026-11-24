@@ -373,13 +373,13 @@ async function connectAgent() {
 let configurationIssue;
 function renderConfigurationCopy() {
   $('#service-note').textContent = configuration.configured
-    ? t('configReady', { model: configuration.model === 'sensenova-u1.5-lite' ? 'SenseNova U1.5 Lite' : configuration.model }) : t('configNeeded');
+    ? t('configReady', { model: configuration.model === 'sensenova-u1.6-lite' ? 'SenseNova U1.6 Lite' : configuration.model }) : t('configNeeded');
   $('#config-key').placeholder = t(configuration.has_key ? 'keepKeyPlaceholder' : 'keyPlaceholder');
   $('#config-error').textContent = configurationIssue ? errorMessage(configurationIssue) : '';
 }
 function openConfiguration() {
   $('#config-base-url').value = configuration.base_url || 'https://token.sensenova.cn/v1';
-  $('#config-model').value = configuration.model || 'sensenova-u1.5-lite';
+  $('#config-model').value = configuration.model || 'sensenova-u1.6-lite';
   $('#config-key').value = '';
   $('#config-key').required = !configuration.has_key;
   configurationIssue = undefined;

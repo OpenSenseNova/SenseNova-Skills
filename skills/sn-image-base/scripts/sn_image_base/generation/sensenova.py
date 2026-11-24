@@ -29,7 +29,7 @@ DEFAULT_RESOLUTION: Literal["1K", "2K", "4K"] = "2K"
 DEFAULT_ASPECT_RATIO = "16:9"
 DEFAULT_POLL_INTERVAL = 5.0
 OUTPUT_DIR = Path("/tmp/openclaw-sn-image")
-U15_LITE_MODEL = "sensenova-u1.5-lite"
+U16_LITE_MODEL = "sensenova-u1.6-lite"
 
 
 IMAGE_GEN_ENDPOINT = "/images/generations"
@@ -165,11 +165,11 @@ class SensenovaText2ImageClient(T2IBaseClient):
         model: str | None = None,
         output_path: Path | None = None,
     ) -> dict:
-        """Edit one or more reference images with SenseNova U1.5 Lite."""
+        """Edit one or more reference images with SenseNova U1.6 Lite."""
         model = model or self.model or global_configs.SN_IMAGE_GEN_MODEL
-        if model.lower() != U15_LITE_MODEL:
+        if model.lower() != U16_LITE_MODEL:
             raise ValueError(
-                f"SenseNova image editing requires model {U15_LITE_MODEL!r}; got {model!r}."
+                f"SenseNova image editing requires model {U16_LITE_MODEL!r}; got {model!r}."
             )
         if not images:
             raise ValueError("At least one reference image is required.")
@@ -319,7 +319,7 @@ class SensenovaText2ImageClient(T2IBaseClient):
 
         Example:
         {
-            "model": "sensenova-u1.5-lite",
+            "model": "sensenova-u1.6-lite",
             "prompt": "A cat wearing a hat",
             "size": "1024x1024",
             "response_format": "url",
@@ -373,14 +373,14 @@ class SensenovaText2ImageClient(T2IBaseClient):
             buckets = BUCKETS_1K
         elif resolution == "2K":
             buckets = BUCKETS_2K
-        elif resolution == "4K" and (model or "").lower() == U15_LITE_MODEL:
+        elif resolution == "4K" and (model or "").lower() == U16_LITE_MODEL:
             buckets = BUCKETS_4K
         else:
-            # U1 Fast only supports 1K / 2K. U1.5 Lite is the only SenseNova
+            # U1 Fast only supports 1K / 2K. U1.6 Lite is the only SenseNova
             # model currently supporting native 4K output.
             raise ValueError(
                 f"image-size {resolution!r} is not supported by the SenseNova image backend "
-                f"for model {model or 'unknown'!r} (supported: 1K, 2K; U1.5 Lite also supports 4K)."
+                f"for model {model or 'unknown'!r} (supported: 1K, 2K; U1.6 Lite also supports 4K)."
             )
         try:
             ws, _, hs = aspect_ratio.strip().partition(":")

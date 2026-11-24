@@ -14,7 +14,7 @@
         "assets/feishu-edit-007-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考蜡笔涂鸦风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -54,7 +54,7 @@
         "assets/feishu-edit-002-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考分层纸雕风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -101,7 +101,7 @@
         "assets/feishu-edit-011-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考Riso 复古印刷风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -149,7 +149,7 @@
         "assets/feishu-edit-049-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考单色编辑印刷样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -191,7 +191,7 @@
         "assets/feishu-edit-003-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考实景延伸线稿 · 旅行样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -229,7 +229,7 @@
         "assets/feishu-edit-020-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考Riso 复古装饰插画样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -265,7 +265,7 @@
         "assets/feishu-edit-004-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考胶带拼贴图案样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -301,7 +301,7 @@
         "assets/feishu-edit-012-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "将原照的核心主体做成带浅色纸边和柔和阴影的摄影剪贴，在单张竖版纸面中下部加入与主体互动的黑线小人和英文手写短句，上方留白。",
         "preserve": [],
@@ -339,7 +339,7 @@
         "assets/feishu-edit-025-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考阶梯手账拼贴样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -382,7 +382,7 @@
         "assets/feishu-edit-021-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考3D可爱玩偶风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -421,7 +421,7 @@
         "assets/feishu-edit-029-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考粗糙手绘样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -457,7 +457,7 @@
         "assets/feishu-edit-022-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考角色设计参考表样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -502,7 +502,7 @@
         "assets/feishu-edit-032-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考建筑线稿风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -538,7 +538,7 @@
         "assets/feishu-edit-030-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考厚涂油画 · 艺术双联样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -577,7 +577,7 @@
         "assets/feishu-edit-042-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考字体破框艺术样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -616,7 +616,7 @@
         "assets/feishu-edit-038-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考铅笔彩绘风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -652,7 +652,7 @@
         "assets/feishu-edit-039-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "将照片重绘为单幅竖版手绘海报，保留主体关系与地点特征，以中下部插画和顶部大面积留白构成纸面布局。",
         "preserve": [],
@@ -694,7 +694,7 @@
         "assets/feishu-edit-041-q.webp"
       ],
       "requiredInputs": 3,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考手账拼贴样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -732,7 +732,7 @@
         "assets/feishu-edit-043-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考手账日记风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -771,7 +771,7 @@
         "assets/feishu-edit-045-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考旅行照拆成手帐样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -814,7 +814,7 @@
         "assets/feishu-edit-046-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考微缩模型样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -850,7 +850,7 @@
         "assets/feishu-edit-047-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考人物水彩速写样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -886,7 +886,7 @@
         "assets/feishu-edit-048-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考现代绘本风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -922,7 +922,7 @@
         "assets/feishu-edit-050-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "将照片中的同一场景重绘为印象派厚涂油画，保留主体特征和自然透视，结合纸面肌理与手写排版。",
         "preserve": [],
@@ -964,7 +964,7 @@
         "assets/feishu-edit-051-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考相纸拼贴艺术样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1004,7 +1004,7 @@
         "assets/feishu-edit-052-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考照片重构样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1041,7 +1041,7 @@
         "assets/feishu-edit-053-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考专属图章样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1077,7 +1077,7 @@
         "assets/feishu-edit-057-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考办公手绘拼贴样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1116,7 +1116,7 @@
         "assets/feishu-edit-058-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考Y2K海报样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1154,7 +1154,7 @@
         "assets/feishu-edit-059-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考3D手办样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1193,7 +1193,7 @@
         "assets/feishu-edit-060-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "3:4 竖版画布在高度中点分为两个 3:2 横版区域；上半区保留上传原照的摄影质感，下半区才将同一场景转为纸雕，形成明确的材质对照。",
         "preserve": [
@@ -1246,7 +1246,7 @@
         "assets/feishu-edit-062-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考厚涂油画 · 微缩景观样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1282,7 +1282,7 @@
         "assets/feishu-edit-063-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考建筑阴影分析图样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1323,7 +1323,7 @@
         "assets/feishu-edit-064-k.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考复古故障艺术样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1359,7 +1359,7 @@
         "assets/feishu-edit-066-n.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考插画风格样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1395,7 +1395,7 @@
         "assets/feishu-edit-013-o.webp"
       ],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考手工剪纸立体插画样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1429,7 +1429,7 @@
       "preview": "assets/feishu-case-014-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考城市插画样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1460,7 +1460,7 @@
       "preview": "assets/feishu-case-015-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考厚涂油画 · 猫咪池塘样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1491,7 +1491,7 @@
       "preview": "assets/feishu-case-018-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考东方美学样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1524,7 +1524,7 @@
       "preview": "assets/feishu-case-040-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考看起来不像AI生成的信息图样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1568,7 +1568,7 @@
       "preview": "assets/feishu-case-044-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考复古计算机质感插画样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1607,7 +1607,7 @@
       "preview": "assets/feishu-case-019-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考荷塘水彩线稿样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1641,7 +1641,7 @@
       "preview": "assets/feishu-case-028-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考3D微缩模型样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1679,7 +1679,7 @@
       "preview": "assets/feishu-case-037-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考户外治愈系 Plog 风样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1710,7 +1710,7 @@
       "preview": "assets/feishu-case-067-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考维伦纽瓦导演风格样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1741,7 +1741,7 @@
       "preview": "assets/feishu-case-056-2.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考日杂画报写真 · 日系甜妹样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1772,7 +1772,7 @@
       "preview": "assets/feishu-case-056-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考日杂画报写真 · Y2K粉黑样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1805,7 +1805,7 @@
       "preview": "assets/feishu-case-065-1.webp",
       "inputImages": [],
       "requiredInputs": 0,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考科研绘图样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],
@@ -1860,7 +1860,7 @@
       "preview": "assets/feishu-case-016-1.webp",
       "inputImages": [],
       "requiredInputs": 1,
-      "sourceLabel": "SenseNova U1.5 Lite 示例",
+      "sourceLabel": "SenseNova U1.6 Lite 示例",
       "recipe": {
         "effect": "参考实景延伸线稿 · 第二世界样例及当前Prompt理解画面关系，由用户需求决定如何迁移。",
         "preserve": [],

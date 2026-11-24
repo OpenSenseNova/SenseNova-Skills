@@ -13,7 +13,7 @@ For installation and usage, please refer to the project's [README.md](https://gi
 The skill provides the following subcommands:
 
 - `sn-image-generate`: image generation
-- `sn-image-edit`: image editing (SenseNova U1.5 Lite)
+- `sn-image-edit`: image editing (SenseNova U1.6 Lite)
 - `sn-image-recognize`: image recognition (VLM)
 - `sn-text-optimize`: text optimization (LLM)
 
@@ -45,7 +45,7 @@ SN_BASE_URL="https://token.sensenova.cn/v1"
 SN_API_KEY="<sensenova-token-plan-api-key>"
 
 # Optional model overrides
-SN_IMAGE_GEN_MODEL="sensenova-u1.5-lite"   # or sensenova-u1-fast, or another Token Plan image model
+SN_IMAGE_GEN_MODEL="sensenova-u1.6-lite"   # or sensenova-u1-fast, or another Token Plan image model
 SN_CHAT_MODEL="sensenova-6.8-flash-lite"
 ```
 
@@ -87,7 +87,7 @@ Full configuration for image generation:
 | `SN_BASE_URL` | Global base URL used when capability-specific base URLs are unset | `""` |
 | `SN_IMAGE_GEN_API_KEY` | Optional image-generation-only API key override | `SN_API_KEY` |
 | `SN_IMAGE_GEN_MODEL_TYPE` | The type of image generation model to use | `"sensenova"` |
-| `SN_IMAGE_GEN_MODEL` | The name of the image generation model to use | `"sensenova-u1.5-lite"` |
+| `SN_IMAGE_GEN_MODEL` | The name of the image generation model to use | `"sensenova-u1.6-lite"` |
 | `SN_IMAGE_GEN_BASE_URL` | The base URL for the image generation API | `SN_BASE_URL`, then `"https://token.sensenova.cn/v1"` |
 
 The default values are recommended for the [SenseNova](https://platform.sensenova.cn/).
@@ -127,7 +127,7 @@ To use non-default image generation models, please:
 
     ```ini
     # (Default) For [SenseNova](https://platform.sensenova.cn/)
-    SN_IMAGE_GEN_MODEL="sensenova-u1.5-lite"
+    SN_IMAGE_GEN_MODEL="sensenova-u1.6-lite"
     # Or use SenseNova U1 Fast:
     # SN_IMAGE_GEN_MODEL="sensenova-u1-fast"
     # For Google's Nano Banana model API
