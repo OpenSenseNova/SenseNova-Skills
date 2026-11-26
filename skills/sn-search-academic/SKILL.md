@@ -94,6 +94,32 @@ python3 scripts/search.py "open source governance" --source ssrn --limit 10
 python3 scripts/search.py "agentic memory" --source all --limit 8 --output results/search.json
 ```
 
+### arxiv_native.py（推荐：零依赖 arXiv 直连）
+
+只依赖标准库，**不需要 `arxiv` / `deepxiv-sdk` / `playwright` 任何一个可选依赖**，兼容 Python 3.9+。当环境里缺少可选依赖、或需要稳定可预期的 arXiv 检索时，用这个脚本代替 `search.py --source arxiv`。
+
+为什么需要它：`search.py` 的 `arxiv` 通道按 `arxiv_official → deepxiv → openalex → …` 顺序降级。前两者缺依赖时会**静默**落到 openalex，外层仍返回 `success: true`，于是调用方以为拿到了 arXiv 结果，实际拿到的是 OpenAlex 的期刊词条（常见于 2014 年百科条目这类无关旧数据）。`arxiv_native.py` 去掉了这条降级链，失败即报错。
+
+```bash
+# 预设查询（推荐，已内置分类限定）
+python3 scripts/arxiv_native.py --preset governance  --days 7 --limit 30   # 治理/制度/贡献者/许可/激励
+python3 scripts/arxiv_native.py --preset opensource  --days 7 --limit 30   # 开源软件工程与协作
+python3 scripts/arxiv_native.py --preset supplychain --days 7 --limit 20   # 供应链/SBOM/依赖漏洞
+
+# 自定义查询：务必叠加分类限定
+python3 scripts/arxiv_native.py --query '(cat:cs.SE OR cat:cs.CY) AND abs:"open source" AND abs:maintainer' --limit 20
+
+# 按 ID 取元数据 / JSON 输出
+python3 scripts/arxiv_native.py --ids 2610.28027,2610.29199
+python3 scripts/arxiv_native.py --preset governance --days 7 --json
+```
+
+参数：`--preset {opensource,governance,supplychain}`、`--query`、`--ids`、`--cats`（默认 `cs.SE,cs.CY,cs.SI,econ.GN`）、`--limit`、`--days`（客户端按 `published` 过滤）、`--sort {submittedDate,relevance,lastUpdatedDate}`、`--json`。
+
+**查询精度**：arXiv 的裸 `abs:"open source"` 会命中物理/化学语境中"open-source"的泛用表述（照明设备、GPU 调度等），必须叠加 `cat:` 限定才有可用精度。
+
+**限流**：arXiv 要求请求间隔 ≥3 秒（单连接）。脚本单次调用只发一次请求，不需要额外等待；批量化时自行在多次调用之间 sleep。
+
 ### paper.py
 
 统一论文阅读入口。默认按 arXiv 论文读取；读取 PMC 论文时显式传 `--source pmc`。不确定章节名时先用 `--list_section` 列出可用章节，再用 `--section` 精读。
