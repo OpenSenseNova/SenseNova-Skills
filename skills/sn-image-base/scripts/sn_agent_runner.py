@@ -343,9 +343,9 @@ async def run_image_edit(args: argparse.Namespace) -> tuple[dict, int]:
         raise BadConfigurationError(
             f"No model provided. {global_configs.get_env_var_help('SN_IMAGE_GEN_MODEL')}"
         )
-    if model.lower() != "sensenova-u1.5-lite":
+    if model.lower() != "sensenova-u1.6-lite":
         raise BadConfigurationError(
-            "sn-image-edit requires SN_IMAGE_GEN_MODEL=sensenova-u1.5-lite; "
+            "sn-image-edit requires SN_IMAGE_GEN_MODEL=sensenova-u1.6-lite; "
             f"got {model!r}."
         )
     api_key = args.api_key or global_configs.SN_IMAGE_GEN_API_KEY

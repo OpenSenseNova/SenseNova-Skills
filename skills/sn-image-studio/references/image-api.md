@@ -1,7 +1,7 @@
 # Image size handling
 
 SenseNova API documentation:
-https://platform.sensenova.cn/docs (SenseNova U1.5 Lite, synchronous image generation, `size`).
+https://platform.sensenova.cn/docs (SenseNova U1.6 Lite, synchronous image generation, `size`).
 
 - Each output edge must be 512–4096 pixels and a multiple of 32.
 - Width-to-height ratio must be between 1:3 and 3:1, inclusive.
@@ -9,7 +9,7 @@ https://platform.sensenova.cn/docs (SenseNova U1.5 Lite, synchronous image gener
 
 For text-to-image, Studio resolves “sample ratio” from the pinned case's width and height. `images.py` scales that ratio toward a 2048² or 4096² pixel budget, caps the longest edge at 4096, rounds both edges to multiples of 32, and keeps rounding within the ratio boundaries. It validates the final pixel size before sending the request. Sample dimensions such as 2752×1536 are valid ratios and must not be rejected for being slightly wider than 16:9.
 
-The 4K option remains scoped to `sensenova-u1.5-lite` in this client. Image editing retains its existing `size=auto` behavior so the provider adapts to the main input image.
+The 4K option remains scoped to `sensenova-u1.6-lite` in this client. Image editing retains its existing `size=auto` behavior so the provider adapts to the main input image.
 
 
 ## Execution timeouts

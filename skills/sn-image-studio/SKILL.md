@@ -1,6 +1,6 @@
 ---
 name: sn-image-studio
-description: Open Image Studio to select example styles, edit prompts or submit requirements. Use its ACP bridge with Codex, Claude Code or Hermes to adapt prompts and execute SenseNova U1.5 image tasks. Also use to publish supplied prompts and effect images to the case library.
+description: Open Image Studio to select example styles, edit prompts or submit requirements. Use its ACP bridge with Codex, Claude Code or Hermes to adapt prompts and execute SenseNova U1.6 image tasks. Also use to publish supplied prompts and effect images to the case library.
 ---
 
 # Image Studio
@@ -31,7 +31,7 @@ Replace `codex` with the selected harness consistently. Open the returned loopba
 
 Set `--language` from the user's explicit language preference, otherwise their conversation language: `zh-CN` for Chinese and `en` for English. Use `auto` when the user's language is unknown or unsupported; it uses the saved UI preference, then the browser language (Chinese → Chinese; other languages → English). Open the complete returned URL, including its language query, even when reusing a running service. The launch language overrides a previously saved choice; subsequent changes use the main-page switch and apply to Settings too.
 
-Configuration uses `SN_IMAGE_GEN_API_KEY` → `SN_API_KEY`, `SN_IMAGE_GEN_BASE_URL` → `SN_BASE_URL` → `https://token.sensenova.cn/v1`, `SN_IMAGE_GEN_MODEL` → `sensenova-u1.5-lite`, and `SN_IMAGE_GEN_MODEL_TYPE` → `sensenova`. Use existing environment/project `.env`; pass `--env-file /absolute/path/.env` consistently for a custom file. The selected file overrides process variables; image-specific settings override shared settings.
+Configuration uses `SN_IMAGE_GEN_API_KEY` → `SN_API_KEY`, `SN_IMAGE_GEN_BASE_URL` → `SN_BASE_URL` → `https://token.sensenova.cn/v1`, `SN_IMAGE_GEN_MODEL` → `sensenova-u1.6-lite`, and `SN_IMAGE_GEN_MODEL_TYPE` → `sensenova`. Use existing environment/project `.env`; pass `--env-file /absolute/path/.env` consistently for a custom file. The selected file overrides process variables; image-specific settings override shared settings.
 
 If image credentials are missing, the page opens its configuration form. The user enters the key there or edits `.env`; keep keys out of chat, task data and logs. The page preserves unrelated settings and writes image-specific overrides privately. Harness authentication uses that harness's existing setup and is separate from the SenseNova image key.
 
@@ -82,4 +82,4 @@ python3 "$SKILL_DIR/scripts/images.py" \
   --aspect-ratio 3:4 --save-path /absolute/path/result.png
 ```
 
-Add `--images /absolute/path/input.png /absolute/path/reference.png` for editing and `--env-file` for custom configuration. Default resolution is 2k. Model names must be in the U1.5 family; actual access depends on the account. Automatic prompt extension is disabled. Report actual API errors; uncertain paid requests are not automatically resubmitted.
+Add `--images /absolute/path/input.png /absolute/path/reference.png` for editing and `--env-file` for custom configuration. Default resolution is 2k. Model names must be in the U1.6 family; actual access depends on the account. Automatic prompt extension is disabled. Report actual API errors; uncertain paid requests are not automatically resubmitted.

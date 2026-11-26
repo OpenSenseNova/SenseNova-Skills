@@ -50,7 +50,7 @@ Features:
 |                       |        |          | `force`: skip evaluation, always execute Step 2 expansion |
 |                       |        |          | `disable`: skip Step 2, use `user_prompt` directly as `expanded_prompt` |
 | `aspect_ratio` | string | *inferred* (`16:9`) | Set by **Main Agent** when the user states an explicit supported ratio (e.g. `16:9` / `9:16`, optionally via `宽高比` / `画面比例` / `aspect ratio`); otherwise left unset and the **Worker** infers it in Step 0 from `user_prompt` (orientation / scene cues) per `references/runtime-parameters.md`. |
-| `image_size` | string | *inferred* (`2k`) | Set by **Main Agent** when the user states an explicit size (`2k` / `4k`); otherwise the **Worker** infers it in Step 0 (currently a single option, `2k`). `4k` is supported when `SN_IMAGE_GEN_MODEL=sensenova-u1.5-lite`; other models may reject it and the skill surfaces that error. |
+| `image_size` | string | *inferred* (`2k`) | Set by **Main Agent** when the user states an explicit size (`2k` / `4k`); otherwise the **Worker** infers it in Step 0 (currently a single option, `2k`). `4k` is supported when `SN_IMAGE_GEN_MODEL=sensenova-u1.6-lite`; other models may reject it and the skill surfaces that error. |
 
 > **Who extracts what:** Main Agent parameter extraction resolves `max_rounds`, `output_mode`, `prompts_expand_mode`, and `aspect_ratio` / `image_size` (each only when the user gives an explicit value). `aspect_ratio` and `image_size` without an explicit value are inferred by the Worker in Step 0.
 
